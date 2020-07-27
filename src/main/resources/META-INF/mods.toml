@@ -1,0 +1,11 @@
+modLoader="javafml"
+loaderVersion="[32,)"
+[[mods]]
+modId="towerofgod"
+version="1.16.1-0.9.0"
+displayName="Tower of God Mod"
+credits="Thanks for this mod goes to SIU and his manhwa, Tower of God"
+authors="DavidQF555"
+description='''
+This mod adds in many features of the Tower of God universe made by SIU. 
+'''
