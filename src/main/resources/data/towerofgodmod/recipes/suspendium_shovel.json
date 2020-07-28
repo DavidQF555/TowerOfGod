@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" x ",
+		" y ",
+		" y "
+	],
+	"key": {
+		"x": {
+			"item": "towerofgodmod:suspendium"
+		},
+		"y": {
+			"item": "minecraft:stick"
+		}
+	},
+	"result": {
+		"item": "towerofgodmod:suspendium_shovel",
+		"count": 1
+	}
+}
