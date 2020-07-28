@@ -5,6 +5,7 @@ modId="towerofgodmod"
 version="${file.jarVersion}"
 displayName="Tower of God Mod"
 displayURL="https://github.com/DavidQF555/TowerOfGodMod"
+logoFile="logo.png"
 credits="Thanks for this mod goes to SIU and his manhwa, Tower of God"
 authors="DavidQF555"
 description='''
