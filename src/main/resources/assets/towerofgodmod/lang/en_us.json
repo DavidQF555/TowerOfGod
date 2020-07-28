@@ -11,5 +11,11 @@
 	"item.towerofgodmod.suspendium_helmet": "Suspendium Helmet",
 	"item.towerofgodmod.suspendium_chestplate": "Suspendium Chestplate",
 	"item.towerofgodmod.suspendium_leggings": "Suspendium Leggings",
-	"item.towerofgodmod.suspendium_boots": "Suspendium Boots"
+	"item.towerofgodmod.suspendium_boots": "Suspendium Boots",
+	"item.towerofgodmod.wooden_needle": "Wooden Needle",
+	"item.towerofgodmod.stone_needle": "Stone Needle",
+	"item.towerofgodmod.iron_needle": "Iron Needle",
+	"item.towerofgodmod.diamond_needle": "Diamond Needle",
+	"item.towerofgodmod.netherite_needle": "Netherite Needle",
+	"item.towerofgodmod.suspendium_needle": "Suspendium Needle"
 }

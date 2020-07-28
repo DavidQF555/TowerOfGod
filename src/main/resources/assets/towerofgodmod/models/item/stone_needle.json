@@ -1,0 +1,6 @@
+{
+	"parent": "item/handheld",
+	"textures": {
+		"layer0": "towerofgodmod:items/stone_needle"
+	}
+}

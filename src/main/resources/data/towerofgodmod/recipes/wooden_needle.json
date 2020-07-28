@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"x  ",
+		" x ",
+		"  x"
+	],
+	"key": {
+		"x": {
+			"item": "minecraft:stick"
+		}
+	},
+	"result": {
+		"item": "towerofgodmod:wooden_needle",
+		"count": 1
+	}
+}
