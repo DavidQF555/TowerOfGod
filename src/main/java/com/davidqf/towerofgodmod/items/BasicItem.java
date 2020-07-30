@@ -4,9 +4,9 @@ import com.davidqf.towerofgodmod.TowerOfGod;
 
 import net.minecraft.item.Item;
 
-public class ItemBase extends Item {
+public class BasicItem extends Item {
 
-	public ItemBase() {
+	public BasicItem() {
 		super(new Item.Properties().group(TowerOfGod.TAB));
 	}
 }

@@ -1,6 +1,6 @@
 package com.davidqf.towerofgodmod.tools;
 
-import com.davidqf.towerofgodmod.RegistryHandler;
+import com.davidqf.towerofgodmod.util.RegistryHandler;
 
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.crafting.Ingredient;

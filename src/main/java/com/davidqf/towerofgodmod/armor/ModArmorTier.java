@@ -1,6 +1,7 @@
 package com.davidqf.towerofgodmod.armor;
 
 import com.davidqf.towerofgodmod.*;
+import com.davidqf.towerofgodmod.util.RegistryHandler;
 
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;

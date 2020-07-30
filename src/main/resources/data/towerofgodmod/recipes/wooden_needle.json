@@ -3,11 +3,14 @@
 	"pattern": [
 		"x  ",
 		" x ",
-		"  x"
+		"  y"
 	],
 	"key": {
 		"x": {
 			"item": "minecraft:stick"
+		},
+		"y": {
+			"tag": "minecraft:planks"
 		}
 	},
 	"result": {

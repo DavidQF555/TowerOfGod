@@ -1,6 +1,7 @@
 package com.davidqf.towerofgodmod.world.gen;
 
 import com.davidqf.towerofgodmod.*;
+import com.davidqf.towerofgodmod.util.RegistryHandler;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.world.biome.Biome;
