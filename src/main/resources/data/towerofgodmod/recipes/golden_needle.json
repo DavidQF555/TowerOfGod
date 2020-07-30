@@ -7,14 +7,14 @@
 	],
 	"key": {
 		"x": {
-			"tag": "minecraft:planks"
+			"item": "minecraft:gold_ingot"
 		},
 		"y": {
 			"item": "minecraft:iron_ingot"
 		}
 	},
 	"result": {
-		"item": "towerofgodmod:wooden_needle",
+		"item": "towerofgodmod:golden_needle",
 		"count": 1
 	}
 }
