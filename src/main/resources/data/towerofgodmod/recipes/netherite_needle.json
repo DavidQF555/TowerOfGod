@@ -1,20 +1,12 @@
 {
-	"type": "minecraft:crafting_shaped",
-	"pattern": [
-		"x  ",
-		" x ",
-		"  y"
-	],
-	"key": {
-		"x": {
-			"item": "minecraft:netherite_ingot"
-		},
-		"y": {
-			"item": "minecraft:iron_ingot"
-		}
+	"type": "minecraft:smithing",
+	"base": {
+		"item": "towerofgodmod:diamond_needle"
+	},
+	"addition": {
+		"item": "minecraft:netherite_ingot"
 	},
 	"result": {
-		"item": "towerofgodmod:netherite_needle",
-		"count": 1
+		"item": "towerofgodmod:netherite_needle"
 	}
 }

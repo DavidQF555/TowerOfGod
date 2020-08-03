@@ -1,12 +1,6 @@
 {
-	"type": "minecraft:smithing",
-	"base": {
-		"item": "towerofgodmod:diamond_needle"
-	},
-	"addition": {
-		"item": "minecraft:netherite_ingot"
-	},
-	"result": {
-		"item": "towerofgodmod:netherite_needle"
+	"parent": "item/handheld",
+	"textures": {
+		"layer0": "towerofgodmod:items/netherite_needle"
 	}
 }
