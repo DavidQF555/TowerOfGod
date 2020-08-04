@@ -3,7 +3,8 @@ package com.davidqf.towerofgodmod.items;
 import com.davidqf.towerofgodmod.TowerOfGod;
 
 import net.minecraft.block.Block;
-import net.minecraft.item.*;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 
 public class BlockItemBase extends BlockItem {
 

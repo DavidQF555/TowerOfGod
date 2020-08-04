@@ -4,7 +4,8 @@ import com.davidqf.towerofgodmod.entities.LighthouseEntity;
 import com.davidqf.towerofgodmod.util.RegistryHandler;
 
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.common.Mod;
@@ -33,9 +34,7 @@ public class TowerOfGod {
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
-		DeferredWorkQueue.runLater(() -> {
-			GlobalEntityTypeAttributes.put(RegistryHandler.LIGHTHOUSE_ENTITY.get(), LighthouseEntity.setAttributes().func_233813_a_());
-		});
+		DeferredWorkQueue.runLater(() -> GlobalEntityTypeAttributes.put(RegistryHandler.LIGHTHOUSE_ENTITY.get(), LighthouseEntity.setAttributes().func_233813_a_()));
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {}

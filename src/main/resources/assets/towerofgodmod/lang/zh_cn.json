@@ -20,5 +20,6 @@
 	"item.towerofgodmod.netherite_needle": "下界合金针",
 	"item.towerofgodmod.suspendium_needle": "浮游石针",
 	"item.towerofgodmod.lighthouse_item": "灯塔",
-	"entity.towerofgodmod.lighthouse_entity": "灯塔"
+	"entity.towerofgodmod.lighthouse_entity": "灯塔",
+	"container.towerofgodmod.lighthouse_container": "灯塔"
 }

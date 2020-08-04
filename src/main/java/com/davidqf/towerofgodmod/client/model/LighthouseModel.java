@@ -7,6 +7,8 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 
+import javax.annotation.Nonnull;
+
 public class LighthouseModel<T extends LighthouseEntity> extends EntityModel<T>{
 
 	private final ModelRenderer lighthouse;
@@ -20,12 +22,12 @@ public class LighthouseModel<T extends LighthouseEntity> extends EntityModel<T>{
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
+	public void render(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
 		lighthouse.render(matrixStack, buffer, packedLight, packedOverlay);
 	}
 
 	@Override
-	public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setRotationAngles(@Nonnull T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		lighthouse.rotateAngleX = headPitch * ((float) Math.PI / 180f);
 		lighthouse.rotateAngleY = netHeadYaw * ((float) Math.PI / 180f);
 	}

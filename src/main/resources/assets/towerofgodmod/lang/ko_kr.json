@@ -20,5 +20,6 @@
 	"item.towerofgodmod.netherite_needle": "네더라이트 니들",
 	"item.towerofgodmod.suspendium_needle": "부유석 니들",
 	"item.towerofgodmod.lighthouse_item": "등대",
-	"entity.towerofgodmod.lighthouse_entity": "등대"
+	"entity.towerofgodmod.lighthouse_entity": "등대",
+	"container.towerofgodmod.lighthouse_container": "등대"
 }

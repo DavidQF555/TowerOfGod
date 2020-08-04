@@ -2,26 +2,34 @@ package com.davidqf.towerofgodmod.util;
 
 import com.davidqf.towerofgodmod.TowerOfGod;
 import com.davidqf.towerofgodmod.armor.ModArmorTier;
-import com.davidqf.towerofgodmod.blocks.*;
+import com.davidqf.towerofgodmod.blocks.LightBlock;
+import com.davidqf.towerofgodmod.blocks.SuspendiumBlock;
+import com.davidqf.towerofgodmod.blocks.SuspendiumOre;
 import com.davidqf.towerofgodmod.entities.LighthouseEntity;
-import com.davidqf.towerofgodmod.items.*;
+import com.davidqf.towerofgodmod.items.BasicItem;
+import com.davidqf.towerofgodmod.items.BlockItemBase;
+import com.davidqf.towerofgodmod.items.LighthouseItem;
 import com.davidqf.towerofgodmod.tools.ModToolTier;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.*;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.*;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class RegistryHandler {
 
 	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, TowerOfGod.MOD_ID);
 	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, TowerOfGod.MOD_ID);
+	public static final DeferredRegister<ContainerType<?>> CONTAINER_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, TowerOfGod.MOD_ID);
 	public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITIES, TowerOfGod.MOD_ID);
 
 	public static final RegistryObject<Item> SUSPENDIUM = ITEMS.register("suspendium", BasicItem::new);
@@ -47,14 +55,18 @@ public class RegistryHandler {
 	public static final RegistryObject<SwordItem> NETHERITE_NEEDLE = ITEMS.register("netherite_needle", () -> new SwordItem(ItemTier.NETHERITE, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
 	public static final RegistryObject<SwordItem> SUSPENDIUM_NEEDLE = ITEMS.register("suspendium_needle", () -> new SwordItem(ModToolTier.SUSPENDIUM, 1, 1.6f, new Item.Properties().group(TowerOfGod.TAB)));
 
-	public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE_ENTITY = ENTITY_TYPES.register("lighthouse_entity", () -> EntityType.Builder.create(new LighthouseEntity.Factory(), EntityClassification.AMBIENT).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_entity").toString()));
+	public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE_ENTITY = ENTITY_TYPES.register("lighthouse_entity", () -> EntityType.Builder.create(new LighthouseEntity.Factory(), EntityClassification.AMBIENT).size(0.9f, 0.9f).build(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_entity").toString()));
+	public static final RegistryObject<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
 	
 	public static final RegistryObject<Item> LIGHTHOUSE_ITEM = ITEMS.register("lighthouse_item", LighthouseItem::new);
+	
+	public static final RegistryObject<ContainerType<LighthouseEntity.LighthouseContainer>> LIGHTHOUSE_CONTAINER = CONTAINER_TYPES.register("lighthouse_container", () -> IForgeContainerType.create(new LighthouseEntity.LighthouseContainer.Factory()));
 
 	public static void init() {
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		ITEMS.register(bus);
 		BLOCKS.register(bus);
+		CONTAINER_TYPES.register(bus);
 		ENTITY_TYPES.register(bus);
 	}
 }

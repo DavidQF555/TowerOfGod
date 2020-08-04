@@ -20,5 +20,6 @@
 	"item.towerofgodmod.netherite_needle": "Netherite Needle",
 	"item.towerofgodmod.suspendium_needle": "Suspendium Needle",
 	"item.towerofgodmod.lighthouse_item": "Lighthouse",
-	"entity.towerofgodmod.lighthouse_entity": "Lighthouse"
+	"entity.towerofgodmod.lighthouse_entity": "Lighthouse",
+	"container.towerofgodmod.lighthouse_container": "Lighthouse"
 }
