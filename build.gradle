@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.0.3'
+version = '1.0.4'
 group = 'com.davidqf.minecraft.towerofgod'
 archivesBaseName = 'towerofgod'
 
@@ -77,7 +77,7 @@ jar {
         attributes([
             "Specification-Title": "towerofgod",
             "Specification-Vendor": "davidqf",
-            "Specification-Version": "1.0.3",
+            "Specification-Version": "1",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"davidqf",

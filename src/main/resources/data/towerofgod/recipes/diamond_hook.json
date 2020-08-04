@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    "x x",
+    "x  "
+  ],
+  "key": {
+    "x": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "result": {
+    "item": "towerofgod:diamond_hook",
+    "count": 1
+  }
+}

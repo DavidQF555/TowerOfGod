@@ -19,6 +19,13 @@
 	"item.towerofgod.diamond_needle": "다이아몬드 니들",
 	"item.towerofgod.netherite_needle": "네더라이트 니들",
 	"item.towerofgod.suspendium_needle": "부유석 니들",
+	"item.towerofgod.wooden_hook": "나무 후크",
+	"item.towerofgod.stone_hook": "돌 후크",
+	"item.towerofgod.iron_hook": "철 후크",
+	"item.towerofgod.golden_hook": "황금 후크",
+	"item.towerofgod.diamond_hook": "다이아몬드 후크",
+	"item.towerofgod.netherite_hook": "네더라이트 후크",
+	"item.towerofgod.suspendium_hook": "부유석 후크",
 	"item.towerofgod.lighthouse_item": "등대",
 	"entity.towerofgod.lighthouse_entity": "등대",
 	"container.towerofgod.lighthouse_container": "등대"

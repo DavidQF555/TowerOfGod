@@ -1,0 +1,76 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "towerofgod:items/suspendium_hook"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        -45,
+        -90,
+        0
+      ],
+      "translation": [
+        0,
+        19,
+        3
+      ],
+      "scale": [
+        2,
+        2,
+        2
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        -45,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        19,
+        3
+      ],
+      "scale": [
+        2,
+        2,
+        2
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        -45,
+        -90,
+        0
+      ],
+      "translation": [
+        0,
+        8,
+        0
+      ],
+      "scale": [
+        2,
+        2,
+        2
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        -45,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        8,
+        0
+      ],
+      "scale": [
+        2,
+        2,
+        2
+      ]
+    }
+  }
+}

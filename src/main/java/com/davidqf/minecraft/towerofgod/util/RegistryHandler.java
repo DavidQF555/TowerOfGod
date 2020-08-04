@@ -3,6 +3,7 @@ package com.davidqf.minecraft.towerofgod.util;
 import com.davidqf.minecraft.towerofgod.items.BasicItem;
 import com.davidqf.minecraft.towerofgod.items.BlockItemBase;
 import com.davidqf.minecraft.towerofgod.items.LighthouseItem;
+import com.davidqf.minecraft.towerofgod.tools.HookItem;
 import com.davidqf.minecraft.towerofgod.tools.ModToolTier;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.armor.ModArmorTier;
@@ -11,6 +12,7 @@ import com.davidqf.minecraft.towerofgod.blocks.SuspendiumBlock;
 import com.davidqf.minecraft.towerofgod.blocks.SuspendiumOre;
 import com.davidqf.minecraft.towerofgod.entities.LighthouseEntity;
 
+import com.davidqf.minecraft.towerofgod.tools.NeedleItem;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -47,19 +49,25 @@ public class RegistryHandler {
 	public static final RegistryObject<ArmorItem> SUSPENDIUM_LEGGINGS = ITEMS.register("suspendium_leggings", () -> new ArmorItem(ModArmorTier.SUSPENDIUM, EquipmentSlotType.LEGS, new Item.Properties().group(TowerOfGod.TAB)));
 	public static final RegistryObject<ArmorItem> SUSPENDIUM_BOOTS = ITEMS.register("suspendium_boots", () -> new ArmorItem(ModArmorTier.SUSPENDIUM, EquipmentSlotType.FEET, new Item.Properties().group(TowerOfGod.TAB)));
 
-	public static final RegistryObject<SwordItem> WOODEN_NEEDLE = ITEMS.register("wooden_needle", () -> new SwordItem(ItemTier.WOOD, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
-	public static final RegistryObject<SwordItem> STONE_NEEDLE = ITEMS.register("stone_needle", () -> new SwordItem(ItemTier.STONE, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
-	public static final RegistryObject<SwordItem> IRON_NEEDLE = ITEMS.register("iron_needle", () -> new SwordItem(ItemTier.IRON, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
-	public static final RegistryObject<SwordItem> GOLDEN_NEEDLE = ITEMS.register("golden_needle", () -> new SwordItem(ItemTier.GOLD, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
-	public static final RegistryObject<SwordItem> DIAMOND_NEEDLE = ITEMS.register("diamond_needle", () -> new SwordItem(ItemTier.DIAMOND, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
-	public static final RegistryObject<SwordItem> NETHERITE_NEEDLE = ITEMS.register("netherite_needle", () -> new SwordItem(ItemTier.NETHERITE, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
-	public static final RegistryObject<SwordItem> SUSPENDIUM_NEEDLE = ITEMS.register("suspendium_needle", () -> new SwordItem(ModToolTier.SUSPENDIUM, 1, 1.6f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> WOODEN_NEEDLE = ITEMS.register("wooden_needle", () -> new NeedleItem(ItemTier.WOOD, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> STONE_NEEDLE = ITEMS.register("stone_needle", () -> new NeedleItem(ItemTier.STONE, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> IRON_NEEDLE = ITEMS.register("iron_needle", () -> new NeedleItem(ItemTier.IRON, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> GOLDEN_NEEDLE = ITEMS.register("golden_needle", () -> new NeedleItem(ItemTier.GOLD, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> DIAMOND_NEEDLE = ITEMS.register("diamond_needle", () -> new NeedleItem(ItemTier.DIAMOND, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> NETHERITE_NEEDLE = ITEMS.register("netherite_needle", () -> new NeedleItem(ItemTier.NETHERITE, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> SUSPENDIUM_NEEDLE = ITEMS.register("suspendium_needle", () -> new NeedleItem(ModToolTier.SUSPENDIUM, 1, 1.6f, new Item.Properties().group(TowerOfGod.TAB)));
+
+	public static final RegistryObject<SwordItem> WOODEN_HOOK = ITEMS.register("wooden_hook", () -> new HookItem(ItemTier.WOOD, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> STONE_HOOK = ITEMS.register("stone_hook", () -> new HookItem(ItemTier.STONE, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> IRON_HOOK = ITEMS.register("iron_hook", () -> new HookItem(ItemTier.IRON, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> GOLDEN_HOOK = ITEMS.register("golden_hook", () -> new HookItem(ItemTier.GOLD, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> DIAMOND_HOOK = ITEMS.register("diamond_hook", () -> new HookItem(ItemTier.DIAMOND, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> NETHERITE_HOOK = ITEMS.register("netherite_hook", () -> new HookItem(ItemTier.NETHERITE, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)));
+	public static final RegistryObject<SwordItem> SUSPENDIUM_HOOK = ITEMS.register("suspendium_hook", () -> new HookItem(ModToolTier.SUSPENDIUM, 3, -2.4f, new Item.Properties().group(TowerOfGod.TAB)));
 
 	public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE_ENTITY = ENTITY_TYPES.register("lighthouse_entity", () -> EntityType.Builder.create(new LighthouseEntity.Factory(), EntityClassification.AMBIENT).size(0.9f, 0.9f).build(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_entity").toString()));
 	public static final RegistryObject<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
-	
 	public static final RegistryObject<Item> LIGHTHOUSE_ITEM = ITEMS.register("lighthouse_item", LighthouseItem::new);
-	
 	public static final RegistryObject<ContainerType<LighthouseEntity.LighthouseContainer>> LIGHTHOUSE_CONTAINER = CONTAINER_TYPES.register("lighthouse_container", () -> IForgeContainerType.create(new LighthouseEntity.LighthouseContainer.Factory()));
 
 	public static void init() {

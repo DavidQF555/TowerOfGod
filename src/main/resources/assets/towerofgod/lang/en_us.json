@@ -19,6 +19,13 @@
 	"item.towerofgod.diamond_needle": "Diamond Needle",
 	"item.towerofgod.netherite_needle": "Netherite Needle",
 	"item.towerofgod.suspendium_needle": "Suspendium Needle",
+	"item.towerofgod.wooden_hook": "Wooden Hook",
+	"item.towerofgod.stone_hook": "Stone Hook",
+	"item.towerofgod.iron_hook": "Iron Hook",
+	"item.towerofgod.golden_hook": "Golden Hook",
+	"item.towerofgod.diamond_hook": "Diamond Hook",
+	"item.towerofgod.netherite_hook": "Netherite Hook",
+	"item.towerofgod.suspendium_hook": "Suspendium Hook",
 	"item.towerofgod.lighthouse_item": "Lighthouse",
 	"entity.towerofgod.lighthouse_entity": "Lighthouse",
 	"container.towerofgod.lighthouse_container": "Lighthouse"
