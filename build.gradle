@@ -13,8 +13,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = '1.0.3'
-group = 'com.davidqf.towerofgodmod'
-archivesBaseName = 'towerofgodmod'
+group = 'com.davidqf.minecraft.towerofgod'
+archivesBaseName = 'towerofgod'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
@@ -75,7 +75,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "towerofgodmod",
+            "Specification-Title": "towerofgod",
             "Specification-Vendor": "davidqf",
             "Specification-Version": "1.0.3",
             "Implementation-Title": project.name,

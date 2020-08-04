@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"xxx",
+		"x x",
+		"   "
+	],
+	"key": {
+		"x": {
+			"item": "towerofgod:suspendium"
+		}
+	},
+	"result": {
+		"item": "towerofgod:suspendium_helmet",
+		"count": 1
+	}
+}

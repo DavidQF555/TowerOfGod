@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "towerofgod:suspendium_block"
+		}
+	],
+	"result": {
+		"item": "towerofgod:suspendium",
+		"count": 9
+	}
+}

@@ -1,0 +1,6 @@
+{
+	"parent": "item/handheld",
+	"textures": {
+		"layer0": "towerofgod:items/suspendium_needle"
+	}
+}
