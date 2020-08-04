@@ -28,5 +28,7 @@
 	"item.towerofgod.suspendium_hook": "Suspendium Hook",
 	"item.towerofgod.lighthouse_item": "Lighthouse",
 	"entity.towerofgod.lighthouse_entity": "Lighthouse",
-	"container.towerofgod.lighthouse_container": "Lighthouse"
+	"container.towerofgod.lighthouse_container": "Lighthouse",
+	"entity.towerofgod.observer_entity": "Observer",
+	"item.towerofgod.observer_item": "Observer"
 }

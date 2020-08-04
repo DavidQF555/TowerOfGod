@@ -1,6 +1,7 @@
 package com.davidqf.minecraft.towerofgod.util;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
+import com.davidqf.minecraft.towerofgod.entities.FlyingDevice;
 import com.davidqf.minecraft.towerofgod.entities.LighthouseEntity;
 
 import net.minecraft.entity.Entity;
@@ -14,20 +15,25 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CapabilityHandler {
 
-	public static final ResourceLocation LIGHTHOUSE_DATA = new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_data");
+    public static final ResourceLocation LIGHTHOUSE_DATA = new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_data");
+    public static final ResourceLocation DEVICE_DATA = new ResourceLocation(TowerOfGod.MOD_ID, "device_data");
 
-	@SubscribeEvent
-	public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
-		if(event.getObject() instanceof LighthouseEntity) {
-			event.addCapability(LIGHTHOUSE_DATA, new LighthouseEntity.DataProvider());
-		}
-	}
+    @SubscribeEvent
+    public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof FlyingDevice) {
+            event.addCapability(DEVICE_DATA, new FlyingDevice.DataProvider());
+        }
+        if (event.getObject() instanceof LighthouseEntity) {
+            event.addCapability(LIGHTHOUSE_DATA, new LighthouseEntity.DataProvider());
+        }
+    }
 
-	@Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-	private static class ModBus {
-		@SubscribeEvent
-		public static void registerCapabilities(FMLCommonSetupEvent event) {
-			CapabilityManager.INSTANCE.register(LighthouseEntity.IData.class, new LighthouseEntity.DataStorage(), new LighthouseEntity.Data.Factory());
-		}
-	}
+    @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    private static class ModBus {
+        @SubscribeEvent
+        public static void registerCapabilities(FMLCommonSetupEvent event) {
+            CapabilityManager.INSTANCE.register(FlyingDevice.IData.class, new FlyingDevice.DataStorage(), new FlyingDevice.Data.Factory());
+            CapabilityManager.INSTANCE.register(LighthouseEntity.IData.class, new LighthouseEntity.DataStorage(), new LighthouseEntity.Data.Factory());
+        }
+    }
 }

@@ -28,5 +28,7 @@
 	"item.towerofgod.suspendium_hook": "浮游石钩",
 	"item.towerofgod.lighthouse_item": "灯塔",
 	"entity.towerofgod.lighthouse_entity": "灯塔",
-	"container.towerofgod.lighthouse_container": "灯塔"
+	"container.towerofgod.lighthouse_container": "灯塔",
+	"entity.towerofgod.observer_entity": "观察者",
+	"item.towerofgod.observer_item": "观察者"
 }

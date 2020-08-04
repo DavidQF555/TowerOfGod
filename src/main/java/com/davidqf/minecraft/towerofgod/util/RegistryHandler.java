@@ -1,8 +1,10 @@
 package com.davidqf.minecraft.towerofgod.util;
 
+import com.davidqf.minecraft.towerofgod.entities.ObserverEntity;
 import com.davidqf.minecraft.towerofgod.items.BasicItem;
 import com.davidqf.minecraft.towerofgod.items.BlockItemBase;
 import com.davidqf.minecraft.towerofgod.items.LighthouseItem;
+import com.davidqf.minecraft.towerofgod.items.ObserverItem;
 import com.davidqf.minecraft.towerofgod.tools.HookItem;
 import com.davidqf.minecraft.towerofgod.tools.ModToolTier;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
@@ -26,6 +28,8 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import javax.annotation.Resource;
 
 public class RegistryHandler {
 
@@ -69,6 +73,9 @@ public class RegistryHandler {
 	public static final RegistryObject<Block> LIGHT_BLOCK = BLOCKS.register("light_block", LightBlock::new);
 	public static final RegistryObject<Item> LIGHTHOUSE_ITEM = ITEMS.register("lighthouse_item", LighthouseItem::new);
 	public static final RegistryObject<ContainerType<LighthouseEntity.LighthouseContainer>> LIGHTHOUSE_CONTAINER = CONTAINER_TYPES.register("lighthouse_container", () -> IForgeContainerType.create(new LighthouseEntity.LighthouseContainer.Factory()));
+
+	public static final RegistryObject<EntityType<ObserverEntity>> OBSERVER_ENTITY = ENTITY_TYPES.register("observer_entity", () -> EntityType.Builder.create(new ObserverEntity.Factory(), EntityClassification.AMBIENT).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "observer_entity").toString()));
+	public static final RegistryObject<Item> OBSERVER_ITEM = ITEMS.register("observer_item", ObserverItem::new);
 
 	public static void init() {
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
