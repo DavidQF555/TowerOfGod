@@ -30,5 +30,7 @@
 	"entity.towerofgod.lighthouse_entity": "등대",
 	"container.towerofgod.lighthouse_container": "등대",
 	"entity.towerofgod.observer_entity": "옵저버",
-	"item.towerofgod.observer_item": "옵저버"
+	"item.towerofgod.observer_item": "옵저버",
+	"entity.towerofgod.regular_entity": "선별인원",
+	"entity.towerofgod.shinsu_entity": "신수"
 }

@@ -30,5 +30,7 @@
 	"entity.towerofgod.lighthouse_entity": "Lighthouse",
 	"container.towerofgod.lighthouse_container": "Lighthouse",
 	"entity.towerofgod.observer_entity": "Observer",
-	"item.towerofgod.observer_item": "Observer"
+	"item.towerofgod.observer_item": "Observer",
+	"entity.towerofgod.regular_entity": "Regular",
+	"entity.towerofgod.shinsu_entity": "Shinsu"
 }

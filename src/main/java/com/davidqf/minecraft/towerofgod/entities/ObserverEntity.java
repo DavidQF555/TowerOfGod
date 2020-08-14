@@ -17,7 +17,7 @@ public class ObserverEntity extends FlyingDevice {
     }
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
-        return LighthouseEntity.func_233666_p_()
+        return ObserverEntity.func_233666_p_()
                 .func_233815_a_(Attributes.field_233822_e_, 3)
                 .func_233815_a_(Attributes.field_233821_d_, 3)
                 .func_233815_a_(Attributes.field_233818_a_, 10);
@@ -30,5 +30,4 @@ public class ObserverEntity extends FlyingDevice {
             return new ObserverEntity(world, null);
         }
     }
-
 }

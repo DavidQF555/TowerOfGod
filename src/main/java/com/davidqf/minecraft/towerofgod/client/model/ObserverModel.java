@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 
 import javax.annotation.Nonnull;
 
-public class ObserverModel<T extends ObserverEntity> extends EntityModel<T>{
+public class ObserverModel<T extends ObserverEntity> extends EntityModel<T> {
 
     private final ModelRenderer observer;
 
@@ -22,8 +22,8 @@ public class ObserverModel<T extends ObserverEntity> extends EntityModel<T>{
     }
 
     @Override
-    public void render(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
-        observer.render(matrixStack, buffer, packedLight, packedOverlay);
+    public void render(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        observer.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override

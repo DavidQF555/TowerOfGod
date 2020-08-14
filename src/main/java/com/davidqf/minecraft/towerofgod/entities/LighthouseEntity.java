@@ -1,8 +1,5 @@
 package com.davidqf.minecraft.towerofgod.entities;
 
-import java.util.Objects;
-import java.util.concurrent.Callable;
-
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.util.RegistryHandler;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -14,7 +11,6 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.controller.FlyingMovementController;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -25,20 +21,14 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -47,14 +37,14 @@ import javax.annotation.Nullable;
 
 public class LighthouseEntity extends FlyingDevice implements INamedContainerProvider {
 
+    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".lighthouseentity";
     private static final int INVENTORY_SIZE = 27;
-    private final IData data;
+    private Inventory inventory;
     private BlockPos light;
 
     public LighthouseEntity(World worldIn, @Nullable LivingEntity owner) {
         super(RegistryHandler.LIGHTHOUSE_ENTITY.get(), worldIn, owner);
-        data = getCapability(DataProvider.capability).orElseThrow(NullPointerException::new);
-        data.setInventory(new Inventory(INVENTORY_SIZE));
+        inventory = new Inventory(INVENTORY_SIZE);
         light = null;
     }
 
@@ -78,16 +68,16 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
     @Nonnull
     private Inventory getInventory() {
-        return data.getInventory();
+        return inventory;
     }
 
     @Override
     public void dropInventory() {
-        for (ItemStack item : getInventory().func_233543_f_()) {
+        for (ItemStack item : inventory.func_233543_f_()) {
             ItemEntity en = new ItemEntity(world, getPosX(), getPosY(), getPosZ(), item);
             world.addEntity(en);
         }
-        data.getInventory().clear();
+        inventory.clear();
     }
 
     public void openInventory(PlayerEntity player) {
@@ -147,6 +137,30 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         if (light != null && world.getBlockState(pos).getBlock().equals(RegistryHandler.LIGHT_BLOCK.get())) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
+    }
+
+    @Override
+    public void readAdditional(CompoundNBT nbt) {
+        super.readAdditional(nbt);
+        inventory = new Inventory(INVENTORY_SIZE);
+        if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
+            CompoundNBT lighthouse = (CompoundNBT) nbt.get(TAG_KEY);
+            if (lighthouse != null) {
+                inventory.read(lighthouse.getList("Inventory", Constants.NBT.TAG_COMPOUND));
+                light = new BlockPos(lighthouse.getInt("X"), lighthouse.getInt("Y"), lighthouse.getInt("Z"));
+            }
+        }
+    }
+
+    @Override
+    public void writeAdditional(CompoundNBT nbt) {
+        super.writeAdditional(nbt);
+        CompoundNBT lighthouse = new CompoundNBT();
+        lighthouse.put("Inventory", inventory.write());
+        lighthouse.putInt("X", light.getX());
+        lighthouse.putInt("Y", light.getY());
+        lighthouse.putInt("Z", light.getZ());
+        nbt.put(TAG_KEY, lighthouse);
     }
 
     public static class LighthouseContainer extends Container {
@@ -261,81 +275,6 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         @Override
         public LighthouseEntity create(@Nullable EntityType<LighthouseEntity> type, @Nonnull World world) {
             return new LighthouseEntity(world, null);
-        }
-    }
-
-    public interface IData {
-
-        Inventory getInventory();
-
-        void setInventory(Inventory inv);
-
-    }
-
-    public static class Data implements IData {
-
-        private Inventory inv;
-
-        public Data() {
-            inv = new Inventory(INVENTORY_SIZE);
-        }
-
-        @Override
-        public Inventory getInventory() {
-            return inv;
-        }
-
-        @Override
-        public void setInventory(Inventory inv) {
-            this.inv = inv;
-        }
-
-        public static class Factory implements Callable<IData> {
-            @Override
-            public IData call() {
-                return new Data();
-            }
-        }
-    }
-
-    public static class DataProvider implements ICapabilitySerializable<INBT> {
-
-        @CapabilityInject(IData.class)
-        public static Capability<IData> capability = null;
-        private final LazyOptional<IData> instance = LazyOptional.of(() -> Objects.requireNonNull(capability.getDefaultInstance()));
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
-            return cap == capability ? instance.cast() : LazyOptional.empty();
-        }
-
-        @Override
-        public INBT serializeNBT() {
-            return capability.getStorage().writeNBT(capability, instance.orElseThrow(NullPointerException::new), null);
-        }
-
-        @Override
-        public void deserializeNBT(INBT nbt) {
-            capability.getStorage().readNBT(capability, instance.orElseThrow(NullPointerException::new), null, nbt);
-        }
-    }
-
-    public static class DataStorage implements Capability.IStorage<IData> {
-
-        @Override
-        public INBT writeNBT(Capability<IData> capability, IData instance, Direction side) {
-            CompoundNBT tag = new CompoundNBT();
-            tag.put("inventory", instance.getInventory().write());
-            return tag;
-        }
-
-        @Override
-        public void readNBT(Capability<IData> capability, IData instance, Direction side, INBT nbt) {
-            CompoundNBT tag = (CompoundNBT) nbt;
-            Inventory inv = new Inventory(INVENTORY_SIZE);
-            inv.read(tag.getList("inventory", Constants.NBT.TAG_COMPOUND));
-            instance.setInventory(inv);
         }
     }
 }

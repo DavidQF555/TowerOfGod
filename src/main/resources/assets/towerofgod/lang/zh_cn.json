@@ -30,5 +30,7 @@
 	"entity.towerofgod.lighthouse_entity": "灯塔",
 	"container.towerofgod.lighthouse_container": "灯塔",
 	"entity.towerofgod.observer_entity": "观察者",
-	"item.towerofgod.observer_item": "观察者"
+	"item.towerofgod.observer_item": "观察者",
+	"entity.towerofgod.regular_entity": "选别人员",
+	"entity.towerofgod.shinsu_entity": "神水"
 }
