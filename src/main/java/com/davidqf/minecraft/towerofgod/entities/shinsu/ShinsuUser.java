@@ -210,9 +210,9 @@ public abstract class ShinsuUser extends CreatureEntity {
             }
             ShinsuTechnique technique;
             if (best.isEmpty()) {
-                technique = possible.get((int) (possible.size() * Math.random()));
+                technique = possible.get((int) (possible.size() * getRNG().nextDouble()));
             } else {
-                technique = best.get((int) (best.size() * Math.random()));
+                technique = best.get((int) (best.size() * getRNG().nextDouble()));
             }
             ShinsuTechniques tech = ShinsuTechniques.get(technique);
             if (tech != null) {

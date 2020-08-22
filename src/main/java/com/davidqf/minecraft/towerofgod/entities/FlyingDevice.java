@@ -42,8 +42,12 @@ public abstract class FlyingDevice extends FlyingEntity {
 
     @Nonnull
     @Override
-    protected PathNavigator createNavigator(@Nonnull World worldIn) {
-        return new FlyingPathNavigator(this, worldIn);
+    public PathNavigator createNavigator(@Nonnull World worldIn) {
+        FlyingPathNavigator nav = new FlyingPathNavigator(this, worldIn);
+        nav.setCanEnterDoors(true);
+        nav.setCanOpenDoors(false);
+        nav.setCanSwim(true);
+        return nav;
     }
 
     @Nullable
@@ -110,10 +114,12 @@ public abstract class FlyingDevice extends FlyingEntity {
             return owner != null && !owner.isSpectator() && getDistanceSq(owner) >= DISTANCE * DISTANCE;
         }
 
+        @Override
         public void resetTask() {
             getNavigator().clearPath();
         }
 
+        @Override
         public void tick() {
             if (getOwner() != null) {
                 getNavigator().tryMoveToXYZ(getOwner().getPosX(), getOwner().getPosYEye(), getOwner().getPosZ(), 1);

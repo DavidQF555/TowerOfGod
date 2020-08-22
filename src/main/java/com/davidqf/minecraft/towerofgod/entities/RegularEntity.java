@@ -57,14 +57,15 @@ public class RegularEntity extends ShinsuUser {
         Personality[] personalities = Personality.values();
         personality = personalities[(int) (Math.random() * personalities.length)];
 
+        Random rand = getRNG();
         Family[] families = Family.values();
-        Family family = families[(int) (Math.random() * families.length)];
+        Family family = families[(int) (rand.nextDouble() * families.length)];
         setFamily(family);
         getPreferred().addAll(family.getPreferredTechniques());
 
         IStats stats = ShinsuUser.getStats(this);
         stats.setLevel(level);
-        stats.setResistance(Math.random() * 0.3 + 0.7 / level * 20 / family.getResistance());
+        stats.setResistance(rand.nextDouble() * 0.3 + 0.7 / level * 20 / family.getResistance());
         double shinsu = (level * Math.random() + level) * family.getShinsu();
         stats.setShinsu((int) shinsu + 1);
         stats.setBaangs((int) (shinsu / 35) + 1);
@@ -79,12 +80,11 @@ public class RegularEntity extends ShinsuUser {
         }
 
         ShinsuQuality[] qualities = family.getQualities();
-        double random = Math.random();
-        if (random < FAMILY_QUALITY_RATE && qualities.length > 0) {
-            setQuality(qualities[(int) (qualities.length * Math.random())]);
+        if (rand.nextDouble() < FAMILY_QUALITY_RATE && qualities.length > 0) {
+            setQuality(qualities[(int) (qualities.length * rand.nextDouble())]);
         } else {
             ShinsuQuality[] values = ShinsuQuality.values();
-            setQuality(values[(int) (Math.random() * values.length)]);
+            setQuality(values[(int) (rand.nextDouble() * values.length)]);
         }
 
         List<Item> weapon = new ArrayList<>();
@@ -108,9 +108,9 @@ public class RegularEntity extends ShinsuUser {
         }
         ItemStack weap = Items.AIR.getDefaultInstance();
         if (!pref.isEmpty() && Math.random() < FAMILY_WEAPON_RATE) {
-            weap = pref.get((int) (Math.random() * pref.size())).getDefaultInstance();
+            weap = pref.get((int) (rand.nextDouble() * pref.size())).getDefaultInstance();
         } else if (Math.random() < 1 - 1.0 / weapon.size()) {
-            weap = weapon.get((int) (Math.random() * weapon.size())).getDefaultInstance();
+            weap = weapon.get((int) (rand.nextDouble() * weapon.size())).getDefaultInstance();
         }
         setItemStackToSlot(EquipmentSlotType.MAINHAND, weap);
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
@@ -155,7 +155,7 @@ public class RegularEntity extends ShinsuUser {
     }
 
     @Override
-    protected void onDeathUpdate() {
+    public void onDeathUpdate() {
         super.onDeathUpdate();
         List<RegularEntity> members = team.getEntityMembers(world);
         if (this.equals(team.getLeader(world)) && members.size() > 1) {
@@ -293,7 +293,7 @@ public class RegularEntity extends ShinsuUser {
             }
             nearby.removeAll(rem);
             if (!nearby.isEmpty()) {
-                RegularEntity reg = nearby.get((int) (Math.random() * nearby.size()));
+                RegularEntity reg = nearby.get((int) (getRNG().nextDouble() * nearby.size()));
                 List<RegularEntity> members = team.getEntityMembers(world);
                 reg.team.getEntityMembers(world).addAll(members);
                 for (RegularEntity mem : members) {

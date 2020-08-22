@@ -10,12 +10,15 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
+@OnlyIn(Dist.CLIENT)
 public class ShinsuRenderer extends EntityRenderer<ShinsuEntity> {
 
-    protected static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/shinsu_entity.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/shinsu_entity.png");
     private static final ShinsuModel<ShinsuEntity> MODEL = new ShinsuModel<>();
 
     public ShinsuRenderer(EntityRendererManager renderManagerIn) {
@@ -33,12 +36,11 @@ public class ShinsuRenderer extends EntityRenderer<ShinsuEntity> {
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
         boolean visible = !entityIn.isInvisible() && !entityIn.isInvisibleToPlayer(Minecraft.getInstance().player);
         IVertexBuilder ivertexbuilder = bufferIn.getBuffer(MODEL.getRenderType(getEntityTexture(entityIn)));
-        int overlay = OverlayTexture.getPackedUV(OverlayTexture.getU(0), OverlayTexture.getV(false));
         int hex = entityIn.getQuality().getColor();
         int red = (hex & 0xFF0000) >> 16;
         int green = (hex & 0xFF00) >> 8;
         int blue = (hex & 0xFF);
-        MODEL.render(matrixStackIn, ivertexbuilder, packedLightIn, overlay, (float) (red / 255.0) + 1, (float) (green / 255.0) + 1, (float) (blue / 255.0) + 1, visible ? 0.15F : 1.0F);
+        MODEL.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, (float) (red / 255.0) + 1, (float) (green / 255.0) + 1, (float) (blue / 255.0) + 1, visible ? 0.15F : 1.0F);
     }
 
 }

@@ -5,9 +5,12 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 
+@OnlyIn(Dist.CLIENT)
 public class RegularRenderer extends BipedRenderer<RegularEntity, BipedModel<RegularEntity>> {
 
     public RegularRenderer(EntityRendererManager renderManagerIn) {

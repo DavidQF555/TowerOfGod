@@ -48,17 +48,6 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         light = null;
     }
 
-    @Nonnull
-    @Override
-    public ActionResultType applyPlayerInteraction(@Nonnull PlayerEntity player, @Nonnull Vector3d vec, @Nonnull Hand hand) {
-        ActionResultType ret = super.applyPlayerInteraction(player, vec, hand);
-        if (getOwner() != null && player.equals(getOwner())) {
-            openInventory(player);
-            return ActionResultType.SUCCESS;
-        }
-        return ret;
-    }
-
     public static AttributeModifierMap.MutableAttribute setAttributes() {
         return MobEntity.func_233666_p_()
                 .func_233815_a_(Attributes.field_233822_e_, 0.2)
@@ -78,6 +67,17 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
             world.addEntity(en);
         }
         inventory.clear();
+    }
+
+    @Nonnull
+    @Override
+    public ActionResultType applyPlayerInteraction(@Nonnull PlayerEntity player, @Nonnull Vector3d vec, @Nonnull Hand hand) {
+        ActionResultType ret = super.applyPlayerInteraction(player, vec, hand);
+        if (getOwner() != null && player.equals(getOwner())) {
+            openInventory(player);
+            return ActionResultType.SUCCESS;
+        }
+        return ret;
     }
 
     public void openInventory(PlayerEntity player) {
