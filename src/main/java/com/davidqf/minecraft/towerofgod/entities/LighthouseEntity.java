@@ -60,9 +60,9 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     }
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
-        return LighthouseEntity.func_233666_p_()
-                .func_233815_a_(Attributes.field_233822_e_, 3)
-                .func_233815_a_(Attributes.field_233821_d_, 3)
+        return MobEntity.func_233666_p_()
+                .func_233815_a_(Attributes.field_233822_e_, 0.2)
+                .func_233815_a_(Attributes.field_233821_d_, 0.2)
                 .func_233815_a_(Attributes.field_233818_a_, 10);
     }
 

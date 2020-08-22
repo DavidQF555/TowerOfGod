@@ -2,12 +2,14 @@ package com.davidqf.minecraft.towerofgod.entities;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.controller.FlyingMovementController;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.pathfinding.FlyingPathNavigator;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.pathfinding.PathNodeType;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
@@ -55,6 +57,27 @@ public abstract class FlyingDevice extends FlyingEntity {
     @Override
     public boolean canDespawn(double distanceToClosestPlayer) {
         return false;
+    }
+
+    @Override
+    public void travel(@Nonnull Vector3d vec) {
+        float speed = (float) func_233637_b_(Attributes.field_233822_e_);
+        setAIMoveSpeed(speed);
+        if (isInWater()) {
+            moveRelative(speed, vec);
+            move(MoverType.SELF, getMotion());
+            setMotion(getMotion().scale(0.8F));
+        } else if (isInLava()) {
+            moveRelative(speed, vec);
+            move(MoverType.SELF, getMotion());
+            setMotion(getMotion().scale(0.5D));
+        } else {
+            float f = 0.91F;
+            moveRelative(speed, vec);
+            move(MoverType.SELF, getMotion());
+            setMotion(getMotion().scale(f));
+        }
+        func_233629_a_(this, false);
     }
 
     @Override
