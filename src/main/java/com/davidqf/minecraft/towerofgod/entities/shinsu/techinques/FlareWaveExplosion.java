@@ -2,8 +2,8 @@ package com.davidqf.minecraft.towerofgod.entities.shinsu.techinques;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -29,7 +29,7 @@ public class FlareWaveExplosion extends ShinsuTechnique.Targetable {
             LivingEntity target = (LivingEntity) t;
             double resistance = ShinsuTechnique.getTotalResistance(user, target);
             target.attackEntityFrom(DamageSource.MAGIC, (float) (DAMAGE * resistance) * getLevel() / 2);
-            target.addPotionEffect(new EffectInstance(Effect.get(2), (int) (60 * resistance), getLevel(), true, false, false));
+            target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 * resistance), getLevel(), true, false, false));
             double knock = KNOCKBACK * resistance;
             Vector3d vel = target.getPositionVec().subtract(user.getPositionVec()).normalize().mul(knock, knock, knock);
             target.addVelocity(vel.getX(), vel.getY(), vel.getZ());
@@ -39,8 +39,9 @@ public class FlareWaveExplosion extends ShinsuTechnique.Targetable {
     @Override
     public boolean canUse(World world) {
         Entity u = getUser(world);
-        if (u != null) {
-            return super.canUse(world) && getTarget(world) != null && u.getDistanceSq(getTarget(world)) <= RANGE * RANGE;
+        Entity target = getTarget(world);
+        if (u != null && target != null) {
+            return super.canUse(world) && u.getDistanceSq(target) <= RANGE * RANGE;
         }
         return false;
     }

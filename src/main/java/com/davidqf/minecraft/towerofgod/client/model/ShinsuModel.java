@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 
 import javax.annotation.Nonnull;
 
-public class ShinsuModel<T extends ShinsuEntity> extends EntityModel<T> {
+public class ShinsuModel extends EntityModel<ShinsuEntity> {
 
     private final ModelRenderer shinsu;
 
@@ -21,7 +21,7 @@ public class ShinsuModel<T extends ShinsuEntity> extends EntityModel<T> {
     }
 
     @Override
-    public void setRotationAngles(@Nonnull T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setRotationAngles(@Nonnull ShinsuEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         shinsu.rotateAngleX = headPitch * ((float) Math.PI / 140f);
         shinsu.rotateAngleY = netHeadYaw * ((float) Math.PI / 140f);
     }

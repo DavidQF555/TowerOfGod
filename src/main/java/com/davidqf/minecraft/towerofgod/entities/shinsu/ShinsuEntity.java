@@ -15,6 +15,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -79,7 +80,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             ShinsuQuality quality = getQuality();
             if (quality != null) {
                 if (quality == ShinsuQuality.ICE) {
-                    target.addPotionEffect(new EffectInstance(Effect.get(2), 60, 2, true, false, false));
+                    target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 60, 2, true, false, false));
                 } else if (quality == ShinsuQuality.FIRE) {
                     source = DamageSource.ON_FIRE;
                     target.setFire(7);
@@ -88,7 +89,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
                     target.addVelocity(vec.getX(), vec.getY(), vec.getZ());
                 } else if (quality == ShinsuQuality.PLANT) {
                     source = DamageSource.CACTUS;
-                    target.addPotionEffect(new EffectInstance(Effect.get(19), 140, 2, true, false, false));
+                    target.addPotionEffect(new EffectInstance(Effects.POISON, 140, 2, true, false, false));
                 } else if (quality == ShinsuQuality.STONE) {
                     source = DamageSource.FALLING_BLOCK;
                     damage += 3;
@@ -97,7 +98,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
                     remove = false;
                 } else if (quality == ShinsuQuality.LIGHTNING) {
                     source = DamageSource.LIGHTNING_BOLT;
-                    target.addPotionEffect(new EffectInstance(Effect.get(2), 20, 3, true, false, false));
+                    target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 20, 3, true, false, false));
                     target.setFire(3);
                 }
             }

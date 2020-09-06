@@ -86,30 +86,35 @@ public abstract class ShinsuTechnique implements INBTSerializable<CompoundNBT> {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putString("technique", technique.name());
-        nbt.putUniqueId("user", user);
-        nbt.putInt("ticks", ticksLeft);
-        nbt.putInt("level", level);
+        if(user != null) {
+            nbt.putUniqueId("User", user);
+        }
+        nbt.putString("Technique", technique.name());
+        nbt.putInt("Ticks", ticksLeft);
+        nbt.putInt("Level", level);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        technique = ShinsuTechniques.get(nbt.getString("technique"));
-        user = nbt.getUniqueId("user");
-        ticksLeft = nbt.getInt("ticks");
-        level = nbt.getInt("level");
+        if(nbt.contains("User")) {
+            user = nbt.getUniqueId("User");
+        }
+        technique = ShinsuTechniques.get(nbt.getString("Technique"));
+        ticksLeft = nbt.getInt("Ticks");
+        level = nbt.getInt("Level");
     }
 
     public static abstract class Targetable extends ShinsuTechnique {
 
         private UUID target;
 
-        public Targetable(ShinsuTechniques technique, LivingEntity user, int level, LivingEntity target) {
+        public Targetable(ShinsuTechniques technique, LivingEntity user, int level, @Nullable LivingEntity target) {
             super(technique, user, level);
-            this.target = target.getUniqueID();
+            this.target = target == null ? null : target.getUniqueID();
         }
 
+        @Nullable
         public Entity getTarget(World world) {
             if (world instanceof ServerWorld) {
                 return ((ServerWorld) world).getEntityByUuid(target);
@@ -120,13 +125,13 @@ public abstract class ShinsuTechnique implements INBTSerializable<CompoundNBT> {
         @Override
         public CompoundNBT serializeNBT() {
             CompoundNBT nbt = super.serializeNBT();
-            nbt.putUniqueId("target", target);
+            nbt.putUniqueId("Target", target);
             return nbt;
         }
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) {
-            target = nbt.getUniqueId("target");
+            target = nbt.getUniqueId("Target");
         }
 
     }
@@ -147,15 +152,15 @@ public abstract class ShinsuTechnique implements INBTSerializable<CompoundNBT> {
         @Override
         public CompoundNBT serializeNBT() {
             CompoundNBT nbt = super.serializeNBT();
-            nbt.putDouble("x", pos.getX());
-            nbt.putDouble("y", pos.getY());
-            nbt.putDouble("z", pos.getZ());
+            nbt.putDouble("X", pos.getX());
+            nbt.putDouble("Y", pos.getY());
+            nbt.putDouble("Z", pos.getZ());
             return nbt;
         }
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) {
-            pos = new Vector3d(nbt.getDouble("x"), nbt.getDouble("y"), nbt.getDouble("z"));
+            pos = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
         }
     }
 }

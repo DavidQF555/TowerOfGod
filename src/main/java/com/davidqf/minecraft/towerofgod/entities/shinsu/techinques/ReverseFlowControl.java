@@ -2,8 +2,8 @@ package com.davidqf.minecraft.towerofgod.entities.shinsu.techinques;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -36,7 +36,7 @@ public class ReverseFlowControl extends ShinsuTechnique.Targetable {
             LivingEntity user = (LivingEntity) u;
             LivingEntity target = (LivingEntity) t;
             double resistance = ShinsuTechnique.getTotalResistance(user, target);
-            target.addPotionEffect(new EffectInstance(Effect.get(2), 2, (int) (5 * resistance) * getLevel() + 1, true, false, false));
+            target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 2, (int) (5 * resistance) * getLevel() + 1, true, false, false));
         }
         super.tick(world);
     }
