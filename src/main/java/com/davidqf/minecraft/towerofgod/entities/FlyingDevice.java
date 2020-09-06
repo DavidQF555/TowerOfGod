@@ -5,6 +5,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.controller.FlyingMovementController;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.passive.IFlyingAnimal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.pathfinding.FlyingPathNavigator;
 import net.minecraft.pathfinding.PathNavigator;
@@ -19,19 +20,19 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.UUID;
 
-public abstract class FlyingDevice extends FlyingEntity {
+public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal {
 
     private static final String TAG_KEY = TowerOfGod.MOD_ID + ".flyingdevice";
     private UUID owner;
 
-    public FlyingDevice(EntityType<? extends FlyingDevice> type, World worldIn, @Nullable LivingEntity owner) {
+    public FlyingDevice(EntityType<? extends FlyingDevice> type, World worldIn) {
         super(type, worldIn);
         moveController = new FlyingMovementController(this, 180, true);
-        setPathPriority(PathNodeType.LAVA, -3);
-        setPathPriority(PathNodeType.DAMAGE_FIRE, -2);
-        setPathPriority(PathNodeType.DAMAGE_CACTUS, -2);
-        setPathPriority(PathNodeType.DAMAGE_OTHER, -2);
-        this.owner = owner == null ? null : owner.getUniqueID();
+        setPathPriority(PathNodeType.LAVA, -1);
+        setPathPriority(PathNodeType.DAMAGE_FIRE, -1);
+        setPathPriority(PathNodeType.DAMAGE_CACTUS, -1);
+        setPathPriority(PathNodeType.DAMAGE_OTHER, -1);
+        owner = null;
     }
 
     @Override
@@ -58,6 +59,10 @@ public abstract class FlyingDevice extends FlyingEntity {
         return null;
     }
 
+    public void setOwner(LivingEntity owner) {
+        this.owner = owner.getUniqueID();
+    }
+
     @Override
     public boolean canDespawn(double distanceToClosestPlayer) {
         return false;
@@ -66,7 +71,6 @@ public abstract class FlyingDevice extends FlyingEntity {
     @Override
     public void travel(@Nonnull Vector3d vec) {
         float speed = (float) func_233637_b_(Attributes.field_233822_e_);
-        setAIMoveSpeed(speed);
         if (isInWater()) {
             moveRelative(speed, vec);
             move(MoverType.SELF, getMotion());

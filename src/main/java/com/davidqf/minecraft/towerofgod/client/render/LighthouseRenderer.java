@@ -15,12 +15,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @OnlyIn(Dist.CLIENT)
-public class LighthouseRenderer extends MobRenderer<LighthouseEntity, LighthouseModel<LighthouseEntity>> {
+public class LighthouseRenderer extends MobRenderer<LighthouseEntity, LighthouseModel> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/lighthouse_entity.png");
 
     public LighthouseRenderer(EntityRendererManager renderManagerIn) {
-        super(renderManagerIn, new LighthouseModel<>(), 0.5f);
+        super(renderManagerIn, new LighthouseModel(), 0.5f);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.davidqf.minecraft.towerofgod.entities;
 
 import com.davidqf.minecraft.towerofgod.util.RegistryHandler;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -13,8 +12,8 @@ import javax.annotation.Nullable;
 
 public class ObserverEntity extends FlyingDevice {
 
-    public ObserverEntity(World worldIn, @Nullable LivingEntity owner) {
-        super(RegistryHandler.OBSERVER_ENTITY.get(), worldIn, owner);
+    public ObserverEntity(World worldIn) {
+        super(RegistryHandler.OBSERVER_ENTITY.get(), worldIn);
     }
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
@@ -28,7 +27,7 @@ public class ObserverEntity extends FlyingDevice {
         @Nonnull
         @Override
         public ObserverEntity create(@Nullable EntityType<ObserverEntity> type, @Nonnull World world) {
-            return new ObserverEntity(world, null);
+            return new ObserverEntity(world);
         }
     }
 }

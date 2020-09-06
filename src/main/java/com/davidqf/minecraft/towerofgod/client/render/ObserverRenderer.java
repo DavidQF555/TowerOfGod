@@ -13,12 +13,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nonnull;
 
 @OnlyIn(Dist.CLIENT)
-public class ObserverRenderer extends MobRenderer<ObserverEntity, ObserverModel<ObserverEntity>> {
+public class ObserverRenderer extends MobRenderer<ObserverEntity, ObserverModel> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/observer_entity.png");
 
     public ObserverRenderer(EntityRendererManager renderManagerIn) {
-        super(renderManagerIn, new ObserverModel<>(), 0.1f);
+        super(renderManagerIn, new ObserverModel(), 0.1f);
     }
 
     @Nonnull

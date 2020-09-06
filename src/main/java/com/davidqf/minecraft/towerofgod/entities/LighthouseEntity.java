@@ -42,8 +42,8 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     private Inventory inventory;
     private BlockPos light;
 
-    public LighthouseEntity(World worldIn, @Nullable LivingEntity owner) {
-        super(RegistryHandler.LIGHTHOUSE_ENTITY.get(), worldIn, owner);
+    public LighthouseEntity(World worldIn) {
+        super(RegistryHandler.LIGHTHOUSE_ENTITY.get(), worldIn);
         inventory = new Inventory(INVENTORY_SIZE);
         light = null;
     }
@@ -147,7 +147,9 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
             CompoundNBT lighthouse = (CompoundNBT) nbt.get(TAG_KEY);
             if (lighthouse != null) {
                 inventory.read(lighthouse.getList("Inventory", Constants.NBT.TAG_COMPOUND));
-                light = new BlockPos(lighthouse.getInt("X"), lighthouse.getInt("Y"), lighthouse.getInt("Z"));
+                if (lighthouse.contains("X", Constants.NBT.TAG_COMPOUND)) {
+                    light = new BlockPos(lighthouse.getInt("X"), lighthouse.getInt("Y"), lighthouse.getInt("Z"));
+                }
             }
         }
     }
@@ -157,10 +159,12 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         super.writeAdditional(nbt);
         CompoundNBT lighthouse = new CompoundNBT();
         lighthouse.put("Inventory", inventory.write());
-        lighthouse.putInt("X", light.getX());
-        lighthouse.putInt("Y", light.getY());
-        lighthouse.putInt("Z", light.getZ());
-        nbt.put(TAG_KEY, lighthouse);
+        if (light != null) {
+            lighthouse.putInt("X", light.getX());
+            lighthouse.putInt("Y", light.getY());
+            lighthouse.putInt("Z", light.getZ());
+            nbt.put(TAG_KEY, lighthouse);
+        }
     }
 
     public static class LighthouseContainer extends Container {
@@ -274,7 +278,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         @Nonnull
         @Override
         public LighthouseEntity create(@Nullable EntityType<LighthouseEntity> type, @Nonnull World world) {
-            return new LighthouseEntity(world, null);
+            return new LighthouseEntity(world);
         }
     }
 }

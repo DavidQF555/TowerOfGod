@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 
 import javax.annotation.Nonnull;
 
-public class ObserverModel<T extends ObserverEntity> extends EntityModel<T> {
+public class ObserverModel extends EntityModel<ObserverEntity> {
 
     private final ModelRenderer observer;
 
@@ -27,7 +27,7 @@ public class ObserverModel<T extends ObserverEntity> extends EntityModel<T> {
     }
 
     @Override
-    public void setRotationAngles(@Nonnull T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setRotationAngles(@Nonnull ObserverEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         observer.rotateAngleX = headPitch * ((float) Math.PI / 180f);
         observer.rotateAngleY = netHeadYaw * ((float) Math.PI / 180f);
     }

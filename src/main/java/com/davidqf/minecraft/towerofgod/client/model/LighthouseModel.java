@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 
 import javax.annotation.Nonnull;
 
-public class LighthouseModel<T extends LighthouseEntity> extends EntityModel<T> {
+public class LighthouseModel extends EntityModel<LighthouseEntity> {
 
     private final ModelRenderer lighthouse;
 
@@ -23,11 +23,11 @@ public class LighthouseModel<T extends LighthouseEntity> extends EntityModel<T> 
 
     @Override
     public void render(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        lighthouse.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        lighthouse.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha * 0.8f);
     }
 
     @Override
-    public void setRotationAngles(@Nonnull T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setRotationAngles(@Nonnull LighthouseEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         lighthouse.rotateAngleX = headPitch * ((float) Math.PI / 180f);
         lighthouse.rotateAngleY = netHeadYaw * ((float) Math.PI / 180f);
     }
