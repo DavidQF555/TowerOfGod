@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
 public class ShinsuRenderer extends EntityRenderer<ShinsuEntity> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/shinsu_entity.png");
-    private static final ShinsuModel<ShinsuEntity> MODEL = new ShinsuModel<>();
+    private static final ShinsuModel MODEL = new ShinsuModel();
 
     public ShinsuRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);
