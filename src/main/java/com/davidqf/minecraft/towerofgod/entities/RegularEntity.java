@@ -118,26 +118,26 @@ public class RegularEntity extends ShinsuUser {
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
         return RegularEntity.func_233666_p_()
-                .func_233815_a_(Attributes.field_233819_b_, 32)
-                .func_233815_a_(Attributes.field_233821_d_, 0.1)
-                .func_233815_a_(Attributes.field_233818_a_, 20)
-                .func_233815_a_(Attributes.field_233823_f_, 1);
+                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32)
+                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.1)
+                .createMutableAttribute(Attributes.MAX_HEALTH, 20)
+                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 1);
     }
 
     @Override
     public void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new SwimGoal(this));
-        this.goalSelector.addGoal(8, new LookAtGoal(this, PlayerEntity.class, 8));
-        this.goalSelector.addGoal(1, new FindTeamGoal());
-        this.goalSelector.addGoal(10, new LookRandomlyGoal(this));
-        this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1));
-        this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1, true));
-        this.goalSelector.addGoal(8, new FollowLeaderGoal());
-        this.goalSelector.addGoal(7, new MoveTowardsTargetGoal(this, 1.5, 32));
-        this.targetSelector.addGoal(2, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new TeamTargetGoal());
-        this.targetSelector.addGoal(4, new PersonalityTargetGoal());
+        goalSelector.addGoal(0, new SwimGoal(this));
+        goalSelector.addGoal(8, new LookAtGoal(this, PlayerEntity.class, 8));
+        goalSelector.addGoal(1, new FindTeamGoal());
+        goalSelector.addGoal(10, new LookRandomlyGoal(this));
+        goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1));
+        goalSelector.addGoal(5, new MeleeAttackGoal(this, 1, true));
+        goalSelector.addGoal(8, new FollowLeaderGoal());
+        goalSelector.addGoal(7, new MoveTowardsTargetGoal(this, 1.5, 32));
+        targetSelector.addGoal(2, new HurtByTargetGoal(this));
+        targetSelector.addGoal(3, new TeamTargetGoal());
+        targetSelector.addGoal(4, new PersonalityTargetGoal());
     }
 
     @Override
@@ -158,7 +158,7 @@ public class RegularEntity extends ShinsuUser {
     public void onDeathUpdate() {
         super.onDeathUpdate();
         List<RegularEntity> members = team.getEntityMembers(world);
-        if (this.equals(team.getLeader(world)) && members.size() > 1) {
+        if (equals(team.getLeader(world)) && members.size() > 1) {
             members.remove(this);
             team.setLeader(members.get((int) (Math.random() * members.size())));
         }

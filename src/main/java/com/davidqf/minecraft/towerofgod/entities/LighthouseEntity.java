@@ -5,6 +5,7 @@ import com.davidqf.minecraft.towerofgod.util.RegistryHandler;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.ScreenManager.IScreenFactory;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -34,7 +35,10 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
 public class LighthouseEntity extends FlyingDevice implements INamedContainerProvider {
 
     private static final String TAG_KEY = TowerOfGod.MOD_ID + ".lighthouseentity";
@@ -50,12 +54,11 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
         return MobEntity.func_233666_p_()
-                .func_233815_a_(Attributes.field_233822_e_, 0.2)
-                .func_233815_a_(Attributes.field_233821_d_, 0.2)
-                .func_233815_a_(Attributes.field_233818_a_, 10);
+                .createMutableAttribute(Attributes.FLYING_SPEED, 0.2)
+                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.2)
+                .createMutableAttribute(Attributes.MAX_HEALTH, 10);
     }
 
-    @Nonnull
     private Inventory getInventory() {
         return inventory;
     }
@@ -69,9 +72,8 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         inventory.clear();
     }
 
-    @Nonnull
     @Override
-    public ActionResultType applyPlayerInteraction(@Nonnull PlayerEntity player, @Nonnull Vector3d vec, @Nonnull Hand hand) {
+    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d vec, Hand hand) {
         ActionResultType ret = super.applyPlayerInteraction(player, vec, hand);
         if (getOwner() != null && player.equals(getOwner())) {
             openInventory(player);
@@ -92,7 +94,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     }
 
     @Override
-    public SoundEvent getHurtSound(@Nonnull DamageSource s) {
+    public SoundEvent getHurtSound(DamageSource s) {
         return SoundEvents.BLOCK_BEACON_POWER_SELECT;
     }
 
@@ -103,11 +105,10 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
     @Nullable
     @Override
-    public Container createMenu(int id, @Nonnull PlayerInventory inv, PlayerEntity player) {
+    public Container createMenu(int id, PlayerInventory inv, PlayerEntity player) {
         return !player.isSpectator() ? new LighthouseContainer(id, inv, this) : null;
     }
 
-    @Nonnull
     @Override
     public ITextComponent getDisplayName() {
         return new TranslationTextComponent("container." + TowerOfGod.MOD_ID + ".lighthouse_container");
@@ -133,7 +134,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         removeLight(light);
     }
 
-    private void removeLight(@Nonnull BlockPos pos) {
+    private void removeLight(BlockPos pos) {
         if (light != null && world.getBlockState(pos).getBlock().equals(RegistryHandler.LIGHT_BLOCK.get())) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
@@ -176,18 +177,18 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
             Inventory inv = en.getInventory();
             for (int k = 0; k < 3; ++k) {
                 for (int l = 0; l < 9; ++l) {
-                    this.addSlot(new Slot(inv, l + k * 9, 8 + l * 18, 11 + k * 18));
+                    addSlot(new Slot(inv, l + k * 9, 8 + l * 18, 11 + k * 18));
                 }
             }
 
             for (int i1 = 0; i1 < 3; ++i1) {
                 for (int k1 = 0; k1 < 9; ++k1) {
-                    this.addSlot(new Slot(player, k1 + i1 * 9 + 9, 8 + k1 * 18, 84 + i1 * 18));
+                    addSlot(new Slot(player, k1 + i1 * 9 + 9, 8 + k1 * 18, 84 + i1 * 18));
                 }
             }
 
             for (int j1 = 0; j1 < 9; ++j1) {
-                this.addSlot(new Slot(player, j1, 8 + j1 * 18, 142));
+                addSlot(new Slot(player, j1, 8 + j1 * 18, 142));
             }
             this.en = en;
         }
@@ -197,17 +198,16 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
             return playerIn.equals(en.getOwner());
         }
 
-        @Nonnull
         @Override
-        public ItemStack transferStackInSlot(@Nonnull PlayerEntity player, int index) {
+        public ItemStack transferStackInSlot(PlayerEntity player, int index) {
             ItemStack returnStack = ItemStack.EMPTY;
-            final Slot slot = this.inventorySlots.get(index);
+            final Slot slot = inventorySlots.get(index);
             if (slot != null && slot.getHasStack()) {
                 final ItemStack slotStack = slot.getStack();
                 returnStack = slotStack.copy();
-                final int containerSlots = this.inventorySlots.size() - player.inventory.mainInventory.size();
+                final int containerSlots = inventorySlots.size() - player.inventory.mainInventory.size();
                 if (index < containerSlots) {
-                    if (!mergeItemStack(slotStack, containerSlots, this.inventorySlots.size(), true)) {
+                    if (!mergeItemStack(slotStack, containerSlots, inventorySlots.size(), true)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (!mergeItemStack(slotStack, 0, containerSlots, false)) {
@@ -227,7 +227,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         }
 
         public static class Factory implements IContainerFactory<LighthouseContainer> {
-
+            @Nullable
             @Override
             public LighthouseContainer create(int windowId, PlayerInventory playerInv, PacketBuffer extraData) {
                 LighthouseEntity entity = (LighthouseEntity) playerInv.player.world.getEntityByID(extraData.readVarInt());
@@ -242,42 +242,40 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
         public LighthouseScreen(LighthouseContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
             super(screenContainer, inv, titleIn);
-            field_238743_q_ -= 4;
-            field_238745_s_ += 2;
+            titleY -= 4;
+            playerInventoryTitleY += 2;
         }
 
         @Override
-        public void func_230430_a_(@Nonnull MatrixStack p_230430_1_, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
-            this.func_230446_a_(p_230430_1_);
-            super.func_230430_a_(p_230430_1_, p_230430_2_, p_230430_3_, p_230430_4_);
-            this.func_230459_a_(p_230430_1_, p_230430_2_, p_230430_3_);
+        public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+            renderBackground(matrixStack);
+            super.render(matrixStack, mouseX, mouseY, partialTicks);
+            func_230459_a_(matrixStack, mouseX, mouseY);
         }
 
         @Deprecated
         @Override
-        protected void func_230450_a_(@Nonnull MatrixStack p_230450_1_, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            if (field_230706_i_ != null) {
-                field_230706_i_.getTextureManager().bindTexture(GUI);
+        protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+            RenderSystem.color4f(1, 1, 1, 1);
+            if (minecraft != null) {
+                minecraft.getTextureManager().bindTexture(GUI);
             }
-            int i = (this.field_230708_k_ - this.xSize) / 2;
-            int j = (this.field_230709_l_ - this.ySize) / 2;
-            this.func_238474_b_(p_230450_1_, i, j, 0, 0, this.xSize, this.ySize);
+            int i = (width - xSize) / 2;
+            int j = (height - ySize) / 2;
+            blit(matrixStack, i, j, 0, 0, xSize, ySize);
         }
 
         public static class Factory implements IScreenFactory<LighthouseContainer, LighthouseScreen> {
-            @Nonnull
             @Override
-            public LighthouseScreen create(@Nonnull LighthouseContainer con, @Nonnull PlayerInventory inv, @Nonnull ITextComponent text) {
+            public LighthouseScreen create(LighthouseContainer con, PlayerInventory inv, ITextComponent text) {
                 return new LighthouseScreen(con, inv, text);
             }
         }
     }
 
     public static class Factory implements EntityType.IFactory<LighthouseEntity> {
-        @Nonnull
         @Override
-        public LighthouseEntity create(@Nullable EntityType<LighthouseEntity> type, @Nonnull World world) {
+        public LighthouseEntity create(@Nullable EntityType<LighthouseEntity> type, World world) {
             return new LighthouseEntity(world);
         }
     }

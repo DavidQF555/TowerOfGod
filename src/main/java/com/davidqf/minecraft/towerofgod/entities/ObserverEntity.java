@@ -18,9 +18,9 @@ public class ObserverEntity extends FlyingDevice {
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
         return MobEntity.func_233666_p_()
-                .func_233815_a_(Attributes.field_233822_e_, 0.3)
-                .func_233815_a_(Attributes.field_233821_d_, 0.3)
-                .func_233815_a_(Attributes.field_233818_a_, 10);
+                .createMutableAttribute(Attributes.FLYING_SPEED, 0.3)
+                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.3)
+                .createMutableAttribute(Attributes.MAX_HEALTH, 10);
     }
 
     public static class Factory implements EntityType.IFactory<ObserverEntity> {

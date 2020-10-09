@@ -6,11 +6,11 @@ import net.minecraft.block.material.Material;
 
 public class LightBlock extends AirBlock {
 
-	private static final int LIGHT = 15;
+    private static final int LIGHT = 15;
 
-	public LightBlock() {
-		super(Block.Properties.create(Material.AIR)
-				.func_235838_a_(state -> LIGHT));
-	}
+    public LightBlock() {
+        super(Block.Properties.create(Material.AIR)
+                .setLightLevel(state -> LIGHT));
+    }
 
 }
