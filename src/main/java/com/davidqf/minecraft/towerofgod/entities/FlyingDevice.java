@@ -70,7 +70,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
 
     @Override
     public void travel(@Nonnull Vector3d vec) {
-        float speed = (float) func_233637_b_(Attributes.field_233822_e_);
+        float speed = (float) getAttributeValue(Attributes.FLYING_SPEED);
         if (isInWater()) {
             moveRelative(speed, vec);
             move(MoverType.SELF, getMotion());
