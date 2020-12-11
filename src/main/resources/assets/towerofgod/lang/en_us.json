@@ -32,5 +32,22 @@
 	"entity.towerofgod.observer_entity": "Observer",
 	"item.towerofgod.observer_item": "Observer",
 	"entity.towerofgod.regular_entity": "Regular",
-	"entity.towerofgod.shinsu_entity": "Shinsu"
+	"advancement.towerofgod.contract": "Contract",
+	"advancement.towerofgod.reverse_flow_control": "Reverse Flow Control",
+	"advancement.towerofgod.shinsu_blast": "Shinsu Blast",
+	"advancement.towerofgod.body_reinforcement": "Body Reinforcement",
+	"criteria.towerofgod.kill": "Kill %1$s: ",
+	"criteria.towerofgod.item": "Submit %1$s: ",
+	"button.towerofgod.complete": "Complete",
+	"button.towerofgod.shinsu": "Shinsu",
+	"button.towerofgod.baangs": "Baangs",
+	"button.towerofgod.resistance": "Resistance",
+	"button.towerofgod.tension": "Tension",
+	"button.towerofgod.learn_technique": "Learn %1$s",
+	"button.towerofgod.rewards": "Rewards",
+	"technique.towerofgod.reverse_flow_control": "Reverse Flow Control",
+	"technique.towerofgod.body_reinforcement": "Body Reinforcement",
+	"technique.towerofgod.flare_wave_explosion": "Flare Wave Explosion",
+	"technique.towerofgod.shinsu_blast": "Shinsu Blast",
+	"effect.towerofgod.reverse_flow_effect": "Reverse Flow"
 }

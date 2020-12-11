@@ -2,7 +2,7 @@ package com.davidqf.minecraft.towerofgod.client.render;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.model.LighthouseModel;
-import com.davidqf.minecraft.towerofgod.entities.LighthouseEntity;
+import com.davidqf.minecraft.towerofgod.common.entities.LighthouseEntity;
 
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;

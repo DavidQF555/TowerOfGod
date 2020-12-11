@@ -3,7 +3,7 @@ package com.davidqf.minecraft.towerofgod.client.render;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.model.ObserverModel;
 
-import com.davidqf.minecraft.towerofgod.entities.ObserverEntity;
+import com.davidqf.minecraft.towerofgod.common.entities.ObserverEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;

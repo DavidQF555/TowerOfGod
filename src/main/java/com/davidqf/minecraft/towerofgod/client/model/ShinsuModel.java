@@ -1,6 +1,6 @@
 package com.davidqf.minecraft.towerofgod.client.model;
 
-import com.davidqf.minecraft.towerofgod.entities.shinsu.ShinsuEntity;
+import com.davidqf.minecraft.towerofgod.common.entities.ShinsuEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.entity.model.EntityModel;

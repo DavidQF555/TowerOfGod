@@ -1,12 +1,11 @@
 package com.davidqf.minecraft.towerofgod;
 
-import com.davidqf.minecraft.towerofgod.entities.ObserverEntity;
-import com.davidqf.minecraft.towerofgod.entities.RegularEntity;
-import com.davidqf.minecraft.towerofgod.util.KeyBindingsList;
-import com.davidqf.minecraft.towerofgod.util.RegistryHandler;
-import com.davidqf.minecraft.towerofgod.entities.LighthouseEntity;
+import com.davidqf.minecraft.towerofgod.common.entities.ObserverEntity;
+import com.davidqf.minecraft.towerofgod.common.entities.RegularEntity;
+import com.davidqf.minecraft.towerofgod.client.util.KeyBindingsList;
+import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
+import com.davidqf.minecraft.towerofgod.common.entities.LighthouseEntity;
 
-import net.minecraft.client.gui.widget.list.KeyBindingList;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;

@@ -1,6 +1,6 @@
 package com.davidqf.minecraft.towerofgod.client.model;
 
-import com.davidqf.minecraft.towerofgod.entities.LighthouseEntity;
+import com.davidqf.minecraft.towerofgod.common.entities.LighthouseEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 

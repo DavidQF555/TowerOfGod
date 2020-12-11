@@ -1,6 +1,6 @@
 package com.davidqf.minecraft.towerofgod.client.render;
 
-import com.davidqf.minecraft.towerofgod.entities.RegularEntity;
+import com.davidqf.minecraft.towerofgod.common.entities.RegularEntity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.model.BipedModel;
@@ -22,4 +22,5 @@ public class RegularRenderer extends BipedRenderer<RegularEntity, BipedModel<Reg
     public ResourceLocation getEntityTexture(RegularEntity entity) {
         return entity.getFamily().getTexture();
     }
+
 }
