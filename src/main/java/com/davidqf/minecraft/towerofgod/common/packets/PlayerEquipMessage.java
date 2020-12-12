@@ -33,7 +33,7 @@ public class PlayerEquipMessage {
         return new PlayerEquipMessage(equips);
     };
     private static final BiConsumer<PlayerEquipMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        message.handle(context.get());
+        context.get().enqueueWork(() -> message.handle(context.get()));
     };
 
     private final CompoundNBT equips;

@@ -35,7 +35,7 @@ public class ShinsuUserTickMessage {
     private static final Function<PacketBuffer, ShinsuUserTickMessage> DECODER = buffer -> new ShinsuUserTickMessage();
 
     private static final BiConsumer<ShinsuUserTickMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        message.handle(context.get());
+        context.get().enqueueWork(() -> message.handle(context.get()));
     };
 
     public static void register(int index) {

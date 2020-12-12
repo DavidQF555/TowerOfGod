@@ -55,7 +55,7 @@ public class CastShinsuMessage {
         return new CastShinsuMessage(user, technique, target, dir);
     };
     private static final BiConsumer<CastShinsuMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        message.handle(context.get());
+        context.get().enqueueWork(() -> message.handle(context.get()));
     };
 
     private final UUID user;

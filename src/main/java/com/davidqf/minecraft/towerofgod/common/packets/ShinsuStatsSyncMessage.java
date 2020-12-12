@@ -33,7 +33,7 @@ public class ShinsuStatsSyncMessage {
         return new ShinsuStatsSyncMessage(stats);
     };
     private static final BiConsumer<ShinsuStatsSyncMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        message.handle(context.get());
+        context.get().enqueueWork(() -> message.handle(context.get()));
     };
 
     private final CompoundNBT stats;

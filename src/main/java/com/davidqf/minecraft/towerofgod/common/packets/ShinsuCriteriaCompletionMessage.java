@@ -29,7 +29,7 @@ public class ShinsuCriteriaCompletionMessage {
     private static final Function<PacketBuffer, ShinsuCriteriaCompletionMessage> DECODER = buffer -> new ShinsuCriteriaCompletionMessage(ShinsuAdvancement.get(buffer.readString()));
 
     private static final BiConsumer<ShinsuCriteriaCompletionMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        message.handle(context.get());
+        context.get().enqueueWork(() -> message.handle(context.get()));
     };
 
     public static void register(int index) {
