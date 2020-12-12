@@ -39,6 +39,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
 
@@ -126,8 +129,12 @@ public class ClientEventBusSubscriber {
         public static void onEvent(Event event) {
             PlayerEntity player = Minecraft.getInstance().player;
             if (player != null) {
-                for (ShinsuAdvancement unlocked : ShinsuAdvancement.getUnlocked(player)) {
-                    unlocked.getCriteria().onEvent(player, event);
+                IShinsuStats stats = IShinsuStats.get(player);
+                for(ShinsuAdvancement advancement : stats.getUnlockedAdvancements()){
+                    ShinsuAdvancementCriteria criteria = advancement.getCriteria();
+                    if(criteria.correctEvent(event)){
+                        criteria.onEvent(player, event);
+                    }
                 }
             }
         }

@@ -17,9 +17,11 @@ import net.minecraftforge.eventbus.api.Event;
 public abstract class ShinsuAdvancementCriteria {
 
     private ShinsuAdvancement advancement;
+    private final boolean checksEvents;
 
-    public ShinsuAdvancementCriteria() {
+    public ShinsuAdvancementCriteria(boolean checksEvents) {
         advancement = null;
+        this.checksEvents = checksEvents;
     }
 
     public void onEvent(Entity user, Event event) {}
@@ -41,6 +43,10 @@ public abstract class ShinsuAdvancementCriteria {
         return IShinsuStats.get(user).getAdvancements().get(advancement).getProgress() >= getAdvancement().getCompletionAmount();
     }
 
+    public boolean correctEvent(Event event){
+        return checksEvents;
+    }
+
     public abstract ITextComponent[] getText(Entity user);
 
     public void setAdvancement(ShinsuAdvancement advancement){
@@ -54,18 +60,20 @@ public abstract class ShinsuAdvancementCriteria {
         private final EntityClassification[] classifications;
 
         public KillCriteria(Class<? extends LivingEntity>[] types) {
+            super(true);
             this.types = types;
             classifications = null;
         }
 
         public KillCriteria(EntityClassification[] classifications){
+            super(true);
             types = null;
             this.classifications = classifications;
         }
 
         @Override
         public void onEvent(Entity user, Event event) {
-            if(ShinsuAdvancement.getUnlocked(user).contains(getAdvancement()) && event instanceof LivingDeathEvent){
+            if(event instanceof LivingDeathEvent){
                 LivingDeathEvent death = (LivingDeathEvent) event;
                 IShinsuStats stats = IShinsuStats.get(user);
                 ShinsuAdvancementProgress progress = stats.getAdvancements().get(getAdvancement());
@@ -109,6 +117,11 @@ public abstract class ShinsuAdvancementCriteria {
             arr[0] = new TranslationTextComponent(TRANSLATION_KEY, getAdvancement().getCompletionAmount());
             return arr;
         }
+
+        @Override
+        public boolean correctEvent(Event event) {
+            return super.correctEvent(event) && event instanceof LivingDeathEvent;
+        }
     }
 
     public static class ItemCriteria extends ShinsuAdvancementCriteria {
@@ -117,6 +130,7 @@ public abstract class ShinsuAdvancementCriteria {
         private final Item[] types;
 
         public ItemCriteria(Item[] types) {
+            super(false);
             this.types = types;
         }
 
