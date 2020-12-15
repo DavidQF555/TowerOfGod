@@ -119,16 +119,14 @@ public class ClientEventBusSubscriber {
                         ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.TICK, attack));
                         if (attack.ticksLeft() <= 0) {
                             ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.END, attack));
-                            techniques.remove(i);
+                            stats.removeTechnique(attack);
                         }
                         changed = true;
                     }
-                    Map<ShinsuTechnique, Integer> cooldowns = stats.getCooldowns();
-                    List<ShinsuTechnique> keys = new ArrayList<>(cooldowns.keySet());
-                    for (ShinsuTechnique key : keys) {
-                        int time = cooldowns.get(key);
+                    for (ShinsuTechnique key : ShinsuTechnique.values()) {
+                        int time = stats.getCooldown(key);
                         if (time > 0) {
-                            cooldowns.put(key, time - 1);
+                            stats.addCooldown(key, time - 1);
                             changed = true;
                         }
                     }
@@ -157,10 +155,12 @@ public class ClientEventBusSubscriber {
             PlayerEntity player = Minecraft.getInstance().player;
             if (player != null) {
                 IShinsuStats stats = IShinsuStats.get(player);
-                for (ShinsuAdvancement advancement : stats.getUnlockedAdvancements()) {
-                    ShinsuAdvancementCriteria criteria = advancement.getCriteria();
-                    if (criteria.correctEvent(event)) {
-                        criteria.onEvent(player, event);
+                if (stats instanceof IShinsuStats.AdvancementShinsuStats) {
+                    for (ShinsuAdvancement advancement : ((IShinsuStats.AdvancementShinsuStats) stats).getUnlockedAdvancements()) {
+                        ShinsuAdvancementCriteria criteria = advancement.getCriteria();
+                        if (criteria.correctEvent(event)) {
+                            criteria.onEvent(player, event);
+                        }
                     }
                 }
             }

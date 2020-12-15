@@ -32,13 +32,11 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
             attack.tick(world);
             if (attack.ticksLeft() <= 0) {
                 attack.onEnd(world);
-                techniques.remove(i);
+                stats.removeTechnique(attack);
             }
         }
-        Map<ShinsuTechnique, Integer> cooldowns = stats.getCooldowns();
-        List<ShinsuTechnique> keys = new ArrayList<>(cooldowns.keySet());
-        for (ShinsuTechnique key : keys) {
-            cooldowns.put(key, Math.max(0, cooldowns.get(key) - 1));
+        for (ShinsuTechnique key : ShinsuTechnique.values()) {
+            stats.addCooldown(key, Math.max(0, stats.getCooldown(key) - 1));
         }
         super.livingTick();
     }
@@ -56,11 +54,11 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
         @Override
         public boolean shouldExecute() {
             List<ShinsuTechnique> tech = new ArrayList<>();
-            for(ShinsuTechnique technique : stats.getKnownTechniques().keySet()){
+            for(ShinsuTechnique technique : ShinsuTechnique.values()){
                 ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
                 LivingEntity target = getAttackTarget();
                 Vector3d dir = (target != null && canEntityBeSeen(target)) ? target.getEyePosition(1).subtract(getEyePosition(1)).normalize() : getLookVec();
-                if((!stats.getCooldowns().containsKey(technique) || stats.getCooldowns().get(technique) <= 0) && builder.canCast(technique, ShinsuUserEntity.this, stats.getTechniqueLevel(technique), target, dir) && !isUsed(technique, target, dir)) {
+                if(stats.getCooldown(technique) <= 0 && builder.canCast(technique, ShinsuUserEntity.this, stats.getTechniqueLevel(technique), target, dir) && !isUsed(technique, target, dir)) {
                     tech.add(technique);
                 }
             }

@@ -33,14 +33,19 @@ public abstract class ShinsuAdvancementCriteria {
     }
 
     public int getCount(Entity user) {
-        return IShinsuStats.get(user).getAdvancements().get(getAdvancement()).getProgress();
+        IShinsuStats stats = IShinsuStats.get(user);
+        if (stats instanceof IShinsuStats.AdvancementShinsuStats) {
+            return ((IShinsuStats.AdvancementShinsuStats) stats).getAdvancements().get(getAdvancement()).getProgress();
+        }
+        return 0;
     }
 
     public boolean canComplete(Entity user) {
         if(user instanceof PlayerEntity && ((PlayerEntity) user).isCreative()) {
             return true;
         }
-        return IShinsuStats.get(user).getAdvancements().get(advancement).getProgress() >= getAdvancement().getCompletionAmount();
+        IShinsuStats stats = IShinsuStats.get(user);
+        return stats instanceof IShinsuStats.AdvancementShinsuStats && ((IShinsuStats.AdvancementShinsuStats) stats).getAdvancements().get(advancement).getProgress() >= getAdvancement().getCompletionAmount();
     }
 
     public boolean correctEvent(Event event){
@@ -76,21 +81,22 @@ public abstract class ShinsuAdvancementCriteria {
             if(event instanceof LivingDeathEvent){
                 LivingDeathEvent death = (LivingDeathEvent) event;
                 IShinsuStats stats = IShinsuStats.get(user);
-                ShinsuAdvancementProgress progress = stats.getAdvancements().get(getAdvancement());
-                if(user.equals(death.getSource().getTrueSource())){
-                    if(types != null) {
-                        Class<? extends LivingEntity> clazz = death.getEntityLiving().getClass();
-                        for(Class<? extends LivingEntity> type : types) {
-                            if(clazz == type) {
-                                progress.setProgress(progress.getProgress() + 1);
+                if(stats instanceof IShinsuStats.AdvancementShinsuStats) {
+                    ShinsuAdvancementProgress progress = ((IShinsuStats.AdvancementShinsuStats) stats).getAdvancements().get(getAdvancement());
+                    if (user.equals(death.getSource().getTrueSource())) {
+                        if (types != null) {
+                            Class<? extends LivingEntity> clazz = death.getEntityLiving().getClass();
+                            for (Class<? extends LivingEntity> type : types) {
+                                if (clazz == type) {
+                                    progress.setProgress(progress.getProgress() + 1);
+                                }
                             }
-                        }
-                    }
-                    else if(classifications != null) {
-                        EntityClassification c = death.getEntityLiving().getClassification(false);
-                        for(EntityClassification classification : classifications) {
-                            if(c.equals(classification)) {
-                                progress.setProgress(progress.getProgress() + 1);
+                        } else if (classifications != null) {
+                            EntityClassification c = death.getEntityLiving().getClassification(false);
+                            for (EntityClassification classification : classifications) {
+                                if (c.equals(classification)) {
+                                    progress.setProgress(progress.getProgress() + 1);
+                                }
                             }
                         }
                     }

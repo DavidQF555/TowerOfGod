@@ -65,7 +65,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         Entity user = getUser(world);
         if (user != null) {
             IShinsuStats stats = IShinsuStats.get(user);
-            stats.getTechniques().remove(this);
+            stats.removeTechnique(this);
         }
     }
 

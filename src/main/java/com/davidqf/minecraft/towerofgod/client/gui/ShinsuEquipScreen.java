@@ -67,7 +67,12 @@ public class ShinsuEquipScreen extends Screen {
         x = (width - xSize) / 2;
         y = (height - ySize) / 2;
         addSlots();
-        unlocked = new ArrayList<>(stats.getKnownTechniques().keySet());
+        unlocked = new ArrayList<>();
+        for(ShinsuTechnique technique : ShinsuTechnique.values()) {
+            if(stats.getTechniqueLevel(technique) > 0){
+                unlocked.add(technique);
+            }
+        }
         for (ShinsuSlot slot : selected) {
             unlocked.remove(slot.technique);
         }

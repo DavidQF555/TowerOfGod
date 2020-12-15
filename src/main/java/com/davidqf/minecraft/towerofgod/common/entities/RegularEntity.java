@@ -104,56 +104,58 @@ public class RegularEntity extends ShinsuUserEntity {
     }
 
     private void setAdvancements() {
-        Map<ShinsuAdvancement, ShinsuAdvancementProgress> advancements = IShinsuStats.get(this).getAdvancements();
-        Family family = getFamily();
-        List<ShinsuAdvancement> possible = new ArrayList<>();
-        List<ShinsuAdvancement> additions = new ArrayList<>();
-        for(ShinsuAdvancement advancement : ShinsuAdvancement.values()){
-            if(advancement.getParent() == null) {
-                possible.add(advancement);
-                additions.add(advancement);
+        IShinsuStats stats = IShinsuStats.get(this);
+        if(stats instanceof IShinsuStats.AdvancementShinsuStats) {
+            Map<ShinsuAdvancement, ShinsuAdvancementProgress> advancements = ((IShinsuStats.AdvancementShinsuStats) stats).getAdvancements();
+            Family family = getFamily();
+            List<ShinsuAdvancement> possible = new ArrayList<>();
+            List<ShinsuAdvancement> additions = new ArrayList<>();
+            for (ShinsuAdvancement advancement : ShinsuAdvancement.values()) {
+                if (advancement.getParent() == null) {
+                    possible.add(advancement);
+                    additions.add(advancement);
+                }
             }
-        }
-        int count = 0;
-        int max = ShinsuAdvancement.values().length;
-        List<ShinsuAdvancement> preferred = new ArrayList<>();
-        Random random = getRNG();
-        while(count < max && count < level) {
-            possible.addAll(additions);
-            preferred:
-            for(ShinsuAdvancement advancement : additions){
-                ShinsuAdvancement.Reward reward = advancement.getReward();
-                for (ShinsuTechnique technique : reward.getTechniques()) {
-                    for (ShinsuTechnique pref : family.getPreferredTechniques()) {
-                        if (pref == technique) {
-                            preferred.add(advancement);
-                            continue preferred;
+            int count = 0;
+            int max = ShinsuAdvancement.values().length;
+            List<ShinsuAdvancement> preferred = new ArrayList<>();
+            Random random = getRNG();
+            while (count < max && count < level) {
+                possible.addAll(additions);
+                preferred:
+                for (ShinsuAdvancement advancement : additions) {
+                    ShinsuAdvancement.Reward reward = advancement.getReward();
+                    for (ShinsuTechnique technique : reward.getTechniques()) {
+                        for (ShinsuTechnique pref : family.getPreferredTechniques()) {
+                            if (pref == technique) {
+                                preferred.add(advancement);
+                                continue preferred;
+                            }
+                        }
+                    }
+                    for (ShinsuQuality quality : reward.getQualities()) {
+                        for (ShinsuQuality qual : family.getQualities()) {
+                            if (qual == quality) {
+                                preferred.add(advancement);
+                                continue preferred;
+                            }
                         }
                     }
                 }
-                for (ShinsuQuality quality : reward.getQualities()) {
-                    for (ShinsuQuality qual : family.getQualities()) {
-                        if (qual == quality) {
-                            preferred.add(advancement);
-                            continue preferred;
-                        }
-                    }
+                ShinsuAdvancement add;
+                double rand = random.nextDouble();
+                if (!preferred.isEmpty() && rand < FAMILY_ADVANCEMENT_RATE) {
+                    add = preferred.get((int) (random.nextDouble() * preferred.size()));
+                } else {
+                    add = possible.get((int) (random.nextDouble() * possible.size()));
                 }
+                advancements.put(add, new ShinsuAdvancementProgress(add, 0, true));
+                possible.remove(add);
+                preferred.remove(add);
+                additions.clear();
+                additions.addAll(add.getDirectChildren());
+                count++;
             }
-            ShinsuAdvancement add;
-            double rand = random.nextDouble();
-            if(!preferred.isEmpty() && rand < FAMILY_ADVANCEMENT_RATE) {
-                add = preferred.get((int) (random.nextDouble() * preferred.size()));
-            }
-            else{
-                add = possible.get((int) (random.nextDouble() * possible.size()));
-            }
-            advancements.put(add, new ShinsuAdvancementProgress(add, 0, true));
-            possible.remove(add);
-            preferred.remove(add);
-            additions.clear();
-            additions.addAll(add.getDirectChildren());
-            count ++;
         }
     }
 

@@ -24,7 +24,7 @@ public class CapabilityHandler {
     public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
         Entity entity = event.getObject();
         if (entity instanceof ShinsuUserEntity || entity instanceof PlayerEntity) {
-            event.addCapability(SHINSU_STATS, new IShinsuStats.StatsProvider());
+            event.addCapability(SHINSU_STATS, new IShinsuStats.Provider());
         }
         if(entity instanceof PlayerEntity) {
             event.addCapability(PLAYER_EQUIPS, new IPlayerShinsuEquips.Provider());
@@ -35,7 +35,7 @@ public class CapabilityHandler {
     private static class ModBus {
         @SubscribeEvent
         public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
-            CapabilityManager.INSTANCE.register(IShinsuStats.class, new IShinsuStats.StatsStorage(), new IShinsuStats.ShinsuStats.Factory());
+            CapabilityManager.INSTANCE.register(IShinsuStats.class, new IShinsuStats.Storage(), () -> IShinsuStats.Type.ADVANCEMENT.getSupplier().get());
             CapabilityManager.INSTANCE.register(IPlayerShinsuEquips.class, new IPlayerShinsuEquips.Storage(), new IPlayerShinsuEquips.PlayerShinsuEquips.Factory());
             ShinsuStatsSyncMessage.register(index ++);
             PlayerEquipMessage.register(index ++);

@@ -41,7 +41,7 @@ public class ShinsuSkillTreeScreen extends Screen {
     private static final int UNLOCKED_LINE_COLOR = 0xFFFFFFFF;
     private static final int LOCKED_LINE_COLOR = 0xBBBBBBBB;
     private ShinsuAdvancementInfoTabGui tab;
-    private final IShinsuStats stats;
+    private final IShinsuStats.AdvancementShinsuStats stats;
     private final Map<ShinsuAdvancement, List<int[]>> hLines;
     private final Map<ShinsuAdvancement, List<int[]>> vLines;
     private int posX;
@@ -50,11 +50,18 @@ public class ShinsuSkillTreeScreen extends Screen {
     public ShinsuSkillTreeScreen() {
         super(TITLE);
         tab = null;
-        stats = IShinsuStats.get(Minecraft.getInstance().player);
         hLines = new HashMap<>();
         vLines = new HashMap<>();
         posX = 0;
         posY = 0;
+        IShinsuStats s = IShinsuStats.get(Minecraft.getInstance().player);
+        if(s instanceof IShinsuStats.AdvancementShinsuStats){
+            stats = ((IShinsuStats.AdvancementShinsuStats) s);
+        }
+        else{
+            stats = null;
+            closeScreen();
+        }
     }
 
     @Override

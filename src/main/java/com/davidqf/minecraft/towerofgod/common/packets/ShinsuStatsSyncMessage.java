@@ -25,11 +25,13 @@ public class ShinsuStatsSyncMessage {
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals);
     private static final BiConsumer<ShinsuStatsSyncMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+        buffer.writeString(message.type.name());
         buffer.writeCompoundTag(message.stats);
     };
     private static final Function<PacketBuffer, ShinsuStatsSyncMessage> DECODER = buffer -> {
-        IShinsuStats.ShinsuStats stats = new IShinsuStats.ShinsuStats();
-            stats.deserialize(buffer.readCompoundTag());
+
+        IShinsuStats stats = IShinsuStats.Type.get(buffer.readString()).getSupplier().get();
+        stats.deserialize(buffer.readCompoundTag());
         return new ShinsuStatsSyncMessage(stats);
     };
     private static final BiConsumer<ShinsuStatsSyncMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
@@ -37,9 +39,11 @@ public class ShinsuStatsSyncMessage {
         message.handle(cont);
     };
 
+    private final IShinsuStats.Type type;
     private final CompoundNBT stats;
 
-    public ShinsuStatsSyncMessage(IShinsuStats stats){
+    public ShinsuStatsSyncMessage(IShinsuStats stats) {
+        type = stats.getType();
         this.stats = stats.serialize();
     }
 
@@ -48,20 +52,19 @@ public class ShinsuStatsSyncMessage {
     }
 
     private void handle(NetworkEvent.Context context) {
-     NetworkDirection dir = context.getDirection();
+        NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
-            context.enqueueWork(()-> {
-                        ServerPlayerEntity player = context.getSender();
-                        IShinsuStats tar = IShinsuStats.get(player);
-                        tar.deserialize(stats);
-                    });
+            context.enqueueWork(() -> {
+                ServerPlayerEntity player = context.getSender();
+                IShinsuStats tar = IShinsuStats.get(player);
+                tar.deserialize(stats);
+            });
             context.setPacketHandled(true);
-        }
-        else if(dir == NetworkDirection.PLAY_TO_CLIENT){
-            context.enqueueWork(()-> {
-                        IShinsuStats tar = IShinsuStats.get(Minecraft.getInstance().player);
-                        tar.deserialize(stats);
-                    });
+        } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
+            context.enqueueWork(() -> {
+                IShinsuStats tar = IShinsuStats.get(Minecraft.getInstance().player);
+                tar.deserialize(stats);
+            });
             context.setPacketHandled(true);
         }
     }
