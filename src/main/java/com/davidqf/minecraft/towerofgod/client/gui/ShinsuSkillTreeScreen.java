@@ -4,7 +4,7 @@ import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
 import com.davidqf.minecraft.towerofgod.client.util.KeyBindingsList;
 import com.davidqf.minecraft.towerofgod.common.packets.ShinsuCriteriaCompletionMessage;
-import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniques;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.packets.ShinsuStatsSyncMessage;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -285,7 +285,7 @@ public class ShinsuSkillTreeScreen extends Screen {
                         rewards.add(new RewardIcon(this, ShinsuIcons.TENSION, posX, iconY, new StringTextComponent("x" + reward.getTension() + " ").append(RewardIcon.TENSION)));
                         posX += RewardIcon.WIDTH + 1;
                     }
-                    for (ShinsuTechniques technique : reward.getTechniques()) {
+                    for (ShinsuTechnique technique : reward.getTechniques()) {
                         rewards.add(new RewardIcon(this, technique.getIcon(), posX, iconY, new TranslationTextComponent(RewardIcon.LEARN_TECHNIQUE_KEY, technique.getName())));
                         posX += RewardIcon.WIDTH + 1;
                     }

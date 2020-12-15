@@ -10,10 +10,10 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlackFish extends ShinsuTechnique {
+public class BlackFish extends ShinsuTechniqueInstance {
     
     public BlackFish(LivingEntity user, int level) {
-        super(ShinsuTechniques.BLACK_FISH, user, level, level * 600);
+        super(ShinsuTechnique.BLACK_FISH, user, level, level * 600);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class BlackFish extends ShinsuTechnique {
         return getLevel() * 600;
     }
 
-    public static class Builder implements ShinsuTechniques.Builder<BlackFish> {
+    public static class Builder implements ShinsuTechnique.Builder<BlackFish> {
 
         private final int shinsu;
         private final int baangs;

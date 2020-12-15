@@ -1,7 +1,7 @@
 package com.davidqf.minecraft.towerofgod.common.entities;
 
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -74,7 +74,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         if (e instanceof LivingEntity && s instanceof LivingEntity) {
             boolean remove = true;
             LivingEntity target = (LivingEntity) e;
-            float damage = (float) (DAMAGE * ShinsuTechnique.getTotalResistance((LivingEntity) s, target) * level / 3.0);
+            float damage = (float) (DAMAGE * ShinsuTechniqueInstance.getTotalResistance((LivingEntity) s, target) * level / 3.0);
             DamageSource source = DamageSource.MAGIC;
             ShinsuQuality quality = getQuality();
             if (quality != null) {

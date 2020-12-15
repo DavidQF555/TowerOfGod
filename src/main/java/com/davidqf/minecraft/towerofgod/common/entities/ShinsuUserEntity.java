@@ -1,7 +1,7 @@
 package com.davidqf.minecraft.towerofgod.common.entities;
 
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniques;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.Goal;
@@ -26,18 +26,18 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
     @Override
     public void livingTick() {
         IShinsuStats stats = IShinsuStats.get(this);
-        List<ShinsuTechnique> techniques = stats.getTechniques();
+        List<ShinsuTechniqueInstance> techniques = stats.getTechniques();
         for (int i = techniques.size() - 1; i >= 0; i--) {
-            ShinsuTechnique attack = techniques.get(i);
+            ShinsuTechniqueInstance attack = techniques.get(i);
             attack.tick(world);
             if (attack.ticksLeft() <= 0) {
                 attack.onEnd(world);
                 techniques.remove(i);
             }
         }
-        Map<ShinsuTechniques, Integer> cooldowns = stats.getCooldowns();
-        List<ShinsuTechniques> keys = new ArrayList<>(cooldowns.keySet());
-        for (ShinsuTechniques key : keys) {
+        Map<ShinsuTechnique, Integer> cooldowns = stats.getCooldowns();
+        List<ShinsuTechnique> keys = new ArrayList<>(cooldowns.keySet());
+        for (ShinsuTechnique key : keys) {
             cooldowns.put(key, Math.max(0, cooldowns.get(key) - 1));
         }
         super.livingTick();
@@ -46,7 +46,7 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
     public class CastShinsuGoal extends Goal {
 
         private final IShinsuStats stats;
-        private ShinsuTechniques technique;
+        private ShinsuTechnique technique;
 
         private CastShinsuGoal(){
             stats = IShinsuStats.get(ShinsuUserEntity.this);
@@ -55,9 +55,9 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
 
         @Override
         public boolean shouldExecute() {
-            List<ShinsuTechniques> tech = new ArrayList<>();
-            for(ShinsuTechniques technique : stats.getKnownTechniques().keySet()){
-                ShinsuTechniques.Builder<? extends ShinsuTechnique> builder = technique.getBuilder();
+            List<ShinsuTechnique> tech = new ArrayList<>();
+            for(ShinsuTechnique technique : stats.getKnownTechniques().keySet()){
+                ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
                 LivingEntity target = getAttackTarget();
                 Vector3d dir = (target != null && canEntityBeSeen(target)) ? target.getEyePosition(1).subtract(getEyePosition(1)).normalize() : getLookVec();
                 if((!stats.getCooldowns().containsKey(technique) || stats.getCooldowns().get(technique) <= 0) && builder.canCast(technique, ShinsuUserEntity.this, stats.getTechniqueLevel(technique), target, dir) && !isUsed(technique, target, dir)) {
@@ -89,13 +89,13 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
             return false;
         }
 
-        private boolean isUsed(ShinsuTechniques technique, @Nullable Entity target, @Nullable Vector3d dir){
-            for(ShinsuTechnique tech : stats.getTechniques()){
+        private boolean isUsed(ShinsuTechnique technique, @Nullable Entity target, @Nullable Vector3d dir){
+            for(ShinsuTechniqueInstance tech : stats.getTechniques()){
                 if(tech.getTechnique() == technique) {
-                    if (tech instanceof ShinsuTechnique.Targetable) {
-                        return target != null && ((ShinsuTechnique.Targetable) tech).getTargetUUID().equals(target.getUniqueID());
-                    } else if (tech instanceof ShinsuTechnique.Direction) {
-                        return ((ShinsuTechnique.Direction) tech).getDirection().equals(dir);
+                    if (tech instanceof ShinsuTechniqueInstance.Targetable) {
+                        return target != null && ((ShinsuTechniqueInstance.Targetable) tech).getTargetUUID().equals(target.getUniqueID());
+                    } else if (tech instanceof ShinsuTechniqueInstance.Direction) {
+                        return ((ShinsuTechniqueInstance.Direction) tech).getDirection().equals(dir);
                     }
                     return true;
                 }

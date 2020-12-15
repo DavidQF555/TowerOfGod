@@ -1,7 +1,6 @@
 package com.davidqf.minecraft.towerofgod.common.techinques;
 
 import com.davidqf.minecraft.towerofgod.common.entities.ShinsuEntity;
-import com.davidqf.minecraft.towerofgod.common.entities.ShinsuUserEntity;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -12,12 +11,12 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ShinsuBlast extends ShinsuTechnique.Direction {
+public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
 
     private static final double BASE_SPEED = 0.5;
 
     public ShinsuBlast(LivingEntity user, int level, @Nonnull Vector3d dir) {
-        super(ShinsuTechniques.SHINSU_BLAST, user, level, dir.normalize(), 200);
+        super(ShinsuTechnique.SHINSU_BLAST, user, level, dir.normalize(), 200);
     }
 
     @Override
@@ -35,7 +34,7 @@ public class ShinsuBlast extends ShinsuTechnique.Direction {
         }
         }
 
-    public static class Builder implements ShinsuTechniques.Builder<ShinsuBlast> {
+    public static class Builder implements ShinsuTechnique.Builder<ShinsuBlast> {
 
         private final int shinsu;
         private final int baangs;
@@ -51,8 +50,8 @@ public class ShinsuBlast extends ShinsuTechnique.Direction {
         }
 
         @Override
-        public boolean canCast(@Nonnull ShinsuTechniques technique, @Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
-            return ShinsuTechniques.Builder.super.canCast(technique, user, level, target, dir) && (!(user instanceof MobEntity) || ((MobEntity) user).getAttackTarget() != null);
+        public boolean canCast(@Nonnull ShinsuTechnique technique, @Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+            return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && (!(user instanceof MobEntity) || ((MobEntity) user).getAttackTarget() != null);
         }
 
         @Nonnull

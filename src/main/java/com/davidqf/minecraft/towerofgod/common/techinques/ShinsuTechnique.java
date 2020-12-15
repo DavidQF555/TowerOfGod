@@ -1,159 +1,93 @@
 package com.davidqf.minecraft.towerofgod.common.techinques;
 
+import com.davidqf.minecraft.towerofgod.TowerOfGod;
+import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
+import com.davidqf.minecraft.towerofgod.client.gui.ShinsuIcons;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public abstract class ShinsuTechnique implements INBTSerializable<CompoundNBT> {
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+public enum ShinsuTechnique {
 
-    private ShinsuTechniques technique;
-    private UUID user;
-    private int ticksLeft;
-    private int level;
+    BODY_REINFORCEMENT(new BodyReinforcement.Builder(10, 1), "body_reinforcement", ShinsuIcons.SWIRL),
+    BLACK_FISH(new BlackFish.Builder(10, 1), "black_fish", ShinsuIcons.SWIRL),
+    FLARE_WAVE_EXPLOSION(new FlareWaveExplosion.Builder(20, 1), "flare_wave_explosion", ShinsuIcons.SWIRL),
+    REVERSE_FLOW_CONTROL(new ReverseFlowControl.Builder(10, 1), "reverse_flow_control", ShinsuIcons.REVERSE),
+    SHINSU_BLAST(new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.SWIRL);
 
-    public ShinsuTechnique(ShinsuTechniques technique, LivingEntity user, int level, int ticksLeft) {
-        this.technique = technique;
-        this.user = user == null ? null : user.getUniqueID();
-        this.level = level;
-        this.ticksLeft = ticksLeft;
-    }
+    private final Builder<? extends ShinsuTechniqueInstance> builder;
+    private final TranslationTextComponent name;
+    private final RenderInfo icon;
 
-    public static double getTotalResistance(LivingEntity user, LivingEntity target) {
-        IShinsuStats targetStats = IShinsuStats.get(target);
-        IShinsuStats userStats = IShinsuStats.get(user);
-        return targetStats.getResistance() / userStats.getTension();
-    }
-
-    public int ticksLeft() {
-        return ticksLeft;
+    ShinsuTechnique(Builder<? extends ShinsuTechniqueInstance> builder, String name, RenderInfo icon) {
+        this.builder = builder;
+        this.name = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name);
+        this.icon = icon;
     }
 
     @Nullable
-    public Entity getUser(World world) {
-        if (world instanceof ServerWorld) {
-            return ((ServerWorld) world).getEntityByUuid(user);
+    public static ShinsuTechnique get(String name) {
+        for (ShinsuTechnique tech : values()) {
+            if (name.equals(tech.getName().getKey())) {
+                return tech;
+            }
         }
         return null;
     }
 
-    public ShinsuTechniques getTechnique(){
-        return technique;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public void onEnd(World world) {}
-
-    public void onUse(World world) {
-    }
-
-    public int getCooldown(){
-        return 0;
-    }
-
-    public void remove(World world) {
-        Entity user = getUser(world);
-        if (user != null) {
-            IShinsuStats stats = IShinsuStats.get(user);
-            stats.getTechniques().remove(this);
-        }
-    }
-
-    public void tick(World world) {
-        ticksLeft--;
-    }
-
-    @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
-        if(user != null) {
-            nbt.putUniqueId("User", user);
-        }
-        nbt.putString("Technique", technique.getName().getKey());
-        nbt.putInt("Ticks", ticksLeft);
-        nbt.putInt("Level", level);
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        if(nbt.contains("User")) {
-            user = nbt.getUniqueId("User");
-        }
-        technique = ShinsuTechniques.get(nbt.getString("Technique"));
-        ticksLeft = nbt.getInt("Ticks");
-        level = nbt.getInt("Level");
-    }
-
-    public static abstract class Targetable extends ShinsuTechnique {
-
-        private UUID target;
-
-        public Targetable(ShinsuTechniques technique, LivingEntity user, int level, Entity target, int ticksLeft) {
-            super(technique, user, level, ticksLeft);
-            this.target = target == null ? null : target.getUniqueID();
-        }
-
-        public Entity getTarget(World world) {
-            if (world instanceof ServerWorld) {
-                return ((ServerWorld) world).getEntityByUuid(target);
+    @Nullable
+    public static ShinsuTechnique get(ShinsuTechniqueInstance technique) {
+        for (ShinsuTechnique tech : values()) {
+            if (tech == technique.getTechnique()) {
+                return tech;
             }
-            return null;
         }
-
-        public UUID getTargetUUID(){
-            return target;
-        }
-
-        @Override
-        public CompoundNBT serializeNBT() {
-            CompoundNBT nbt = super.serializeNBT();
-            nbt.putUniqueId("Target", target);
-            return nbt;
-        }
-
-        @Override
-        public void deserializeNBT(CompoundNBT nbt) {
-            target = nbt.getUniqueId("Target");
-        }
-
+        return null;
     }
 
-    public static abstract class Direction extends ShinsuTechnique {
+    public Builder<? extends ShinsuTechniqueInstance> getBuilder() {
+        return builder;
+    }
 
-        private Vector3d dir;
+    public TranslationTextComponent getName(){
+        return name;
+    }
 
-        public Direction(ShinsuTechniques technique, LivingEntity user, int level, Vector3d dir, int ticksLeft) {
-            super(technique, user, level, ticksLeft);
-            this.dir = dir;
-        }
+    public int getShinsuUse() {
+        return builder.getShinsuUse();
+    }
 
-        public Vector3d getDirection() {
-            return dir;
-        }
+    public int getBaangUse() {
+        return builder.getBaangUse();
+    }
 
-        @Override
-        public CompoundNBT serializeNBT() {
-            CompoundNBT nbt = super.serializeNBT();
-            nbt.putDouble("X", dir.getX());
-            nbt.putDouble("Y", dir.getY());
-            nbt.putDouble("Z", dir.getZ());
-            return nbt;
-        }
+    public RenderInfo getIcon(){
+        return icon;
+    }
 
-        @Override
-        public void deserializeNBT(CompoundNBT nbt) {
-            dir = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
+    public interface Builder<T extends ShinsuTechniqueInstance> {
+
+        @Nullable
+        T build(LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir);
+
+        T emptyBuild();
+
+        int getShinsuUse();
+
+        int getBaangUse();
+
+        default boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+            IShinsuStats stats = IShinsuStats.get(user);
+            return level > 0 && stats.getShinsu() >= technique.getShinsuUse() && stats.getBaangs() >= technique.getBaangUse();
         }
     }
+
 }

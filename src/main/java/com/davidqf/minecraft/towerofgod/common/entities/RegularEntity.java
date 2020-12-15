@@ -4,7 +4,7 @@ import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.gui.ShinsuAdvancement;
 import com.davidqf.minecraft.towerofgod.client.gui.ShinsuAdvancementProgress;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniques;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.*;
@@ -123,8 +123,8 @@ public class RegularEntity extends ShinsuUserEntity {
             preferred:
             for(ShinsuAdvancement advancement : additions){
                 ShinsuAdvancement.Reward reward = advancement.getReward();
-                for (ShinsuTechniques technique : reward.getTechniques()) {
-                    for (ShinsuTechniques pref : family.getPreferredTechniques()) {
+                for (ShinsuTechnique technique : reward.getTechniques()) {
+                    for (ShinsuTechnique pref : family.getPreferredTechniques()) {
                         if (pref == technique) {
                             preferred.add(advancement);
                             continue preferred;

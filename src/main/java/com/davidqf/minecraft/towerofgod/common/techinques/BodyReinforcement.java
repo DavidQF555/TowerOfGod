@@ -10,10 +10,10 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BodyReinforcement extends ShinsuTechnique {
+public class BodyReinforcement extends ShinsuTechniqueInstance {
 
     public BodyReinforcement(LivingEntity user, int level) {
-        super(ShinsuTechniques.BODY_REINFORCEMENT, user, level, level * 300);
+        super(ShinsuTechnique.BODY_REINFORCEMENT, user, level, level * 300);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class BodyReinforcement extends ShinsuTechnique {
         return getLevel() * 300;
     }
 
-    public static class Builder implements ShinsuTechniques.Builder<BodyReinforcement> {
+    public static class Builder implements ShinsuTechnique.Builder<BodyReinforcement> {
 
         private final int shinsu;
         private final int baangs;

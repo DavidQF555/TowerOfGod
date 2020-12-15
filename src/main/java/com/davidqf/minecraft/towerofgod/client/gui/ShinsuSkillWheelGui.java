@@ -3,7 +3,7 @@ package com.davidqf.minecraft.towerofgod.client.gui;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
 import com.davidqf.minecraft.towerofgod.client.util.IPlayerShinsuEquips;
-import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniques;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.MethodsReturnNonnullByDefault;
@@ -37,7 +37,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
     public ShinsuSkillWheelGui() {
         parts = new Part[(int) (360 / Part.ANGLE)];
         ClientPlayerEntity player = Minecraft.getInstance().player;
-        ShinsuTechniques[] equips = IPlayerShinsuEquips.get(player).getEquipped();
+        ShinsuTechnique[] equips = IPlayerShinsuEquips.get(player).getEquipped();
         float angle = Part.ANGLE / 2;
         for (int i = 0; i < parts.length; i++) {
             parts[i] = new Part(this, i < equips.length ? equips[i] : null, angle);
@@ -53,7 +53,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
     }
 
     @Nullable
-    public ShinsuTechniques getSelected() {
+    public ShinsuTechnique getSelected() {
         return selected == null ? null : selected.technique;
     }
 
@@ -121,11 +121,11 @@ public class ShinsuSkillWheelGui extends AbstractGui {
         private static final int CANNOT_CAST_NAME_COLOR = 0xFFFF0000;
         private static final int CAN_CAST_COLOR = 0xAA00FF00;
         private static final int CANNOT_CAST_COLOR = 0x88FF0000;
-        private final ShinsuTechniques technique;
+        private final ShinsuTechnique technique;
         private final float angle;
         private final ShinsuSkillWheelGui gui;
 
-        private Part(ShinsuSkillWheelGui gui, @Nullable ShinsuTechniques technique, float angle) {
+        private Part(ShinsuSkillWheelGui gui, @Nullable ShinsuTechnique technique, float angle) {
             this.technique = technique;
             this.angle = angle;
             this.gui = gui;

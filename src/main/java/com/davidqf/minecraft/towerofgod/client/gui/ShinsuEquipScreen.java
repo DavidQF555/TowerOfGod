@@ -4,7 +4,7 @@ import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
 import com.davidqf.minecraft.towerofgod.client.util.IPlayerShinsuEquips;
 import com.davidqf.minecraft.towerofgod.common.packets.PlayerEquipMessage;
-import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniques;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.MethodsReturnNonnullByDefault;
@@ -34,7 +34,7 @@ public class ShinsuEquipScreen extends Screen {
     private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 166);
     private static final int TITLE_COLOR = 0xFFFFFFFF;
     private final ShinsuSlot[][] slots;
-    private List<ShinsuTechniques> unlocked;
+    private List<ShinsuTechnique> unlocked;
     private final ShinsuSlot[] selected;
     private final IShinsuStats stats;
     private final IPlayerShinsuEquips equips;
@@ -109,7 +109,7 @@ public class ShinsuEquipScreen extends Screen {
     private void addSlots() {
         int width = 16 * xSize / 195;
         int height = 16 * ySize / 166;
-        ShinsuTechniques[] equipped = equips.getEquipped();
+        ShinsuTechnique[] equipped = equips.getEquipped();
         for (int i = 0; i < selected.length; i++) {
             ShinsuSlot slot = new ShinsuSlot(this, x + 16 * xSize / 195 + 49 * xSize * i / 195, y + 35 * ySize / 166, width, height, i < equipped.length ? equipped[i] : null);
             selected[i] = slot;
@@ -152,9 +152,9 @@ public class ShinsuEquipScreen extends Screen {
         private static final RenderInfo TOOLTIP = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 32, 166, 64, 18);
         private static final int TOOLTIP_COLOR = 0xFFFFFFFF;
         private final ShinsuEquipScreen screen;
-        private ShinsuTechniques technique;
+        private ShinsuTechnique technique;
 
-        private ShinsuSlot(ShinsuEquipScreen screen, int x, int y, int width, int height, @Nullable ShinsuTechniques technique) {
+        private ShinsuSlot(ShinsuEquipScreen screen, int x, int y, int width, int height, @Nullable ShinsuTechnique technique) {
             super(x, y, width, height, StringTextComponent.EMPTY);
             this.screen = screen;
             this.technique = technique;
@@ -162,7 +162,7 @@ public class ShinsuEquipScreen extends Screen {
 
         @Override
         public void onPress() {
-            ShinsuTechniques[] equipped = screen.equips.getEquipped();
+            ShinsuTechnique[] equipped = screen.equips.getEquipped();
             if (isSelected()) {
                 for(int i = 0; i < screen.selected.length; i ++) {
                     if(equals(screen.selected[i])) {
