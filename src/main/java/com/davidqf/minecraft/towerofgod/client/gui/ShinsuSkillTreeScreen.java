@@ -40,6 +40,7 @@ public class ShinsuSkillTreeScreen extends Screen {
     private static final int MIN_DISTANCE = 20;
     private static final int UNLOCKED_LINE_COLOR = 0xFFFFFFFF;
     private static final int LOCKED_LINE_COLOR = 0xBBBBBBBB;
+    private static final int TEXT_COLOR = 0xFFFFFFFF;
     private ShinsuAdvancementInfoTabGui tab;
     private final IShinsuStats.AdvancementShinsuStats stats;
     private final Map<ShinsuAdvancement, List<int[]>> hLines;
@@ -55,10 +56,9 @@ public class ShinsuSkillTreeScreen extends Screen {
         posX = 0;
         posY = 0;
         IShinsuStats s = IShinsuStats.get(Minecraft.getInstance().player);
-        if(s instanceof IShinsuStats.AdvancementShinsuStats){
+        if (s instanceof IShinsuStats.AdvancementShinsuStats) {
             stats = ((IShinsuStats.AdvancementShinsuStats) s);
-        }
-        else{
+        } else {
             stats = null;
             closeScreen();
         }
@@ -74,7 +74,7 @@ public class ShinsuSkillTreeScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if(keyCode == KeyBindingsList.OPEN_TREE.getKey().getKeyCode()) {
+        if (keyCode == KeyBindingsList.OPEN_TREE.getKey().getKeyCode()) {
             closeScreen();
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -97,20 +97,27 @@ public class ShinsuSkillTreeScreen extends Screen {
         renderLines(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         tab.render(matrixStack, mouseX, mouseY, partialTicks);
+        renderText(matrixStack);
         RenderSystem.disableBlend();
     }
 
-    private void renderLines(MatrixStack matrixStack){
-        for(List<int[]> list : hLines.values()) {
+    private void renderLines(MatrixStack matrixStack) {
+        for (List<int[]> list : hLines.values()) {
             for (int[] line : list) {
                 hLine(matrixStack, line[0] + posX, line[1] + posX, line[2] + posY, line[3]);
             }
         }
-        for(List<int[]> list : vLines.values()) {
+        for (List<int[]> list : vLines.values()) {
             for (int[] line : list) {
                 vLine(matrixStack, line[0] + posX, line[1] + posY, line[2] + posY, line[3]);
             }
         }
+    }
+
+    private void renderText(MatrixStack matrixStack) {
+        int dif = 1;
+        drawString(matrixStack, minecraft.fontRenderer, ShinsuAdvancementInfoTabGui.RewardIcon.RESISTANCE.copyRaw().appendString(" x" + stats.getResistance()), dif, dif, TEXT_COLOR);
+        drawString(matrixStack, minecraft.fontRenderer, ShinsuAdvancementInfoTabGui.RewardIcon.TENSION.copyRaw().appendString(" x" + stats.getTension()), dif, dif + minecraft.fontRenderer.FONT_HEIGHT, TEXT_COLOR);
     }
 
     public void select(@Nullable ShinsuAdvancementButton button) {
@@ -179,7 +186,7 @@ public class ShinsuSkillTreeScreen extends Screen {
         return sum;
     }
 
-    private void updateServer(){
+    private void updateServer() {
         ShinsuStatsSyncMessage.INSTANCE.sendToServer(new ShinsuStatsSyncMessage(stats));
     }
 
@@ -219,7 +226,7 @@ public class ShinsuSkillTreeScreen extends Screen {
             int blitOffset = getBlitOffset();
             int color = complete ? COMPLETE_COLOR : (parentComplete ? UNLOCKED_COLOR : LOCKED_COLOR);
             RENDER.render(matrixStack, x, y, blitOffset, WIDTH, HEIGHT, color);
-                advancement.getIcon().render(matrixStack, x, y, blitOffset, width, height, color);
+            advancement.getIcon().render(matrixStack, x, y, blitOffset, width, height, color);
         }
     }
 
@@ -257,7 +264,7 @@ public class ShinsuSkillTreeScreen extends Screen {
                 complete.active = false;
             } else {
                 RENDER.render(matrixStack, 0, screen.height - HEIGHT, getBlitOffset(), screen.width, HEIGHT, 0xFFFFFFFF);
-                int x = screen.width / 20;
+                int x = screen.width / 40;
                 int y = screen.height - 7 * HEIGHT / 8;
                 drawString(matrixStack, screen.font, advancement.getName(), x, y, TEXT_COLOR);
                 y += screen.font.FONT_HEIGHT;
@@ -377,10 +384,10 @@ public class ShinsuSkillTreeScreen extends Screen {
                             ShinsuCriteriaCompletionMessage.INSTANCE.sendToServer(new ShinsuCriteriaCompletionMessage(tab.advancement));
                             tab.screen.stats.getAdvancements().get(tab.advancement).complete();
                             tab.screen.updateServer();
-                            for(int[] line : tab.screen.hLines.get(tab.advancement)) {
+                            for (int[] line : tab.screen.hLines.get(tab.advancement)) {
                                 line[3] = ShinsuSkillTreeScreen.UNLOCKED_LINE_COLOR;
                             }
-                            for(int[] line : tab.screen.vLines.get(tab.advancement)) {
+                            for (int[] line : tab.screen.vLines.get(tab.advancement)) {
                                 line[3] = ShinsuSkillTreeScreen.UNLOCKED_LINE_COLOR;
                             }
                         }
