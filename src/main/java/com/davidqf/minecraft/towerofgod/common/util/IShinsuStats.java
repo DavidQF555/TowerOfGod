@@ -65,7 +65,7 @@ public interface IShinsuStats {
     void addCooldown(ShinsuTechnique technique, int time);
 
     default void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, @Nullable Vector3d dir) {
-        if(getCooldown(technique) <= 0) {
+        if (getCooldown(technique) <= 0) {
             int level = getTechniqueLevel(technique);
             ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
             if (builder.canCast(technique, user, level, target, dir)) {
@@ -95,15 +95,15 @@ public interface IShinsuStats {
 
         ADVANCEMENT(AdvancementShinsuStats::new);
 
-       private final Supplier<IShinsuStats> supplier;
+        private final Supplier<IShinsuStats> supplier;
 
         Type(Supplier<IShinsuStats> supplier) {
             this.supplier = supplier;
         }
 
-        public static Type get(String name){
-            for(Type type : values()){
-                if(type.name().equals(name)){
+        public static Type get(String name) {
+            for (Type type : values()) {
+                if (type.name().equals(name)) {
                     return type;
                 }
             }
@@ -156,10 +156,10 @@ public interface IShinsuStats {
         @Override
         public int getTechniqueLevel(ShinsuTechnique technique) {
             int count = 0;
-            for(ShinsuAdvancement advancement : advancements.keySet()){
-                for(ShinsuTechnique reward : advancement.getReward().getTechniques()){
-                    if(reward == technique){
-                        count ++;
+            for (ShinsuAdvancement advancement : advancements.keySet()) {
+                for (ShinsuTechnique reward : advancement.getReward().getTechniques()) {
+                    if (reward == technique) {
+                        count++;
                         break;
                     }
                 }
@@ -168,7 +168,8 @@ public interface IShinsuStats {
         }
 
         @Override
-        public void addKnownTechnique(ShinsuTechnique technique, int level) {}
+        public void addKnownTechnique(ShinsuTechnique technique, int level) {
+        }
 
         private int getMaxShinsu() {
             int amt = 0;
@@ -261,12 +262,13 @@ public interface IShinsuStats {
         }
 
         private void addUnlockedAdvancements(List<ShinsuAdvancement> advancements, ShinsuAdvancement advancement) {
-            advancements.add(advancement);
             Map<ShinsuAdvancement, ShinsuAdvancementProgress> progress = getAdvancements();
             if (progress.get(advancement).isComplete()) {
                 for (ShinsuAdvancement ad : advancement.getDirectChildren()) {
                     addUnlockedAdvancements(advancements, ad);
                 }
+            } else {
+                advancements.add(advancement);
             }
         }
 
