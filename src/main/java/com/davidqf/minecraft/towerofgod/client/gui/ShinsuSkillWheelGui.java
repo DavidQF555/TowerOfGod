@@ -27,7 +27,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/wheel.png");
     private static final int RADIUS = 100;
-    private static final double MIN_MOVEMENT = 1;
+    private static final double MIN_MOVEMENT = 1.5;
     private final Part[] parts;
     private Part selected;
     private final IShinsuStats stats;
@@ -67,7 +67,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
             selected.renderName(matrixStack, cenX, cenY);
         } else {
             float dYaw = yaw - prevYaw;
-            float dPitch = pitch - prevPitch;
+            float dPitch = prevPitch - pitch;
             double magSq = dYaw * dYaw + dPitch * dPitch;
             if (magSq >= MIN_MOVEMENT * MIN_MOVEMENT) {
                 double angle = Math.atan(dPitch / dYaw) * 180 / Math.PI;
@@ -79,6 +79,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
                 for (Part part : parts) {
                     if (part.angle >= angle || (angle + Part.ANGLE > 360 && part.angle >= angle - 360)) {
                         selected = part;
+                        System.out.println(selected.angle + " : " + angle);
                         break;
                     }
                 }
@@ -140,7 +141,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
             int color = ColorHelper.PackedColor.blendColors(equals(gui.selected) ? SELECTED_COLOR : COLOR, canCast() ? CAN_CAST_COLOR : CANNOT_CAST_COLOR);
             matrixStack.push();
             matrixStack.translate(cenX, cenY, 0);
-            matrixStack.rotate(new Quaternion(Vector3f.ZP, angle - 90, true));
+            matrixStack.rotate(new Quaternion(Vector3f.ZP, -angle, true));
             RENDER.render(matrixStack, 0, 0, getBlitOffset(), RADIUS, RADIUS, color);
             matrixStack.pop();
         }
