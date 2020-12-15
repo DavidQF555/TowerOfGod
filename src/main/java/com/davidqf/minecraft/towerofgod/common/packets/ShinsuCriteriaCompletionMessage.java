@@ -29,7 +29,8 @@ public class ShinsuCriteriaCompletionMessage {
     private static final Function<PacketBuffer, ShinsuCriteriaCompletionMessage> DECODER = buffer -> new ShinsuCriteriaCompletionMessage(ShinsuAdvancement.get(buffer.readString()));
 
     private static final BiConsumer<ShinsuCriteriaCompletionMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        context.get().enqueueWork(() -> message.handle(context.get()));
+        NetworkEvent.Context cont = context.get();
+        message.handle(cont);
     };
 
     public static void register(int index) {
@@ -45,9 +46,11 @@ public class ShinsuCriteriaCompletionMessage {
     private void handle(NetworkEvent.Context context) {
         NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
-            ShinsuAdvancementCriteria criteria = advancement.getCriteria();
-            ServerPlayerEntity player = context.getSender();
-            criteria.onCompletion(player);
+            context.enqueueWork(() -> {
+                ShinsuAdvancementCriteria criteria = advancement.getCriteria();
+                ServerPlayerEntity player = context.getSender();
+                criteria.onCompletion(player);
+            });
             context.setPacketHandled(true);
         }
     }

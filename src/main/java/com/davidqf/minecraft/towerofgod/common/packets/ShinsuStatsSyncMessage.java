@@ -33,7 +33,8 @@ public class ShinsuStatsSyncMessage {
         return new ShinsuStatsSyncMessage(stats);
     };
     private static final BiConsumer<ShinsuStatsSyncMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        context.get().enqueueWork(() -> message.handle(context.get()));
+        NetworkEvent.Context cont = context.get();
+        message.handle(cont);
     };
 
     private final CompoundNBT stats;
@@ -49,14 +50,18 @@ public class ShinsuStatsSyncMessage {
     private void handle(NetworkEvent.Context context) {
      NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
-            ServerPlayerEntity player = context.getSender();
-            IShinsuStats tar = IShinsuStats.get(player);
-            tar.deserialize(stats);
+            context.enqueueWork(()-> {
+                        ServerPlayerEntity player = context.getSender();
+                        IShinsuStats tar = IShinsuStats.get(player);
+                        tar.deserialize(stats);
+                    });
             context.setPacketHandled(true);
         }
         else if(dir == NetworkDirection.PLAY_TO_CLIENT){
-            IShinsuStats tar = IShinsuStats.get(Minecraft.getInstance().player);
-            tar.deserialize(stats);
+            context.enqueueWork(()-> {
+                        IShinsuStats tar = IShinsuStats.get(Minecraft.getInstance().player);
+                        tar.deserialize(stats);
+                    });
             context.setPacketHandled(true);
         }
     }

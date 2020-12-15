@@ -9,7 +9,9 @@ import com.davidqf.minecraft.towerofgod.client.render.ShinsuRenderer;
 import com.davidqf.minecraft.towerofgod.common.entities.LighthouseEntity;
 
 import com.davidqf.minecraft.towerofgod.common.packets.PlayerEquipMessage;
-import com.davidqf.minecraft.towerofgod.common.packets.ShinsuUserTickMessage;
+import com.davidqf.minecraft.towerofgod.common.packets.ShinsuTechniqueMessage;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import com.davidqf.minecraft.towerofgod.common.packets.ShinsuStatsSyncMessage;
@@ -41,6 +43,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
@@ -108,14 +111,38 @@ public class ClientEventBusSubscriber {
                     wheel.tick();
                 }
                 if (player != null) {
-                    ShinsuUserTickMessage.INSTANCE.sendToServer(new ShinsuUserTickMessage());
-                }
-            }
-                if (KeyBindingsList.OPEN_TREE.isPressed()) {
-                    if (client.currentScreen == null) {
-                        client.displayGuiScreen(new ShinsuSkillTreeScreen());
+                    boolean changed = false;
+                    IShinsuStats stats = IShinsuStats.get(player);
+                    List<ShinsuTechniqueInstance> techniques = stats.getTechniques();
+                    for (int i = techniques.size() - 1; i >= 0; i--) {
+                        ShinsuTechniqueInstance attack = techniques.get(i);
+                        ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.TICK, attack));
+                        if (attack.ticksLeft() <= 0) {
+                            ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.END, attack));
+                            techniques.remove(i);
+                        }
+                        changed = true;
+                    }
+                    Map<ShinsuTechnique, Integer> cooldowns = stats.getCooldowns();
+                    List<ShinsuTechnique> keys = new ArrayList<>(cooldowns.keySet());
+                    for (ShinsuTechnique key : keys) {
+                        int time = cooldowns.get(key);
+                        if (time > 0) {
+                            cooldowns.put(key, time - 1);
+                            changed = true;
+                        }
+                    }
+                    if (changed) {
+                        ShinsuStatsSyncMessage.INSTANCE.sendToServer(new ShinsuStatsSyncMessage(stats));
                     }
                 }
+
+            }
+            if (KeyBindingsList.OPEN_TREE.isPressed()) {
+                if (client.currentScreen == null) {
+                    client.displayGuiScreen(new ShinsuSkillTreeScreen());
+                }
+            }
         }
 
         @SubscribeEvent
@@ -130,9 +157,9 @@ public class ClientEventBusSubscriber {
             PlayerEntity player = Minecraft.getInstance().player;
             if (player != null) {
                 IShinsuStats stats = IShinsuStats.get(player);
-                for(ShinsuAdvancement advancement : stats.getUnlockedAdvancements()){
+                for (ShinsuAdvancement advancement : stats.getUnlockedAdvancements()) {
                     ShinsuAdvancementCriteria criteria = advancement.getCriteria();
-                    if(criteria.correctEvent(event)){
+                    if (criteria.correctEvent(event)) {
                         criteria.onEvent(player, event);
                     }
                 }
@@ -147,8 +174,8 @@ public class ClientEventBusSubscriber {
         }
 
         @SubscribeEvent
-        public static void onClonePlayerEvent(PlayerEvent.Clone event){
-            if(event.isWasDeath()){
+        public static void onClonePlayerEvent(PlayerEvent.Clone event) {
+            if (event.isWasDeath()) {
                 PlayerEntity original = event.getOriginal();
                 Entity clone = event.getEntity();
                 IShinsuStats.get(clone).deserialize(IShinsuStats.get(original).serialize());

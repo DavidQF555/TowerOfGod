@@ -38,9 +38,8 @@ public class CapabilityHandler {
             CapabilityManager.INSTANCE.register(IShinsuStats.class, new IShinsuStats.StatsStorage(), new IShinsuStats.ShinsuStats.Factory());
             CapabilityManager.INSTANCE.register(IPlayerShinsuEquips.class, new IPlayerShinsuEquips.Storage(), new IPlayerShinsuEquips.PlayerShinsuEquips.Factory());
             ShinsuStatsSyncMessage.register(index ++);
-            CastShinsuMessage.register(index ++);
             PlayerEquipMessage.register(index ++);
-            ShinsuUserTickMessage.register(index ++);
+            ShinsuTechniqueMessage.register(index ++);
             ShinsuCriteriaCompletionMessage.register(index ++);
         }
     }

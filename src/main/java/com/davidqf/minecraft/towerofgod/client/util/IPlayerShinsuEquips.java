@@ -1,8 +1,7 @@
 package com.davidqf.minecraft.towerofgod.client.util;
 
-import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniques;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -22,7 +21,7 @@ public interface IPlayerShinsuEquips {
         return user.getCapability(Provider.capability).orElseGet(PlayerShinsuEquips::new);
     }
 
-    ShinsuTechniques[] getEquipped();
+    ShinsuTechnique[] getEquipped();
     
     CompoundNBT serialize();
     
@@ -30,14 +29,14 @@ public interface IPlayerShinsuEquips {
 
     class PlayerShinsuEquips implements IPlayerShinsuEquips {
 
-        private ShinsuTechniques[] equipped;
+        private ShinsuTechnique[] equipped;
 
         public PlayerShinsuEquips() {
-            equipped = new ShinsuTechniques[4];
+            equipped = new ShinsuTechnique[4];
         }
 
         @Override
-        public ShinsuTechniques[] getEquipped() {
+        public ShinsuTechnique[] getEquipped() {
             return equipped;
         }
 
@@ -46,7 +45,7 @@ public interface IPlayerShinsuEquips {
             CompoundNBT nbt = new CompoundNBT();
             nbt.putInt("Size", equipped.length);
             for(int i = 0; i < equipped.length; i ++) {
-                ShinsuTechniques technique = equipped[i];
+                ShinsuTechnique technique = equipped[i];
                     nbt.putString(i + 1 + "", technique == null ? "" : technique.getName().getKey());
             }
             return nbt;
@@ -54,9 +53,9 @@ public interface IPlayerShinsuEquips {
 
         @Override
         public void deserialize(CompoundNBT nbt) {
-            equipped = new ShinsuTechniques[nbt.getInt("Size")];
+            equipped = new ShinsuTechnique[nbt.getInt("Size")];
             for(int i = 0; i < equipped.length; i ++){
-                equipped[i] = ShinsuTechniques.get(nbt.getString(i + 1 + ""));
+                equipped[i] = ShinsuTechnique.get(nbt.getString(i + 1 + ""));
             }
         }
         

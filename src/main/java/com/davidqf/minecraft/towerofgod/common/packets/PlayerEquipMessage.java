@@ -33,12 +33,13 @@ public class PlayerEquipMessage {
         return new PlayerEquipMessage(equips);
     };
     private static final BiConsumer<PlayerEquipMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        context.get().enqueueWork(() -> message.handle(context.get()));
+        NetworkEvent.Context cont = context.get();
+        message.handle(cont);
     };
 
     private final CompoundNBT equips;
 
-    public PlayerEquipMessage(IPlayerShinsuEquips equips){
+    public PlayerEquipMessage(IPlayerShinsuEquips equips) {
         this.equips = equips.serialize();
     }
 
@@ -49,14 +50,17 @@ public class PlayerEquipMessage {
     private void handle(NetworkEvent.Context context) {
         NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
-            ServerPlayerEntity player = context.getSender();
-            IPlayerShinsuEquips tar = IPlayerShinsuEquips.get(player);
-            tar.deserialize(equips);
+            context.enqueueWork(() -> {
+                ServerPlayerEntity player = context.getSender();
+                IPlayerShinsuEquips tar = IPlayerShinsuEquips.get(player);
+                tar.deserialize(equips);
+            });
             context.setPacketHandled(true);
-        }
-        else if(dir == NetworkDirection.PLAY_TO_CLIENT){
-            IPlayerShinsuEquips tar = IPlayerShinsuEquips.get(Minecraft.getInstance().player);
-            tar.deserialize(equips);
+        } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
+            context.enqueueWork(() -> {
+                IPlayerShinsuEquips tar = IPlayerShinsuEquips.get(Minecraft.getInstance().player);
+                tar.deserialize(equips);
+            });
             context.setPacketHandled(true);
         }
     }
