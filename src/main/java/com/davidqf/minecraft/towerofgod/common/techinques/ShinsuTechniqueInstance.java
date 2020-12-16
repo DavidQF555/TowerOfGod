@@ -44,7 +44,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         return null;
     }
 
-    public ShinsuTechnique getTechnique(){
+    public ShinsuTechnique getTechnique() {
         return technique;
     }
 
@@ -52,12 +52,13 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         return level;
     }
 
-    public void onEnd(World world) {}
+    public void onEnd(World world) {
+    }
 
     public void onUse(World world) {
     }
 
-    public int getCooldown(){
+    public int getCooldown() {
         return 0;
     }
 
@@ -76,7 +77,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
-        if(user != null) {
+        if (user != null) {
             nbt.putUniqueId("User", user);
         }
         nbt.putString("Technique", technique.getName().getKey());
@@ -87,7 +88,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        if(nbt.contains("User")) {
+        if (nbt.contains("User")) {
             user = nbt.getUniqueId("User");
         }
         technique = ShinsuTechnique.get(nbt.getString("Technique"));
@@ -111,7 +112,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
             return null;
         }
 
-        public UUID getTargetUUID(){
+        public UUID getTargetUUID() {
             return target;
         }
 
@@ -124,6 +125,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) {
+            super.deserializeNBT(nbt);
             target = nbt.getUniqueId("Target");
         }
 
@@ -153,6 +155,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) {
+            super.deserializeNBT(nbt);
             dir = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
         }
     }
