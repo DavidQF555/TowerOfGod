@@ -79,7 +79,6 @@ public class ShinsuSkillWheelGui extends AbstractGui {
                 for (Part part : parts) {
                     if (part.angle >= angle || (angle + Part.ANGLE > 360 && part.angle >= angle - 360)) {
                         selected = part;
-                        System.out.println(selected.angle + " : " + angle);
                         break;
                     }
                 }
