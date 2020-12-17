@@ -27,6 +27,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
             user.addPotionEffect(new EffectInstance(Effects.STRENGTH, 2, getLevel(), true, false, false));
             user.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 2, getLevel(), true, false, false));
         }
+        super.tick(world);
     }
 
     @Override

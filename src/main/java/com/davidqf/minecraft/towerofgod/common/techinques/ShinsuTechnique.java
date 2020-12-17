@@ -57,7 +57,7 @@ public enum ShinsuTechnique {
         return builder;
     }
 
-    public TranslationTextComponent getName(){
+    public TranslationTextComponent getName() {
         return name;
     }
 
@@ -69,7 +69,7 @@ public enum ShinsuTechnique {
         return builder.getBaangUse();
     }
 
-    public RenderInfo getIcon(){
+    public RenderInfo getIcon() {
         return icon;
     }
 
@@ -86,7 +86,7 @@ public enum ShinsuTechnique {
 
         default boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
             IShinsuStats stats = IShinsuStats.get(user);
-            return level > 0 && stats.getShinsu() >= technique.getShinsuUse() && stats.getBaangs() >= technique.getBaangUse();
+            return level > 0 && stats.getCooldown(technique) <= 0 && stats.getShinsu() >= technique.getShinsuUse() && stats.getBaangs() >= technique.getBaangUse();
         }
     }
 

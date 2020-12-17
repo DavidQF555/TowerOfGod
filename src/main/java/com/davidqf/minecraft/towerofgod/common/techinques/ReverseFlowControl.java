@@ -23,7 +23,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
         Entity u = getUser(world);
         Entity t = getTarget(world);
         if (u instanceof LivingEntity && t instanceof LivingEntity) {
-            if(u.getDistanceSq(t) > RANGE * RANGE){
+            if (u.getDistanceSq(t) > RANGE * RANGE) {
                 remove(world);
                 return;
             }
@@ -52,18 +52,13 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
 
         @Override
         public ReverseFlowControl build(@Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
-                return target instanceof LivingEntity ? new ReverseFlowControl(user, level, (LivingEntity) target) : null;
+            return target instanceof LivingEntity ? new ReverseFlowControl(user, level, (LivingEntity) target) : null;
         }
 
         @Nonnull
         @Override
         public ReverseFlowControl emptyBuild() {
             return new ReverseFlowControl(null, 0, null);
-        }
-
-        @Override
-        public boolean canCast(@Nonnull ShinsuTechnique technique, @Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
-            return target instanceof LivingEntity && ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && user.getDistanceSq(target) <= RANGE * RANGE;
         }
 
         @Override

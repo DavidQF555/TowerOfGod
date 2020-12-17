@@ -41,9 +41,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
@@ -64,15 +62,17 @@ public class ClientEventBusSubscriber {
 
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseInputEvent event) {
-        if (wheel != null && wheel.getSelected() != null && event.getButton() == 0) {
-            int action = event.getAction();
-            if (action == GLFW.GLFW_RELEASE && wheel.isLocked()) {
-                Minecraft client = Minecraft.getInstance();
-                IShinsuStats stats = IShinsuStats.get(client.player);
-                stats.cast(client.player, wheel.getSelected(), client.pointedEntity, client.player.getLookVec());
-                wheel = null;
-            } else if (action == GLFW.GLFW_PRESS) {
-                wheel.lock();
+        Minecraft client = Minecraft.getInstance();
+        if (client.player != null) {
+            IShinsuStats stats = IShinsuStats.get(client.player);
+            if (wheel != null && wheel.getSelected() != null && wheel.getSelected().getBuilder().canCast(wheel.getSelected(), client.player, stats.getTechniqueLevel(wheel.getSelected()), client.pointedEntity, client.player.getLookVec()) && event.getButton() == 0) {
+                int action = event.getAction();
+                if (action == GLFW.GLFW_RELEASE && wheel.isLocked()) {
+                    stats.cast(client.player, wheel.getSelected(), client.pointedEntity, client.player.getLookVec());
+                    wheel = null;
+                } else if (action == GLFW.GLFW_PRESS) {
+                    wheel.lock();
+                }
             }
         }
     }
@@ -116,8 +116,10 @@ public class ClientEventBusSubscriber {
                     List<ShinsuTechniqueInstance> techniques = stats.getTechniques();
                     for (int i = techniques.size() - 1; i >= 0; i--) {
                         ShinsuTechniqueInstance attack = techniques.get(i);
+                        attack.tick(player.world);
                         ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.TICK, attack));
                         if (attack.ticksLeft() <= 0) {
+                            attack.onEnd(player.world);
                             ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.END, attack));
                             stats.removeTechnique(attack);
                         }

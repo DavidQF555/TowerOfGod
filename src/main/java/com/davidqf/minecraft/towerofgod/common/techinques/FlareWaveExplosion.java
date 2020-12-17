@@ -25,14 +25,16 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
     public void onUse(World world) {
         Entity u = getUser(world);
         Entity t = getTarget(world);
-        LivingEntity user = (LivingEntity) u;
-        LivingEntity target = (LivingEntity) t;
-        double resistance = getTotalResistance(user, target);
-        target.attackEntityFrom(DamageSource.MAGIC, (float) (DAMAGE / resistance) * getLevel() / 2);
-        target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 / resistance), getLevel(), true, false, false));
-        double knock = KNOCKBACK / resistance;
-        Vector3d vel = target.getPositionVec().subtract(user.getPositionVec()).normalize().mul(knock, knock, knock);
-        target.addVelocity(vel.getX(), vel.getY(), vel.getZ());
+        if (u.getDistanceSq(t) <= RANGE * RANGE) {
+            LivingEntity user = (LivingEntity) u;
+            LivingEntity target = (LivingEntity) t;
+            double resistance = getTotalResistance(user, target);
+            target.attackEntityFrom(DamageSource.MAGIC, (float) (DAMAGE / resistance) * getLevel() / 2);
+            target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 / resistance), getLevel(), true, false, false));
+            double knock = KNOCKBACK / resistance;
+            Vector3d vel = target.getPositionVec().subtract(user.getPositionVec()).normalize().mul(knock, knock, knock);
+            target.addVelocity(vel.getX(), vel.getY(), vel.getZ());
+        }
     }
 
     @Override
@@ -59,11 +61,6 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
         @Override
         public FlareWaveExplosion emptyBuild() {
             return new FlareWaveExplosion(null, 0, null);
-        }
-
-        @Override
-        public boolean canCast(@Nonnull ShinsuTechnique technique, @Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
-            return target instanceof LivingEntity && ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && user.getDistanceSq(target) <= RANGE * RANGE;
         }
 
         @Override

@@ -64,7 +64,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
         int cenX = window.getScaledWidth() / 2;
         int cenY = window.getScaledHeight() / 2;
         if (locked && selected != null) {
-            selected.renderName(matrixStack, cenX, cenY);
+            selected.renderName(matrixStack, cenX, cenY, 0);
         } else {
             float dYaw = yaw - prevYaw;
             float dPitch = prevPitch - pitch;
@@ -90,7 +90,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
                 double angle = part.angle - Part.ANGLE / 2;
                 int xOff = (int) (Math.cos(angle * Math.PI / 180) * RADIUS / 2);
                 int yOff = -(int) (Math.sin(angle * Math.PI / 180) * RADIUS / 2);
-                part.renderName(matrixStack, cenX + xOff, cenY + yOff);
+                part.renderName(matrixStack, cenX + xOff, cenY + yOff, stats.getCooldown(part.technique));
             }
         }
     }
@@ -115,12 +115,12 @@ public class ShinsuSkillWheelGui extends AbstractGui {
 
         private static final RenderInfo RENDER = new RenderInfo(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/wheel.png"), 64, 64, 0, 0, 64, 64);
         private static final float ANGLE = 90;
-        private static final int COLOR = 0x22FFFFFF;
+        private static final int COLOR = 0x11FFFFFF;
         private static final int SELECTED_COLOR = 0xDDAAAAAA;
         private static final int CAN_CAST_NAME_COLOR = 0xFF00FF00;
         private static final int CANNOT_CAST_NAME_COLOR = 0xFFFF0000;
-        private static final int CAN_CAST_COLOR = 0xAA00FF00;
-        private static final int CANNOT_CAST_COLOR = 0x88FF0000;
+        private static final int CAN_CAST_COLOR = 0x9900FF00;
+        private static final int CANNOT_CAST_COLOR = 0x99FF0000;
         private final ShinsuTechnique technique;
         private final float angle;
         private final ShinsuSkillWheelGui gui;
@@ -150,9 +150,27 @@ public class ShinsuSkillWheelGui extends AbstractGui {
             return technique != null && technique.getBuilder().canCast(technique, client.player, gui.stats.getTechniqueLevel(technique), client.pointedEntity, client.player.getLookVec());
         }
 
-        private void renderName(MatrixStack matrixStack, int x, int y) {
+        private void renderName(MatrixStack matrixStack, int x, int y, int cooldown) {
             FontRenderer font = Minecraft.getInstance().fontRenderer;
-            drawCenteredString(matrixStack, font, technique == null ? StringTextComponent.EMPTY : technique.getName(), x, y - font.FONT_HEIGHT / 2, canCast() ? CAN_CAST_NAME_COLOR : CANNOT_CAST_NAME_COLOR);
+            float scale = cooldown <= 0 ? 1 : 0.75f;
+            int color = canCast() ? CAN_CAST_NAME_COLOR : CANNOT_CAST_NAME_COLOR;
+            drawCenteredString(matrixStack, font, technique == null ? StringTextComponent.EMPTY : technique.getName(), x, y - font.FONT_HEIGHT / 2, color);
+            if (cooldown > 0) {
+                matrixStack.push();
+                matrixStack.scale(scale, scale, scale);
+                drawCenteredString(matrixStack, font, technique == null ? StringTextComponent.EMPTY : new StringTextComponent(getRoundedString(cooldown / 20.0, 1) + "s"), (int) (x / scale), (int) ((y + font.FONT_HEIGHT / 2.0) / scale), color);
+                matrixStack.pop();
+            }
+        }
+
+        private String getRoundedString(double cooldown, int digits) {
+            String s = cooldown + "";
+            String whole = s.substring(0, s.indexOf('.'));
+            StringBuilder decimal = new StringBuilder(s.substring(s.indexOf('.') + 1));
+            for (int i = decimal.length(); i < digits; i++) {
+                decimal.append("0");
+            }
+            return whole + "." + decimal.substring(0, digits);
         }
     }
 }
