@@ -11,9 +11,11 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -68,8 +70,8 @@ public class ShinsuEquipScreen extends Screen {
         y = (height - ySize) / 2;
         addSlots();
         unlocked = new ArrayList<>();
-        for(ShinsuTechnique technique : ShinsuTechnique.values()) {
-            if(stats.getTechniqueLevel(technique) > 0){
+        for (ShinsuTechnique technique : ShinsuTechnique.values()) {
+            if (stats.getTechniqueLevel(technique) > 0) {
                 unlocked.add(technique);
             }
         }
@@ -82,7 +84,7 @@ public class ShinsuEquipScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if(button == 0) {
+        if (button == 0) {
             scroller.color = Scroller.COLOR;
         }
         return super.mouseReleased(mouseX, mouseY, button);
@@ -100,13 +102,13 @@ public class ShinsuEquipScreen extends Screen {
         BACKGROUND.render(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
         drawCenteredString(matrixStack, font, title, x + xSize / 2, y + ySize / 20, TITLE_COLOR);
         ShinsuSlot hovered = null;
-        for(Widget button : buttons){
+        for (Widget button : buttons) {
             button.render(matrixStack, mouseX, mouseY, partialTicks);
             if (hovered == null && button instanceof ShinsuSlot && ((ShinsuSlot) button).technique != null && mouseX >= button.x && mouseY >= button.y && mouseX < button.x + button.getWidth() && mouseY < button.y + button.getHeight()) {
                 hovered = (ShinsuSlot) button;
             }
         }
-        if(hovered != null){
+        if (hovered != null) {
             hovered.renderTooltip(matrixStack);
         }
     }
@@ -169,8 +171,8 @@ public class ShinsuEquipScreen extends Screen {
         public void onPress() {
             ShinsuTechnique[] equipped = screen.equips.getEquipped();
             if (isSelected()) {
-                for(int i = 0; i < screen.selected.length; i ++) {
-                    if(equals(screen.selected[i])) {
+                for (int i = 0; i < screen.selected.length; i++) {
+                    if (equals(screen.selected[i])) {
                         equipped[i] = null;
                         break;
                     }
@@ -238,7 +240,7 @@ public class ShinsuEquipScreen extends Screen {
         @Override
         protected boolean clicked(double mouseX, double mouseY) {
             boolean clicked = super.clicked(mouseX, mouseY);
-            if(clicked) {
+            if (clicked) {
                 color = DRAG_COLOR;
             }
             return clicked;
@@ -262,14 +264,21 @@ public class ShinsuEquipScreen extends Screen {
 
     public static class OpenButton extends Button {
 
-        private static final int WIDTH = 20;
-        private static final int HEIGHT = 18;
         private static final RenderInfo RENDER = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 166, 20, 18);
         private final Screen screen;
 
-        public OpenButton(Screen screen, int x, int y) {
-            super(x, y, WIDTH, HEIGHT, StringTextComponent.EMPTY, press -> Minecraft.getInstance().displayGuiScreen(new ShinsuEquipScreen(195, 166)));
+        public OpenButton(Screen screen, int x, int y, int width, int height) {
+            super(x, y, width, height, StringTextComponent.EMPTY, press -> Minecraft.getInstance().displayGuiScreen(new ShinsuEquipScreen(195, 166)));
             this.screen = screen;
+        }
+
+        @Override
+        public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+            if (screen instanceof CreativeScreen) {
+                int index = ((CreativeScreen) screen).getSelectedTabIndex();
+                visible = index == ItemGroup.INVENTORY.getIndex();
+            }
+            super.render(matrixStack, mouseX, mouseY, partialTicks);
         }
 
         @Override
