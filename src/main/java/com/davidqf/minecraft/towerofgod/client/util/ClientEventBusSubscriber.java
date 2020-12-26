@@ -8,7 +8,7 @@ import com.davidqf.minecraft.towerofgod.client.render.RegularRenderer;
 import com.davidqf.minecraft.towerofgod.client.render.ShinsuRenderer;
 import com.davidqf.minecraft.towerofgod.common.entities.LighthouseEntity;
 
-import com.davidqf.minecraft.towerofgod.common.packets.PlayerEquipMessage;
+import com.davidqf.minecraft.towerofgod.common.packets.PlayerEquipsSyncMessage;
 import com.davidqf.minecraft.towerofgod.common.packets.ShinsuTechniqueMessage;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
@@ -95,9 +95,11 @@ public class ClientEventBusSubscriber {
             IShinsuStats stats = IShinsuStats.get(client.player);
             if (wheel != null && wheel.getSelected() != null && wheel.getSelected().getBuilder().canCast(wheel.getSelected(), client.player, stats.getTechniqueLevel(wheel.getSelected()), client.pointedEntity, client.player.getLookVec()) && event.getButton() == 0) {
                 int action = event.getAction();
-                if (action == GLFW.GLFW_RELEASE && wheel.isLocked()) {
-                    stats.cast(client.player, wheel.getSelected(), client.pointedEntity, client.player.getLookVec());
-                    wheel = null;
+                if (wheel.isLocked()) {
+                    if (action == GLFW.GLFW_RELEASE) {
+                        stats.cast(client.player, wheel.getSelected(), client.pointedEntity, client.player.getLookVec());
+                        wheel = null;
+                    }
                 } else if (action == GLFW.GLFW_PRESS) {
                     wheel.lock();
                 }
@@ -190,7 +192,7 @@ public class ClientEventBusSubscriber {
         public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             PlayerEntity player = event.getPlayer();
             ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ShinsuStatsSyncMessage(IShinsuStats.get(player)));
-            PlayerEquipMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new PlayerEquipMessage(IPlayerShinsuEquips.get(player)));
+            PlayerEquipsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new PlayerEquipsSyncMessage(IPlayerShinsuEquips.get(player)));
             MainWindow window = Minecraft.getInstance().getMainWindow();
             int y = window.getScaledHeight() - 36;
             shinsu = new StatsMeterGui.Shinsu(player, window.getScaledWidth() / 2 - 91, y, 85, 5);
@@ -225,8 +227,12 @@ public class ClientEventBusSubscriber {
             if (event.isWasDeath()) {
                 PlayerEntity original = event.getOriginal();
                 Entity clone = event.getEntity();
-                IShinsuStats.get(clone).deserialize(IShinsuStats.get(original).serialize());
-                IPlayerShinsuEquips.get(clone).deserialize(IPlayerShinsuEquips.get(original).serialize());
+                IShinsuStats oStats = IShinsuStats.get(original);
+                IShinsuStats.get(clone).deserialize(oStats.serialize());
+                ShinsuStatsSyncMessage.INSTANCE.sendToServer(new ShinsuStatsSyncMessage(oStats));
+                IPlayerShinsuEquips oEquips = IPlayerShinsuEquips.get(original);
+                IPlayerShinsuEquips.get(clone).deserialize(oEquips.serialize());
+                PlayerEquipsSyncMessage.INSTANCE.sendToServer(new PlayerEquipsSyncMessage(oEquips));
             }
         }
 

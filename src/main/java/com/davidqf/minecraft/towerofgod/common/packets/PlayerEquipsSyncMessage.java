@@ -16,35 +16,35 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class PlayerEquipMessage {
+public class PlayerEquipsSyncMessage {
 
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(TowerOfGod.MOD_ID, "player_equip_packet"),
+            new ResourceLocation(TowerOfGod.MOD_ID, "player_equips_sync_packet"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals);
-    private static final BiConsumer<PlayerEquipMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<PlayerEquipsSyncMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeCompoundTag(message.equips);
     };
-    private static final Function<PacketBuffer, PlayerEquipMessage> DECODER = buffer -> {
+    private static final Function<PacketBuffer, PlayerEquipsSyncMessage> DECODER = buffer -> {
         IPlayerShinsuEquips equips = new IPlayerShinsuEquips.PlayerShinsuEquips();
         equips.deserialize(buffer.readCompoundTag());
-        return new PlayerEquipMessage(equips);
+        return new PlayerEquipsSyncMessage(equips);
     };
-    private static final BiConsumer<PlayerEquipMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final BiConsumer<PlayerEquipsSyncMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
 
     private final CompoundNBT equips;
 
-    public PlayerEquipMessage(IPlayerShinsuEquips equips) {
+    public PlayerEquipsSyncMessage(IPlayerShinsuEquips equips) {
         this.equips = equips.serialize();
     }
 
     public static void register(int index) {
-        INSTANCE.registerMessage(index, PlayerEquipMessage.class, ENCODER, DECODER, CONSUMER);
+        INSTANCE.registerMessage(index, PlayerEquipsSyncMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

@@ -3,7 +3,7 @@ package com.davidqf.minecraft.towerofgod.client.gui;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
 import com.davidqf.minecraft.towerofgod.client.util.IPlayerShinsuEquips;
-import com.davidqf.minecraft.towerofgod.common.packets.PlayerEquipMessage;
+import com.davidqf.minecraft.towerofgod.common.packets.PlayerEquipsSyncMessage;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -190,7 +190,7 @@ public class ShinsuEquipScreen extends Screen {
                     }
                 }
             }
-            PlayerEquipMessage.INSTANCE.sendToServer(new PlayerEquipMessage(screen.equips));
+            PlayerEquipsSyncMessage.INSTANCE.sendToServer(new PlayerEquipsSyncMessage(screen.equips));
         }
 
         private boolean isSelected() {

@@ -38,7 +38,7 @@ public class CapabilityHandler {
             CapabilityManager.INSTANCE.register(IShinsuStats.class, new IShinsuStats.Storage(), () -> IShinsuStats.Type.ADVANCEMENT.getSupplier().get());
             CapabilityManager.INSTANCE.register(IPlayerShinsuEquips.class, new IPlayerShinsuEquips.Storage(), new IPlayerShinsuEquips.PlayerShinsuEquips.Factory());
             ShinsuStatsSyncMessage.register(index ++);
-            PlayerEquipMessage.register(index ++);
+            PlayerEquipsSyncMessage.register(index ++);
             ShinsuTechniqueMessage.register(index ++);
             ShinsuCriteriaCompletionMessage.register(index ++);
         }
