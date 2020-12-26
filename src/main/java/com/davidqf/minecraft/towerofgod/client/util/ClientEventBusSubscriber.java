@@ -15,6 +15,7 @@ import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstanc
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import com.davidqf.minecraft.towerofgod.common.packets.ShinsuStatsSyncMessage;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.ScreenManager;
@@ -47,17 +48,43 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
 
+    private static StatsMeterGui.Shinsu shinsu = null;
+    private static StatsMeterGui.Baangs baangs = null;
     private static ShinsuSkillWheelGui wheel = null;
 
     @SubscribeEvent
-    public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
-        if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || (wheel != null && wheel.isLocked())) {
-            if (wheel == null) {
-                wheel = new ShinsuSkillWheelGui();
+    public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+        IShinsuStats stats = IShinsuStats.get(Minecraft.getInstance().player);
+        if (stats.getShinsu() > 0 || stats.getBaangs() > 0) {
+            if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD) {
+                event.getMatrixStack().translate(0, -10, 0);
+            } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
+                if (shinsu != null) {
+                    shinsu.render(event.getMatrixStack());
+                }
+                if (baangs != null) {
+                    baangs.render(event.getMatrixStack());
+                }
             }
-            wheel.render(event.getMatrixStack());
-        } else {
-            wheel = null;
+        }
+    }
+
+    @SubscribeEvent
+    public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
+        Minecraft client = Minecraft.getInstance();
+        IShinsuStats stats = IShinsuStats.get(client.player);
+        if ((event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD) && (stats.getShinsu() > 0 || stats.getBaangs() > 0)) {
+            event.getMatrixStack().translate(0, 10, 0);
+        }
+        if (!client.gameSettings.hideGUI) {
+            if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || (wheel != null && wheel.isLocked())) {
+                if (wheel == null) {
+                    wheel = new ShinsuSkillWheelGui();
+                }
+                wheel.render(event.getMatrixStack());
+            } else {
+                wheel = null;
+            }
         }
     }
 
@@ -164,6 +191,10 @@ public class ClientEventBusSubscriber {
             PlayerEntity player = event.getPlayer();
             ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ShinsuStatsSyncMessage(IShinsuStats.get(player)));
             PlayerEquipMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new PlayerEquipMessage(IPlayerShinsuEquips.get(player)));
+            MainWindow window = Minecraft.getInstance().getMainWindow();
+            int y = window.getScaledHeight() - 36;
+            shinsu = new StatsMeterGui.Shinsu(player, window.getScaledWidth() / 2 - 91, y, 85, 5);
+            baangs = new StatsMeterGui.Baangs(player, window.getScaledWidth() / 2 + 6, y, 85, 5);
         }
 
         @SubscribeEvent

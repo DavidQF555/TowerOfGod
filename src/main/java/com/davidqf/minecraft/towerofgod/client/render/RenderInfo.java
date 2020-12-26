@@ -19,12 +19,12 @@ public class RenderInfo {
     private final ResourceLocation texture;
     private final int textureWidth;
     private final int textureHeight;
-    private final int startX;
-    private final int startY;
-    private final int blitWidth;
-    private final int blitHeight;
+    private int startX;
+    private int startY;
+    private int blitWidth;
+    private int blitHeight;
 
-    public RenderInfo(ResourceLocation texture, int textureWidth, int textureHeight, int startX, int startY, int blitWidth, int blitHeight){
+    public RenderInfo(ResourceLocation texture, int textureWidth, int textureHeight, int startX, int startY, int blitWidth, int blitHeight) {
         this.texture = texture;
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
@@ -57,5 +57,21 @@ public class RenderInfo {
         RenderSystem.enableBlend();
         WorldVertexBufferUploader.draw(bufferbuilder);
         RenderSystem.disableBlend();
+    }
+
+    public void setStartX(int x) {
+        startX = x;
+    }
+
+    public void setStartY(int y) {
+        startY = y;
+    }
+
+    public void setBlitWidth(int width) {
+        blitWidth = width;
+    }
+
+    public void setBlitHeight(int height) {
+        blitHeight = height;
     }
 }

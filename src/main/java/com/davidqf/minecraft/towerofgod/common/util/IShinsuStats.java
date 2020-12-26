@@ -141,7 +141,6 @@ public interface IShinsuStats {
             techniques.remove(technique);
         }
 
-
         @Override
         public ShinsuQuality getQuality() {
             return quality;
@@ -239,7 +238,7 @@ public interface IShinsuStats {
         public void addKnownTechnique(ShinsuTechnique technique, int level) {
         }
 
-        private int getMaxShinsu() {
+        public int getMaxShinsu() {
             int amt = 0;
             for (ShinsuAdvancementProgress progress : advancements.values()) {
                 if (progress.isComplete()) {
@@ -249,7 +248,7 @@ public interface IShinsuStats {
             return amt;
         }
 
-        private int getMaxBaangs() {
+        public int getMaxBaangs() {
             int amt = 0;
             for (ShinsuAdvancementProgress progress : advancements.values()) {
                 if (progress.isComplete()) {
