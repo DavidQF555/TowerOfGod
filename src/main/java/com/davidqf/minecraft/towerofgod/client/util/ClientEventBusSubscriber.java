@@ -22,7 +22,6 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -51,6 +50,8 @@ public class ClientEventBusSubscriber {
     private static StatsMeterGui.Shinsu shinsu = null;
     private static StatsMeterGui.Baangs baangs = null;
     private static ShinsuSkillWheelGui wheel = null;
+    private static IShinsuStats clonedStats = null;
+    private static IPlayerShinsuEquips clonedEquips = null;
 
     @SubscribeEvent
     public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
@@ -193,10 +194,7 @@ public class ClientEventBusSubscriber {
             PlayerEntity player = event.getPlayer();
             ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ShinsuStatsSyncMessage(IShinsuStats.get(player)));
             PlayerEquipsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new PlayerEquipsSyncMessage(IPlayerShinsuEquips.get(player)));
-            MainWindow window = Minecraft.getInstance().getMainWindow();
-            int y = window.getScaledHeight() - 36;
-            shinsu = new StatsMeterGui.Shinsu(player, window.getScaledWidth() / 2 - 91, y, 85, 5);
-            baangs = new StatsMeterGui.Baangs(player, window.getScaledWidth() / 2 + 6, y, 85, 5);
+            initializeMeters();
         }
 
         @SubscribeEvent
@@ -225,14 +223,22 @@ public class ClientEventBusSubscriber {
         @SubscribeEvent
         public static void onClonePlayerEvent(PlayerEvent.Clone event) {
             if (event.isWasDeath()) {
-                PlayerEntity original = event.getOriginal();
-                Entity clone = event.getEntity();
-                IShinsuStats oStats = IShinsuStats.get(original);
-                IShinsuStats.get(clone).deserialize(oStats.serialize());
-                ShinsuStatsSyncMessage.INSTANCE.sendToServer(new ShinsuStatsSyncMessage(oStats));
-                IPlayerShinsuEquips oEquips = IPlayerShinsuEquips.get(original);
-                IPlayerShinsuEquips.get(clone).deserialize(oEquips.serialize());
-                PlayerEquipsSyncMessage.INSTANCE.sendToServer(new PlayerEquipsSyncMessage(oEquips));
+                ServerPlayerEntity original = (ServerPlayerEntity) event.getOriginal();
+                clonedStats = IShinsuStats.get(original);
+                clonedEquips = IPlayerShinsuEquips.get(original);
+            }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+            ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+            if (player.getUniqueID().equals(Minecraft.getInstance().player.getUniqueID())) {
+                IShinsuStats stats = IShinsuStats.get(player);
+                stats.deserialize(clonedStats.serialize());
+                ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new ShinsuStatsSyncMessage(clonedStats));
+                IPlayerShinsuEquips equips = IPlayerShinsuEquips.get(player);
+                equips.deserialize(clonedEquips.serialize());
+                PlayerEquipsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new PlayerEquipsSyncMessage(clonedEquips));
             }
         }
 
@@ -242,6 +248,13 @@ public class ClientEventBusSubscriber {
             if (entity.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
                 entity.setVelocity(0, 0, 0);
             }
+        }
+
+        private static void initializeMeters() {
+            MainWindow window = Minecraft.getInstance().getMainWindow();
+            int y = window.getScaledHeight() - 36;
+            shinsu = new StatsMeterGui.Shinsu(window.getScaledWidth() / 2 - 91, y, 85, 5);
+            baangs = new StatsMeterGui.Baangs(window.getScaledWidth() / 2 + 6, y, 85, 5);
         }
     }
 }

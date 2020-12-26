@@ -6,7 +6,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Function;
@@ -20,7 +19,6 @@ public abstract class StatsMeterGui extends AbstractGui {
     private final RenderInfo background;
     private final RenderInfo bar;
     private final RenderInfo lines;
-    private final IShinsuStats.AdvancementShinsuStats stats;
     private final Function<IShinsuStats.AdvancementShinsuStats, Integer> value;
     private final Function<IShinsuStats.AdvancementShinsuStats, Integer> max;
     private final int maxDisplay;
@@ -30,7 +28,7 @@ public abstract class StatsMeterGui extends AbstractGui {
     private final int height;
     private final int textColor;
 
-    public StatsMeterGui(PlayerEntity player, int x, int y, int width, int height, Function<IShinsuStats.AdvancementShinsuStats, Integer> value, Function<IShinsuStats.AdvancementShinsuStats, Integer> max, int maxDisplay, RenderInfo bar, RenderInfo background, int textColor) {
+    public StatsMeterGui(int x, int y, int width, int height, Function<IShinsuStats.AdvancementShinsuStats, Integer> value, Function<IShinsuStats.AdvancementShinsuStats, Integer> max, int maxDisplay, RenderInfo bar, RenderInfo background, int textColor) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -42,10 +40,10 @@ public abstract class StatsMeterGui extends AbstractGui {
         this.background = background;
         this.textColor = textColor;
         lines = new RenderInfo(TEXTURE, 256, 256, 0, 80, 182, 5);
-        stats = (IShinsuStats.AdvancementShinsuStats) IShinsuStats.get(player);
     }
 
     public void render(MatrixStack matrixStack) {
+        IShinsuStats.AdvancementShinsuStats stats = (IShinsuStats.AdvancementShinsuStats) IShinsuStats.get(Minecraft.getInstance().player);
         background.render(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
         int value = this.value.apply(stats);
         int max = this.max.apply(stats);
@@ -77,8 +75,8 @@ public abstract class StatsMeterGui extends AbstractGui {
         private static final int TEXT_COLOR = 0xFF8CF5FF;
         private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 10, 182, 5);
 
-        public Shinsu(PlayerEntity player, int x, int y, int width, int height) {
-            super(player, x, y, width, height, IShinsuStats.AdvancementShinsuStats::getShinsu, IShinsuStats.AdvancementShinsuStats::getMaxShinsu, MAX_SHINSU, new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
+        public Shinsu(int x, int y, int width, int height) {
+            super(x, y, width, height, IShinsuStats.AdvancementShinsuStats::getShinsu, IShinsuStats.AdvancementShinsuStats::getMaxShinsu, MAX_SHINSU, new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
         }
     }
 
@@ -88,8 +86,8 @@ public abstract class StatsMeterGui extends AbstractGui {
         private static final int TEXT_COLOR = 0xFF8CF5FF;
         private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, 256, 256, 0, 10, 182, 5);
 
-        public Baangs(PlayerEntity player, int x, int y, int width, int height) {
-            super(player, x, y, width, height, IShinsuStats.AdvancementShinsuStats::getBaangs, IShinsuStats.AdvancementShinsuStats::getMaxBaangs, MAX_BAANGS, new RenderInfo(TEXTURE, 256, 256, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
+        public Baangs(int x, int y, int width, int height) {
+            super(x, y, width, height, IShinsuStats.AdvancementShinsuStats::getBaangs, IShinsuStats.AdvancementShinsuStats::getMaxBaangs, MAX_BAANGS, new RenderInfo(TEXTURE, 256, 256, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
         }
     }
 }
