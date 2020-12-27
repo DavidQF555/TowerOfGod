@@ -25,6 +25,7 @@ import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
@@ -94,11 +95,12 @@ public class ClientEventBusSubscriber {
         Minecraft client = Minecraft.getInstance();
         if (client.player != null) {
             IShinsuStats stats = IShinsuStats.get(client.player);
-            if (wheel != null && wheel.getSelected() != null && wheel.getSelected().getBuilder().canCast(wheel.getSelected(), client.player, stats.getTechniqueLevel(wheel.getSelected()), client.pointedEntity, client.player.getLookVec()) && event.getButton() == 0) {
+            Vector3d dir = client.player.getLookVec();
+            if (wheel != null && wheel.getSelected() != null && wheel.getSelected().getBuilder().canCast(wheel.getSelected(), client.player, stats.getTechniqueLevel(wheel.getSelected()), client.pointedEntity, dir) && event.getButton() == 0) {
                 int action = event.getAction();
                 if (wheel.isLocked()) {
                     if (action == GLFW.GLFW_RELEASE) {
-                        stats.cast(client.player, wheel.getSelected(), client.pointedEntity, client.player.getLookVec());
+                        stats.cast(client.player, wheel.getSelected(), client.pointedEntity, dir);
                         wheel = null;
                     }
                 } else if (action == GLFW.GLFW_PRESS) {
