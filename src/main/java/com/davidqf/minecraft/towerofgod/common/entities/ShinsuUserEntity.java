@@ -46,7 +46,7 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
         private final IShinsuStats stats;
         private ShinsuTechnique technique;
 
-        private CastShinsuGoal(){
+        private CastShinsuGoal() {
             stats = IShinsuStats.get(ShinsuUserEntity.this);
             technique = null;
         }
@@ -54,15 +54,15 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
         @Override
         public boolean shouldExecute() {
             List<ShinsuTechnique> tech = new ArrayList<>();
-            for(ShinsuTechnique technique : ShinsuTechnique.values()){
+            for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                 ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
                 LivingEntity target = getAttackTarget();
                 Vector3d dir = (target != null && canEntityBeSeen(target)) ? target.getEyePosition(1).subtract(getEyePosition(1)).normalize() : getLookVec();
-                if(stats.getCooldown(technique) <= 0 && builder.canCast(technique, ShinsuUserEntity.this, stats.getTechniqueLevel(technique), target, dir) && !isUsed(technique, target, dir)) {
+                if (stats.getCooldown(technique) <= 0 && builder.canCast(technique, ShinsuUserEntity.this, stats.getTechniqueLevel(technique), target, dir) && !isUsed(technique, target, dir)) {
                     tech.add(technique);
                 }
             }
-            if(tech.isEmpty()){
+            if (tech.isEmpty()) {
                 return false;
             }
             int index = (int) (Math.random() * tech.size());
@@ -87,9 +87,9 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
             return false;
         }
 
-        private boolean isUsed(ShinsuTechnique technique, @Nullable Entity target, @Nullable Vector3d dir){
-            for(ShinsuTechniqueInstance tech : stats.getTechniques()){
-                if(tech.getTechnique() == technique) {
+        private boolean isUsed(ShinsuTechnique technique, @Nullable Entity target, @Nullable Vector3d dir) {
+            for (ShinsuTechniqueInstance tech : stats.getTechniques()) {
+                if (tech.getTechnique() == technique) {
                     if (tech instanceof ShinsuTechniqueInstance.Targetable) {
                         return target != null && ((ShinsuTechniqueInstance.Targetable) tech).getTargetUUID().equals(target.getUniqueID());
                     } else if (tech instanceof ShinsuTechniqueInstance.Direction) {

@@ -16,7 +16,7 @@ public class HookItem extends SwordItem {
 
     @Override
     public boolean hitEntity(@Nonnull ItemStack stack, @Nonnull LivingEntity target, @Nonnull LivingEntity attacker) {
-        if(stack.getItem() instanceof HookItem) {
+        if (stack.getItem() instanceof HookItem) {
             float mul = attacker.getDistance(target) / 4;
             Vector3d vel = attacker.getPositionVec().subtract(target.getPositionVec()).normalize().mul(mul, mul, mul);
             target.addVelocity(vel.getX(), vel.getY(), vel.getZ());

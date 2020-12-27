@@ -11,10 +11,10 @@ import net.minecraft.util.ResourceLocation;
 public enum Family {
 
     ARIE("arie", new ShinsuQuality[]{}, new ShinsuTechnique[]{}, new Class[]{SwordItem.class}, 1, 1),
-    EURASIA("eurasia", new ShinsuQuality[]{ShinsuQuality.WIND}, new ShinsuTechnique[] {}, new Class[]{}, 1, 1.5),
+    EURASIA("eurasia", new ShinsuQuality[]{ShinsuQuality.WIND}, new ShinsuTechnique[]{}, new Class[]{}, 1, 1.5),
     HA("ha", new ShinsuQuality[]{}, new ShinsuTechnique[]{}, new Class[]{HookItem.class}, 1.5, 1),
     KHUN("khun", new ShinsuQuality[]{ShinsuQuality.ICE, ShinsuQuality.LIGHTNING}, new ShinsuTechnique[]{}, new Class[]{}, 1, 1),
-    YEON("yeon", new ShinsuQuality[]{ShinsuQuality.FIRE}, new ShinsuTechnique[] {}, new Class[]{}, 1, 1.2);
+    YEON("yeon", new ShinsuQuality[]{ShinsuQuality.FIRE}, new ShinsuTechnique[]{}, new Class[]{}, 1, 1.2);
 
     private final ResourceLocation texture;
     private final ShinsuQuality[] qualities;

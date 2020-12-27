@@ -22,17 +22,17 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
     @Override
     public void onUse(World world) {
         Entity u = getUser(world);
-            if (u instanceof LivingEntity) {
-                LivingEntity user = (LivingEntity) u;
-                IShinsuStats stats = IShinsuStats.get(u);
-                ShinsuQuality quality = stats.getQuality();
-                double speed = quality.getSpeed();
-                speed *= BASE_SPEED * getLevel() / 2.0;
-                Vector3d dir = getDirection().mul(speed, speed, speed);
-                ShinsuEntity shinsuEntity = new ShinsuEntity(world, user, quality, getLevel(), user.getPosX(), user.getPosYEye(), user.getPosZ(), dir.x, dir.y, dir.z);
-                user.getEntityWorld().addEntity(shinsuEntity);
+        if (u instanceof LivingEntity) {
+            LivingEntity user = (LivingEntity) u;
+            IShinsuStats stats = IShinsuStats.get(u);
+            ShinsuQuality quality = stats.getQuality();
+            double speed = quality.getSpeed();
+            speed *= BASE_SPEED * getLevel() / 2.0;
+            Vector3d dir = getDirection().mul(speed, speed, speed);
+            ShinsuEntity shinsuEntity = new ShinsuEntity(world, user, quality, getLevel(), user.getPosX(), user.getPosYEye(), user.getPosZ(), dir.x, dir.y, dir.z);
+            user.getEntityWorld().addEntity(shinsuEntity);
         }
-        }
+    }
 
     public static class Builder implements ShinsuTechnique.Builder<ShinsuBlast> {
 
@@ -46,7 +46,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
 
         @Override
         public ShinsuBlast build(@Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
-                return dir != null ? new ShinsuBlast(user, level, dir) : null;
+            return dir != null ? new ShinsuBlast(user, level, dir) : null;
         }
 
         @Override

@@ -9,53 +9,53 @@ import javax.annotation.Nonnull;
 
 public enum ModToolTier implements IItemTier {
 
-	SUSPENDIUM(1250, 14, 1, 2, 15, Ingredient.fromItems(RegistryHandler.SUSPENDIUM.get()));
+    SUSPENDIUM(1250, 14, 1, 2, 15, Ingredient.fromItems(RegistryHandler.SUSPENDIUM.get()));
 
-	private final int uses;
-	private final float efficiency;
-	private final float damage;
-	private final int harvest;
-	private final int enchantability;
-	private final Ingredient repair;
+    private final int uses;
+    private final float efficiency;
+    private final float damage;
+    private final int harvest;
+    private final int enchantability;
+    private final Ingredient repair;
 
-	ModToolTier(int uses, float efficiency, float damage, int harvest, int enchantability, Ingredient repair) {
-		this.uses = uses;
-		this.efficiency = efficiency;
-		this.damage = damage;
-		this.harvest = harvest;
-		this.enchantability = enchantability;
-		this.repair = repair;
-	}
+    ModToolTier(int uses, float efficiency, float damage, int harvest, int enchantability, Ingredient repair) {
+        this.uses = uses;
+        this.efficiency = efficiency;
+        this.damage = damage;
+        this.harvest = harvest;
+        this.enchantability = enchantability;
+        this.repair = repair;
+    }
 
-	@Override
-	public int getMaxUses() {
-		return uses;
-	}
+    @Override
+    public int getMaxUses() {
+        return uses;
+    }
 
-	@Override
-	public float getEfficiency() {
-		return efficiency;
-	}
+    @Override
+    public float getEfficiency() {
+        return efficiency;
+    }
 
-	@Override
-	public float getAttackDamage() {
-		return damage;
-	}
+    @Override
+    public float getAttackDamage() {
+        return damage;
+    }
 
-	@Override
-	public int getHarvestLevel() {
-		return harvest;
-	}
+    @Override
+    public int getHarvestLevel() {
+        return harvest;
+    }
 
-	@Override
-	public int getEnchantability() {
-		return enchantability;
-	}
+    @Override
+    public int getEnchantability() {
+        return enchantability;
+    }
 
-	@Nonnull
-	@Override
-	public Ingredient getRepairMaterial() {
-		return repair;
-	}
+    @Nonnull
+    @Override
+    public Ingredient getRepairMaterial() {
+        return repair;
+    }
 
 }

@@ -7,12 +7,12 @@ import net.minecraftforge.common.ToolType;
 
 public class SuspendiumBlock extends Block {
 
-	public SuspendiumBlock() {
-		super(Block.Properties.create(Material.ROCK)
-				.hardnessAndResistance(3f, 3f)
-				.sound(SoundType.STONE)
-				.harvestLevel(1)
-				.harvestTool(ToolType.PICKAXE));
-	}
+    public SuspendiumBlock() {
+        super(Block.Properties.create(Material.ROCK)
+                .hardnessAndResistance(3f, 3f)
+                .sound(SoundType.STONE)
+                .harvestLevel(1)
+                .harvestTool(ToolType.PICKAXE));
+    }
 
 }

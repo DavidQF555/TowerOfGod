@@ -19,7 +19,7 @@ public class ShinsuAdvancementProgress implements INBTSerializable<CompoundNBT> 
         return advancement;
     }
 
-    public int getProgress(){
+    public int getProgress() {
         return progress;
     }
 
@@ -31,7 +31,7 @@ public class ShinsuAdvancementProgress implements INBTSerializable<CompoundNBT> 
         complete = true;
     }
 
-    public boolean isComplete(){
+    public boolean isComplete() {
         return complete;
     }
 

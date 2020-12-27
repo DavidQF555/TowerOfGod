@@ -19,12 +19,12 @@ import java.util.List;
 @MethodsReturnNonnullByDefault
 public enum ShinsuAdvancement {
 
-    CONTRACT(null, "contract", 1, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.ItemCriteria(new Item[] {Items.PAPER}), new Reward(new ShinsuTechnique[]{}, new ShinsuQuality[]{}, 100, 1, 1, 1)),
-    REVERSE_FLOW_CONTROL(CONTRACT, "reverse_flow_control", 20, ShinsuIcons.REVERSE, new ShinsuAdvancementCriteria.KillCriteria(new EntityClassification[] {EntityClassification.MONSTER}), new Reward(new ShinsuTechnique[] {ShinsuTechnique.REVERSE_FLOW_CONTROL}, new ShinsuQuality[]{}, 100, 1, 1, 1)),
-    BLACK_FISH(CONTRACT, "black_fish", 20, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.KillCriteria(new EntityClassification[] {EntityClassification.MONSTER}), new Reward(new ShinsuTechnique[] {ShinsuTechnique.BLACK_FISH}, new ShinsuQuality[]{}, 100, 1, 1, 1.5)),
-    FLARE_WAVE_EXPLOSION(CONTRACT, "flare_wave_explosion", 20, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.KillCriteria(new EntityClassification[] {EntityClassification.MONSTER}), new Reward(new ShinsuTechnique[] {ShinsuTechnique.FLARE_WAVE_EXPLOSION}, new ShinsuQuality[]{}, 100, 1, 1, 1.5)),
-    SHINSU_BLAST(CONTRACT, "shinsu_blast", 20, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.KillCriteria(new EntityClassification[] {EntityClassification.MONSTER}), new Reward(new ShinsuTechnique[] {ShinsuTechnique.SHINSU_BLAST}, new ShinsuQuality[]{}, 100, 1, 1, 1.5)),
-    BODY_REINFORCEMENT(CONTRACT, "body_reinforcement", 20, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.ItemCriteria(new Item[] {Items.IRON_INGOT}), new Reward(new ShinsuTechnique[] {ShinsuTechnique.BODY_REINFORCEMENT}, new ShinsuQuality[]{}, 100, 1, 1.5, 1));
+    CONTRACT(null, "contract", 1, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.ItemCriteria(new Item[]{Items.PAPER}), new Reward(new ShinsuTechnique[]{}, new ShinsuQuality[]{}, 100, 1, 1, 1)),
+    REVERSE_FLOW_CONTROL(CONTRACT, "reverse_flow_control", 20, ShinsuIcons.REVERSE, new ShinsuAdvancementCriteria.KillCriteria(new EntityClassification[]{EntityClassification.MONSTER}), new Reward(new ShinsuTechnique[]{ShinsuTechnique.REVERSE_FLOW_CONTROL}, new ShinsuQuality[]{}, 100, 1, 1, 1)),
+    BLACK_FISH(CONTRACT, "black_fish", 20, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.KillCriteria(new EntityClassification[]{EntityClassification.MONSTER}), new Reward(new ShinsuTechnique[]{ShinsuTechnique.BLACK_FISH}, new ShinsuQuality[]{}, 100, 1, 1, 1.5)),
+    FLARE_WAVE_EXPLOSION(CONTRACT, "flare_wave_explosion", 20, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.KillCriteria(new EntityClassification[]{EntityClassification.MONSTER}), new Reward(new ShinsuTechnique[]{ShinsuTechnique.FLARE_WAVE_EXPLOSION}, new ShinsuQuality[]{}, 100, 1, 1, 1.5)),
+    SHINSU_BLAST(CONTRACT, "shinsu_blast", 20, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.KillCriteria(new EntityClassification[]{EntityClassification.MONSTER}), new Reward(new ShinsuTechnique[]{ShinsuTechnique.SHINSU_BLAST}, new ShinsuQuality[]{}, 100, 1, 1, 1.5)),
+    BODY_REINFORCEMENT(CONTRACT, "body_reinforcement", 20, ShinsuIcons.SWIRL, new ShinsuAdvancementCriteria.ItemCriteria(new Item[]{Items.IRON_INGOT}), new Reward(new ShinsuTechnique[]{ShinsuTechnique.BODY_REINFORCEMENT}, new ShinsuQuality[]{}, 100, 1, 1.5, 1));
 
     private final ShinsuAdvancement parent;
     private final TranslationTextComponent name;
@@ -44,9 +44,9 @@ public enum ShinsuAdvancement {
     }
 
     @Nullable
-    public static ShinsuAdvancement get(String name){
-        for(ShinsuAdvancement advancement : values()) {
-            if(advancement.getName().getKey().equals(name)){
+    public static ShinsuAdvancement get(String name) {
+        for (ShinsuAdvancement advancement : values()) {
+            if (advancement.getName().getKey().equals(name)) {
                 return advancement;
             }
         }
@@ -54,37 +54,37 @@ public enum ShinsuAdvancement {
     }
 
     @Nullable
-    public ShinsuAdvancement getParent(){
+    public ShinsuAdvancement getParent() {
         return parent;
     }
 
     public List<ShinsuAdvancement> getDirectChildren() {
         List<ShinsuAdvancement> children = new ArrayList<>();
-        for(ShinsuAdvancement adv : values()) {
-            if(this == adv.parent) {
+        for (ShinsuAdvancement adv : values()) {
+            if (this == adv.parent) {
                 children.add(adv);
             }
         }
         return children;
     }
 
-    public TranslationTextComponent getName(){
+    public TranslationTextComponent getName() {
         return name;
     }
 
-    public int getCompletionAmount(){
+    public int getCompletionAmount() {
         return completionAmt;
     }
 
-    public RenderInfo getIcon(){
+    public RenderInfo getIcon() {
         return icon;
     }
 
-    public ShinsuAdvancementCriteria getCriteria(){
+    public ShinsuAdvancementCriteria getCriteria() {
         return criteria;
     }
 
-    public Reward getReward(){
+    public Reward getReward() {
         return reward;
     }
 
@@ -106,27 +106,27 @@ public enum ShinsuAdvancement {
             this.tension = tension;
         }
 
-        public ShinsuTechnique[] getTechniques(){
+        public ShinsuTechnique[] getTechniques() {
             return techniques;
         }
 
-        public ShinsuQuality[] getQualities(){
+        public ShinsuQuality[] getQualities() {
             return qualities;
         }
 
-        public int getShinsu(){
+        public int getShinsu() {
             return shinsu;
         }
 
-        public int getBaangs(){
+        public int getBaangs() {
             return baangs;
         }
 
-        public double getResistance(){
+        public double getResistance() {
             return resistance;
         }
 
-        public double getTension(){
+        public double getTension() {
             return tension;
         }
     }

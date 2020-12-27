@@ -105,7 +105,7 @@ public class RegularEntity extends ShinsuUserEntity {
 
     private void setAdvancements() {
         IShinsuStats stats = IShinsuStats.get(this);
-        if(stats instanceof IShinsuStats.AdvancementShinsuStats) {
+        if (stats instanceof IShinsuStats.AdvancementShinsuStats) {
             Map<ShinsuAdvancement, ShinsuAdvancementProgress> advancements = ((IShinsuStats.AdvancementShinsuStats) stats).getAdvancements();
             Family family = getFamily();
             List<ShinsuAdvancement> possible = new ArrayList<>();

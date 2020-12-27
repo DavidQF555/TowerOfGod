@@ -20,13 +20,14 @@ public class CapabilityHandler {
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
     private static int index = 0;
+
     @SubscribeEvent
     public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
         Entity entity = event.getObject();
         if (entity instanceof ShinsuUserEntity || entity instanceof PlayerEntity) {
             event.addCapability(SHINSU_STATS, new IShinsuStats.Provider());
         }
-        if(entity instanceof PlayerEntity) {
+        if (entity instanceof PlayerEntity) {
             event.addCapability(PLAYER_EQUIPS, new IPlayerShinsuEquips.Provider());
         }
     }
@@ -37,10 +38,10 @@ public class CapabilityHandler {
         public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
             CapabilityManager.INSTANCE.register(IShinsuStats.class, new IShinsuStats.Storage(), () -> IShinsuStats.Type.ADVANCEMENT.getSupplier().get());
             CapabilityManager.INSTANCE.register(IPlayerShinsuEquips.class, new IPlayerShinsuEquips.Storage(), new IPlayerShinsuEquips.PlayerShinsuEquips.Factory());
-            ShinsuStatsSyncMessage.register(index ++);
-            PlayerEquipsSyncMessage.register(index ++);
-            ShinsuTechniqueMessage.register(index ++);
-            ShinsuCriteriaCompletionMessage.register(index ++);
+            ShinsuStatsSyncMessage.register(index++);
+            PlayerEquipsSyncMessage.register(index++);
+            ShinsuTechniqueMessage.register(index++);
+            ShinsuCriteriaCompletionMessage.register(index++);
         }
     }
 }

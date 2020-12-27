@@ -18,15 +18,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModOreGen {
 
-	@SubscribeEvent
-	public static void generateOres(FMLLoadCompleteEvent event) {
-		for(Biome biome : ForgeRegistries.BIOMES) {
-			if(biome.getCategory() != Biome.Category.THEEND && biome.getCategory() != Biome.Category.NETHER) {
-				CountRangeConfig range = new CountRangeConfig(3, 17, 0, 100);
-				OreFeatureConfig feature = new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8);
-				ConfiguredPlacement<CountRangeConfig> config = Placement.COUNT_RANGE.configure(range);
-				biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, Feature.ORE.withConfiguration(feature).withPlacement(config));
-			}
-		}
-	}
+    @SubscribeEvent
+    public static void generateOres(FMLLoadCompleteEvent event) {
+        for (Biome biome : ForgeRegistries.BIOMES) {
+            if (biome.getCategory() != Biome.Category.THEEND && biome.getCategory() != Biome.Category.NETHER) {
+                CountRangeConfig range = new CountRangeConfig(3, 17, 0, 100);
+                OreFeatureConfig feature = new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8);
+                ConfiguredPlacement<CountRangeConfig> config = Placement.COUNT_RANGE.configure(range);
+                biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, Feature.ORE.withConfiguration(feature).withPlacement(config));
+            }
+        }
+    }
 }

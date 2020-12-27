@@ -22,9 +22,9 @@ public interface IPlayerShinsuEquips {
     }
 
     ShinsuTechnique[] getEquipped();
-    
+
     CompoundNBT serialize();
-    
+
     void deserialize(CompoundNBT nbt);
 
     class PlayerShinsuEquips implements IPlayerShinsuEquips {
@@ -44,9 +44,9 @@ public interface IPlayerShinsuEquips {
         public CompoundNBT serialize() {
             CompoundNBT nbt = new CompoundNBT();
             nbt.putInt("Size", equipped.length);
-            for(int i = 0; i < equipped.length; i ++) {
+            for (int i = 0; i < equipped.length; i++) {
                 ShinsuTechnique technique = equipped[i];
-                    nbt.putString(i + 1 + "", technique == null ? "" : technique.getName().getKey());
+                nbt.putString(i + 1 + "", technique == null ? "" : technique.getName().getKey());
             }
             return nbt;
         }
@@ -54,11 +54,11 @@ public interface IPlayerShinsuEquips {
         @Override
         public void deserialize(CompoundNBT nbt) {
             equipped = new ShinsuTechnique[nbt.getInt("Size")];
-            for(int i = 0; i < equipped.length; i ++){
+            for (int i = 0; i < equipped.length; i++) {
                 equipped[i] = ShinsuTechnique.get(nbt.getString(i + 1 + ""));
             }
         }
-        
+
         public static class Factory implements Callable<IPlayerShinsuEquips> {
             @Override
             public IPlayerShinsuEquips call() {

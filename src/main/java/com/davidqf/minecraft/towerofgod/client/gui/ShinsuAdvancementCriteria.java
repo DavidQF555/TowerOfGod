@@ -24,11 +24,13 @@ public abstract class ShinsuAdvancementCriteria {
         this.checksEvents = checksEvents;
     }
 
-    public void onEvent(Entity user, Event event) {}
+    public void onEvent(Entity user, Event event) {
+    }
 
-    public void onCompletion(Entity user) {}
+    public void onCompletion(Entity user) {
+    }
 
-    public ShinsuAdvancement getAdvancement(){
+    public ShinsuAdvancement getAdvancement() {
         return advancement;
     }
 
@@ -41,20 +43,20 @@ public abstract class ShinsuAdvancementCriteria {
     }
 
     public boolean canComplete(Entity user) {
-        if(user instanceof PlayerEntity && ((PlayerEntity) user).isCreative()) {
+        if (user instanceof PlayerEntity && ((PlayerEntity) user).isCreative()) {
             return true;
         }
         IShinsuStats stats = IShinsuStats.get(user);
         return stats instanceof IShinsuStats.AdvancementShinsuStats && ((IShinsuStats.AdvancementShinsuStats) stats).getAdvancements().get(advancement).getProgress() >= getAdvancement().getCompletionAmount();
     }
 
-    public boolean correctEvent(Event event){
+    public boolean correctEvent(Event event) {
         return checksEvents;
     }
 
     public abstract ITextComponent[] getText(Entity user);
 
-    public void setAdvancement(ShinsuAdvancement advancement){
+    public void setAdvancement(ShinsuAdvancement advancement) {
         this.advancement = advancement;
     }
 
@@ -70,7 +72,7 @@ public abstract class ShinsuAdvancementCriteria {
             classifications = null;
         }
 
-        public KillCriteria(EntityClassification[] classifications){
+        public KillCriteria(EntityClassification[] classifications) {
             super(true);
             types = null;
             this.classifications = classifications;
@@ -78,10 +80,10 @@ public abstract class ShinsuAdvancementCriteria {
 
         @Override
         public void onEvent(Entity user, Event event) {
-            if(event instanceof LivingDeathEvent){
+            if (event instanceof LivingDeathEvent) {
                 LivingDeathEvent death = (LivingDeathEvent) event;
                 IShinsuStats stats = IShinsuStats.get(user);
-                if(stats instanceof IShinsuStats.AdvancementShinsuStats) {
+                if (stats instanceof IShinsuStats.AdvancementShinsuStats) {
                     ShinsuAdvancementProgress progress = ((IShinsuStats.AdvancementShinsuStats) stats).getAdvancements().get(getAdvancement());
                     if (user.equals(death.getSource().getTrueSource())) {
                         if (types != null) {
@@ -107,16 +109,15 @@ public abstract class ShinsuAdvancementCriteria {
         @Override
         public ITextComponent[] getText(Entity user) {
             ITextComponent[] arr = new ITextComponent[1];
-            if(types != null){
+            if (types != null) {
                 arr = new ITextComponent[types.length + 1];
-                for(int i = 0; i < types.length; i ++) {
+                for (int i = 0; i < types.length; i++) {
                     arr[i + 1] = new StringTextComponent(types[i].getName());
                 }
 
-            }
-            else if(classifications != null){
+            } else if (classifications != null) {
                 arr = new ITextComponent[classifications.length + 1];
-                for(int i = 0; i < classifications.length; i ++) {
+                for (int i = 0; i < classifications.length; i++) {
                     arr[i + 1] = new StringTextComponent(classifications[i].getName());
                 }
             }
@@ -142,18 +143,17 @@ public abstract class ShinsuAdvancementCriteria {
 
         @Override
         public void onCompletion(Entity user) {
-            if(user instanceof PlayerEntity && !((PlayerEntity) user).isCreative()) {
+            if (user instanceof PlayerEntity && !((PlayerEntity) user).isCreative()) {
                 PlayerEntity player = (PlayerEntity) user;
                 int completion = getAdvancement().getCompletionAmount();
-                for(int i = 0; i < player.inventory.mainInventory.size(); i ++){
+                for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
                     ItemStack item = player.inventory.mainInventory.get(i);
-                    if(correctType(item)){
+                    if (correctType(item)) {
                         int count = item.getCount();
-                        if(count < completion) {
+                        if (count < completion) {
                             player.inventory.removeStackFromSlot(i);
                             completion -= count;
-                        }
-                        else {
+                        } else {
                             item.setCount(count - completion);
                             break;
                         }
@@ -165,10 +165,10 @@ public abstract class ShinsuAdvancementCriteria {
         @Override
         public int getCount(Entity user) {
             int count = 0;
-            if(user instanceof PlayerEntity) {
+            if (user instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) user;
-                for(ItemStack item : player.inventory.mainInventory){
-                    if(correctType(item)){
+                for (ItemStack item : player.inventory.mainInventory) {
+                    if (correctType(item)) {
                         count += item.getCount();
                     }
                 }
@@ -184,7 +184,7 @@ public abstract class ShinsuAdvancementCriteria {
         @Override
         public ITextComponent[] getText(Entity user) {
             ITextComponent[] arr = new ITextComponent[types.length + 1];
-            for (int i = 0; i < types.length; i ++) {
+            for (int i = 0; i < types.length; i++) {
                 arr[i + 1] = types[i].getDisplayName(types[i].getDefaultInstance());
             }
             arr[0] = new TranslationTextComponent(TRANSLATION_KEY, getAdvancement().getCompletionAmount());
@@ -193,8 +193,8 @@ public abstract class ShinsuAdvancementCriteria {
 
         private boolean correctType(ItemStack itemStack) {
             Item item = itemStack.getItem();
-            for(Item type : types) {
-                if(item.equals(type)){
+            for (Item type : types) {
+                if (item.equals(type)) {
                     return true;
                 }
             }

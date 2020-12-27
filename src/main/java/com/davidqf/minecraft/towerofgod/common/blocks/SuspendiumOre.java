@@ -7,12 +7,12 @@ import net.minecraftforge.common.ToolType;
 
 public class SuspendiumOre extends Block {
 
-	public SuspendiumOre() {
-		super(Block.Properties.create(Material.ROCK)
-				.hardnessAndResistance(5f, 5f)
-				.sound(SoundType.STONE)
-				.harvestLevel(1)
-				.harvestTool(ToolType.PICKAXE));
-	}
+    public SuspendiumOre() {
+        super(Block.Properties.create(Material.ROCK)
+                .hardnessAndResistance(5f, 5f)
+                .sound(SoundType.STONE)
+                .harvestLevel(1)
+                .harvestTool(ToolType.PICKAXE));
+    }
 
 }
