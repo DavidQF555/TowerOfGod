@@ -77,29 +77,34 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             float damage = (float) (DAMAGE * ShinsuTechniqueInstance.getTotalResistance((LivingEntity) s, target) * level / 3.0);
             DamageSource source = DamageSource.MAGIC;
             ShinsuQuality quality = getQuality();
-            if (quality != null) {
-                if (quality == ShinsuQuality.ICE) {
+            switch (quality) {
+                case ICE:
                     target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 60, 2, true, false, false));
-                } else if (quality == ShinsuQuality.FIRE) {
+                    break;
+                case FIRE:
                     source = DamageSource.ON_FIRE;
                     target.setFire(7);
-                } else if (quality == ShinsuQuality.WIND) {
+                    break;
+                case WIND:
                     Vector3d vec = target.getPositionVec().subtract(rayTraceResult.getHitVec()).normalize().mul(3, 3, 3);
                     target.addVelocity(vec.getX(), vec.getY(), vec.getZ());
-                } else if (quality == ShinsuQuality.PLANT) {
+                    break;
+                case PLANT:
                     source = DamageSource.CACTUS;
                     target.addPotionEffect(new EffectInstance(Effects.POISON, 140, 2, true, false, false));
-                } else if (quality == ShinsuQuality.STONE) {
+                    break;
+                case STONE:
                     source = DamageSource.FALLING_BLOCK;
                     damage += 3;
-                } else if (quality == ShinsuQuality.CRYSTAL) {
+                case CRYSTAL:
                     damage += 2;
                     remove = false;
-                } else if (quality == ShinsuQuality.LIGHTNING) {
+                    break;
+                case LIGHTNING:
                     source = DamageSource.LIGHTNING_BOLT;
                     target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 20, 3, true, false, false));
                     target.setFire(3);
-                }
+                    break;
             }
             target.attackEntityFrom(source, damage);
             if (remove) {
