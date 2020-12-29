@@ -29,7 +29,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
             double speed = quality.getSpeed();
             speed *= BASE_SPEED * getLevel() / 2.0;
             Vector3d dir = getDirection().mul(speed, speed, speed);
-            ShinsuEntity shinsuEntity = new ShinsuEntity(world, user, quality, getLevel(), user.getPosX(), user.getPosYEye(), user.getPosZ(), dir.x, dir.y, dir.z);
+            ShinsuEntity shinsuEntity = new ShinsuEntity(world, user, quality, this, getLevel(), user.getPosX(), user.getPosYEye(), user.getPosZ(), dir.x, dir.y, dir.z);
             user.getEntityWorld().addEntity(shinsuEntity);
         }
     }

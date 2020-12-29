@@ -1,35 +1,57 @@
 package com.davidqf.minecraft.towerofgod.common.techinques;
 
+import com.davidqf.minecraft.towerofgod.common.packets.ShinsuStatsSyncMessage;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public abstract class ShinsuTechniqueInstance implements INBTSerializable<CompoundNBT> {
 
+    private UUID id;
     private ShinsuTechnique technique;
     private UUID user;
     private int ticksLeft;
     private int level;
 
     public ShinsuTechniqueInstance(ShinsuTechnique technique, LivingEntity user, int level, int ticksLeft) {
+        id = UUID.randomUUID();
         this.technique = technique;
         this.user = user == null ? null : user.getUniqueID();
         this.level = level;
         this.ticksLeft = ticksLeft;
     }
 
+    @Nullable
+    public static ShinsuTechniqueInstance get(Entity user, UUID id) {
+        IShinsuStats stats = IShinsuStats.get(user);
+        for (ShinsuTechniqueInstance instance : stats.getTechniques()) {
+            if (instance.id.equals(id)) {
+                return instance;
+            }
+        }
+        return null;
+    }
+
     public static double getTotalResistance(LivingEntity user, LivingEntity target) {
         IShinsuStats targetStats = IShinsuStats.get(target);
         IShinsuStats userStats = IShinsuStats.get(user);
         return targetStats.getResistance() / userStats.getTension();
+    }
+
+    public UUID getID() {
+        return id;
     }
 
     public int ticksLeft() {
@@ -67,6 +89,11 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user != null) {
             IShinsuStats stats = IShinsuStats.get(user);
             stats.removeTechnique(this);
+            if (user instanceof ServerPlayerEntity) {
+                ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new ShinsuStatsSyncMessage(stats));
+            } else if (user instanceof ClientPlayerEntity) {
+                ShinsuStatsSyncMessage.INSTANCE.sendToServer(new ShinsuStatsSyncMessage(stats));
+            }
         }
     }
 
@@ -77,6 +104,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
+        nbt.putUniqueId("ID", id);
         if (user != null) {
             nbt.putUniqueId("User", user);
         }
@@ -88,9 +116,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        if (nbt.contains("User")) {
-            user = nbt.getUniqueId("User");
-        }
+        id = nbt.getUniqueId("ID");
+        user = nbt.getUniqueId("User");
         technique = ShinsuTechnique.get(nbt.getString("Technique"));
         ticksLeft = nbt.getInt("Ticks");
         level = nbt.getInt("Level");
