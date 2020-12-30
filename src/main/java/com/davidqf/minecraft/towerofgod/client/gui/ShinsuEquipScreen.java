@@ -36,7 +36,7 @@ public class ShinsuEquipScreen extends Screen {
     private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 166);
     private static final int TITLE_COLOR = 0xFFFFFFFF;
     private final ShinsuSlot[][] slots;
-    private List<ShinsuTechnique> unlocked;
+    private final List<ShinsuTechnique> unlocked;
     private final ShinsuSlot[] selected;
     private final IShinsuStats stats;
     private final IPlayerShinsuEquips equips;
@@ -69,7 +69,6 @@ public class ShinsuEquipScreen extends Screen {
         x = (width - xSize) / 2;
         y = (height - ySize) / 2;
         addSlots();
-        unlocked = new ArrayList<>();
         for (ShinsuTechnique technique : ShinsuTechnique.values()) {
             if (stats.getTechniqueLevel(technique) > 0) {
                 unlocked.add(technique);

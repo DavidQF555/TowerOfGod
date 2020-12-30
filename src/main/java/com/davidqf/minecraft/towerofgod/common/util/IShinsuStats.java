@@ -224,11 +224,13 @@ public interface IShinsuStats {
         @Override
         public int getTechniqueLevel(ShinsuTechnique technique) {
             int count = 0;
+            Map<ShinsuAdvancement, ShinsuAdvancementProgress> advancements = getAdvancements();
             for (ShinsuAdvancement advancement : advancements.keySet()) {
-                for (ShinsuTechnique reward : advancement.getReward().getTechniques()) {
-                    if (reward == technique) {
-                        count++;
-                        break;
+                if (advancements.get(advancement).isComplete()) {
+                    for (ShinsuTechnique reward : advancement.getReward().getTechniques()) {
+                        if (reward == technique) {
+                            count++;
+                        }
                     }
                 }
             }
