@@ -79,6 +79,7 @@ public interface IShinsuStats {
                             ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new ShinsuStatsSyncMessage(this));
                         }
                     } else if (user instanceof ClientPlayerEntity) {
+                        ShinsuStatsSyncMessage.INSTANCE.sendToServer(new ShinsuStatsSyncMessage(this));
                         ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.USE, tech));
                     }
                 }

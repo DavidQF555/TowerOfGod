@@ -1,13 +1,16 @@
 package com.davidqf.minecraft.towerofgod.common.entities;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
+import com.davidqf.minecraft.towerofgod.common.packets.ShinsuStatsSyncMessage;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
+import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -24,6 +27,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -150,6 +154,10 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         ShinsuTechniqueInstance technique = getTechnique();
         if (technique != null) {
             technique.remove(world);
+            Entity shooter = func_234616_v_();
+            if (shooter instanceof ServerPlayerEntity) {
+                ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) shooter), new ShinsuStatsSyncMessage(IShinsuStats.get(shooter)));
+            }
         }
         super.remove(keepData);
     }

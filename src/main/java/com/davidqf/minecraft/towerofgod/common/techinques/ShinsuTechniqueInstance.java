@@ -1,20 +1,15 @@
 package com.davidqf.minecraft.towerofgod.common.techinques;
 
-import com.davidqf.minecraft.towerofgod.common.packets.ShinsuStatsSyncMessage;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public abstract class ShinsuTechniqueInstance implements INBTSerializable<CompoundNBT> {
@@ -89,11 +84,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user != null) {
             IShinsuStats stats = IShinsuStats.get(user);
             stats.removeTechnique(this);
-            if (user instanceof ServerPlayerEntity) {
-                ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new ShinsuStatsSyncMessage(stats));
-            } else if (user instanceof ClientPlayerEntity) {
-                ShinsuStatsSyncMessage.INSTANCE.sendToServer(new ShinsuStatsSyncMessage(stats));
-            }
         }
     }
 
