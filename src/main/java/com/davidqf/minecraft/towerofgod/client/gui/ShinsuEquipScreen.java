@@ -2,14 +2,12 @@ package com.davidqf.minecraft.towerofgod.client.gui;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
-import com.davidqf.minecraft.towerofgod.client.util.IPlayerShinsuEquips;
-import com.davidqf.minecraft.towerofgod.common.packets.PlayerEquipsSyncMessage;
+import com.davidqf.minecraft.towerofgod.common.packets.ChangeEquipsMessage;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.widget.Widget;
@@ -24,6 +22,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -35,11 +34,11 @@ public class ShinsuEquipScreen extends Screen {
     private static final TranslationTextComponent TITLE = new TranslationTextComponent("gui." + TowerOfGod.MOD_ID + ".shinsu_equip_screen");
     private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 166);
     private static final int TITLE_COLOR = 0xFFFFFFFF;
+    public static Map<ShinsuTechnique, Integer> known = Maps.newEnumMap(ShinsuTechnique.class);
     private final ShinsuSlot[][] slots;
     private final List<ShinsuTechnique> unlocked;
     private final ShinsuSlot[] selected;
-    private final IShinsuStats stats;
-    private final IPlayerShinsuEquips equips;
+    private final ShinsuTechnique[] equipped;
     private Scroller scroller;
     private final int xSize;
     private final int ySize;
@@ -47,18 +46,22 @@ public class ShinsuEquipScreen extends Screen {
     private int y;
     private int topRow;
 
-    private ShinsuEquipScreen(int xSize, int ySize) {
+    public ShinsuEquipScreen(int xSize, int ySize) {
         super(TITLE);
         x = 0;
         y = 0;
         this.xSize = xSize;
         this.ySize = ySize;
-        ClientPlayerEntity player = Minecraft.getInstance().player;
-        stats = IShinsuStats.get(player);
-        equips = IPlayerShinsuEquips.get(player);
         slots = new ShinsuSlot[3][9];
         unlocked = new ArrayList<>();
+        for (ShinsuTechnique technique : known.keySet()) {
+            if (known.get(technique) > 0) {
+                unlocked.add(technique);
+            }
+        }
         selected = new ShinsuSlot[4];
+        equipped = new ShinsuTechnique[4];
+        System.arraycopy(ShinsuSkillWheelGui.equipped, 0, equipped, 0, Math.min(equipped.length, ShinsuSkillWheelGui.equipped.length));
         scroller = null;
         topRow = 0;
     }
@@ -69,11 +72,6 @@ public class ShinsuEquipScreen extends Screen {
         x = (width - xSize) / 2;
         y = (height - ySize) / 2;
         addSlots();
-        for (ShinsuTechnique technique : ShinsuTechnique.values()) {
-            if (stats.getTechniqueLevel(technique) > 0) {
-                unlocked.add(technique);
-            }
-        }
         for (ShinsuSlot slot : selected) {
             unlocked.remove(slot.technique);
         }
@@ -87,12 +85,6 @@ public class ShinsuEquipScreen extends Screen {
             scroller.color = Scroller.COLOR;
         }
         return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-
-        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -115,7 +107,6 @@ public class ShinsuEquipScreen extends Screen {
     private void addSlots() {
         int width = 16 * xSize / 195;
         int height = 16 * ySize / 166;
-        ShinsuTechnique[] equipped = equips.getEquipped();
         for (int i = 0; i < selected.length; i++) {
             ShinsuSlot slot = new ShinsuSlot(this, x + 16 * xSize / 195 + 49 * xSize * i / 195, y + 35 * ySize / 166, width, height, i < equipped.length ? equipped[i] : null);
             selected[i] = slot;
@@ -168,11 +159,10 @@ public class ShinsuEquipScreen extends Screen {
 
         @Override
         public void onPress() {
-            ShinsuTechnique[] equipped = screen.equips.getEquipped();
             if (isSelected()) {
                 for (int i = 0; i < screen.selected.length; i++) {
                     if (equals(screen.selected[i])) {
-                        equipped[i] = null;
+                        screen.equipped[i] = null;
                         break;
                     }
                 }
@@ -182,14 +172,15 @@ public class ShinsuEquipScreen extends Screen {
                 for (int i = 0; i < screen.selected.length; i++) {
                     ShinsuSlot slot = screen.selected[i];
                     if (slot.technique == null) {
-                        equipped[i] = technique;
+                        screen.equipped[i] = technique;
+                        screen.selected[i].technique = technique;
                         slot.technique = technique;
                         screen.unlocked.remove(technique);
                         break;
                     }
                 }
             }
-            PlayerEquipsSyncMessage.INSTANCE.sendToServer(new PlayerEquipsSyncMessage(screen.equips));
+            ChangeEquipsMessage.INSTANCE.sendToServer(new ChangeEquipsMessage(screen.equipped));
         }
 
         private boolean isSelected() {
@@ -209,7 +200,7 @@ public class ShinsuEquipScreen extends Screen {
         }
 
         private void renderTooltip(MatrixStack matrixStack) {
-            TranslationTextComponent text = technique.getName();
+            TranslationTextComponent text = technique.getText();
             int tWidth = screen.font.func_238414_a_(text) + height / 2;
             int tHeight = screen.font.FONT_HEIGHT + width / 2;
             int dY = height / -2;
@@ -258,7 +249,6 @@ public class ShinsuEquipScreen extends Screen {
         public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
             RENDER.render(matrixStack, x, y, 0, width, height, color);
         }
-
     }
 
     public static class OpenButton extends Button {

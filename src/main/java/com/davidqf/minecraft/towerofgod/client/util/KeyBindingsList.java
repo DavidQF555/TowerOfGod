@@ -6,11 +6,9 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class KeyBindingsList {
 
-    public static final KeyBinding OPEN_TREE = new KeyBinding("key." + TowerOfGod.MOD_ID + ".openshinsutree", 71, "key." + TowerOfGod.MOD_ID + ".categpry");
     public static final KeyBinding OPEN_WHEEL = new KeyBinding("key." + TowerOfGod.MOD_ID + ".openshinsuwheel", 71, "key." + TowerOfGod.MOD_ID + ".categpry");
 
     public static void register() {
-        ClientRegistry.registerKeyBinding(OPEN_TREE);
         ClientRegistry.registerKeyBinding(OPEN_WHEEL);
     }
 }

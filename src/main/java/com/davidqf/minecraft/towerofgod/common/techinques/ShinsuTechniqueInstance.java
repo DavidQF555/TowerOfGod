@@ -1,13 +1,16 @@
 package com.davidqf.minecraft.towerofgod.common.techinques;
 
+import com.davidqf.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -54,11 +57,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     @Nullable
-    public Entity getUser(World world) {
-        if (world instanceof ServerWorld) {
-            return ((ServerWorld) world).getEntityByUuid(user);
-        }
-        return null;
+    public Entity getUser(ServerWorld world) {
+        return world.getEntityByUuid(user);
     }
 
     public ShinsuTechnique getTechnique() {
@@ -69,17 +69,19 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         return level;
     }
 
-    public void onEnd(World world) {
+    public void onEnd(ServerWorld world) {
+        updateMeter(world);
     }
 
-    public void onUse(World world) {
+    public void onUse(ServerWorld world) {
+        updateMeter(world);
     }
 
     public int getCooldown() {
         return 0;
     }
 
-    public void remove(World world) {
+    public void remove(ServerWorld world) {
         Entity user = getUser(world);
         if (user != null) {
             IShinsuStats stats = IShinsuStats.get(user);
@@ -87,8 +89,16 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         }
     }
 
-    public void tick(World world) {
+    public void tick(ServerWorld world) {
         ticksLeft--;
+    }
+
+    private void updateMeter(ServerWorld world) {
+        Entity user = getUser(world);
+        if (user instanceof ServerPlayerEntity) {
+            IShinsuStats stats = IShinsuStats.get(user);
+            UpdateStatsMetersMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+        }
     }
 
     @Override
@@ -98,7 +108,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user != null) {
             nbt.putUniqueId("User", user);
         }
-        nbt.putString("Technique", technique.getName().getKey());
+        nbt.putString("Technique", technique.getName());
         nbt.putInt("Ticks", ticksLeft);
         nbt.putInt("Level", level);
         return nbt;

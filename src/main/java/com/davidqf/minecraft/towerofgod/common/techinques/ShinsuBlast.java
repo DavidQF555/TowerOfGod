@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
     }
 
     @Override
-    public void onUse(World world) {
+    public void onUse(ServerWorld world) {
         Entity u = getUser(world);
         if (u instanceof LivingEntity) {
             LivingEntity user = (LivingEntity) u;

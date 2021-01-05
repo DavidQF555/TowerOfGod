@@ -1,14 +1,11 @@
 package com.davidqf.minecraft.towerofgod.client.gui;
 
 import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ResourceLocation;
-
-import java.util.function.Function;
 
 public abstract class StatsMeterGui extends AbstractGui {
 
@@ -19,8 +16,8 @@ public abstract class StatsMeterGui extends AbstractGui {
     private final RenderInfo background;
     private final RenderInfo bar;
     private final RenderInfo lines;
-    private final Function<IShinsuStats.AdvancementShinsuStats, Integer> value;
-    private final Function<IShinsuStats.AdvancementShinsuStats, Integer> max;
+    private int value;
+    private int max;
     private final int maxDisplay;
     private final int x;
     private final int y;
@@ -28,7 +25,7 @@ public abstract class StatsMeterGui extends AbstractGui {
     private final int height;
     private final int textColor;
 
-    public StatsMeterGui(int x, int y, int width, int height, Function<IShinsuStats.AdvancementShinsuStats, Integer> value, Function<IShinsuStats.AdvancementShinsuStats, Integer> max, int maxDisplay, RenderInfo bar, RenderInfo background, int textColor) {
+    public StatsMeterGui(int x, int y, int width, int height, int value, int max, int maxDisplay, RenderInfo bar, RenderInfo background, int textColor) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -43,10 +40,7 @@ public abstract class StatsMeterGui extends AbstractGui {
     }
 
     public void render(MatrixStack matrixStack) {
-        IShinsuStats.AdvancementShinsuStats stats = (IShinsuStats.AdvancementShinsuStats) IShinsuStats.get(Minecraft.getInstance().player);
         background.render(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
-        int value = this.value.apply(stats);
-        int max = this.max.apply(stats);
         double ratio = value * 1.0 / max;
         bar.setBlitWidth((int) (BLIT_WIDTH * ratio));
         bar.render(matrixStack, x, y, getBlitOffset(), (int) (width * ratio), height, 0xFFFFFFFF);
@@ -69,14 +63,30 @@ public abstract class StatsMeterGui extends AbstractGui {
         font.drawString(matrixStack, text, textX, textY, textColor);
     }
 
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
+    }
+
     public static class Shinsu extends StatsMeterGui {
 
         private static final int MAX_SHINSU = 200;
         private static final int TEXT_COLOR = 0xFF8CF5FF;
         private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 10, 182, 5);
 
-        public Shinsu(int x, int y, int width, int height) {
-            super(x, y, width, height, IShinsuStats.AdvancementShinsuStats::getShinsu, IShinsuStats.AdvancementShinsuStats::getMaxShinsu, MAX_SHINSU, new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
+        public Shinsu(int x, int y, int width, int height, int value, int max) {
+            super(x, y, width, height, value, max, MAX_SHINSU, new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
         }
     }
 
@@ -86,8 +96,8 @@ public abstract class StatsMeterGui extends AbstractGui {
         private static final int TEXT_COLOR = 0xFF8CF5FF;
         private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, 256, 256, 0, 10, 182, 5);
 
-        public Baangs(int x, int y, int width, int height) {
-            super(x, y, width, height, IShinsuStats.AdvancementShinsuStats::getBaangs, IShinsuStats.AdvancementShinsuStats::getMaxBaangs, MAX_BAANGS, new RenderInfo(TEXTURE, 256, 256, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
+        public Baangs(int x, int y, int width, int height, int value, int max) {
+            super(x, y, width, height, value, max, MAX_BAANGS, new RenderInfo(TEXTURE, 256, 256, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
         }
     }
 }

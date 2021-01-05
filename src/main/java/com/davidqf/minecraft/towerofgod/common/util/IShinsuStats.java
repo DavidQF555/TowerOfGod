@@ -1,16 +1,11 @@
 package com.davidqf.minecraft.towerofgod.common.util;
 
-import com.davidqf.minecraft.towerofgod.client.gui.ShinsuAdvancement;
-import com.davidqf.minecraft.towerofgod.client.gui.ShinsuAdvancementProgress;
-import com.davidqf.minecraft.towerofgod.common.packets.ShinsuStatsSyncMessage;
-import com.davidqf.minecraft.towerofgod.common.packets.ShinsuTechniqueMessage;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
+import com.google.common.collect.Maps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -20,21 +15,17 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.Supplier;
 
 public interface IShinsuStats {
 
     @Nonnull
     static IShinsuStats get(Entity user) {
-        return user.getCapability(Provider.capability).orElseGet(AdvancementShinsuStats::new);
+        return user.getCapability(Provider.capability).orElseGet(ShinsuStats::new);
     }
-
-    Type getType();
 
     List<ShinsuTechniqueInstance> getTechniques();
 
@@ -44,15 +35,27 @@ public interface IShinsuStats {
 
     int getTechniqueLevel(ShinsuTechnique technique);
 
-    void addKnownTechnique(ShinsuTechnique technique, int level);
+    void addKnownTechnique(ShinsuTechnique technique, int amt);
 
     int getShinsu();
 
+    int getMaxShinsu();
+
+    void addMaxShinsu(int amount);
+
     int getBaangs();
+
+    int getMaxBaangs();
+
+    void addMaxBaangs(int amount);
 
     double getResistance();
 
+    void multiplyResistance(double factor);
+
     double getTension();
+
+    void multiplyTension(double factor);
 
     default ShinsuQuality getQuality() {
         return ShinsuQuality.NONE;
@@ -65,7 +68,7 @@ public interface IShinsuStats {
     void addCooldown(ShinsuTechnique technique, int time);
 
     default void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, @Nullable Vector3d dir) {
-        if (getCooldown(technique) <= 0) {
+        if (getCooldown(technique) <= 0 && user.world instanceof ServerWorld) {
             int level = getTechniqueLevel(technique);
             ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
             if (builder.canCast(technique, user, level, target, dir)) {
@@ -73,56 +76,41 @@ public interface IShinsuStats {
                 if (tech != null) {
                     addCooldown(technique, tech.getCooldown());
                     addTechnique(tech);
-                    if (user.world instanceof ServerWorld) {
-                        tech.onUse(user.world);
-                        if (user instanceof ServerPlayerEntity) {
-                            ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new ShinsuStatsSyncMessage(this));
-                        }
-                    } else if (user instanceof ClientPlayerEntity) {
-                        ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.USE, tech));
-                        ShinsuStatsSyncMessage.INSTANCE.sendToServer(new ShinsuStatsSyncMessage(this));
-                    }
+                    tech.onUse((ServerWorld) user.world);
                 }
             }
         }
+    }
+
+    default void tick(ServerWorld world) {
     }
 
     CompoundNBT serialize();
 
     void deserialize(CompoundNBT nbt);
 
-    enum Type {
+    class ShinsuStats implements IShinsuStats {
 
-        ADVANCEMENT(AdvancementShinsuStats::new);
-
-        private final Supplier<IShinsuStats> supplier;
-
-        Type(Supplier<IShinsuStats> supplier) {
-            this.supplier = supplier;
-        }
-
-        public static Type get(String name) {
-            for (Type type : values()) {
-                if (type.name().equals(name)) {
-                    return type;
-                }
-            }
-            return null;
-        }
-
-        public Supplier<IShinsuStats> getSupplier() {
-            return supplier;
-        }
-    }
-
-    abstract class ShinsuStats implements IShinsuStats {
-
+        private int shinsu;
+        private int baangs;
+        private double resistance;
+        private double tension;
         private ShinsuQuality quality;
+        private final Map<ShinsuTechnique, Integer> known;
         private final Map<ShinsuTechnique, Integer> cooldowns;
         private final List<ShinsuTechniqueInstance> techniques;
 
-        public ShinsuStats(ShinsuQuality quality, Map<ShinsuTechnique, Integer> cooldowns, List<ShinsuTechniqueInstance> techniques) {
+        public ShinsuStats() {
+            this(0, 0, 1, 1, ShinsuQuality.NONE, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());
+        }
+
+        private ShinsuStats(int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, Map<ShinsuTechnique, Integer> known, Map<ShinsuTechnique, Integer> cooldowns, List<ShinsuTechniqueInstance> techniques) {
+            this.shinsu = shinsu;
+            this.baangs = baangs;
+            this.resistance = resistance;
+            this.tension = tension;
             this.quality = quality;
+            this.known = known;
             this.cooldowns = cooldowns;
             this.techniques = techniques;
         }
@@ -140,6 +128,74 @@ public interface IShinsuStats {
         @Override
         public void removeTechnique(ShinsuTechniqueInstance technique) {
             techniques.remove(technique);
+        }
+
+        @Override
+        public int getTechniqueLevel(ShinsuTechnique technique) {
+            return known.getOrDefault(technique, 0);
+        }
+
+        @Override
+        public void addKnownTechnique(ShinsuTechnique technique, int amt) {
+            known.put(technique, getTechniqueLevel(technique) + amt);
+        }
+
+        @Override
+        public int getShinsu() {
+            int shinsu = this.shinsu;
+            for (ShinsuTechniqueInstance technique : getTechniques()) {
+                shinsu -= technique.getTechnique().getShinsuUse();
+            }
+            return shinsu;
+        }
+
+        @Override
+        public int getMaxShinsu() {
+            return shinsu;
+        }
+
+        @Override
+        public void addMaxShinsu(int amount) {
+            shinsu = Math.max(0, shinsu + amount);
+        }
+
+        @Override
+        public int getBaangs() {
+            int baangs = this.baangs;
+            for (ShinsuTechniqueInstance technique : getTechniques()) {
+                baangs -= technique.getTechnique().getBaangUse();
+            }
+            return baangs;
+        }
+
+        @Override
+        public int getMaxBaangs() {
+            return baangs;
+        }
+
+        @Override
+        public void addMaxBaangs(int amount) {
+            baangs = Math.max(0, baangs + amount);
+        }
+
+        @Override
+        public double getResistance() {
+            return resistance;
+        }
+
+        @Override
+        public void multiplyResistance(double factor) {
+            resistance *= factor;
+        }
+
+        @Override
+        public double getTension() {
+            return tension;
+        }
+
+        @Override
+        public void multiplyTension(double factor) {
+            tension *= factor;
         }
 
         @Override
@@ -163,16 +219,44 @@ public interface IShinsuStats {
         }
 
         @Override
+        public void tick(ServerWorld world) {
+            List<ShinsuTechniqueInstance> techniques = getTechniques();
+            for (int i = 0; i < techniques.size(); i++) {
+                ShinsuTechniqueInstance technique = techniques.get(i);
+                technique.tick(world);
+                if (technique.ticksLeft() <= 0) {
+                    technique.onEnd(world);
+                    removeTechnique(technique);
+                }
+            }
+            for (ShinsuTechnique technique : known.keySet()) {
+                int time = getCooldown(technique);
+                if (time > 0) {
+                    addCooldown(technique, time - 1);
+                }
+            }
+        }
+
+        @Override
         public CompoundNBT serialize() {
             CompoundNBT tag = new CompoundNBT();
-            CompoundNBT list = new CompoundNBT();
-            list.putInt("Size", techniques.size());
+            tag.putInt("Shinsu", shinsu);
+            tag.putInt("Baangs", baangs);
+            tag.putDouble("Resistance", resistance);
+            tag.putDouble("Tension", tension);
+            CompoundNBT knownTech = new CompoundNBT();
+            for (ShinsuTechnique tech : known.keySet()) {
+                knownTech.putInt(tech.name(), known.get(tech));
+            }
+            tag.put("Known", knownTech);
+            CompoundNBT instances = new CompoundNBT();
+            instances.putInt("Size", techniques.size());
             for (int i = 0; i < techniques.size(); i++) {
                 ShinsuTechniqueInstance tech = techniques.get(i);
-                list.put(i + 1 + "", tech.serializeNBT());
-                list.putString("Type" + (i + 1), ShinsuTechnique.get(tech).getName().getKey());
+                instances.put(i + 1 + "", tech.serializeNBT());
+                instances.putString("Type" + (i + 1), ShinsuTechnique.get(tech).getName());
             }
-            tag.put("Techniques", list);
+            tag.put("Techniques", instances);
             tag.putString("Quality", quality.name());
             CompoundNBT cool = new CompoundNBT();
             for (ShinsuTechnique tech : cooldowns.keySet()) {
@@ -184,6 +268,16 @@ public interface IShinsuStats {
 
         @Override
         public void deserialize(CompoundNBT nbt) {
+            shinsu = nbt.getInt("Shinsu");
+            baangs = nbt.getInt("Baangs");
+            resistance = nbt.getDouble("Resistance");
+            tension = nbt.getDouble("Tension");
+            known.clear();
+            CompoundNBT knownTech = nbt.getCompound("Known");
+            for (ShinsuTechnique tech : ShinsuTechnique.values()) {
+                String key = tech.name();
+                known.put(tech, knownTech.getInt(key));
+            }
             techniques.clear();
             CompoundNBT list = nbt.getCompound("Techniques");
             for (int i = 0; i < list.getInt("Size"); i++) {
@@ -201,160 +295,6 @@ public interface IShinsuStats {
             }
         }
 
-    }
-
-    class AdvancementShinsuStats extends ShinsuStats {
-
-        private final Map<ShinsuAdvancement, ShinsuAdvancementProgress> advancements;
-
-        public AdvancementShinsuStats() {
-            this(ShinsuQuality.NONE, new EnumMap<>(ShinsuTechnique.class), new EnumMap<>(ShinsuAdvancement.class));
-        }
-
-        private AdvancementShinsuStats(ShinsuQuality quality, Map<ShinsuTechnique, Integer> cooldowns, Map<ShinsuAdvancement, ShinsuAdvancementProgress> advancements) {
-            super(quality, cooldowns, new ArrayList<>());
-            this.advancements = advancements;
-        }
-
-        @Override
-        public Type getType() {
-            return Type.ADVANCEMENT;
-        }
-
-        @Override
-        public int getTechniqueLevel(ShinsuTechnique technique) {
-            int count = 0;
-            Map<ShinsuAdvancement, ShinsuAdvancementProgress> advancements = getAdvancements();
-            for (ShinsuAdvancement advancement : advancements.keySet()) {
-                if (advancements.get(advancement).isComplete()) {
-                    for (ShinsuTechnique reward : advancement.getReward().getTechniques()) {
-                        if (reward == technique) {
-                            count++;
-                        }
-                    }
-                }
-            }
-            return count;
-        }
-
-        @Override
-        public void addKnownTechnique(ShinsuTechnique technique, int level) {
-        }
-
-        public int getMaxShinsu() {
-            int amt = 0;
-            for (ShinsuAdvancementProgress progress : advancements.values()) {
-                if (progress.isComplete()) {
-                    amt += progress.getAdvancement().getReward().getShinsu();
-                }
-            }
-            return amt;
-        }
-
-        public int getMaxBaangs() {
-            int amt = 0;
-            for (ShinsuAdvancementProgress progress : advancements.values()) {
-                if (progress.isComplete()) {
-                    amt += progress.getAdvancement().getReward().getBaangs();
-                }
-            }
-            return amt;
-        }
-
-        @Override
-        public int getShinsu() {
-            int inUse = 0;
-            for (ShinsuTechniqueInstance technique : getTechniques()) {
-                inUse += ShinsuTechnique.get(technique).getShinsuUse();
-            }
-            return getMaxShinsu() - inUse;
-        }
-
-        @Override
-        public int getBaangs() {
-            int inUse = 0;
-            for (ShinsuTechniqueInstance technique : getTechniques()) {
-                inUse += ShinsuTechnique.get(technique).getBaangUse();
-            }
-            return getMaxBaangs() - inUse;
-        }
-
-        @Override
-        public double getResistance() {
-            double amt = 1;
-            for (ShinsuAdvancementProgress progress : advancements.values()) {
-                if (progress.isComplete()) {
-                    amt *= progress.getAdvancement().getReward().getResistance();
-                }
-            }
-            return amt;
-        }
-
-        @Override
-        public double getTension() {
-            double amt = 1;
-            for (ShinsuAdvancementProgress progress : advancements.values()) {
-                if (progress.isComplete()) {
-                    amt *= progress.getAdvancement().getReward().getTension();
-                }
-            }
-            return amt;
-        }
-
-        public List<ShinsuAdvancement> getUnlockedAdvancements() {
-            List<ShinsuAdvancement> advancements = new ArrayList<>();
-            for (ShinsuAdvancement advancement : ShinsuAdvancement.values()) {
-                if (advancement.getParent() == null) {
-                    addUnlockedAdvancements(advancements, advancement);
-                }
-            }
-            return advancements;
-        }
-
-        private void addUnlockedAdvancements(List<ShinsuAdvancement> advancements, ShinsuAdvancement advancement) {
-            Map<ShinsuAdvancement, ShinsuAdvancementProgress> progress = getAdvancements();
-            if (progress.get(advancement).isComplete()) {
-                for (ShinsuAdvancement ad : advancement.getDirectChildren()) {
-                    addUnlockedAdvancements(advancements, ad);
-                }
-            } else {
-                advancements.add(advancement);
-            }
-        }
-
-        public Map<ShinsuAdvancement, ShinsuAdvancementProgress> getAdvancements() {
-            for (ShinsuAdvancement advancement : ShinsuAdvancement.values()) {
-                if (!advancements.containsKey(advancement)) {
-                    advancements.put(advancement, new ShinsuAdvancementProgress(advancement, 0, false));
-                }
-            }
-            return advancements;
-        }
-
-        @Override
-        public CompoundNBT serialize() {
-            CompoundNBT tag = super.serialize();
-            CompoundNBT adv = new CompoundNBT();
-            for (ShinsuAdvancement advancement : getAdvancements().keySet()) {
-                String key = advancement.getName().getKey();
-                adv.put(key, advancements.get(advancement).serializeNBT());
-            }
-            tag.put("Advancements", adv);
-            return tag;
-        }
-
-        @Override
-        public void deserialize(CompoundNBT nbt) {
-            super.deserialize(nbt);
-            advancements.clear();
-            CompoundNBT ad = nbt.getCompound("Advancements");
-            for (ShinsuAdvancement advancement : ShinsuAdvancement.values()) {
-                String key = advancement.getName().getKey();
-                ShinsuAdvancementProgress progress = new ShinsuAdvancementProgress(null, 0, false);
-                progress.deserializeNBT((CompoundNBT) ad.get(key));
-                advancements.put(advancement, progress);
-            }
-        }
     }
 
     class Provider implements ICapabilitySerializable<INBT> {

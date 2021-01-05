@@ -1,9 +1,6 @@
 package com.davidqf.minecraft.towerofgod.common.entities;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
-import com.davidqf.minecraft.towerofgod.client.gui.ShinsuAdvancement;
-import com.davidqf.minecraft.towerofgod.client.gui.ShinsuAdvancementProgress;
-import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
@@ -34,7 +31,7 @@ import java.util.*;
 public class RegularEntity extends ShinsuUserEntity {
 
     private static final String TAG_KEY = TowerOfGod.MOD_ID + ".regularentity";
-    private static final double FAMILY_ADVANCEMENT_RATE = 0.8;
+    private static final double FAMILY_TECHNIQUE_RATE = 0.8;
     private static final double FAMILY_WEAPON_RATE = 0.8;
     private static final List<Class<? extends Item>> WEAPONS = new ArrayList<>(Arrays.asList(SwordItem.class, AxeItem.class));
     public static final DataParameter<String> FAMILY = EntityDataManager.createKey(RegularEntity.class, DataSerializers.STRING);
@@ -52,20 +49,13 @@ public class RegularEntity extends ShinsuUserEntity {
 
     @Override
     public ILivingEntityData onInitialSpawn(@Nonnull IWorld worldIn, @Nonnull DifficultyInstance difficultyIn, @Nonnull SpawnReason reason, ILivingEntityData spawnDataIn, CompoundNBT dataTag) {
-
-        level = (int) (Math.random() * ShinsuAdvancement.values().length) + 1;
-
+        level = rand.nextInt(ShinsuTechnique.values().length) + 1;
         Personality[] personalities = Personality.values();
-        personality = personalities[(int) (Math.random() * personalities.length)];
-
-        Random rand = getRNG();
+        personality = personalities[rand.nextInt(personalities.length)];
         Family[] families = Family.values();
-        Family family = families[(int) (rand.nextDouble() * families.length)];
+        Family family = families[rand.nextInt(families.length)];
         setFamily(family);
-        IShinsuStats stats = IShinsuStats.get(this);
-
-        setAdvancements();
-
+        setStats();
         List<Item> weapon = new ArrayList<>();
         List<Item> pref = new ArrayList<>();
         for (Item item : ForgeRegistries.ITEMS) {
@@ -86,10 +76,10 @@ public class RegularEntity extends ShinsuUserEntity {
             }
         }
         ItemStack weap = Items.AIR.getDefaultInstance();
-        if (!pref.isEmpty() && Math.random() < FAMILY_WEAPON_RATE) {
-            weap = pref.get((int) (rand.nextDouble() * pref.size())).getDefaultInstance();
+        if (!pref.isEmpty() && rand.nextDouble() < FAMILY_WEAPON_RATE) {
+            weap = pref.get(rand.nextInt(pref.size())).getDefaultInstance();
         } else if (Math.random() < 1 - 1.0 / weapon.size()) {
-            weap = weapon.get((int) (rand.nextDouble() * weapon.size())).getDefaultInstance();
+            weap = weapon.get(rand.nextInt(weapon.size())).getDefaultInstance();
         }
         setItemStackToSlot(EquipmentSlotType.MAINHAND, weap);
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
@@ -103,59 +93,25 @@ public class RegularEntity extends ShinsuUserEntity {
                 .createMutableAttribute(Attributes.ATTACK_DAMAGE, 1);
     }
 
-    private void setAdvancements() {
+    private void setStats() {
         IShinsuStats stats = IShinsuStats.get(this);
-        if (stats instanceof IShinsuStats.AdvancementShinsuStats) {
-            Map<ShinsuAdvancement, ShinsuAdvancementProgress> advancements = ((IShinsuStats.AdvancementShinsuStats) stats).getAdvancements();
-            Family family = getFamily();
-            List<ShinsuAdvancement> possible = new ArrayList<>();
-            List<ShinsuAdvancement> additions = new ArrayList<>();
-            for (ShinsuAdvancement advancement : ShinsuAdvancement.values()) {
-                if (advancement.getParent() == null) {
-                    possible.add(advancement);
-                    additions.add(advancement);
-                }
+        Family family = getFamily();
+        stats.addMaxShinsu(10 + (int) (15 * rand.nextDouble() * level * family.getShinsu()));
+        stats.addMaxBaangs(1 + (int) (rand.nextDouble() * level * family.getBaangs() / 3));
+        stats.multiplyResistance(1 + rand.nextDouble() * level * family.getResistance() / 2);
+        stats.multiplyTension(1 + rand.nextDouble() * level * family.getTension() / 2);
+        ShinsuTechnique[] all = ShinsuTechnique.values();
+        ShinsuTechnique[] preferred = family.getPreferredTechniques();
+        int amount = level - rand.nextInt(level);
+        for (int i = 0; i < amount; i++) {
+            double chance = rand.nextDouble();
+            ShinsuTechnique technique;
+            if (preferred.length > 0 && chance < FAMILY_TECHNIQUE_RATE) {
+                technique = preferred[rand.nextInt(preferred.length)];
+            } else {
+                technique = all[rand.nextInt(all.length)];
             }
-            int count = 0;
-            int max = ShinsuAdvancement.values().length;
-            List<ShinsuAdvancement> preferred = new ArrayList<>();
-            Random random = getRNG();
-            while (count < max && count < level) {
-                possible.addAll(additions);
-                preferred:
-                for (ShinsuAdvancement advancement : additions) {
-                    ShinsuAdvancement.Reward reward = advancement.getReward();
-                    for (ShinsuTechnique technique : reward.getTechniques()) {
-                        for (ShinsuTechnique pref : family.getPreferredTechniques()) {
-                            if (pref == technique) {
-                                preferred.add(advancement);
-                                continue preferred;
-                            }
-                        }
-                    }
-                    for (ShinsuQuality quality : reward.getQualities()) {
-                        for (ShinsuQuality qual : family.getQualities()) {
-                            if (qual == quality) {
-                                preferred.add(advancement);
-                                continue preferred;
-                            }
-                        }
-                    }
-                }
-                ShinsuAdvancement add;
-                double rand = random.nextDouble();
-                if (!preferred.isEmpty() && rand < FAMILY_ADVANCEMENT_RATE) {
-                    add = preferred.get((int) (random.nextDouble() * preferred.size()));
-                } else {
-                    add = possible.get((int) (random.nextDouble() * possible.size()));
-                }
-                advancements.put(add, new ShinsuAdvancementProgress(add, 0, true));
-                possible.remove(add);
-                preferred.remove(add);
-                additions.clear();
-                additions.addAll(add.getDirectChildren());
-                count++;
-            }
+            stats.addKnownTechnique(technique, 1);
         }
     }
 

@@ -8,13 +8,11 @@ import com.davidqf.minecraft.towerofgod.client.render.RegularRenderer;
 import com.davidqf.minecraft.towerofgod.client.render.ShinsuRenderer;
 import com.davidqf.minecraft.towerofgod.common.entities.LighthouseEntity;
 
-import com.davidqf.minecraft.towerofgod.common.packets.PlayerEquipsSyncMessage;
-import com.davidqf.minecraft.towerofgod.common.packets.ShinsuTechniqueMessage;
+import com.davidqf.minecraft.towerofgod.common.packets.*;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
-import com.davidqf.minecraft.towerofgod.common.packets.ShinsuStatsSyncMessage;
+import com.google.common.collect.Maps;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -22,11 +20,11 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -34,7 +32,6 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -43,64 +40,86 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.List;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
 
-    private static StatsMeterGui.Shinsu shinsu = null;
-    private static StatsMeterGui.Baangs baangs = null;
+    public static StatsMeterGui.Shinsu shinsu = null;
+    public static StatsMeterGui.Baangs baangs = null;
     private static ShinsuSkillWheelGui wheel = null;
     private static IShinsuStats clonedStats = null;
     private static IPlayerShinsuEquips clonedEquips = null;
 
     @SubscribeEvent
     public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-        IShinsuStats stats = IShinsuStats.get(Minecraft.getInstance().player);
-        if (stats.getShinsu() > 0 || stats.getBaangs() > 0) {
-            if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD) {
+        Minecraft client = Minecraft.getInstance();
+        if (!client.gameSettings.hideGUI && !client.player.isCreative() && usingValid()) {
+            if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR) {
                 event.getMatrixStack().translate(0, -10, 0);
             } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
-                if (shinsu != null) {
-                    shinsu.render(event.getMatrixStack());
-                }
-                if (baangs != null) {
-                    baangs.render(event.getMatrixStack());
-                }
+                shinsu.render(event.getMatrixStack());
+                baangs.render(event.getMatrixStack());
+                UpdateStatsMetersMessage.INSTANCE.sendToServer(new UpdateStatsMetersMessage(0, 0, 0, 0));
             }
         }
     }
 
     @SubscribeEvent
     public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
-        Minecraft client = Minecraft.getInstance();
-        IShinsuStats stats = IShinsuStats.get(client.player);
-        if ((event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD) && (stats.getShinsu() > 0 || stats.getBaangs() > 0)) {
-            event.getMatrixStack().translate(0, 10, 0);
-        }
-        if (!client.gameSettings.hideGUI) {
-            if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || (wheel != null && wheel.isLocked())) {
+        if (usingValid()) {
+            Minecraft client = Minecraft.getInstance();
+            if (!client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR)) {
+                event.getMatrixStack().translate(0, 10, 0);
+            }
+            if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || wheel != null && wheel.isLocked()) {
                 if (wheel == null) {
                     wheel = new ShinsuSkillWheelGui();
                 }
-                wheel.render(event.getMatrixStack());
+                if (!client.gameSettings.hideGUI) {
+                    UpdateClientCooldownsMessage.INSTANCE.sendToServer(new UpdateClientCooldownsMessage());
+                    UpdateClientCanCastMessage.INSTANCE.sendToServer(new UpdateClientCanCastMessage(client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
+                    wheel.render(event.getMatrixStack());
+                }
             } else {
                 wheel = null;
             }
         }
     }
 
+    private static boolean unlockedTechniques() {
+        for (ShinsuTechnique technique : ShinsuEquipScreen.known.keySet()) {
+            if (ShinsuEquipScreen.known.get(technique) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean usingValid() {
+        boolean equipped = false;
+        for (ShinsuTechnique technique : ShinsuSkillWheelGui.equipped) {
+            if (technique != null) {
+                equipped = true;
+                break;
+            }
+        }
+        return equipped && validStats();
+    }
+
+    private static boolean validStats() {
+        return shinsu != null && baangs != null && (shinsu.getMax() > 0 || baangs.getMax() > 0);
+    }
+
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseInputEvent event) {
         Minecraft client = Minecraft.getInstance();
         if (client.player != null) {
-            IShinsuStats stats = IShinsuStats.get(client.player);
-            Vector3d dir = client.player.getLookVec();
-            if (wheel != null && wheel.getSelected() != null && wheel.getSelected().getBuilder().canCast(wheel.getSelected(), client.player, stats.getTechniqueLevel(wheel.getSelected()), client.pointedEntity, dir) && event.getButton() == 0) {
+            if (wheel != null && wheel.getSelected() != null && ShinsuSkillWheelGui.canCast.get(wheel.getSelected()) && event.getButton() == 0) {
                 int action = event.getAction();
                 if (wheel.isLocked()) {
                     if (action == GLFW.GLFW_RELEASE) {
-                        stats.cast(client.player, wheel.getSelected(), client.pointedEntity, dir);
+                        CastShinsuMessage.INSTANCE.sendToServer(new CastShinsuMessage(wheel.getSelected(), client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
                         wheel = null;
                     }
                 } else if (action == GLFW.GLFW_PRESS) {
@@ -113,24 +132,26 @@ public class ClientEventBusSubscriber {
     @SubscribeEvent
     public static void onGuiScreenEvent(GuiScreenEvent.InitGuiEvent.Post event) {
         Screen screen = event.getGui();
-        if (screen instanceof InventoryScreen) {
-            InventoryScreen inventory = (InventoryScreen) screen;
-            int xSize = inventory.getXSize();
-            int ySize = inventory.getYSize();
-            int x = inventory.getGuiLeft() + xSize * 3 / 4;
-            int y = inventory.getGuiTop() + ySize * 61 / 166;
-            int width = 20 * xSize / 176;
-            int height = 18 * ySize / 166;
-            event.addWidget(new ShinsuEquipScreen.OpenButton(screen, x, y, width, height));
-        } else if (screen instanceof CreativeScreen) {
-            CreativeScreen creative = (CreativeScreen) screen;
-            int xSize = creative.getXSize();
-            int ySize = creative.getYSize();
-            int x = creative.getGuiLeft() + xSize * 126 / 195;
-            int y = creative.getGuiTop() + ySize * 32 / 136;
-            int width = 20 * xSize / 195;
-            int height = 18 * ySize / 136;
-            event.addWidget(new ShinsuEquipScreen.OpenButton(screen, x, y, width, height));
+        if (unlockedTechniques() && validStats()) {
+            if (screen instanceof InventoryScreen) {
+                InventoryScreen inventory = (InventoryScreen) screen;
+                int xSize = inventory.getXSize();
+                int ySize = inventory.getYSize();
+                int x = inventory.getGuiLeft() + xSize * 3 / 4;
+                int y = inventory.getGuiTop() + ySize * 61 / 166;
+                int width = 20 * xSize / 176;
+                int height = 18 * ySize / 166;
+                event.addWidget(new ShinsuEquipScreen.OpenButton(screen, x, y, width, height));
+            } else if (screen instanceof CreativeScreen) {
+                CreativeScreen creative = (CreativeScreen) screen;
+                int xSize = creative.getXSize();
+                int ySize = creative.getYSize();
+                int x = creative.getGuiLeft() + xSize * 126 / 195;
+                int y = creative.getGuiTop() + ySize * 32 / 136;
+                int width = 20 * xSize / 195;
+                int height = 18 * ySize / 136;
+                event.addWidget(new ShinsuEquipScreen.OpenButton(screen, x, y, width, height));
+            }
         }
     }
 
@@ -157,62 +178,35 @@ public class ClientEventBusSubscriber {
                     wheel.tick();
                 }
                 if (player != null) {
-                    boolean changed = false;
-                    IShinsuStats stats = IShinsuStats.get(player);
-                    List<ShinsuTechniqueInstance> techniques = stats.getTechniques();
-                    for (int i = techniques.size() - 1; i >= 0; i--) {
-                        ShinsuTechniqueInstance attack = techniques.get(i);
-                        attack.tick(player.world);
-                        ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.TICK, attack));
-                        if (attack.ticksLeft() <= 0) {
-                            attack.onEnd(player.world);
-                            ShinsuTechniqueMessage.INSTANCE.sendToServer(new ShinsuTechniqueMessage(ShinsuTechniqueMessage.Action.END, attack));
-                            stats.removeTechnique(attack);
-                        }
-                        changed = true;
-                    }
-                    for (ShinsuTechnique key : ShinsuTechnique.values()) {
-                        int time = stats.getCooldown(key);
-                        if (time > 0) {
-                            stats.addCooldown(key, time - 1);
-                            changed = true;
-                        }
-                    }
-                    if (changed) {
-                        ShinsuStatsSyncMessage.INSTANCE.sendToServer(new ShinsuStatsSyncMessage(stats));
-                    }
-                }
-
-            }
-            if (KeyBindingsList.OPEN_TREE.isPressed()) {
-                if (client.currentScreen == null) {
-                    client.displayGuiScreen(new ShinsuSkillTreeScreen());
+                    ShinsuStatsTickMessage.INSTANCE.sendToServer(new ShinsuStatsTickMessage());
                 }
             }
         }
 
         @SubscribeEvent
-        public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-            PlayerEntity player = event.getPlayer();
-            ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ShinsuStatsSyncMessage(IShinsuStats.get(player)));
-            PlayerEquipsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new PlayerEquipsSyncMessage(IPlayerShinsuEquips.get(player)));
+        public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+            Entity entity = event.getEntity();
+            IShinsuStats stats = IShinsuStats.get(entity);
+            Map<ShinsuTechnique, Integer> known = Maps.newEnumMap(ShinsuTechnique.class);
+            for (ShinsuTechnique technique : ShinsuTechnique.values()) {
+                known.put(technique, stats.getTechniqueLevel(technique));
+            }
+            UpdateClientKnownMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
+            UpdateStatsMetersMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+            IPlayerShinsuEquips equipped = IPlayerShinsuEquips.get(entity);
+            UpdateClientEquippedMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientEquippedMessage(equipped.getEquipped()));
+        }
+
+        @SubscribeEvent
+        public static void onClientPlayerLoggedIn(ClientPlayerNetworkEvent.LoggedInEvent event) {
             initializeMeters();
         }
 
         @SubscribeEvent
-        public static void onEvent(Event event) {
-            PlayerEntity player = Minecraft.getInstance().player;
-            if (player != null) {
-                IShinsuStats stats = IShinsuStats.get(player);
-                if (stats instanceof IShinsuStats.AdvancementShinsuStats) {
-                    for (ShinsuAdvancement advancement : ((IShinsuStats.AdvancementShinsuStats) stats).getUnlockedAdvancements()) {
-                        ShinsuAdvancementCriteria criteria = advancement.getCriteria();
-                        if (criteria.correctEvent(event)) {
-                            criteria.onEvent(player, event);
-                        }
-                    }
-                }
-            }
+        public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+            shinsu = null;
+            baangs = null;
+            wheel = null;
         }
 
         @SubscribeEvent
@@ -237,10 +231,8 @@ public class ClientEventBusSubscriber {
             if (player.getUniqueID().equals(Minecraft.getInstance().player.getUniqueID())) {
                 IShinsuStats stats = IShinsuStats.get(player);
                 stats.deserialize(clonedStats.serialize());
-                ShinsuStatsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new ShinsuStatsSyncMessage(clonedStats));
                 IPlayerShinsuEquips equips = IPlayerShinsuEquips.get(player);
                 equips.deserialize(clonedEquips.serialize());
-                PlayerEquipsSyncMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new PlayerEquipsSyncMessage(clonedEquips));
             }
         }
 
@@ -255,8 +247,8 @@ public class ClientEventBusSubscriber {
         private static void initializeMeters() {
             MainWindow window = Minecraft.getInstance().getMainWindow();
             int y = window.getScaledHeight() - 36;
-            shinsu = new StatsMeterGui.Shinsu(window.getScaledWidth() / 2 - 91, y, 85, 5);
-            baangs = new StatsMeterGui.Baangs(window.getScaledWidth() / 2 + 6, y, 85, 5);
+            shinsu = new StatsMeterGui.Shinsu(window.getScaledWidth() / 2 - 91, y, 85, 5, 0, 0);
+            baangs = new StatsMeterGui.Baangs(window.getScaledWidth() / 2 + 6, y, 85, 5, 0, 0);
         }
     }
 }

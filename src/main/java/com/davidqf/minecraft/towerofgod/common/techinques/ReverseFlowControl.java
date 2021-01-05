@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,7 +19,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
     }
 
     @Override
-    public void tick(World world) {
+    public void tick(ServerWorld world) {
         Entity u = getUser(world);
         Entity t = getTarget(world);
         if (u instanceof LivingEntity && t instanceof LivingEntity) {

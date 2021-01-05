@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -32,16 +33,25 @@ public class CapabilityHandler {
         }
     }
 
+    @SubscribeEvent
+    public static void onRegisterCommands(RegisterCommandsEvent event) {
+        StatsCommand.register(event.getDispatcher());
+    }
+
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class ModBus {
         @SubscribeEvent
         public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
-            CapabilityManager.INSTANCE.register(IShinsuStats.class, new IShinsuStats.Storage(), () -> IShinsuStats.Type.ADVANCEMENT.getSupplier().get());
+            CapabilityManager.INSTANCE.register(IShinsuStats.class, new IShinsuStats.Storage(), IShinsuStats.ShinsuStats::new);
             CapabilityManager.INSTANCE.register(IPlayerShinsuEquips.class, new IPlayerShinsuEquips.Storage(), new IPlayerShinsuEquips.PlayerShinsuEquips.Factory());
-            ShinsuStatsSyncMessage.register(index++);
-            PlayerEquipsSyncMessage.register(index++);
-            ShinsuTechniqueMessage.register(index++);
-            ShinsuCriteriaCompletionMessage.register(index++);
+            ChangeEquipsMessage.register(index++);
+            CastShinsuMessage.register(index++);
+            ShinsuStatsTickMessage.register(index++);
+            UpdateStatsMetersMessage.register(index++);
+            UpdateClientCooldownsMessage.register(index++);
+            UpdateClientCanCastMessage.register(index++);
+            UpdateClientKnownMessage.register(index++);
+            UpdateClientEquippedMessage.register(index++);
         }
     }
 }

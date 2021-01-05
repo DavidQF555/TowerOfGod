@@ -23,6 +23,8 @@ public interface IPlayerShinsuEquips {
 
     ShinsuTechnique[] getEquipped();
 
+    void setEquipped(ShinsuTechnique[] equipped);
+
     CompoundNBT serialize();
 
     void deserialize(CompoundNBT nbt);
@@ -41,12 +43,17 @@ public interface IPlayerShinsuEquips {
         }
 
         @Override
+        public void setEquipped(ShinsuTechnique[] equipped) {
+            this.equipped = equipped;
+        }
+
+        @Override
         public CompoundNBT serialize() {
             CompoundNBT nbt = new CompoundNBT();
             nbt.putInt("Size", equipped.length);
             for (int i = 0; i < equipped.length; i++) {
                 ShinsuTechnique technique = equipped[i];
-                nbt.putString(i + 1 + "", technique == null ? "" : technique.getName().getKey());
+                nbt.putString(i + 1 + "", technique == null ? "" : technique.getName());
             }
             return nbt;
         }

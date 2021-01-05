@@ -7,6 +7,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -25,18 +26,9 @@ public abstract class ShinsuUserEntity extends CreatureEntity {
 
     @Override
     public void livingTick() {
-        IShinsuStats stats = IShinsuStats.get(this);
-        List<ShinsuTechniqueInstance> techniques = stats.getTechniques();
-        for (int i = techniques.size() - 1; i >= 0; i--) {
-            ShinsuTechniqueInstance attack = techniques.get(i);
-            attack.tick(world);
-            if (attack.ticksLeft() <= 0) {
-                attack.onEnd(world);
-                stats.removeTechnique(attack);
-            }
-        }
-        for (ShinsuTechnique key : ShinsuTechnique.values()) {
-            stats.addCooldown(key, Math.max(0, stats.getCooldown(key) - 1));
+        if (world instanceof ServerWorld) {
+            IShinsuStats stats = IShinsuStats.get(this);
+            stats.tick((ServerWorld) world);
         }
         super.livingTick();
     }

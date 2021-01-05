@@ -6,7 +6,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,7 +22,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
     }
 
     @Override
-    public void onUse(World world) {
+    public void onUse(ServerWorld world) {
         Entity u = getUser(world);
         Entity t = getTarget(world);
         if (u.getDistanceSq(t) <= RANGE * RANGE) {

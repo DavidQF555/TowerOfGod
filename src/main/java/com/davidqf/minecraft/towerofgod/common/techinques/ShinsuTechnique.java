@@ -1,8 +1,8 @@
 package com.davidqf.minecraft.towerofgod.common.techinques;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
-import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
 import com.davidqf.minecraft.towerofgod.client.gui.ShinsuIcons;
+import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -24,19 +24,21 @@ public enum ShinsuTechnique {
     SHINSU_BLAST(new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.SWIRL);
 
     private final Builder<? extends ShinsuTechniqueInstance> builder;
-    private final TranslationTextComponent name;
+    private final String name;
+    private final TranslationTextComponent text;
     private final RenderInfo icon;
 
     ShinsuTechnique(Builder<? extends ShinsuTechniqueInstance> builder, String name, RenderInfo icon) {
         this.builder = builder;
-        this.name = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name);
+        this.name = name;
+        text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name);
         this.icon = icon;
     }
 
     @Nullable
     public static ShinsuTechnique get(String name) {
         for (ShinsuTechnique tech : values()) {
-            if (name.equals(tech.getName().getKey())) {
+            if (tech.getName().equals(name)) {
                 return tech;
             }
         }
@@ -57,8 +59,12 @@ public enum ShinsuTechnique {
         return builder;
     }
 
-    public TranslationTextComponent getName() {
+    public String getName() {
         return name;
+    }
+
+    public TranslationTextComponent getText() {
+        return text;
     }
 
     public int getShinsuUse() {
