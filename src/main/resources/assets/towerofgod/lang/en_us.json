@@ -48,6 +48,8 @@
   "effect.towerofgod.reverse_flow_effect": "Reverse Flow",
   "container.towerofgod.lighthouse_container": "Lighthouse",
   "gui.towerofgod.shinsu_equip_screen": "Shinsu Equips",
+  "category.towerofgod": "Tower of God",
+  "key.towerofgod.open_shinsu_wheel": "Open Shinsu Wheel",
   "advancement.towerofgod.shinsu.title": "Shinsu",
   "advancement.towerofgod.shinsu.description": "The essential fluid flowing through the Tower at different densities",
   "advancement.towerofgod.body_reinforcement.title": "Body Reinforcement",
