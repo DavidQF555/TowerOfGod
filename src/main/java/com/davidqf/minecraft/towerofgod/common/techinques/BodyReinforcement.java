@@ -12,8 +12,10 @@ import javax.annotation.Nullable;
 
 public class BodyReinforcement extends ShinsuTechniqueInstance {
 
+    private static final int BASE_DURATION = 300;
+
     public BodyReinforcement(LivingEntity user, int level) {
-        super(ShinsuTechnique.BODY_REINFORCEMENT, user, level, level * 300);
+        super(ShinsuTechnique.BODY_REINFORCEMENT, user, level, level * BASE_DURATION);
     }
 
     @Override
@@ -21,18 +23,19 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         Entity e = getUser(world);
         if (e instanceof LivingEntity) {
             LivingEntity user = (LivingEntity) e;
-            user.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 2, getLevel(), true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.SPEED, 2, getLevel(), true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.HASTE, 2, getLevel(), true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.STRENGTH, 2, getLevel(), true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 2, getLevel(), true, false, false));
+            int level = getLevel();
+            user.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 2, level / 2, true, false, false));
+            user.addPotionEffect(new EffectInstance(Effects.SPEED, 2, level, true, false, false));
+            user.addPotionEffect(new EffectInstance(Effects.HASTE, 2, level, true, false, false));
+            user.addPotionEffect(new EffectInstance(Effects.STRENGTH, 2, level / 3, true, false, false));
+            user.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 2, level / 2, true, false, false));
         }
         super.tick(world);
     }
 
     @Override
     public int getCooldown() {
-        return getLevel() * 300;
+        return getLevel() * BASE_DURATION;
     }
 
     public static class Builder implements ShinsuTechnique.Builder<BodyReinforcement> {

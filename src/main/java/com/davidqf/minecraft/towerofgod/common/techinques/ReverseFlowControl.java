@@ -1,5 +1,6 @@
 package com.davidqf.minecraft.towerofgod.common.techinques;
 
+import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -12,32 +13,31 @@ import javax.annotation.Nullable;
 
 public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
 
-    private static final double RANGE = 2;
+    private static final double RANGE = 4;
+    private static final int BASE_DURATION = 40;
 
     public ReverseFlowControl(LivingEntity user, int level, @Nonnull LivingEntity target) {
-        super(ShinsuTechnique.REVERSE_FLOW_CONTROL, user, level, target, level * 40);
+        super(ShinsuTechnique.REVERSE_FLOW_CONTROL, user, level, target, level * BASE_DURATION);
     }
 
     @Override
     public void tick(ServerWorld world) {
-        Entity u = getUser(world);
-        Entity t = getTarget(world);
-        if (u instanceof LivingEntity && t instanceof LivingEntity) {
-            if (u.getDistanceSq(t) > RANGE * RANGE) {
+        Entity user = getUser(world);
+        Entity target = getTarget(world);
+        if (user != null && target instanceof LivingEntity) {
+            if (user.getDistanceSq(target) > RANGE * RANGE) {
                 remove(world);
                 return;
             }
-            LivingEntity user = (LivingEntity) u;
-            LivingEntity target = (LivingEntity) t;
-            double resistance = getTotalResistance(user, target);
-            target.addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), 2, (int) (1.5 * resistance * getLevel())));
+            double resistance = IShinsuStats.getTotalResistance(user, target);
+            ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), 2, (int) (1.5 * resistance * getLevel())));
         }
         super.tick(world);
     }
 
     @Override
     public int getCooldown() {
-        return 80;
+        return BASE_DURATION * 2;
     }
 
     public static class Builder implements ShinsuTechnique.Builder<ReverseFlowControl> {

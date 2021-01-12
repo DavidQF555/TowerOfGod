@@ -12,15 +12,17 @@ import javax.annotation.Nullable;
 
 public class BlackFish extends ShinsuTechniqueInstance {
 
+    private static final int BASE_DURATION = 600;
+
     public BlackFish(LivingEntity user, int level) {
-        super(ShinsuTechnique.BLACK_FISH, user, level, level * 600);
+        super(ShinsuTechnique.BLACK_FISH, user, level, level * BASE_DURATION);
     }
 
     @Override
     public void tick(ServerWorld world) {
         Entity e = getUser(world);
         int level = getLevel();
-        if (e instanceof LivingEntity && world.getLight(e.getPosition()) <= level * 4) {
+        if (e instanceof LivingEntity && world.getLight(e.getPosition()) <= level * 5) {
             ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 2, 1, true, true, true));
         }
         super.tick(world);
@@ -28,7 +30,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return getLevel() * 600;
+        return getLevel() * BASE_DURATION;
     }
 
     public static class Builder implements ShinsuTechnique.Builder<BlackFish> {

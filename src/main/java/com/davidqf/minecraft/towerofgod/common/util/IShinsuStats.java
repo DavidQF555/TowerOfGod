@@ -28,6 +28,12 @@ public interface IShinsuStats {
         return user.getCapability(Provider.capability).orElseGet(ShinsuStats::new);
     }
 
+    static double getTotalResistance(Entity user, Entity target) {
+        IShinsuStats targetStats = get(target);
+        IShinsuStats userStats = get(user);
+        return targetStats.getResistance() / userStats.getTension();
+    }
+
     List<ShinsuTechniqueInstance> getTechniques();
 
     void addTechnique(ShinsuTechniqueInstance technique);
@@ -112,7 +118,7 @@ public interface IShinsuStats {
         private final List<ShinsuTechniqueInstance> techniques;
 
         public ShinsuStats() {
-            this(0, 0, 1, 1, ShinsuQuality.NONE, ShinsuShape.SWORD, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());
+            this(0, 0, 1, 1, ShinsuQuality.NONE, ShinsuShape.NONE, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());
         }
 
         private ShinsuStats(int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, ShinsuShape shape, Map<ShinsuTechnique, Integer> known, Map<ShinsuTechnique, Integer> cooldowns, List<ShinsuTechniqueInstance> techniques) {
@@ -247,8 +253,7 @@ public interface IShinsuStats {
                 ShinsuTechniqueInstance technique = techniques.get(i);
                 technique.tick(world);
                 if (technique.ticksLeft() <= 0) {
-                    technique.onEnd(world);
-                    removeTechnique(technique);
+                    technique.remove(world);
                 }
             }
             for (ShinsuTechnique technique : known.keySet()) {

@@ -90,7 +90,7 @@ public class StatsCommand {
             builder.suggest("baangs");
             builder.suggest("resistance");
             builder.suggest("tension");
-            for (ShinsuTechnique technique : ShinsuTechnique.values()) {
+            for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
                 builder.suggest(technique.getName());
             }
             return builder.buildFuture();

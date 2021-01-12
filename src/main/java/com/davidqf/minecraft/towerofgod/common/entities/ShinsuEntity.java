@@ -3,6 +3,7 @@ package com.davidqf.minecraft.towerofgod.common.entities;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
+import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -77,14 +78,12 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     public void onEntityHit(EntityRayTraceResult rayTraceResult) {
         super.onEntityHit(rayTraceResult);
         Entity e = rayTraceResult.getEntity();
-        Entity s = func_234616_v_();
-        if (e instanceof LivingEntity && s instanceof LivingEntity) {
-            LivingEntity target = (LivingEntity) e;
-            ShinsuQuality quality = getQuality();
-            float damage = (float) (ShinsuTechniqueInstance.getTotalResistance((LivingEntity) s, target) * level * quality.getDamage() * DAMAGE) / 3;
-            quality.applyEntityEffect(this, rayTraceResult);
-            target.attackEntityFrom(quality.getSource(), damage);
-        }
+        Entity shooter = func_234616_v_();
+        LivingEntity target = (LivingEntity) e;
+        ShinsuQuality quality = getQuality();
+        float damage = (float) (IShinsuStats.getTotalResistance(shooter, target) * level * quality.getDamage() * DAMAGE) / 3;
+        quality.applyEntityEffect(this, rayTraceResult);
+        target.attackEntityFrom(quality.getSource(), damage);
     }
 
     @Nullable

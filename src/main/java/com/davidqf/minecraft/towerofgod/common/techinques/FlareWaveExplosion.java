@@ -1,5 +1,6 @@
 package com.davidqf.minecraft.towerofgod.common.techinques;
 
+import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
@@ -15,7 +16,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
 
     private static final double RANGE = 1.5;
     private static final float DAMAGE = 10;
-    private static final double KNOCKBACK = 3;
+    private static final double KNOCKBACK = 2;
 
     public FlareWaveExplosion(LivingEntity user, int level, @Nonnull LivingEntity target) {
         super(ShinsuTechnique.FLARE_WAVE_EXPLOSION, user, level, target, 0);
@@ -23,12 +24,11 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
 
     @Override
     public void onUse(ServerWorld world) {
-        Entity u = getUser(world);
+        Entity user = getUser(world);
         Entity t = getTarget(world);
-        if (u.getDistanceSq(t) <= RANGE * RANGE) {
-            LivingEntity user = (LivingEntity) u;
+        if (user != null && t instanceof LivingEntity && user.getDistanceSq(t) <= RANGE * RANGE) {
             LivingEntity target = (LivingEntity) t;
-            double resistance = getTotalResistance(user, target);
+            double resistance = IShinsuStats.getTotalResistance(user, target);
             target.attackEntityFrom(DamageSource.MAGIC, (float) (DAMAGE / resistance) * getLevel() / 2);
             target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 / resistance), getLevel(), true, false, false));
             double knock = KNOCKBACK / resistance;

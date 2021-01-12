@@ -20,15 +20,17 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     private UUID id;
     private ShinsuTechnique technique;
     private UUID user;
-    private int ticksLeft;
     private int level;
+    private int duration;
+    private int ticks;
 
-    public ShinsuTechniqueInstance(ShinsuTechnique technique, LivingEntity user, int level, int ticksLeft) {
+    public ShinsuTechniqueInstance(ShinsuTechnique technique, LivingEntity user, int level, int duration) {
         id = UUID.randomUUID();
         this.technique = technique;
         this.user = user == null ? null : user.getUniqueID();
         this.level = level;
-        this.ticksLeft = ticksLeft;
+        this.duration = duration;
+        ticks = 0;
     }
 
     @Nullable
@@ -42,18 +44,20 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         return null;
     }
 
-    public static double getTotalResistance(LivingEntity user, LivingEntity target) {
-        IShinsuStats targetStats = IShinsuStats.get(target);
-        IShinsuStats userStats = IShinsuStats.get(user);
-        return targetStats.getResistance() / userStats.getTension();
-    }
-
     public UUID getID() {
         return id;
     }
 
     public int ticksLeft() {
-        return ticksLeft;
+        return duration - ticks;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public int getTicks() {
+        return ticks;
     }
 
     @Nullable
@@ -82,6 +86,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public void remove(ServerWorld world) {
+        onEnd(world);
         Entity user = getUser(world);
         if (user != null) {
             IShinsuStats stats = IShinsuStats.get(user);
@@ -90,7 +95,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public void tick(ServerWorld world) {
-        ticksLeft--;
+        ticks++;
     }
 
     private void updateMeter(ServerWorld world) {
@@ -109,7 +114,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
             nbt.putUniqueId("User", user);
         }
         nbt.putString("Technique", technique.getName());
-        nbt.putInt("Ticks", ticksLeft);
+        nbt.putInt("Duration", duration);
+        nbt.putInt("Ticks", ticks);
         nbt.putInt("Level", level);
         return nbt;
     }
@@ -119,7 +125,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         id = nbt.getUniqueId("ID");
         user = nbt.getUniqueId("User");
         technique = ShinsuTechnique.get(nbt.getString("Technique"));
-        ticksLeft = nbt.getInt("Ticks");
+        duration = nbt.getInt("Duration");
+        ticks = nbt.getInt("Ticks");
         level = nbt.getInt("Level");
     }
 
@@ -127,8 +134,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         private UUID target;
 
-        public Targetable(ShinsuTechnique technique, LivingEntity user, int level, Entity target, int ticksLeft) {
-            super(technique, user, level, ticksLeft);
+        public Targetable(ShinsuTechnique technique, LivingEntity user, int level, Entity target, int duration) {
+            super(technique, user, level, duration);
             this.target = target == null ? null : target.getUniqueID();
         }
 
@@ -162,8 +169,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         private Vector3d dir;
 
-        public Direction(ShinsuTechnique technique, LivingEntity user, int level, Vector3d dir, int ticksLeft) {
-            super(technique, user, level, ticksLeft);
+        public Direction(ShinsuTechnique technique, LivingEntity user, int level, Vector3d dir, int duration) {
+            super(technique, user, level, duration);
             this.dir = dir;
         }
 
