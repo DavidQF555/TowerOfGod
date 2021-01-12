@@ -111,12 +111,13 @@ public class ClientEventBusSubscriber {
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseInputEvent event) {
         Minecraft client = Minecraft.getInstance();
-        if (client.player != null) {
-            if (wheel != null && wheel.getSelected() != null && ShinsuSkillWheelGui.canCast.get(wheel.getSelected()) && event.getButton() == 0) {
+        if (wheel != null) {
+            ShinsuTechnique selected = wheel.getSelected();
+            if (selected != null && ShinsuSkillWheelGui.canCast.containsKey(selected) && ShinsuSkillWheelGui.canCast.get(selected) && event.getButton() == 0) {
                 int action = event.getAction();
                 if (wheel.isLocked()) {
                     if (action == GLFW.GLFW_RELEASE) {
-                        CastShinsuMessage.INSTANCE.sendToServer(new CastShinsuMessage(wheel.getSelected(), client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
+                        CastShinsuMessage.INSTANCE.sendToServer(new CastShinsuMessage(selected, client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
                         wheel = null;
                     }
                 } else if (action == GLFW.GLFW_PRESS) {
