@@ -15,14 +15,12 @@ import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -33,7 +31,7 @@ public class ShinsuEquipScreen extends Screen {
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/shinsu_equip_screen.png");
     private static final TranslationTextComponent TITLE = new TranslationTextComponent("gui." + TowerOfGod.MOD_ID + ".shinsu_equip_screen");
     private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 166);
-    private static final int TITLE_COLOR = 0xFFFFFFFF;
+    private static final int TITLE_COLOR = 0xFF404040;
     public static Map<ShinsuTechnique, Integer> known = Maps.newEnumMap(ShinsuTechnique.class);
     private final ShinsuSlot[][] slots;
     private final List<ShinsuTechnique> unlocked;
@@ -75,7 +73,7 @@ public class ShinsuEquipScreen extends Screen {
         for (ShinsuSlot slot : selected) {
             unlocked.remove(slot.technique);
         }
-        scroller = new Scroller(this, x + 175 * xSize / 195, y + 84 * ySize / 166, 12 * xSize / 195, 15 * ySize / 166, y + 84 * ySize / 166, y + 136 * ySize / 166);
+        scroller = new Scroller(this, x + 175, y + 84, 12, 15, y + 84, y + 136);
         addButton(scroller);
     }
 
@@ -91,7 +89,7 @@ public class ShinsuEquipScreen extends Screen {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         updateSlots();
         BACKGROUND.render(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
-        drawCenteredString(matrixStack, font, title, x + xSize / 2, y + ySize / 20, TITLE_COLOR);
+        font.func_238422_b_(matrixStack, title, x + (xSize - font.func_238414_a_(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
         ShinsuSlot hovered = null;
         for (Widget button : buttons) {
             button.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -100,21 +98,21 @@ public class ShinsuEquipScreen extends Screen {
             }
         }
         if (hovered != null) {
-            hovered.renderTooltip(matrixStack);
+            hovered.renderTooltip(matrixStack, mouseX, mouseY);
         }
     }
 
     private void addSlots() {
-        int width = 16 * xSize / 195;
-        int height = 16 * ySize / 166;
+        int width = 16;
+        int height = 16;
         for (int i = 0; i < selected.length; i++) {
-            ShinsuSlot slot = new ShinsuSlot(this, x + 16 * xSize / 195 + 49 * xSize * i / 195, y + 35 * ySize / 166, width, height, i < equipped.length ? equipped[i] : null);
+            ShinsuSlot slot = new ShinsuSlot(this, x + 16 + 49 * i, y + 35, width, height, i < equipped.length ? equipped[i] : null);
             selected[i] = slot;
             addButton(slot);
         }
         for (int i = 0; i < slots.length; i++) {
             for (int j = 0; j < slots[i].length; j++) {
-                ShinsuSlot slot = new ShinsuSlot(this, x + 8 * xSize / 195 + 18 * xSize * j / 195, y + 84 * ySize / 166 + 18 * ySize * i / 166, width, height, null);
+                ShinsuSlot slot = new ShinsuSlot(this, x + 8 + 18 * j, y + 84 + 18 * i, width, height, null);
                 slots[i][j] = slot;
                 addButton(slot);
             }
@@ -146,8 +144,7 @@ public class ShinsuEquipScreen extends Screen {
 
     private static class ShinsuSlot extends AbstractButton {
 
-        private static final RenderInfo TOOLTIP = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 32, 166, 64, 18);
-        private static final int TOOLTIP_COLOR = 0xFFFFFFFF;
+        private static final String LEVEL_TRANSLATION_KEY = "gui." + TowerOfGod.MOD_ID + ".level";
         private final ShinsuEquipScreen screen;
         private ShinsuTechnique technique;
 
@@ -199,13 +196,18 @@ public class ShinsuEquipScreen extends Screen {
             }
         }
 
-        private void renderTooltip(MatrixStack matrixStack) {
-            TranslationTextComponent text = technique.getText();
-            int tWidth = screen.font.func_238414_a_(text) + height / 2;
-            int tHeight = screen.font.FONT_HEIGHT + width / 2;
-            int dY = height / -2;
-            TOOLTIP.render(matrixStack, x + (width - tWidth) / 2f, y + (height - tHeight) / 2f + dY, getBlitOffset(), tWidth, tHeight, 0xFFFFFFFF);
-            drawCenteredString(matrixStack, screen.font, text, x + width / 2, y + (height - screen.font.FONT_HEIGHT) / 2 + dY, TOOLTIP_COLOR);
+        private void renderTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
+            IFormattableTextComponent name = technique.getText().copyRaw().mergeStyle(TextFormatting.BOLD);
+            TranslationTextComponent level = new TranslationTextComponent(LEVEL_TRANSLATION_KEY, known.getOrDefault(technique, 0));
+            List<ITextComponent> tooltip = new ArrayList<>(Arrays.asList(name, level));
+            int maxLength = 0;
+            for (ITextComponent t : tooltip) {
+                int length = screen.font.func_238414_a_(t);
+                if (length > maxLength) {
+                    maxLength = length;
+                }
+            }
+            GuiUtils.drawHoveringText(matrixStack, tooltip, mouseX, mouseY, screen.width, screen.height, maxLength, screen.font);
         }
     }
 
@@ -213,7 +215,7 @@ public class ShinsuEquipScreen extends Screen {
 
         private static final int COLOR = 0xFFFFFFFF;
         private static final int DRAG_COLOR = 0xFFAAAAAA;
-        private static final RenderInfo RENDER = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 20, 166, 12, 15);
+        private static final RenderInfo RENDER = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 40, 166, 12, 15);
         private final int minY;
         private final int maxY;
         private final ShinsuEquipScreen screen;
@@ -254,6 +256,7 @@ public class ShinsuEquipScreen extends Screen {
     public static class OpenButton extends Button {
 
         private static final RenderInfo RENDER = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 166, 20, 18);
+        private static final RenderInfo HOVERED = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 20, 166, 20, 18);
         private final Screen screen;
 
         public OpenButton(Screen screen, int x, int y, int width, int height) {
@@ -272,7 +275,12 @@ public class ShinsuEquipScreen extends Screen {
 
         @Override
         public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
-            RENDER.render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+            if (isHovered()) {
+                HOVERED.render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+            } else {
+                RENDER.render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+            }
+            ShinsuIcons.SHINSU.render(matrixStack, x + 2, y + 2, screen.getBlitOffset(), width - 4, height - 4, 0xFFFFFFFF);
         }
     }
 }

@@ -19,11 +19,11 @@ import java.util.List;
 @ParametersAreNonnullByDefault
 public enum ShinsuTechnique {
 
-    BODY_REINFORCEMENT(true, new BodyReinforcement.Builder(10, 1), "body_reinforcement", ShinsuIcons.SWIRL),
+    BODY_REINFORCEMENT(true, new BodyReinforcement.Builder(10, 1), "body_reinforcement", ShinsuIcons.RESISTANCE),
     BLACK_FISH(true, new BlackFish.Builder(10, 1), "black_fish", ShinsuIcons.SWIRL),
-    FLARE_WAVE_EXPLOSION(true, new FlareWaveExplosion.Builder(20, 1), "flare_wave_explosion", ShinsuIcons.SWIRL),
+    FLARE_WAVE_EXPLOSION(true, new FlareWaveExplosion.Builder(20, 1), "flare_wave_explosion", ShinsuIcons.TENSION),
     REVERSE_FLOW_CONTROL(true, new ReverseFlowControl.Builder(10, 1), "reverse_flow_control", ShinsuIcons.REVERSE),
-    SHINSU_BLAST(true, new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.SWIRL),
+    SHINSU_BLAST(true, new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.BAANGS),
     MANIFEST(true, new Manifest.Builder(10, 1), "manifest", ShinsuIcons.SWIRL),
     SHOOT_SHINSU_ARROW(false, new ShootShinsuArrow.Builder(3, 1), "shoot_shinsu_arrow", ShinsuIcons.BAANGS);
 

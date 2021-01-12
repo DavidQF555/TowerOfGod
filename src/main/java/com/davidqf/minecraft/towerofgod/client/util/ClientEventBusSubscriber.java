@@ -133,22 +133,14 @@ public class ClientEventBusSubscriber {
         if (unlockedTechniques() && validStats()) {
             if (screen instanceof InventoryScreen) {
                 InventoryScreen inventory = (InventoryScreen) screen;
-                int xSize = inventory.getXSize();
-                int ySize = inventory.getYSize();
-                int x = inventory.getGuiLeft() + xSize * 3 / 4;
-                int y = inventory.getGuiTop() + ySize * 61 / 166;
-                int width = 20 * xSize / 176;
-                int height = 18 * ySize / 166;
-                event.addWidget(new ShinsuEquipScreen.OpenButton(screen, x, y, width, height));
+                int x = inventory.getGuiLeft() + 132;
+                int y = inventory.getGuiTop() + 61;
+                event.addWidget(new ShinsuEquipScreen.OpenButton(screen, x, y, 20, 18));
             } else if (screen instanceof CreativeScreen) {
                 CreativeScreen creative = (CreativeScreen) screen;
-                int xSize = creative.getXSize();
-                int ySize = creative.getYSize();
-                int x = creative.getGuiLeft() + xSize * 126 / 195;
-                int y = creative.getGuiTop() + ySize * 32 / 136;
-                int width = 20 * xSize / 195;
-                int height = 18 * ySize / 136;
-                event.addWidget(new ShinsuEquipScreen.OpenButton(screen, x, y, width, height));
+                int x = creative.getGuiLeft() + 126;
+                int y = creative.getGuiTop() + 32;
+                event.addWidget(new ShinsuEquipScreen.OpenButton(screen, x, y, 20, 18));
             }
         }
     }
