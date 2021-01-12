@@ -3,6 +3,7 @@ package com.davidqf.minecraft.towerofgod.common.items;
 import com.davidqf.minecraft.towerofgod.common.entities.ClickerEntity;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuShape;
+import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -40,12 +41,15 @@ public class ClickerItem extends BasicItem {
             item.setCount(item.getCount() - 1);
             if (playerIn instanceof ServerPlayerEntity) {
                 ServerPlayerEntity serverPlayer = (ServerPlayerEntity) playerIn;
-                CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
-                serverPlayer.addStat(Stats.ITEM_USED.get(this));
                 ShinsuQuality quality = getQuality(serverPlayer);
                 ShinsuShape shape = getShape(serverPlayer);
+                IShinsuStats stats = IShinsuStats.get(serverPlayer);
+                stats.setQuality(quality);
+                stats.setShape(shape);
                 entity.setQuality(quality);
                 entity.setShape(shape);
+                CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
+                serverPlayer.addStat(Stats.ITEM_USED.get(this));
             }
             return ActionResult.func_233538_a_(item, playerIn.world.isRemote());
         }
