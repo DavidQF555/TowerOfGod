@@ -12,23 +12,29 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
+import java.util.List;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public enum ShinsuTechnique {
 
-    BODY_REINFORCEMENT(new BodyReinforcement.Builder(10, 1), "body_reinforcement", ShinsuIcons.SWIRL),
-    BLACK_FISH(new BlackFish.Builder(10, 1), "black_fish", ShinsuIcons.SWIRL),
-    FLARE_WAVE_EXPLOSION(new FlareWaveExplosion.Builder(20, 1), "flare_wave_explosion", ShinsuIcons.SWIRL),
-    REVERSE_FLOW_CONTROL(new ReverseFlowControl.Builder(10, 1), "reverse_flow_control", ShinsuIcons.REVERSE),
-    SHINSU_BLAST(new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.SWIRL);
+    BODY_REINFORCEMENT(true, new BodyReinforcement.Builder(10, 1), "body_reinforcement", ShinsuIcons.SWIRL),
+    BLACK_FISH(true, new BlackFish.Builder(10, 1), "black_fish", ShinsuIcons.SWIRL),
+    FLARE_WAVE_EXPLOSION(true, new FlareWaveExplosion.Builder(20, 1), "flare_wave_explosion", ShinsuIcons.SWIRL),
+    REVERSE_FLOW_CONTROL(true, new ReverseFlowControl.Builder(10, 1), "reverse_flow_control", ShinsuIcons.REVERSE),
+    SHINSU_BLAST(true, new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.SWIRL),
+    MANIFEST(true, new Manifest.Builder(10, 1), "manifest", ShinsuIcons.SWIRL),
+    SHOOT_SHINSU_ARROW(false, new ShootShinsuArrow.Builder(3, 1), "shoot_shinsu_arrow", ShinsuIcons.BAANGS);
 
+    private final boolean obtainable;
     private final Builder<? extends ShinsuTechniqueInstance> builder;
     private final String name;
     private final TranslationTextComponent text;
     private final RenderInfo icon;
 
-    ShinsuTechnique(Builder<? extends ShinsuTechniqueInstance> builder, String name, RenderInfo icon) {
+    ShinsuTechnique(boolean obtainable, Builder<? extends ShinsuTechniqueInstance> builder, String name, RenderInfo icon) {
+        this.obtainable = obtainable;
         this.builder = builder;
         this.name = name;
         text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name);
@@ -53,6 +59,20 @@ public enum ShinsuTechnique {
             }
         }
         return null;
+    }
+
+    public static List<ShinsuTechnique> getObtainableTechniques() {
+        List<ShinsuTechnique> obtainable = new ArrayList<>();
+        for (ShinsuTechnique technique : values()) {
+            if (technique.obtainable) {
+                obtainable.add(technique);
+            }
+        }
+        return obtainable;
+    }
+
+    public boolean isObtainable() {
+        return obtainable;
     }
 
     public Builder<? extends ShinsuTechniqueInstance> getBuilder() {

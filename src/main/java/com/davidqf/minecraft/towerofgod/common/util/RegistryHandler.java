@@ -1,23 +1,15 @@
 package com.davidqf.minecraft.towerofgod.common.util;
 
-import com.davidqf.minecraft.towerofgod.common.entities.ObserverEntity;
-import com.davidqf.minecraft.towerofgod.common.entities.RegularEntity;
-import com.davidqf.minecraft.towerofgod.common.entities.ShinsuEntity;
+import com.davidqf.minecraft.towerofgod.common.entities.*;
+import com.davidqf.minecraft.towerofgod.common.items.*;
 import com.davidqf.minecraft.towerofgod.common.techinques.ReverseFlowEffect;
-import com.davidqf.minecraft.towerofgod.common.items.BasicItem;
-import com.davidqf.minecraft.towerofgod.common.items.BlockItemBase;
-import com.davidqf.minecraft.towerofgod.common.items.LighthouseItem;
-import com.davidqf.minecraft.towerofgod.common.items.ObserverItem;
-import com.davidqf.minecraft.towerofgod.common.tools.HookItem;
-import com.davidqf.minecraft.towerofgod.common.tools.ModToolTier;
+import com.davidqf.minecraft.towerofgod.common.tools.*;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.common.armor.ModArmorTier;
 import com.davidqf.minecraft.towerofgod.common.blocks.LightBlock;
 import com.davidqf.minecraft.towerofgod.common.blocks.SuspendiumBlock;
 import com.davidqf.minecraft.towerofgod.common.blocks.SuspendiumOre;
-import com.davidqf.minecraft.towerofgod.common.entities.LighthouseEntity;
 
-import com.davidqf.minecraft.towerofgod.common.tools.NeedleItem;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -27,11 +19,16 @@ import net.minecraft.item.*;
 import net.minecraft.potion.Effect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class RegistryHandler {
 
@@ -40,6 +37,7 @@ public class RegistryHandler {
     public static final DeferredRegister<ContainerType<?>> CONTAINER_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, TowerOfGod.MOD_ID);
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITIES, TowerOfGod.MOD_ID);
     public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, TowerOfGod.MOD_ID);
+    public static final DeferredRegister<GlobalLootModifierSerializer<?>> LOOT_MODIFIERS = DeferredRegister.create(ForgeRegistries.LOOT_MODIFIER_SERIALIZERS, TowerOfGod.MOD_ID);
 
     public static final RegistryObject<Item> SUSPENDIUM = ITEMS.register("suspendium", BasicItem::new);
     public static final RegistryObject<Block> SUSPENDIUM_ORE = BLOCKS.register("suspendium_ore", SuspendiumOre::new);
@@ -86,6 +84,20 @@ public class RegistryHandler {
 
     public static final RegistryObject<ReverseFlowEffect> REVERSE_FLOW_EFFECT = EFFECTS.register("reverse_flow_effect", ReverseFlowEffect::new);
 
+    public static final RegistryObject<EntityType<ClickerEntity>> CLICKER_ENTITY = ENTITY_TYPES.register("clicker_entity", () -> EntityType.Builder.create(new ClickerEntity.Factory(), EntityClassification.MISC).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "clicker_entity").toString()));
+    public static final RegistryObject<ClickerItem> CLICKER_ITEM = ITEMS.register("clicker_item", ClickerItem::new);
+
+    public static final RegistryObject<ShinsuShovel> SHINSU_SHOVEL = ITEMS.register("shinsu_shovel", () -> new ShinsuShovel(0.5f, -2));
+    public static final RegistryObject<ShinsuPickaxe> SHINSU_PICKAXE = ITEMS.register("shinsu_pickaxe", () -> new ShinsuPickaxe(0, -1.6f));
+    public static final RegistryObject<ShinsuAxe> SHINSU_AXE = ITEMS.register("shinsu_axe", () -> new ShinsuAxe(4, -2));
+    public static final RegistryObject<ShinsuSword> SHINSU_SWORD = ITEMS.register("shinsu_sword", () -> new ShinsuSword(2, -0.8f));
+    public static final RegistryObject<ShinsuHoe> SHINSU_HOE = ITEMS.register("shinsu_hoe", () -> new ShinsuHoe(-1, 4));
+    public static final RegistryObject<ShinsuBow> SHINSU_BOW = ITEMS.register("shinsu_bow", ShinsuBow::new);
+    public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW_ENTITY = ENTITY_TYPES.register("shinsu_arrow_entity", () -> EntityType.Builder.create(new ShinsuArrowEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow_entity").toString()));
+    public static final RegistryObject<ShinsuToolLootModifier.Serializer> SHINSU_TOOL_LOOT_MODIFIER = LOOT_MODIFIERS.register("shinsu_tool_loot_modifier", ShinsuToolLootModifier.Serializer::new);
+
+    public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = new ArrayList<>(Arrays.asList(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW));
+
     public static void init() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ITEMS.register(bus);
@@ -93,5 +105,6 @@ public class RegistryHandler {
         CONTAINER_TYPES.register(bus);
         ENTITY_TYPES.register(bus);
         EFFECTS.register(bus);
+        LOOT_MODIFIERS.register(bus);
     }
 }

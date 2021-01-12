@@ -3,15 +3,19 @@ package com.davidqf.minecraft.towerofgod.common.util;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 
 import com.davidqf.minecraft.towerofgod.client.util.IPlayerShinsuEquips;
+import com.davidqf.minecraft.towerofgod.common.items.ShinsuItemColor;
 import com.davidqf.minecraft.towerofgod.common.packets.*;
 import com.davidqf.minecraft.towerofgod.common.entities.ShinsuUserEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
@@ -40,6 +44,15 @@ public class CapabilityHandler {
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     private static class ModBus {
+
+        @SubscribeEvent
+        public static void onHandleColors(ColorHandlerEvent.Item event) {
+            ShinsuItemColor color = new ShinsuItemColor();
+            for (RegistryObject<? extends Item> item : RegistryHandler.SHINSU_ITEMS) {
+                event.getItemColors().register(color, item::get);
+            }
+        }
+
         @SubscribeEvent
         public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
             CapabilityManager.INSTANCE.register(IShinsuStats.class, new IShinsuStats.Storage(), IShinsuStats.ShinsuStats::new);

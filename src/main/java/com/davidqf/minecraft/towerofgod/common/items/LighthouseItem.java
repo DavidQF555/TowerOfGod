@@ -3,9 +3,12 @@ package com.davidqf.minecraft.towerofgod.common.items;
 import com.davidqf.minecraft.towerofgod.common.entities.FlyingDevice;
 
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +33,16 @@ public class LighthouseItem extends BasicItem {
             dev.setPosition(spawn.x, spawn.y, spawn.z);
             dev.setOwner(playerIn);
             worldIn.addEntity(dev);
-            return ActionResult.resultConsume(playerIn.getHeldItem(handIn));
+            ItemStack item = playerIn.getHeldItem(handIn);
+            item.setCount(item.getCount() - 1);
+            if (playerIn instanceof ServerPlayerEntity) {
+                ServerPlayerEntity serverPlayer = (ServerPlayerEntity) playerIn;
+                CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
+                serverPlayer.addStat(Stats.ITEM_USED.get(this));
+            }
+            return ActionResult.func_233538_a_(item, playerIn.world.isRemote());
         }
         return ActionResult.resultPass(playerIn.getHeldItem(handIn));
     }
+
 }

@@ -2,10 +2,7 @@ package com.davidqf.minecraft.towerofgod.client.util;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.gui.*;
-import com.davidqf.minecraft.towerofgod.client.render.LighthouseRenderer;
-import com.davidqf.minecraft.towerofgod.client.render.ObserverRenderer;
-import com.davidqf.minecraft.towerofgod.client.render.RegularRenderer;
-import com.davidqf.minecraft.towerofgod.client.render.ShinsuRenderer;
+import com.davidqf.minecraft.towerofgod.client.render.*;
 import com.davidqf.minecraft.towerofgod.common.entities.LighthouseEntity;
 
 import com.davidqf.minecraft.towerofgod.common.packets.*;
@@ -23,11 +20,11 @@ import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemModelsProperties;
+import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -164,11 +161,20 @@ public class ClientEventBusSubscriber {
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.OBSERVER_ENTITY.get(), ObserverRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.REGULAR_ENTITY.get(), RegularRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.SHINSU_ENTITY.get(), ShinsuRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.CLICKER_ENTITY.get(), ClickerRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.SHINSU_ARROW_ENTITY.get(), ShinsuArrowRenderer::new);
+        }
+
+        @SubscribeEvent
+        public static void setupFMLClient(FMLClientSetupEvent event) {
+            ItemModelsProperties.func_239418_a_(RegistryHandler.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pull")));
+            ItemModelsProperties.func_239418_a_(RegistryHandler.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pulling")));
         }
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     public static class ForgeBus {
+
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {
             Minecraft client = Minecraft.getInstance();

@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 
 public enum ModToolTier implements IItemTier {
 
+    SHINSU(1000, 12, 2, 3, 0, Ingredient.EMPTY),
     SUSPENDIUM(1250, 14, 1, 2, 15, Ingredient.fromItems(RegistryHandler.SUSPENDIUM.get()));
 
     private final int uses;

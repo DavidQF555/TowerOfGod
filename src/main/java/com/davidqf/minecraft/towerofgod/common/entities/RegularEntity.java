@@ -1,6 +1,8 @@
 package com.davidqf.minecraft.towerofgod.common.entities;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuShape;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
@@ -32,6 +34,8 @@ public class RegularEntity extends ShinsuUserEntity {
 
     private static final String TAG_KEY = TowerOfGod.MOD_ID + ".regularentity";
     private static final double FAMILY_TECHNIQUE_RATE = 0.8;
+    private static final double FAMILY_QUALITY_RATE = 0.8;
+    private static final double FAMILY_SHAPE_RATE = 0.8;
     private static final double FAMILY_WEAPON_RATE = 0.8;
     private static final List<Class<? extends Item>> WEAPONS = new ArrayList<>(Arrays.asList(SwordItem.class, AxeItem.class));
     public static final DataParameter<String> FAMILY = EntityDataManager.createKey(RegularEntity.class, DataSerializers.STRING);
@@ -49,7 +53,7 @@ public class RegularEntity extends ShinsuUserEntity {
 
     @Override
     public ILivingEntityData onInitialSpawn(@Nonnull IWorld worldIn, @Nonnull DifficultyInstance difficultyIn, @Nonnull SpawnReason reason, ILivingEntityData spawnDataIn, CompoundNBT dataTag) {
-        level = rand.nextInt(ShinsuTechnique.values().length) + 1;
+        level = rand.nextInt(ShinsuTechnique.getObtainableTechniques().size()) + 1;
         Personality[] personalities = Personality.values();
         personality = personalities[rand.nextInt(personalities.length)];
         Family[] families = Family.values();
@@ -100,7 +104,7 @@ public class RegularEntity extends ShinsuUserEntity {
         stats.addMaxBaangs(1 + (int) (rand.nextDouble() * level * family.getBaangs() / 3));
         stats.multiplyResistance(1 + rand.nextDouble() * level * family.getResistance() / 2);
         stats.multiplyTension(1 + rand.nextDouble() * level * family.getTension() / 2);
-        ShinsuTechnique[] all = ShinsuTechnique.values();
+        List<ShinsuTechnique> all = ShinsuTechnique.getObtainableTechniques();
         ShinsuTechnique[] preferred = family.getPreferredTechniques();
         int amount = level - rand.nextInt(level);
         for (int i = 0; i < amount; i++) {
@@ -109,10 +113,28 @@ public class RegularEntity extends ShinsuUserEntity {
             if (preferred.length > 0 && chance < FAMILY_TECHNIQUE_RATE) {
                 technique = preferred[rand.nextInt(preferred.length)];
             } else {
-                technique = all[rand.nextInt(all.length)];
+                technique = all.get(rand.nextInt(all.size()));
             }
             stats.addKnownTechnique(technique, 1);
         }
+        ShinsuQuality[] pref = family.getQualities();
+        ShinsuQuality quality;
+        if (pref.length > 0 && rand.nextDouble() < FAMILY_QUALITY_RATE) {
+            quality = pref[rand.nextInt(pref.length)];
+        } else {
+            ShinsuQuality[] qualities = ShinsuQuality.values();
+            quality = qualities[rand.nextInt(qualities.length)];
+        }
+        stats.setQuality(quality);
+        ShinsuShape[] prefShapes = family.getShapes();
+        ShinsuShape shape;
+        if (prefShapes.length > 0 && rand.nextDouble() < FAMILY_SHAPE_RATE) {
+            shape = prefShapes[rand.nextInt(prefShapes.length)];
+        } else {
+            ShinsuShape[] shapes = ShinsuShape.values();
+            shape = shapes[rand.nextInt(shapes.length)];
+        }
+        stats.setShape(shape);
     }
 
     @Override

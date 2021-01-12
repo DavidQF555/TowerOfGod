@@ -1,6 +1,7 @@
 package com.davidqf.minecraft.towerofgod.common.util;
 
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuShape;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.google.common.collect.Maps;
@@ -63,13 +64,22 @@ public interface IShinsuStats {
 
     void setQuality(ShinsuQuality quality);
 
+    default ShinsuShape getShape() {
+        return ShinsuShape.NONE;
+    }
+
+    void setShape(ShinsuShape shape);
+
     int getCooldown(ShinsuTechnique technique);
 
     void addCooldown(ShinsuTechnique technique, int time);
 
     default void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, @Nullable Vector3d dir) {
+        cast(user, technique, getTechniqueLevel(technique), target, dir);
+    }
+
+    default void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, @Nullable Vector3d dir) {
         if (getCooldown(technique) <= 0 && user.world instanceof ServerWorld) {
-            int level = getTechniqueLevel(technique);
             ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
             if (builder.canCast(technique, user, level, target, dir)) {
                 ShinsuTechniqueInstance tech = technique.getBuilder().build(user, level, target, dir);
@@ -96,20 +106,22 @@ public interface IShinsuStats {
         private double resistance;
         private double tension;
         private ShinsuQuality quality;
+        private ShinsuShape shape;
         private final Map<ShinsuTechnique, Integer> known;
         private final Map<ShinsuTechnique, Integer> cooldowns;
         private final List<ShinsuTechniqueInstance> techniques;
 
         public ShinsuStats() {
-            this(0, 0, 1, 1, ShinsuQuality.NONE, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());
+            this(0, 0, 1, 1, ShinsuQuality.NONE, ShinsuShape.SWORD, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());
         }
 
-        private ShinsuStats(int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, Map<ShinsuTechnique, Integer> known, Map<ShinsuTechnique, Integer> cooldowns, List<ShinsuTechniqueInstance> techniques) {
+        private ShinsuStats(int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, ShinsuShape shape, Map<ShinsuTechnique, Integer> known, Map<ShinsuTechnique, Integer> cooldowns, List<ShinsuTechniqueInstance> techniques) {
             this.shinsu = shinsu;
             this.baangs = baangs;
             this.resistance = resistance;
             this.tension = tension;
             this.quality = quality;
+            this.shape = shape;
             this.known = known;
             this.cooldowns = cooldowns;
             this.techniques = techniques;
@@ -209,6 +221,16 @@ public interface IShinsuStats {
         }
 
         @Override
+        public ShinsuShape getShape() {
+            return shape;
+        }
+
+        @Override
+        public void setShape(ShinsuShape shape) {
+            this.shape = shape;
+        }
+
+        @Override
         public int getCooldown(ShinsuTechnique technique) {
             return cooldowns.getOrDefault(technique, 0);
         }
@@ -258,6 +280,7 @@ public interface IShinsuStats {
             }
             tag.put("Techniques", instances);
             tag.putString("Quality", quality.name());
+            tag.putString("Shape", shape.name());
             CompoundNBT cool = new CompoundNBT();
             for (ShinsuTechnique tech : cooldowns.keySet()) {
                 cool.putInt(tech.name(), cooldowns.get(tech));
@@ -287,6 +310,7 @@ public interface IShinsuStats {
                 techniques.add(tech);
             }
             quality = ShinsuQuality.get(nbt.getString("Quality"));
+            shape = ShinsuShape.get(nbt.getString("Shape"));
             cooldowns.clear();
             CompoundNBT cool = nbt.getCompound("Cooldowns");
             for (ShinsuTechnique tech : ShinsuTechnique.values()) {

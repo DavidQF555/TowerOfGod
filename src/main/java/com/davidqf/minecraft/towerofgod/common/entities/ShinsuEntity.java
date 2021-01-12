@@ -15,9 +15,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.IParticleData;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
@@ -40,6 +38,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     private static final DataParameter<String> QUALITY = EntityDataManager.createKey(ShinsuEntity.class, DataSerializers.STRING);
     private UUID technique;
     private int level;
+    private BlockRayTraceResult latestHit;
 
     public ShinsuEntity(World world, @Nullable LivingEntity shooter, ShinsuQuality quality, @Nullable ShinsuTechniqueInstance technique, int level, double x, double y, double z, double dX, double dY, double dZ) {
         super(RegistryHandler.SHINSU_ENTITY.get(), x, y, z, dX, dY, dZ, world);
@@ -47,6 +46,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         setShooter(shooter);
         setQuality(quality);
         this.level = level;
+        latestHit = null;
     }
 
     @Override
@@ -79,44 +79,11 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         Entity e = rayTraceResult.getEntity();
         Entity s = func_234616_v_();
         if (e instanceof LivingEntity && s instanceof LivingEntity) {
-            boolean remove = true;
             LivingEntity target = (LivingEntity) e;
-            float damage = (float) (DAMAGE * ShinsuTechniqueInstance.getTotalResistance((LivingEntity) s, target) * level / 3.0);
-            DamageSource source = DamageSource.MAGIC;
             ShinsuQuality quality = getQuality();
-            switch (quality) {
-                case ICE:
-                    target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 60, 2, true, false, false));
-                    break;
-                case FIRE:
-                    source = DamageSource.ON_FIRE;
-                    target.setFire(7);
-                    break;
-                case WIND:
-                    Vector3d vec = target.getPositionVec().subtract(rayTraceResult.getHitVec()).normalize().mul(3, 3, 3);
-                    target.addVelocity(vec.getX(), vec.getY(), vec.getZ());
-                    break;
-                case PLANT:
-                    source = DamageSource.CACTUS;
-                    target.addPotionEffect(new EffectInstance(Effects.POISON, 140, 2, true, false, false));
-                    break;
-                case STONE:
-                    source = DamageSource.FALLING_BLOCK;
-                    damage += 3;
-                case CRYSTAL:
-                    damage += 2;
-                    remove = false;
-                    break;
-                case LIGHTNING:
-                    source = DamageSource.LIGHTNING_BOLT;
-                    target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 20, 3, true, false, false));
-                    target.setFire(3);
-                    break;
-            }
-            target.attackEntityFrom(source, damage);
-            if (remove) {
-                remove();
-            }
+            float damage = (float) (ShinsuTechniqueInstance.getTotalResistance((LivingEntity) s, target) * level * quality.getDamage() * DAMAGE) / 3;
+            quality.applyEntityEffect(this, rayTraceResult);
+            target.attackEntityFrom(quality.getSource(), damage);
         }
     }
 
@@ -142,17 +109,22 @@ public class ShinsuEntity extends DamagingProjectileEntity {
 
     @Override
     protected void func_230299_a_(BlockRayTraceResult rayTraceResult) {
+        latestHit = rayTraceResult;
         super.func_230299_a_(rayTraceResult);
         remove();
     }
 
     @Override
-    public void remove(boolean keepData) {
+    public void onRemovedFromWorld() {
         ShinsuTechniqueInstance technique = getTechnique();
-        if (technique != null && world instanceof ServerWorld) {
-            technique.remove((ServerWorld) world);
+        if (world instanceof ServerWorld) {
+            Vector3d motion = getMotion();
+            getQuality().applyBlockEffect(this, latestHit == null || isAirBorne ? new BlockRayTraceResult(motion, Direction.getFacingFromVector(motion.x, motion.y, motion.z), getPosition(), true) : latestHit);
+            if (technique != null) {
+                technique.remove((ServerWorld) world);
+            }
         }
-        super.remove(keepData);
+        super.onRemovedFromWorld();
     }
 
     @Override

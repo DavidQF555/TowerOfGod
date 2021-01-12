@@ -55,7 +55,7 @@ public class ShinsuEquipScreen extends Screen {
         slots = new ShinsuSlot[3][9];
         unlocked = new ArrayList<>();
         for (ShinsuTechnique technique : known.keySet()) {
-            if (known.get(technique) > 0) {
+            if (technique.isObtainable() && known.get(technique) > 0) {
                 unlocked.add(technique);
             }
         }
