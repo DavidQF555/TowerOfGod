@@ -145,6 +145,11 @@ public class ClientEventBusSubscriber {
         }
     }
 
+    @SubscribeEvent
+    public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
+        ForgeBus.setMeterPositions();
+    }
+
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ModBus {
         @SubscribeEvent
@@ -244,10 +249,23 @@ public class ClientEventBusSubscriber {
         }
 
         private static void initializeMeters() {
+            shinsu = new StatsMeterGui.Shinsu(0, 0, 85, 5, 0, 0);
+            baangs = new StatsMeterGui.Baangs(0, 0, 85, 5, 0, 0);
+            setMeterPositions();
+        }
+
+        private static void setMeterPositions() {
             MainWindow window = Minecraft.getInstance().getMainWindow();
+            int width = window.getScaledWidth();
             int y = window.getScaledHeight() - 36;
-            shinsu = new StatsMeterGui.Shinsu(window.getScaledWidth() / 2 - 91, y, 85, 5, 0, 0);
-            baangs = new StatsMeterGui.Baangs(window.getScaledWidth() / 2 + 6, y, 85, 5, 0, 0);
+            if (shinsu != null) {
+                shinsu.setX(width / 2 - 91);
+                shinsu.setY(y);
+            }
+            if (baangs != null) {
+                baangs.setX(width / 2 + 6);
+                baangs.setY(y);
+            }
         }
     }
 }

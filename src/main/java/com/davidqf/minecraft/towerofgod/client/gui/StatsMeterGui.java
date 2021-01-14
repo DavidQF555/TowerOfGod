@@ -19,8 +19,8 @@ public abstract class StatsMeterGui extends AbstractGui {
     private int value;
     private int max;
     private final int maxDisplay;
-    private final int x;
-    private final int y;
+    private int x;
+    private int y;
     private final int width;
     private final int height;
     private final int textColor;
@@ -77,6 +77,14 @@ public abstract class StatsMeterGui extends AbstractGui {
 
     public void setMax(int max) {
         this.max = max;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public static class Shinsu extends StatsMeterGui {
