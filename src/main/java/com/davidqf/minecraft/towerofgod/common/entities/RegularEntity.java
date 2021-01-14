@@ -4,7 +4,7 @@ import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuShape;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;

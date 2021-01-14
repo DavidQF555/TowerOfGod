@@ -1,4 +1,4 @@
-package com.davidqf.minecraft.towerofgod.common.world.gen;
+package com.davidqf.minecraft.towerofgod.common.world;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;

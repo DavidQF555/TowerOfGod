@@ -1,15 +1,14 @@
-package com.davidqf.minecraft.towerofgod.common.tools;
+package com.davidqf.minecraft.towerofgod.common.items;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -18,16 +17,15 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
-public class ShinsuPickaxe extends PickaxeItem {
+public class ShinsuSword extends SwordItem {
 
-    public ShinsuPickaxe(int attackDamageIn, float attackSpeedIn) {
-        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
+    public ShinsuSword(int attackDamageIn, float attackSpeedIn) {
+        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Properties().setNoRepair());
     }
 
     @Override
@@ -53,14 +51,6 @@ public class ShinsuPickaxe extends PickaxeItem {
         }
     }
 
-    @Nonnull
-    @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        ShinsuQuality quality = ShinsuQuality.get(context.getItem().getOrCreateChildTag(TowerOfGod.MOD_ID).getString("Quality"));
-        quality.applyBlockEffect(context.getPlayer(), new BlockRayTraceResult(context.getHitVec(), context.getFace(), context.getPos(), context.isInside()));
-        return super.onItemUse(context);
-    }
-
     @Override
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
         return 0;
@@ -78,6 +68,5 @@ public class ShinsuPickaxe extends PickaxeItem {
     public int getEntityLifespan(ItemStack itemStack, World world) {
         return 0;
     }
-
 
 }

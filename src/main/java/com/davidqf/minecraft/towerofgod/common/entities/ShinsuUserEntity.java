@@ -2,7 +2,7 @@ package com.davidqf.minecraft.towerofgod.common.entities;
 
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.vector.Vector3d;

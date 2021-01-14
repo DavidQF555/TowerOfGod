@@ -3,7 +3,7 @@ package com.davidqf.minecraft.towerofgod.common.techinques;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.gui.ShinsuIcons;
 import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

@@ -1,4 +1,4 @@
-package com.davidqf.minecraft.towerofgod.common.tools;
+package com.davidqf.minecraft.towerofgod.common.items;
 
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 

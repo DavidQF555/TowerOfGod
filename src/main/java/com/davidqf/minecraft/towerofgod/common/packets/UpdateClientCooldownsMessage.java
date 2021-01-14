@@ -3,7 +3,7 @@ package com.davidqf.minecraft.towerofgod.common.packets;
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.gui.ShinsuSkillWheelGui;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import com.google.common.collect.Maps;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;

@@ -1,4 +1,4 @@
-package com.davidqf.minecraft.towerofgod.common.util;
+package com.davidqf.minecraft.towerofgod.common.capabilities;
 
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuShape;

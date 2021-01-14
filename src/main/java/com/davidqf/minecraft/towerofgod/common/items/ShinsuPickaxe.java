@@ -1,15 +1,12 @@
-package com.davidqf.minecraft.towerofgod.common.tools;
+package com.davidqf.minecraft.towerofgod.common.items;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.HoeItem;
-import net.minecraft.item.ItemUseContext;
+import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -27,9 +24,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
-public class ShinsuHoe extends HoeItem {
+public class ShinsuPickaxe extends PickaxeItem {
 
-    public ShinsuHoe(int attackDamageIn, float attackSpeedIn) {
+    public ShinsuPickaxe(int attackDamageIn, float attackSpeedIn) {
         super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
     }
 
@@ -81,4 +78,6 @@ public class ShinsuHoe extends HoeItem {
     public int getEntityLifespan(ItemStack itemStack, World world) {
         return 0;
     }
+
+
 }

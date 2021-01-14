@@ -1,5 +1,6 @@
 package com.davidqf.minecraft.towerofgod.common.util;
 
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
 import com.davidqf.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;

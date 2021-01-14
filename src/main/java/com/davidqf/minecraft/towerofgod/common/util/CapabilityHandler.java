@@ -2,7 +2,8 @@ package com.davidqf.minecraft.towerofgod.common.util;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 
-import com.davidqf.minecraft.towerofgod.client.util.IPlayerShinsuEquips;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.items.ShinsuItemColor;
 import com.davidqf.minecraft.towerofgod.common.packets.*;
 import com.davidqf.minecraft.towerofgod.common.entities.ShinsuUserEntity;

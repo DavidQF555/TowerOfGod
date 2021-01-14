@@ -1,8 +1,8 @@
 package com.davidqf.minecraft.towerofgod.common.packets;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
-import com.davidqf.minecraft.towerofgod.client.util.ClientEventBusSubscriber;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import com.davidqf.minecraft.towerofgod.client.gui.GuiEventBusSubscriber;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
@@ -63,10 +63,10 @@ public class UpdateStatsMetersMessage {
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
             context.enqueueWork(() -> {
-                ClientEventBusSubscriber.shinsu.setValue(shinsu);
-                ClientEventBusSubscriber.shinsu.setMax(maxShinsu);
-                ClientEventBusSubscriber.baangs.setValue(baangs);
-                ClientEventBusSubscriber.baangs.setMax(maxBaangs);
+                GuiEventBusSubscriber.shinsu.setValue(shinsu);
+                GuiEventBusSubscriber.shinsu.setMax(maxShinsu);
+                GuiEventBusSubscriber.baangs.setValue(baangs);
+                GuiEventBusSubscriber.baangs.setMax(maxBaangs);
             });
             context.setPacketHandled(true);
         }

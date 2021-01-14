@@ -1,4 +1,4 @@
-package com.davidqf.minecraft.towerofgod.common.world.gen;
+package com.davidqf.minecraft.towerofgod.common.world;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

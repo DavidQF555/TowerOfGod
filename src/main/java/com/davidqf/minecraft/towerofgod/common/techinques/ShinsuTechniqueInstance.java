@@ -1,7 +1,7 @@
 package com.davidqf.minecraft.towerofgod.common.techinques;
 
 import com.davidqf.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
-import com.davidqf.minecraft.towerofgod.common.util.IShinsuStats;
+import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;

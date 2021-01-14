@@ -1,4 +1,4 @@
-package com.davidqf.minecraft.towerofgod.client.util;
+package com.davidqf.minecraft.towerofgod.common.capabilities;
 
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.Entity;

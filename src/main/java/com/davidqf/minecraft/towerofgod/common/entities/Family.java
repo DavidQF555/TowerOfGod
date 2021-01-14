@@ -4,7 +4,7 @@ import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuShape;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.davidqf.minecraft.towerofgod.common.tools.HookItem;
+import com.davidqf.minecraft.towerofgod.common.items.HookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.ResourceLocation;
