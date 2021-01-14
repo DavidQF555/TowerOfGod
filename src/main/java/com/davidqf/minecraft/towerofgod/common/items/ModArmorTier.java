@@ -1,4 +1,4 @@
-package com.davidqf.minecraft.towerofgod.common.armor;
+package com.davidqf.minecraft.towerofgod.common.items;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
