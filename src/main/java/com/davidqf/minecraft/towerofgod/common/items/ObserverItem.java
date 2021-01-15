@@ -1,11 +1,13 @@
 package com.davidqf.minecraft.towerofgod.common.items;
 
+import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.common.entities.FlyingDevice;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
@@ -16,7 +18,11 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class ObserverItem extends BasicItem {
+public class ObserverItem extends Item {
+
+    public ObserverItem() {
+        super(new Properties().group(TowerOfGod.TAB));
+    }
 
     @Nonnull
     @Override
