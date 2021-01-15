@@ -15,19 +15,29 @@ import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import org.lwjgl.glfw.GLFW;
 
+@Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
 
     private static IShinsuStats clonedStats = null;
     private static IPlayerShinsuEquips clonedEquips = null;
+
+    @SubscribeEvent
+    public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
+        Minecraft client = Minecraft.getInstance();
+        if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.currentScreen == null && client.player.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
+            event.setCanceled(true);
+        }
+    }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ModBus {
@@ -52,13 +62,6 @@ public class ClientEventBusSubscriber {
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     public static class ForgeBus {
-
-        @SubscribeEvent
-        public static void onPlayerInteract(PlayerInteractEvent event) {
-            if (event.isCancelable() && event.getEntityLiving().getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
-                event.setCanceled(true);
-            }
-        }
 
         @SubscribeEvent
         public static void onClonePlayerEvent(PlayerEvent.Clone event) {

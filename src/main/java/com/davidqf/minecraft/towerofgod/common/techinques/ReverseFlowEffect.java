@@ -5,12 +5,10 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.potion.Effect;
 import net.minecraft.potion.EffectType;
 
-import java.util.UUID;
-
 public class ReverseFlowEffect extends Effect {
 
     private static final int COLOR = 0xFFFF0000;
-    private static final String ID = UUID.randomUUID().toString();
+    private static final String ID = "aec9659b-3618-43f6-b603-4cd3f14c060b";
 
     public ReverseFlowEffect() {
         super(EffectType.HARMFUL, COLOR);
