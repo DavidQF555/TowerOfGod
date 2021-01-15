@@ -32,7 +32,7 @@ import java.util.*;
 
 public class RegularEntity extends ShinsuUserEntity {
 
-    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".regularentity";
+    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".regular_entity";
     private static final double FAMILY_TECHNIQUE_RATE = 0.8;
     private static final double FAMILY_QUALITY_RATE = 0.8;
     private static final double FAMILY_SHAPE_RATE = 0.8;
@@ -45,7 +45,7 @@ public class RegularEntity extends ShinsuUserEntity {
 
     public RegularEntity(World worldIn) {
         super(RegistryHandler.REGULAR_ENTITY.get(), worldIn);
-        this.level = 1;
+        level = 1;
         team = new Team(this);
         personality = Personality.NEUTRAL;
         setFamily(Family.ARIE);
@@ -60,32 +60,7 @@ public class RegularEntity extends ShinsuUserEntity {
         Family family = families[rand.nextInt(families.length)];
         setFamily(family);
         setStats();
-        List<Item> weapon = new ArrayList<>();
-        List<Item> pref = new ArrayList<>();
-        for (Item item : ForgeRegistries.ITEMS) {
-            if (item instanceof TieredItem && ((TieredItem) item).getTier().getHarvestLevel() > level / 20 + 1) {
-                continue;
-            }
-            for (Class<? extends Item> clazz : family.getWeapons()) {
-                if (clazz.isInstance(item)) {
-                    pref.add(item);
-                    break;
-                }
-            }
-            for (Class<? extends Item> clazz : WEAPONS) {
-                if (clazz.isInstance(item)) {
-                    weapon.add(item);
-                    break;
-                }
-            }
-        }
-        ItemStack weap = Items.AIR.getDefaultInstance();
-        if (!pref.isEmpty() && rand.nextDouble() < FAMILY_WEAPON_RATE) {
-            weap = pref.get(rand.nextInt(pref.size())).getDefaultInstance();
-        } else if (Math.random() < 1 - 1.0 / weapon.size()) {
-            weap = weapon.get(rand.nextInt(weapon.size())).getDefaultInstance();
-        }
-        setItemStackToSlot(EquipmentSlotType.MAINHAND, weap);
+        setWeapon();
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
@@ -135,6 +110,36 @@ public class RegularEntity extends ShinsuUserEntity {
             shape = shapes[rand.nextInt(shapes.length)];
         }
         stats.setShape(shape);
+    }
+
+    private void setWeapon() {
+        List<Item> weapon = new ArrayList<>();
+        List<Item> pref = new ArrayList<>();
+        Family family = getFamily();
+        for (Item item : ForgeRegistries.ITEMS) {
+            if (item instanceof TieredItem && ((TieredItem) item).getTier().getAttackDamage() > level + 1) {
+                continue;
+            }
+            for (Class<? extends Item> clazz : family.getWeapons()) {
+                if (clazz.isInstance(item)) {
+                    pref.add(item);
+                    break;
+                }
+            }
+            for (Class<? extends Item> clazz : WEAPONS) {
+                if (clazz.isInstance(item)) {
+                    weapon.add(item);
+                    break;
+                }
+            }
+        }
+        ItemStack weap = Items.AIR.getDefaultInstance();
+        if (!pref.isEmpty() && rand.nextDouble() < FAMILY_WEAPON_RATE) {
+            weap = pref.get(rand.nextInt(pref.size())).getDefaultInstance();
+        } else if (rand.nextDouble() < 1 - 1.0 / weapon.size()) {
+            weap = weapon.get(rand.nextInt(weapon.size())).getDefaultInstance();
+        }
+        setItemStackToSlot(EquipmentSlotType.MAINHAND, weap);
     }
 
     @Override
@@ -306,7 +311,7 @@ public class RegularEntity extends ShinsuUserEntity {
             }
             nearby.removeAll(rem);
             if (!nearby.isEmpty()) {
-                RegularEntity reg = nearby.get((int) (getRNG().nextDouble() * nearby.size()));
+                RegularEntity reg = nearby.get((getRNG().nextInt(nearby.size())));
                 List<RegularEntity> members = team.getEntityMembers(world);
                 reg.team.getEntityMembers(world).addAll(members);
                 for (RegularEntity mem : members) {
@@ -378,21 +383,21 @@ public class RegularEntity extends ShinsuUserEntity {
         @Override
         public CompoundNBT serializeNBT() {
             CompoundNBT nbt = new CompoundNBT();
-            nbt.putInt("size", members.size());
-            for (int i = 1; i <= members.size(); i++) {
-                nbt.putUniqueId("member" + i, members.get(i - 1));
+            nbt.putInt("Size", members.size());
+            for (int i = 0; i < members.size(); i++) {
+                nbt.putUniqueId("Member" + i, members.get(i));
             }
-            nbt.putUniqueId("leader", leader);
+            nbt.putUniqueId("Leader", leader);
             return nbt;
         }
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) {
-            int size = nbt.getInt("size");
-            for (int i = 1; i <= size; i++) {
-                members.add(nbt.getUniqueId("member" + i));
+            int size = nbt.getInt("Size");
+            for (int i = 0; i < size; i++) {
+                members.add(nbt.getUniqueId("Member" + i));
             }
-            leader = nbt.getUniqueId("leader");
+            leader = nbt.getUniqueId("Leader");
         }
     }
 }
