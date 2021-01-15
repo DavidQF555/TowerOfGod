@@ -42,9 +42,9 @@ public class GuiEventBusSubscriber {
         public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
             Minecraft client = Minecraft.getInstance();
             if (!client.gameSettings.hideGUI && !client.player.isCreative() && usingValid()) {
-                if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR) {
+                if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
                     event.getMatrixStack().translate(0, -10, 0);
-                } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE) {
+                } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
                     shinsu.render(event.getMatrixStack());
                     baangs.render(event.getMatrixStack());
                     UpdateStatsMetersMessage.INSTANCE.sendToServer(new UpdateStatsMetersMessage(0, 0, 0, 0));
@@ -56,7 +56,7 @@ public class GuiEventBusSubscriber {
         public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
             if (usingValid()) {
                 Minecraft client = Minecraft.getInstance();
-                if (!client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR)) {
+                if (!client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
                     event.getMatrixStack().translate(0, 10, 0);
                 }
                 if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || wheel != null && wheel.isLocked()) {
