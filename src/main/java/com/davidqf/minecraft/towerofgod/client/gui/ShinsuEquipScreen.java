@@ -88,6 +88,7 @@ public class ShinsuEquipScreen extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         updateSlots();
+        renderBackground(matrixStack);
         BACKGROUND.render(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
         font.func_238422_b_(matrixStack, title, x + (xSize - font.func_238414_a_(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
         ShinsuSlot hovered = null;
@@ -100,6 +101,11 @@ public class ShinsuEquipScreen extends Screen {
         if (hovered != null) {
             hovered.renderTooltip(matrixStack, mouseX, mouseY);
         }
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 
     private void addSlots() {
