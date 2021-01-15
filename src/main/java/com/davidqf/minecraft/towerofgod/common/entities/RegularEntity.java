@@ -1,6 +1,8 @@
 package com.davidqf.minecraft.towerofgod.common.entities;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
+import com.davidqf.minecraft.towerofgod.common.items.HookItem;
+import com.davidqf.minecraft.towerofgod.common.items.NeedleItem;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuShape;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -37,7 +39,7 @@ public class RegularEntity extends ShinsuUserEntity {
     private static final double FAMILY_QUALITY_RATE = 0.8;
     private static final double FAMILY_SHAPE_RATE = 0.8;
     private static final double FAMILY_WEAPON_RATE = 0.8;
-    private static final List<Class<? extends Item>> WEAPONS = new ArrayList<>(Arrays.asList(SwordItem.class, AxeItem.class));
+    private static final List<Class<? extends Item>> WEAPONS = new ArrayList<>(Arrays.asList(SwordItem.class, AxeItem.class, HookItem.class, NeedleItem.class));
     public static final DataParameter<String> FAMILY = EntityDataManager.createKey(RegularEntity.class, DataSerializers.STRING);
     private Personality personality;
     private Team team;
