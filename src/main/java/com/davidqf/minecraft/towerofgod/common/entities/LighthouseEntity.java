@@ -1,9 +1,9 @@
 package com.davidqf.minecraft.towerofgod.common.entities;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
+import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Blocks;
@@ -22,6 +22,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -40,7 +41,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class LighthouseEntity extends FlyingDevice implements INamedContainerProvider {
 
-    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".lighthouseentity";
+    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".lighthouse_entity";
     private static final int INVENTORY_SIZE = 27;
     private Inventory inventory;
     private BlockPos light;
@@ -146,7 +147,10 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT lighthouse = (CompoundNBT) nbt.get(TAG_KEY);
             if (lighthouse != null) {
-                inventory.read(lighthouse.getList("Inventory", Constants.NBT.TAG_COMPOUND));
+                ListNBT inv = (ListNBT) lighthouse.get("Inventory");
+                for (int i = 0; i < inv.size(); i++) {
+                    inventory.setInventorySlotContents(i, ItemStack.read(inv.getCompound(i)));
+                }
                 if (lighthouse.contains("X", Constants.NBT.TAG_COMPOUND)) {
                     light = new BlockPos(lighthouse.getInt("X"), lighthouse.getInt("Y"), lighthouse.getInt("Z"));
                 }
@@ -158,7 +162,11 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
         CompoundNBT lighthouse = new CompoundNBT();
-        lighthouse.put("Inventory", inventory.write());
+        ListNBT inv = new ListNBT();
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+            inv.add(inventory.getStackInSlot(i).write(new CompoundNBT()));
+        }
+        lighthouse.put("Inventory", inv);
         if (light != null) {
             lighthouse.putInt("X", light.getX());
             lighthouse.putInt("Y", light.getY());
@@ -174,20 +182,18 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         public LighthouseContainer(int id, PlayerInventory player, LighthouseEntity en) {
             super(RegistryHandler.LIGHTHOUSE_CONTAINER.get(), id);
             Inventory inv = en.getInventory();
-            for (int k = 0; k < 3; ++k) {
-                for (int l = 0; l < 9; ++l) {
-                    addSlot(new Slot(inv, l + k * 9, 8 + l * 18, 11 + k * 18));
+            for (int row = 0; row < 3; row++) {
+                for (int column = 0; column < 9; column++) {
+                    addSlot(new Slot(inv, column + row * 9, 8 + column * 18, 11 + row * 18));
                 }
             }
-
-            for (int i1 = 0; i1 < 3; ++i1) {
-                for (int k1 = 0; k1 < 9; ++k1) {
-                    addSlot(new Slot(player, k1 + i1 * 9 + 9, 8 + k1 * 18, 84 + i1 * 18));
+            for (int row = 0; row < 3; row++) {
+                for (int column = 0; column < 9; column++) {
+                    addSlot(new Slot(player, column + row * 9 + 9, 8 + column * 18, 84 + row * 18));
                 }
             }
-
-            for (int j1 = 0; j1 < 9; ++j1) {
-                addSlot(new Slot(player, j1, 8 + j1 * 18, 142));
+            for (int index = 0; index < 9; index++) {
+                addSlot(new Slot(player, index, 8 + index * 18, 142));
             }
             this.en = en;
         }
@@ -237,7 +243,9 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
     public static class LighthouseScreen extends ContainerScreen<LighthouseContainer> {
 
-        private static final ResourceLocation GUI = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png");
+        private static final RenderInfo RENDER = new RenderInfo(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 166, 0, 0, 176, 166);
+        private static final int TITLE_COLOR = 0xFFFFFFFF;
+        private static final int INVENTORY_TITLE_COLOR = 0xFF404040;
 
         public LighthouseScreen(LighthouseContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
             super(screenContainer, inv, titleIn);
@@ -254,14 +262,16 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
         @Deprecated
         @Override
-        protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
-            RenderSystem.color4f(1, 1, 1, 1);
-            if (minecraft != null) {
-                minecraft.getTextureManager().bindTexture(GUI);
-            }
-            int i = (width - xSize) / 2;
-            int j = (height - ySize) / 2;
-            blit(matrixStack, i, j, 0, 0, xSize, ySize);
+        public void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+            int x = (width - xSize) / 2;
+            int y = (height - ySize) / 2;
+            RENDER.render(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
+        }
+
+        @Override
+        public void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
+            this.font.func_238422_b_(matrixStack, title, (float) titleX, (float) titleY, TITLE_COLOR);
+            this.font.func_238422_b_(matrixStack, playerInventory.getDisplayName(), (float) playerInventoryTitleX, (float) playerInventoryTitleY, INVENTORY_TITLE_COLOR);
         }
 
         public static class Factory implements IScreenFactory<LighthouseContainer, LighthouseScreen> {
