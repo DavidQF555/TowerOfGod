@@ -1,7 +1,6 @@
 package com.davidqf.minecraft.towerofgod.common.entities;
 
-import com.davidqf.minecraft.towerofgod.common.packets.ObserverAddHighlightMessage;
-import com.davidqf.minecraft.towerofgod.common.packets.ObserverRemoveHighlightMessage;
+import com.davidqf.minecraft.towerofgod.common.packets.ObserverChangeHighlightMessage;
 import com.davidqf.minecraft.towerofgod.common.packets.RemoveObserverDataMessage;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
@@ -18,7 +17,6 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class ObserverEntity extends FlyingDevice {
@@ -40,24 +38,17 @@ public class ObserverEntity extends FlyingDevice {
 
     @Override
     public void livingTick() {
+        targets.clear();
         Vector3d pos = getPositionVec();
         AxisAlignedBB bounds = new AxisAlignedBB(pos.subtract(RANGE, RANGE, RANGE), pos.add(RANGE, RANGE, RANGE));
-        List<UUID> add = new ArrayList<>();
         for (Entity e : world.getEntitiesInAABBexcluding(this, bounds, null)) {
             if (e.getDistanceSq(this) <= RANGE * RANGE && canEntityBeSeen(e)) {
-                add.add(e.getUniqueID());
+                targets.add(e.getUniqueID());
             }
         }
-        List<UUID> remove = (List<UUID>) targets.clone();
-        remove.removeAll(add);
-        add.removeAll(targets);
-        targets.removeAll(remove);
-        targets.addAll(add);
         Entity owner = getOwner();
         if (owner instanceof ServerPlayerEntity) {
-            UUID id = getUniqueID();
-            ObserverRemoveHighlightMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverRemoveHighlightMessage(id, remove));
-            ObserverAddHighlightMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverAddHighlightMessage(id, add));
+            ObserverChangeHighlightMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverChangeHighlightMessage(getUniqueID(), targets));
         }
         super.livingTick();
     }

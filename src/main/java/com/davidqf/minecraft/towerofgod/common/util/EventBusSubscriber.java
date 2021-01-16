@@ -95,8 +95,7 @@ public class EventBusSubscriber {
             UpdateClientCanCastMessage.register(index++);
             UpdateClientKnownMessage.register(index++);
             UpdateClientEquippedMessage.register(index++);
-            ObserverRemoveHighlightMessage.register(index++);
-            ObserverAddHighlightMessage.register(index++);
+            ObserverChangeHighlightMessage.register(index++);
             RemoveObserverDataMessage.register(index++);
         }
     }

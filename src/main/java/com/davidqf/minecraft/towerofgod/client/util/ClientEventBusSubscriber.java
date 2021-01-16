@@ -49,6 +49,7 @@ public class ClientEventBusSubscriber {
     public static void preRenderLiving(RenderLivingEvent.Pre<LivingEntity, EntityModel<LivingEntity>> event) {
         LivingEntity entity = event.getEntity();
         UUID id = entity.getUniqueID();
+        boolean included = false;
         boolean stillGlowing = false;
         for (UUID key : highlight.keySet()) {
             List<UUID> values = highlight.get(key);
@@ -56,11 +57,15 @@ public class ClientEventBusSubscriber {
             if (stop.contains(id)) {
                 values.remove(id);
                 stop.remove(id);
+                included = true;
             } else if (values.contains(id)) {
                 stillGlowing = true;
+                included = true;
             }
         }
-        entity.setGlowing(stillGlowing);
+        if (included) {
+            entity.setGlowing(stillGlowing);
+        }
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
