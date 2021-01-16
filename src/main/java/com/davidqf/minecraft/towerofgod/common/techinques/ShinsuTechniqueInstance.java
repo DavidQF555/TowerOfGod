@@ -74,7 +74,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public void onEnd(ServerWorld world) {
-        updateMeter(world);
+
     }
 
     public void onUse(ServerWorld world) {
@@ -91,6 +91,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user != null) {
             IShinsuStats stats = IShinsuStats.get(user);
             stats.removeTechnique(this);
+            updateMeter(world);
         }
     }
 
