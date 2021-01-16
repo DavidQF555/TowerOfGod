@@ -22,6 +22,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -113,6 +114,20 @@ public class GuiEventBusSubscriber {
                         wheel.lock();
                     }
                 }
+            }
+        }
+
+        @SubscribeEvent
+        public static void onClickInput(InputEvent.ClickInputEvent event) {
+            if (wheel != null) {
+                event.setSwingHand(false);
+            }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerInteract(PlayerInteractEvent event) {
+            if (wheel != null && event.isCancelable()) {
+                event.setCanceled(true);
             }
         }
 
