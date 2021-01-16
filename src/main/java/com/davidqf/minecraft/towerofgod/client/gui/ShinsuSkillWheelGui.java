@@ -2,14 +2,14 @@ package com.davidqf.minecraft.towerofgod.client.gui;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
-import com.davidqf.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
+import com.davidqf.minecraft.towerofgod.common.packets.UpdateClientCanCastMessage;
+import com.davidqf.minecraft.towerofgod.common.packets.UpdateClientCooldownsMessage;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ColorHelper;
@@ -98,12 +98,13 @@ public class ShinsuSkillWheelGui extends AbstractGui {
     }
 
     public void tick() {
-        ClientPlayerEntity player = Minecraft.getInstance().player;
+        Minecraft client = Minecraft.getInstance();
         prevYaw = yaw;
-        yaw = player.rotationYawHead;
+        yaw = client.player.rotationYawHead;
         prevPitch = pitch;
-        pitch = player.rotationPitch;
-        UpdateStatsMetersMessage.INSTANCE.sendToServer(new UpdateStatsMetersMessage(0, 0, 0, 0));
+        pitch = client.player.rotationPitch;
+        UpdateClientCooldownsMessage.INSTANCE.sendToServer(new UpdateClientCooldownsMessage());
+        UpdateClientCanCastMessage.INSTANCE.sendToServer(new UpdateClientCanCastMessage(client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
     }
 
     public void lock() {
@@ -118,12 +119,12 @@ public class ShinsuSkillWheelGui extends AbstractGui {
 
         private static final RenderInfo RENDER = new RenderInfo(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/wheel.png"), 64, 64, 0, 0, 64, 64);
         private static final float ANGLE = 90;
-        private static final int COLOR = 0x11FFFFFF;
+        private static final int COLOR = 0xAAFFFFFF;
         private static final int SELECTED_COLOR = 0xDDAAAAAA;
+        private static final int CAN_CAST_COLOR = 0xAA00FF00;
+        private static final int CANNOT_CAST_COLOR = 0x88FF0000;
         private static final int CAN_CAST_NAME_COLOR = 0xFF00FF00;
         private static final int CANNOT_CAST_NAME_COLOR = 0xFFFF0000;
-        private static final int CAN_CAST_COLOR = 0x9900FF00;
-        private static final int CANNOT_CAST_COLOR = 0x99FF0000;
         private final float angle;
         private final ShinsuSkillWheelGui gui;
         private ShinsuTechnique technique;

@@ -42,35 +42,33 @@ public class GuiEventBusSubscriber {
         @SubscribeEvent
         public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
             Minecraft client = Minecraft.getInstance();
-            if (!client.gameSettings.hideGUI && !client.player.isCreative() && usingValid()) {
-                if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
-                    event.getMatrixStack().translate(0, -10, 0);
-                } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
-                    shinsu.render(event.getMatrixStack());
-                    baangs.render(event.getMatrixStack());
+            if (usingValid()) {
+                if (!client.gameSettings.hideGUI && !client.player.isCreative()) {
+                    if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
+                        event.getMatrixStack().translate(0, -10, 0);
+                    } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
+                        shinsu.render(event.getMatrixStack());
+                        baangs.render(event.getMatrixStack());
+                    }
+                }
+                if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || wheel != null && wheel.isLocked()) {
+                    if (wheel == null) {
+                        wheel = new ShinsuSkillWheelGui();
+                    }
+                    if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
+                        wheel.render(event.getMatrixStack());
+                    }
+                } else {
+                    wheel = null;
                 }
             }
         }
 
         @SubscribeEvent
         public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
-            if (usingValid()) {
-                Minecraft client = Minecraft.getInstance();
-                if (!client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
-                    event.getMatrixStack().translate(0, 10, 0);
-                }
-                if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || wheel != null && wheel.isLocked()) {
-                    if (wheel == null) {
-                        wheel = new ShinsuSkillWheelGui();
-                    }
-                    if (!client.gameSettings.hideGUI) {
-                        UpdateClientCooldownsMessage.INSTANCE.sendToServer(new UpdateClientCooldownsMessage());
-                        UpdateClientCanCastMessage.INSTANCE.sendToServer(new UpdateClientCanCastMessage(client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
-                        wheel.render(event.getMatrixStack());
-                    }
-                } else {
-                    wheel = null;
-                }
+            Minecraft client = Minecraft.getInstance();
+            if (usingValid() && !client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
+                event.getMatrixStack().translate(0, 10, 0);
             }
         }
 
@@ -153,8 +151,6 @@ public class GuiEventBusSubscriber {
         public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
             ForgeBus.setMeterPositions();
         }
-
-
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
