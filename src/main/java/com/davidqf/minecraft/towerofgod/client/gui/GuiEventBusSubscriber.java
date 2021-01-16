@@ -47,7 +47,6 @@ public class GuiEventBusSubscriber {
                 } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
                     shinsu.render(event.getMatrixStack());
                     baangs.render(event.getMatrixStack());
-                    UpdateStatsMetersMessage.INSTANCE.sendToServer(new UpdateStatsMetersMessage(0, 0, 0, 0));
                 }
             }
         }

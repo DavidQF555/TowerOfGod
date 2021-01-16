@@ -2,6 +2,7 @@ package com.davidqf.minecraft.towerofgod.client.gui;
 
 import com.davidqf.minecraft.towerofgod.TowerOfGod;
 import com.davidqf.minecraft.towerofgod.client.render.RenderInfo;
+import com.davidqf.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
 import com.davidqf.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -102,6 +103,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
         yaw = player.rotationYawHead;
         prevPitch = pitch;
         pitch = player.rotationPitch;
+        UpdateStatsMetersMessage.INSTANCE.sendToServer(new UpdateStatsMetersMessage(0, 0, 0, 0));
     }
 
     public void lock() {
