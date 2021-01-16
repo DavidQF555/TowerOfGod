@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.*;
@@ -75,6 +76,16 @@ public class ShinsuEquipScreen extends Screen {
         }
         scroller = new Scroller(this, x + 175, y + 84, 12, 15, y + 84, y + 136);
         addButton(scroller);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
+        if (minecraft.gameSettings.keyBindInventory.isActiveAndMatches(input)) {
+            closeScreen();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
