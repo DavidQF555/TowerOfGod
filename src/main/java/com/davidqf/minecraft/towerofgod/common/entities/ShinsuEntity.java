@@ -33,7 +33,7 @@ import java.util.UUID;
 @MethodsReturnNonnullByDefault
 public class ShinsuEntity extends DamagingProjectileEntity {
 
-    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".shinsuentity";
+    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".shinsu_entity";
     private static final int PARTICLES = 3;
     private static final float DAMAGE = 5;
     private static final DataParameter<String> QUALITY = EntityDataManager.createKey(ShinsuEntity.class, DataSerializers.STRING);
@@ -85,6 +85,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             quality.applyEntityEffect(this, rayTraceResult);
             target.attackEntityFrom(quality.getSource(), damage);
         }
+        remove();
     }
 
     @Nullable
