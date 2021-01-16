@@ -36,7 +36,7 @@ public class ObserverItem extends Item {
         if (dev != null && dev.canSpawn(worldIn, SpawnReason.MOB_SUMMONED)) {
             Vector3d spawn = eye.add(change);
             dev.setPosition(spawn.x, spawn.y, spawn.z);
-            dev.setOwner(playerIn);
+            dev.setOwnerID(playerIn.getUniqueID());
             worldIn.addEntity(dev);
             ItemStack item = playerIn.getHeldItem(handIn);
             item.setCount(item.getCount() - 1);

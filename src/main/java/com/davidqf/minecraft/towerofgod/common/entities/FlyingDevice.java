@@ -17,12 +17,14 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.EnumSet;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal {
 
-    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".flyingdevice";
+    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".flying_device";
     private UUID owner;
 
     public FlyingDevice(EntityType<? extends FlyingDevice> type, World worldIn) {
@@ -43,7 +45,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
 
     @Nonnull
     @Override
-    public PathNavigator createNavigator(@Nonnull World worldIn) {
+    public PathNavigator createNavigator(World worldIn) {
         FlyingPathNavigator nav = new FlyingPathNavigator(this, worldIn);
         nav.setCanEnterDoors(true);
         nav.setCanOpenDoors(false);
@@ -59,8 +61,8 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
         return null;
     }
 
-    public void setOwner(LivingEntity owner) {
-        this.owner = owner.getUniqueID();
+    public void setOwnerID(UUID id) {
+        owner = id;
     }
 
     @Override
@@ -69,21 +71,21 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     }
 
     @Override
-    public void travel(@Nonnull Vector3d vec) {
+    public void travel(Vector3d vec) {
         float speed = (float) getAttributeValue(Attributes.FLYING_SPEED);
         if (isInWater()) {
             moveRelative(speed, vec);
             move(MoverType.SELF, getMotion());
-            setMotion(getMotion().scale(0.8F));
+            setMotion(getMotion().scale(0.8));
         } else if (isInLava()) {
             moveRelative(speed, vec);
             move(MoverType.SELF, getMotion());
-            setMotion(getMotion().scale(0.5D));
+            setMotion(getMotion().scale(0.5));
         } else {
-            float f = 0.91F;
+            double factor = 0.91;
             moveRelative(speed, vec);
             move(MoverType.SELF, getMotion());
-            setMotion(getMotion().scale(f));
+            setMotion(getMotion().scale(factor));
         }
         func_233629_a_(this, false);
     }

@@ -9,6 +9,7 @@ import com.davidqf.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import com.davidqf.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemModelsProperties;
@@ -16,6 +17,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -25,11 +27,15 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.*;
+
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
 
     private static IShinsuStats clonedStats = null;
     private static IPlayerShinsuEquips clonedEquips = null;
+    public static final Map<UUID, List<UUID>> highlight = new HashMap<>();
+    public static final Map<UUID, List<UUID>> stopHighlight = new HashMap<>();
 
     @SubscribeEvent
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
@@ -37,6 +43,24 @@ public class ClientEventBusSubscriber {
         if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.currentScreen == null && client.player.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent
+    public static void preRenderLiving(RenderLivingEvent.Pre<LivingEntity, EntityModel<LivingEntity>> event) {
+        LivingEntity entity = event.getEntity();
+        UUID id = entity.getUniqueID();
+        boolean stillGlowing = false;
+        for (UUID key : highlight.keySet()) {
+            List<UUID> values = highlight.get(key);
+            List<UUID> stop = stopHighlight.containsKey(key) ? stopHighlight.get(key) : new ArrayList<>();
+            if (stop.contains(id)) {
+                values.remove(id);
+                stop.remove(id);
+            } else if (values.contains(id)) {
+                stillGlowing = true;
+            }
+        }
+        entity.setGlowing(stillGlowing);
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
