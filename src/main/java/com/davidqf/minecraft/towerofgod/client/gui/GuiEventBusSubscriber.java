@@ -101,7 +101,7 @@ public class GuiEventBusSubscriber {
             Minecraft client = Minecraft.getInstance();
             if (wheel != null) {
                 ShinsuTechnique selected = wheel.getSelected();
-                if (selected != null && ShinsuSkillWheelGui.canCast.containsKey(selected) && ShinsuSkillWheelGui.canCast.get(selected) && event.getButton() == 0) {
+                if (selected != null && ShinsuSkillWheelGui.cooldowns.getOrDefault(selected, 0) <= 0 && event.getButton() == 0) {
                     int action = event.getAction();
                     if (wheel.isLocked()) {
                         if (action == GLFW.GLFW_RELEASE) {
