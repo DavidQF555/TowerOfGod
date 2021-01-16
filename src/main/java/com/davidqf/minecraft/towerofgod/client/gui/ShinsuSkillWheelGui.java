@@ -120,7 +120,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
         private static final RenderInfo RENDER = new RenderInfo(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/wheel.png"), 64, 64, 0, 0, 64, 64);
         private static final float ANGLE = 90;
         private static final int COLOR = 0xAAFFFFFF;
-        private static final int SELECTED_COLOR = 0xDDAAAAAA;
+        private static final int SELECTED_COLOR = 0xDD888888;
         private static final int CAN_CAST_COLOR = 0xAA00FF00;
         private static final int CANNOT_CAST_COLOR = 0x88FF0000;
         private static final int CAN_CAST_NAME_COLOR = 0xFF00FF00;
