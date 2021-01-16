@@ -16,7 +16,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
 
-    private static final double RANGE = 1.5;
+    private static final double RANGE = 3;
     private static final float DAMAGE = 10;
     private static final double KNOCKBACK = 2;
 

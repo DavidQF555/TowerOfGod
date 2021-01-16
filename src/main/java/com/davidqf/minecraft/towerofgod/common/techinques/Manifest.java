@@ -19,7 +19,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class Manifest extends ShinsuTechniqueInstance {
 
-    private static final int DURATION = 1000;
+    private static final int DURATION = 2400;
 
     public Manifest(LivingEntity user, int level) {
         super(ShinsuTechnique.MANIFEST, user, level, DURATION);
