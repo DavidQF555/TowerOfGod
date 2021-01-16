@@ -16,6 +16,7 @@ import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -99,6 +100,12 @@ public class ClientEventBusSubscriber {
                 clonedStats = IShinsuStats.get(original);
                 clonedEquips = IPlayerShinsuEquips.get(original);
             }
+        }
+
+        @SubscribeEvent
+        public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+            highlight.clear();
+            stopHighlight.clear();
         }
 
         @SubscribeEvent
