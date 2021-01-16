@@ -15,6 +15,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class Manifest extends ShinsuTechniqueInstance {
 
@@ -55,6 +56,7 @@ public class Manifest extends ShinsuTechniqueInstance {
         super.tick(world);
     }
 
+    @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.Builder<Manifest> {
 
         private final int shinsu;
@@ -66,7 +68,7 @@ public class Manifest extends ShinsuTechniqueInstance {
         }
 
         @Override
-        public Manifest build(@Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        public Manifest build(LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
             return new Manifest(user, level);
         }
 
@@ -74,6 +76,11 @@ public class Manifest extends ShinsuTechniqueInstance {
         @Override
         public Manifest emptyBuild() {
             return new Manifest(null, 0);
+        }
+
+        @Override
+        public boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+            return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && IShinsuStats.get(user).getShape() != ShinsuShape.NONE;
         }
 
         @Override

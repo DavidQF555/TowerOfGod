@@ -10,13 +10,15 @@ import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
 
     private static final double RANGE = 4;
     private static final int BASE_DURATION = 40;
 
-    public ReverseFlowControl(LivingEntity user, int level, @Nonnull LivingEntity target) {
+    public ReverseFlowControl(LivingEntity user, int level, LivingEntity target) {
         super(ShinsuTechnique.REVERSE_FLOW_CONTROL, user, level, target, level * BASE_DURATION);
     }
 
@@ -51,7 +53,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
         }
 
         @Override
-        public ReverseFlowControl build(@Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        public ReverseFlowControl build(LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
             return target instanceof LivingEntity ? new ReverseFlowControl(user, level, (LivingEntity) target) : null;
         }
 
@@ -59,6 +61,11 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
         @Override
         public ReverseFlowControl emptyBuild() {
             return new ReverseFlowControl(null, 0, null);
+        }
+
+        @Override
+        public boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+            return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE;
         }
 
         @Override

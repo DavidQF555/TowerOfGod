@@ -11,14 +11,16 @@ import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
 
     private static final double RANGE = 1.5;
     private static final float DAMAGE = 10;
     private static final double KNOCKBACK = 2;
 
-    public FlareWaveExplosion(LivingEntity user, int level, @Nonnull LivingEntity target) {
+    public FlareWaveExplosion(LivingEntity user, int level, LivingEntity target) {
         super(ShinsuTechnique.FLARE_WAVE_EXPLOSION, user, level, target, 0);
     }
 
@@ -53,7 +55,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
         }
 
         @Override
-        public FlareWaveExplosion build(@Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        public FlareWaveExplosion build(LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
             return target instanceof LivingEntity ? new FlareWaveExplosion(user, level, (LivingEntity) target) : null;
         }
 
@@ -61,6 +63,11 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
         @Override
         public FlareWaveExplosion emptyBuild() {
             return new FlareWaveExplosion(null, 0, null);
+        }
+
+        @Override
+        public boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+            return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE;
         }
 
         @Override
