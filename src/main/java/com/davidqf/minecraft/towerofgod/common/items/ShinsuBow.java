@@ -85,16 +85,9 @@ public class ShinsuBow extends BowItem {
         if (worldIn instanceof ServerWorld) {
             CompoundNBT nbt = stack.getChildTag(TowerOfGod.MOD_ID);
             if (!stack.isEmpty() && nbt != null) {
-                boolean contains = false;
                 UUID id = nbt.getUniqueId("Technique");
-                IShinsuStats stats = IShinsuStats.get(entityIn);
-                for (ShinsuTechniqueInstance technique : stats.getTechniques()) {
-                    if (technique.getID().equals(id)) {
-                        contains = true;
-                        break;
-                    }
-                }
-                if (!contains) {
+                ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
+                if (technique == null) {
                     IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
                     inventory.extractItem(itemSlot, stack.getCount(), false);
                 }
