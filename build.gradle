@@ -76,11 +76,11 @@ jar {
     manifest {
         attributes([
                 "Specification-Title"     : "towerofgod",
-                "Specification-Vendor"    : "davidqf",
+                "Specification-Vendor"    : "davidqf555",
                 "Specification-Version"   : "1",
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : "${version}",
-                "Implementation-Vendor"   : "davidqf",
+                "Implementation-Vendor"   : "davidqf555",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
