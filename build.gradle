@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.16.1-32.0.108'
+version = '1.16.1-1.1.1.4'
 group = 'io.github.davidqf555.minecraft.towerofgod'
 archivesBaseName = 'towerofgod'
 
@@ -69,7 +69,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.1-32.0.75'
+    minecraft 'net.minecraftforge:forge:1.16.1-32.0.108'
 }
 
 jar {
