@@ -1,0 +1,42 @@
+{
+  "parent": "towerofgod:shinsu",
+  "display": {
+    "icon": {
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"water\"}"
+    },
+    "title": {
+      "translate": "advancement.towerofgod.shinsu_control.title"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.shinsu_control.description"
+    }
+  },
+  "criteria": {
+    "drink_water": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "item": "minecraft:potion",
+          "nbt": "{Potion:\"water\"}"
+        },
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "player": {
+                "advancements": {
+                  "towerofgod:shinsu": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "function": "towerofgod:shinsu_control"
+  }
+}

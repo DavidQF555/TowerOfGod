@@ -1,0 +1,45 @@
+{
+  "parent": "towerofgod:shinsu_control",
+  "display": {
+    "icon": {
+      "item": "minecraft:tnt"
+    },
+    "title": {
+      "translate": "advancement.towerofgod.flare_wave_explosion.title"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.flare_wave_explosion.description"
+    }
+  },
+  "criteria": {
+    "explosion": {
+      "trigger": "minecraft:entity_hurt_player",
+      "conditions": {
+        "damage": {
+          "taken": {
+            "min": 15
+          },
+          "type": {
+            "is_explosion": true
+          }
+        },
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "player": {
+                "advancements": {
+                  "towerofgod:shinsu_control": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "function": "towerofgod:flare_wave_explosion"
+  }
+}

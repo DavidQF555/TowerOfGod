@@ -1,0 +1,110 @@
+{
+  "parent": "towerofgod:body_reinforcement",
+  "display": {
+    "icon": {
+      "item": "minecraft:glass"
+    },
+    "title": {
+      "translate": "advancement.towerofgod.black_fish.title"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.black_fish.description"
+    }
+  },
+  "criteria": {
+    "kill_fish_in_day": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "flags": {
+            "is_on_fire": false
+          },
+          "location": {
+            "light": {
+              "block": 0,
+              "sky": 0
+            }
+          },
+          "type": "#towerofgod:aquatic"
+        },
+        "player": [
+          {
+            "condition": "minecraft:alternative",
+            "terms": [
+              {
+                "condition": "minecraft:time_check",
+                "value": {
+                  "min": 0,
+                  "max": 12999
+                }
+              },
+              {
+                "condition": "minecraft:time_check",
+                "value": {
+                  "min": 23031,
+                  "max": 24000
+                }
+              }
+            ]
+          },
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "player": {
+                "advancements": {
+                  "towerofgod:body_reinforcement": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "kill_fish_in_night": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": {
+          "flags": {
+            "is_on_fire": false
+          },
+          "location": {
+            "light": {
+              "block": 0
+            }
+          },
+          "type": "#towerofgod:fish"
+        },
+        "player": [
+          {
+            "condition": "minecraft:time_check",
+            "value": {
+              "min": 13000,
+              "max": 23000
+            }
+          },
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "player": {
+                "advancements": {
+                  "towerofgod:body_reinforcement": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "kill_fish_in_day",
+      "kill_fish_in_night"
+    ]
+  ],
+  "rewards": {
+    "function": "towerofgod:black_fish"
+  }
+}

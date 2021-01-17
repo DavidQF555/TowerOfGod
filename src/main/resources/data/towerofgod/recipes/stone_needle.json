@@ -1,20 +1,20 @@
 {
-	"type": "minecraft:crafting_shaped",
-	"pattern": [
-		"x  ",
-		" x ",
-		"  y"
-	],
-	"key": {
-		"x": {
-			"tag": "minecraft:stone_tool_materials"
-		},
-		"y": {
-			"item": "minecraft:iron_ingot"
-		}
-	},
-	"result": {
-		"item": "towerofgod:stone_needle",
-		"count": 1
-	}
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "x  ",
+    " x ",
+    "  y"
+  ],
+  "key": {
+    "x": {
+      "tag": "minecraft:stone_tool_materials"
+    },
+    "y": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "towerofgod:stone_needle",
+    "count": 1
+  }
 }
