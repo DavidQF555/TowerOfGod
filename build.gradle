@@ -13,7 +13,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = '1.16.1-32.0.108'
-group = 'com.davidqf.minecraft.towerofgod'
+group = 'io.github.davidqf555.minecraft.towerofgod'
 archivesBaseName = 'towerofgod'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
