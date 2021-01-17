@@ -46,6 +46,7 @@ public class ObserverChangeHighlightMessage {
     };
     private final UUID id;
     private final List<UUID> entities;
+
     public ObserverChangeHighlightMessage(UUID id, List<UUID> entities) {
         this.id = id;
         this.entities = entities;

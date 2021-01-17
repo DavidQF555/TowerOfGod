@@ -59,6 +59,7 @@ public class UpdateClientCanCastMessage {
     };
     private final UUID target;
     private final Map<ShinsuTechnique, Boolean> canCast;
+
     public UpdateClientCanCastMessage(@Nullable UUID target) {
         this(target, Maps.newEnumMap(ShinsuTechnique.class));
     }
