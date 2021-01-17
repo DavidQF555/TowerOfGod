@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.ResourceLocation;

@@ -2,7 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.client.render;
 
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.*;
+import net.minecraft.client.renderer.entity.BipedRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;

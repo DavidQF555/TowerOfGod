@@ -1,12 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -30,17 +30,20 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 public class RegularEntity extends ShinsuUserEntity {
 
+    public static final DataParameter<String> FAMILY = EntityDataManager.createKey(RegularEntity.class, DataSerializers.STRING);
     private static final String TAG_KEY = TowerOfGod.MOD_ID + ".regular_entity";
     private static final double FAMILY_TECHNIQUE_RATE = 0.8;
     private static final double FAMILY_QUALITY_RATE = 0.8;
     private static final double FAMILY_SHAPE_RATE = 0.8;
     private static final double FAMILY_WEAPON_RATE = 0.8;
     private static final List<Class<? extends Item>> WEAPONS = new ArrayList<>(Arrays.asList(SwordItem.class, AxeItem.class, HookItem.class, NeedleItem.class));
-    public static final DataParameter<String> FAMILY = EntityDataManager.createKey(RegularEntity.class, DataSerializers.STRING);
     private Personality personality;
     private Team team;
     private int level;
@@ -51,6 +54,14 @@ public class RegularEntity extends ShinsuUserEntity {
         team = new Team(this);
         personality = Personality.NEUTRAL;
         setFamily(Family.ARIE);
+    }
+
+    public static AttributeModifierMap.MutableAttribute setAttributes() {
+        return RegularEntity.func_233666_p_()
+                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32)
+                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.215)
+                .createMutableAttribute(Attributes.MAX_HEALTH, 20)
+                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 1);
     }
 
     @Override
@@ -64,14 +75,6 @@ public class RegularEntity extends ShinsuUserEntity {
         setStats();
         setWeapon();
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-    }
-
-    public static AttributeModifierMap.MutableAttribute setAttributes() {
-        return RegularEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.215)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 20)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 1);
     }
 
     private void setStats() {
@@ -213,6 +216,86 @@ public class RegularEntity extends ShinsuUserEntity {
         return false;
     }
 
+    private enum Personality {
+        AGGRESSIVE(),
+        PASSIVE(),
+        NEUTRAL();
+
+        public static Personality get(String name) {
+            for (Personality personality : values()) {
+                if (personality.name().equals(name)) {
+                    return personality;
+                }
+            }
+            return null;
+        }
+    }
+
+    public static class Factory implements EntityType.IFactory<RegularEntity> {
+        @Nonnull
+        @Override
+        public RegularEntity create(@Nullable EntityType<RegularEntity> type, @Nonnull World world) {
+            return new RegularEntity(world);
+        }
+    }
+
+    private static class Team implements INBTSerializable<CompoundNBT> {
+
+        private final List<UUID> members;
+        private UUID leader;
+
+        public Team(RegularEntity leader) {
+            members = new ArrayList<>();
+            members.add(leader.getUniqueID());
+            this.leader = leader.getUniqueID();
+        }
+
+        public List<RegularEntity> getEntityMembers(World world) {
+            if (world instanceof ServerWorld) {
+                List<RegularEntity> out = new ArrayList<>();
+                for (UUID uuid : members) {
+                    Entity e = ((ServerWorld) world).getEntityByUuid(uuid);
+                    if (e instanceof RegularEntity) {
+                        out.add((RegularEntity) e);
+                    }
+                }
+                return out;
+            }
+            return null;
+        }
+
+        public Entity getLeader(World world) {
+            if (world instanceof ServerWorld) {
+                return ((ServerWorld) world).getEntityByUuid(leader);
+            }
+            return null;
+        }
+
+        public void setLeader(RegularEntity reg) {
+            leader = reg.getUniqueID();
+        }
+
+        @Override
+        public CompoundNBT serializeNBT() {
+            CompoundNBT nbt = new CompoundNBT();
+            nbt.putInt("Size", members.size());
+            for (int i = 0; i < members.size(); i++) {
+                nbt.putUniqueId("Member" + i, members.get(i));
+            }
+            nbt.putUniqueId("Leader", leader);
+            return nbt;
+        }
+
+        @Override
+        public void deserializeNBT(CompoundNBT nbt) {
+            int size = nbt.getInt("Size");
+            for (int i = 0; i < size; i++) {
+                members.add(nbt.getUniqueId("Member" + i));
+            }
+            leader = nbt.getUniqueId("Leader");
+        }
+    }
+
     private class FollowLeaderGoal extends Goal {
 
         private static final double RANGE = 8;
@@ -320,86 +403,6 @@ public class RegularEntity extends ShinsuUserEntity {
                     mem.team = reg.team;
                 }
             }
-        }
-    }
-
-    public static class Factory implements EntityType.IFactory<RegularEntity> {
-        @Nonnull
-        @Override
-        public RegularEntity create(@Nullable EntityType<RegularEntity> type, @Nonnull World world) {
-            return new RegularEntity(world);
-        }
-    }
-
-    private enum Personality {
-        AGGRESSIVE(),
-        PASSIVE(),
-        NEUTRAL();
-
-        public static Personality get(String name) {
-            for (Personality personality : values()) {
-                if (personality.name().equals(name)) {
-                    return personality;
-                }
-            }
-            return null;
-        }
-    }
-
-    private static class Team implements INBTSerializable<CompoundNBT> {
-
-        private final List<UUID> members;
-        private UUID leader;
-
-        public Team(RegularEntity leader) {
-            members = new ArrayList<>();
-            members.add(leader.getUniqueID());
-            this.leader = leader.getUniqueID();
-        }
-
-        public List<RegularEntity> getEntityMembers(World world) {
-            if (world instanceof ServerWorld) {
-                List<RegularEntity> out = new ArrayList<>();
-                for (UUID uuid : members) {
-                    Entity e = ((ServerWorld) world).getEntityByUuid(uuid);
-                    if (e instanceof RegularEntity) {
-                        out.add((RegularEntity) e);
-                    }
-                }
-                return out;
-            }
-            return null;
-        }
-
-        public Entity getLeader(World world) {
-            if (world instanceof ServerWorld) {
-                return ((ServerWorld) world).getEntityByUuid(leader);
-            }
-            return null;
-        }
-
-        public void setLeader(RegularEntity reg) {
-            leader = reg.getUniqueID();
-        }
-
-        @Override
-        public CompoundNBT serializeNBT() {
-            CompoundNBT nbt = new CompoundNBT();
-            nbt.putInt("Size", members.size());
-            for (int i = 0; i < members.size(); i++) {
-                nbt.putUniqueId("Member" + i, members.get(i));
-            }
-            nbt.putUniqueId("Leader", leader);
-            return nbt;
-        }
-
-        @Override
-        public void deserializeNBT(CompoundNBT nbt) {
-            int size = nbt.getInt("Size");
-            for (int i = 0; i < size; i++) {
-                members.add(nbt.getUniqueId("Member" + i));
-            }
-            leader = nbt.getUniqueId("Leader");
         }
     }
 }

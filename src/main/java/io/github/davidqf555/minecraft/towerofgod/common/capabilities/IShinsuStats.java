@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
+import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.google.common.collect.Maps;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,7 +19,10 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public interface IShinsuStats {
 
@@ -107,15 +110,15 @@ public interface IShinsuStats {
 
     class ShinsuStats implements IShinsuStats {
 
+        private final Map<ShinsuTechnique, Integer> known;
+        private final Map<ShinsuTechnique, Integer> cooldowns;
+        private final List<ShinsuTechniqueInstance> techniques;
         private int shinsu;
         private int baangs;
         private double resistance;
         private double tension;
         private ShinsuQuality quality;
         private ShinsuShape shape;
-        private final Map<ShinsuTechnique, Integer> known;
-        private final Map<ShinsuTechnique, Integer> cooldowns;
-        private final List<ShinsuTechniqueInstance> techniques;
 
         public ShinsuStats() {
             this(0, 0, 1, 1, ShinsuQuality.NONE, ShinsuShape.NONE, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());

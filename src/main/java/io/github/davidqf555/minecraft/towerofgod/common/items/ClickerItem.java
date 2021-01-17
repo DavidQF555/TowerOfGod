@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.CriteriaTriggers;

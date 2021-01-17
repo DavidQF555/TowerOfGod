@@ -1,9 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.util;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -12,6 +8,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;

@@ -43,11 +43,6 @@ public class UpdateClientEquippedMessage {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-
-    public static void register(int index) {
-        INSTANCE.registerMessage(index, UpdateClientEquippedMessage.class, ENCODER, DECODER, CONSUMER);
-    }
-
     private final ShinsuTechnique[] equipped;
 
     public UpdateClientEquippedMessage() {
@@ -56,6 +51,10 @@ public class UpdateClientEquippedMessage {
 
     public UpdateClientEquippedMessage(ShinsuTechnique[] equipped) {
         this.equipped = equipped;
+    }
+
+    public static void register(int index) {
+        INSTANCE.registerMessage(index, UpdateClientEquippedMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

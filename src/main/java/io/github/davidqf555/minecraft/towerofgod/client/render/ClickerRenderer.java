@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.client.render;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderer;

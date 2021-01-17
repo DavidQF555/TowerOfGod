@@ -3,9 +3,8 @@ package io.github.davidqf555.minecraft.towerofgod.client.util;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.render.*;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntity;
-
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
@@ -33,10 +32,10 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
 
-    private static IShinsuStats clonedStats = null;
-    private static IPlayerShinsuEquips clonedEquips = null;
     public static final Map<UUID, List<UUID>> highlight = new HashMap<>();
     public static final Map<UUID, List<UUID>> stopHighlight = new HashMap<>();
+    private static IShinsuStats clonedStats = null;
+    private static IPlayerShinsuEquips clonedEquips = null;
 
     @SubscribeEvent
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {

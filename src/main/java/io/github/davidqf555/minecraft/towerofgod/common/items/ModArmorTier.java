@@ -2,12 +2,12 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
-
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.*;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 
 @MethodsReturnNonnullByDefault
 public enum ModArmorTier implements IArmorMaterial {

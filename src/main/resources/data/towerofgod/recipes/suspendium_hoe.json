@@ -1,20 +1,20 @@
 {
-	"type": "minecraft:crafting_shaped",
-	"pattern": [
-		"xx",
-		"y ",
-		"y "
-	],
-	"key": {
-		"x": {
-			"item": "towerofgod:suspendium"
-		},
-		"y": {
-			"item": "minecraft:stick"
-		}
-	},
-	"result": {
-		"item": "towerofgod:suspendium_hoe",
-		"count": 1
-	}
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xx",
+    "y ",
+    "y "
+  ],
+  "key": {
+    "x": {
+      "item": "towerofgod:suspendium"
+    },
+    "y": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "towerofgod:suspendium_hoe",
+    "count": 1
+  }
 }

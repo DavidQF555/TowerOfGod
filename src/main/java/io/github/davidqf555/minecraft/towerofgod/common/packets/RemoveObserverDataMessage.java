@@ -30,15 +30,14 @@ public class RemoveObserverDataMessage {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-
-    public static void register(int index) {
-        INSTANCE.registerMessage(index, RemoveObserverDataMessage.class, ENCODER, DECODER, CONSUMER);
-    }
-
     private final UUID id;
 
     public RemoveObserverDataMessage(UUID id) {
         this.id = id;
+    }
+
+    public static void register(int index) {
+        INSTANCE.registerMessage(index, RemoveObserverDataMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

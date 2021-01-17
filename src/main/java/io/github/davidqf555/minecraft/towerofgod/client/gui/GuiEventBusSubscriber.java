@@ -1,12 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
+import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.util.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.google.common.collect.Maps;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;

@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
+import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuEquipScreen;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
-import com.google.common.collect.Maps;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
@@ -46,11 +46,6 @@ public class UpdateClientKnownMessage {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-
-    public static void register(int index) {
-        INSTANCE.registerMessage(index, UpdateClientKnownMessage.class, ENCODER, DECODER, CONSUMER);
-    }
-
     private final Map<ShinsuTechnique, Integer> known;
 
     public UpdateClientKnownMessage() {
@@ -59,6 +54,10 @@ public class UpdateClientKnownMessage {
 
     public UpdateClientKnownMessage(Map<ShinsuTechnique, Integer> known) {
         this.known = known;
+    }
+
+    public static void register(int index) {
+        INSTANCE.registerMessage(index, UpdateClientKnownMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

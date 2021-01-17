@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.FlyingDevice;
-
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.SpawnReason;

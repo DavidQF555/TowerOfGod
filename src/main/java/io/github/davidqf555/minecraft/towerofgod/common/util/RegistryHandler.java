@@ -1,13 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.util;
 
-import io.github.davidqf555.minecraft.towerofgod.common.entities.*;
-import io.github.davidqf555.minecraft.towerofgod.common.items.*;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ReverseFlowEffect;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.LightBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumOre;
-
+import io.github.davidqf555.minecraft.towerofgod.common.entities.*;
+import io.github.davidqf555.minecraft.towerofgod.common.items.*;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ReverseFlowEffect;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;

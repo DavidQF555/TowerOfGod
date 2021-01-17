@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
+import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuSkillWheelGui;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
-import com.google.common.collect.Maps;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
@@ -46,11 +46,6 @@ public class UpdateClientCooldownsMessage {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-
-    public static void register(int index) {
-        INSTANCE.registerMessage(index, UpdateClientCooldownsMessage.class, ENCODER, DECODER, CONSUMER);
-    }
-
     private final Map<ShinsuTechnique, Integer> cooldowns;
 
     public UpdateClientCooldownsMessage() {
@@ -59,6 +54,10 @@ public class UpdateClientCooldownsMessage {
 
     public UpdateClientCooldownsMessage(Map<ShinsuTechnique, Integer> cooldowns) {
         this.cooldowns = cooldowns;
+    }
+
+    public static void register(int index) {
+        INSTANCE.registerMessage(index, UpdateClientCooldownsMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

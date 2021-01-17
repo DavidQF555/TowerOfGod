@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
+import com.google.gson.JsonObject;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;

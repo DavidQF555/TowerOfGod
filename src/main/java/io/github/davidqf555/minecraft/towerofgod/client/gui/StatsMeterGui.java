@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
-import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -16,14 +16,14 @@ public abstract class StatsMeterGui extends AbstractGui {
     private final RenderInfo background;
     private final RenderInfo bar;
     private final RenderInfo lines;
-    private int value;
-    private int max;
     private final int maxDisplay;
-    private int x;
-    private int y;
     private final int width;
     private final int height;
     private final int textColor;
+    private int value;
+    private int max;
+    private int x;
+    private int y;
 
     public StatsMeterGui(int x, int y, int width, int height, int value, int max, int maxDisplay, RenderInfo bar, RenderInfo background, int textColor) {
         this.x = x;

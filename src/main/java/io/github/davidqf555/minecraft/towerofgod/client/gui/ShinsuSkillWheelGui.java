@@ -1,12 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
+import com.google.common.collect.Maps;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCanCastMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCooldownsMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.google.common.collect.Maps;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;

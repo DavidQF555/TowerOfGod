@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
+import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuSkillWheelGui;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
-import com.google.common.collect.Maps;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -57,14 +57,8 @@ public class UpdateClientCanCastMessage {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-
-    public static void register(int index) {
-        INSTANCE.registerMessage(index, UpdateClientCanCastMessage.class, ENCODER, DECODER, CONSUMER);
-    }
-
     private final UUID target;
     private final Map<ShinsuTechnique, Boolean> canCast;
-
     public UpdateClientCanCastMessage(@Nullable UUID target) {
         this(target, Maps.newEnumMap(ShinsuTechnique.class));
     }
@@ -72,6 +66,10 @@ public class UpdateClientCanCastMessage {
     public UpdateClientCanCastMessage(@Nullable UUID target, Map<ShinsuTechnique, Boolean> canCast) {
         this.target = target;
         this.canCast = canCast;
+    }
+
+    public static void register(int index) {
+        INSTANCE.registerMessage(index, UpdateClientCanCastMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

@@ -1,6 +1,6 @@
 {
-	"parent": "item/generated",
-	"textures": {
-		"layer0": "towerofgod:items/lighthouse_item"
-	}
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "towerofgod:items/lighthouse_item"
+  }
 }

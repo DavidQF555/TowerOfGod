@@ -1,11 +1,11 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
+import com.google.common.collect.Maps;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeEquipsMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import com.google.common.collect.Maps;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -21,7 +21,10 @@ import net.minecraftforge.fml.client.gui.GuiUtils;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -38,9 +41,9 @@ public class ShinsuEquipScreen extends Screen {
     private final List<ShinsuTechnique> unlocked;
     private final ShinsuSlot[] selected;
     private final ShinsuTechnique[] equipped;
-    private Scroller scroller;
     private final int xSize;
     private final int ySize;
+    private Scroller scroller;
     private int x;
     private int y;
     private int topRow;

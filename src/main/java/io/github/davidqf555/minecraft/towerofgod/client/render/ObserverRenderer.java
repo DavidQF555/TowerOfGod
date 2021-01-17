@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.client.render;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.model.ObserverModel;
-
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ObserverEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;

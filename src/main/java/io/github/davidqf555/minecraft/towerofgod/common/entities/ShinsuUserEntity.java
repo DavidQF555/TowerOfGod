@@ -1,16 +1,20 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
-import net.minecraft.entity.*;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
+import net.minecraft.entity.CreatureEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class ShinsuUserEntity extends CreatureEntity {
 

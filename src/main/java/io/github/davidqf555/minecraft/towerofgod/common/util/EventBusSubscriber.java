@@ -1,11 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.util;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuUserEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;

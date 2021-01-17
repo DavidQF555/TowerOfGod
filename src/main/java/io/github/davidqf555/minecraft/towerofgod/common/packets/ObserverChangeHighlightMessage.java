@@ -44,17 +44,15 @@ public class ObserverChangeHighlightMessage {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-
-    public static void register(int index) {
-        INSTANCE.registerMessage(index, ObserverChangeHighlightMessage.class, ENCODER, DECODER, CONSUMER);
-    }
-
     private final UUID id;
     private final List<UUID> entities;
-
     public ObserverChangeHighlightMessage(UUID id, List<UUID> entities) {
         this.id = id;
         this.entities = entities;
+    }
+
+    public static void register(int index) {
+        INSTANCE.registerMessage(index, ObserverChangeHighlightMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

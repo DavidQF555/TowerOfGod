@@ -1,15 +1,15 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
-import com.mojang.blaze3d.matrix.MatrixStack;
-
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.ScreenManager.IScreenFactory;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.entity.*;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.item.ItemEntity;

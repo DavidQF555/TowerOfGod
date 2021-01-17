@@ -1,18 +1,18 @@
 package io.github.davidqf555.minecraft.towerofgod;
 
+import io.github.davidqf555.minecraft.towerofgod.client.util.KeyBindingsList;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
-import io.github.davidqf555.minecraft.towerofgod.client.util.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntity;
-
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.*;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod("towerofgod")
