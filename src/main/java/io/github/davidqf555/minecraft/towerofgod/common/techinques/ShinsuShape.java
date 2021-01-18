@@ -67,15 +67,7 @@ public enum ShinsuShape {
         }
         return amount;
     }),
-    BOW(() -> RegistryHandler.SHINSU_BOW.get().getDefaultInstance(), player -> {
-        double amount = 0;
-        StatisticsManager stats = player.getStats();
-        for (Item item : Tags.Items.ARROWS.getAllElements()) {
-            amount += stats.getValue(Stats.ITEM_CRAFTED, item);
-        }
-        amount += stats.getValue(Stats.ITEM_USED, Items.BOW);
-        return amount;
-    });
+    BOW(() -> RegistryHandler.SHINSU_BOW.get().getDefaultInstance(), player -> player.getStats().getValue(Stats.ITEM_USED, Items.BOW) * 1.0);
 
     private final NonNullSupplier<ItemStack> item;
     private final Function<ServerPlayerEntity, Double> suitability;

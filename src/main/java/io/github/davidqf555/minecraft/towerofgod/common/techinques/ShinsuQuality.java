@@ -95,7 +95,7 @@ public enum ShinsuQuality {
                     }
                     BlockPos down = pos.down();
                     if (entity.world.getBlockState(down).isTopSolid(entity.world, down, entity, Direction.UP)) {
-                        if (state.isAir(entity.world, pos)) {
+                        if (state.getBlock().isAir(state, entity.world, pos)) {
                             entity.world.setBlockState(pos, Blocks.SNOW.getDefaultState());
                         } else if (state.getBlock() instanceof SnowBlock) {
                             entity.world.setBlockState(pos, state.with(SnowBlock.LAYERS, Math.min(state.get(SnowBlock.LAYERS) + 1, 8)));

@@ -11,28 +11,31 @@ import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
-import net.minecraft.world.gen.placement.ConfiguredPlacement;
-import net.minecraft.world.gen.placement.CountRangeConfig;
 import net.minecraft.world.gen.placement.Placement;
+import net.minecraft.world.gen.placement.TopSolidRangeConfig;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class EventBusSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
+    private static ConfiguredFeature<?, ?> SUSPENDIUM_ORE;
     private static int index = 0;
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -54,6 +57,16 @@ public class EventBusSubscriber {
             StatsCommand.register(event.getDispatcher());
         }
 
+        @SubscribeEvent
+        public static void onBiomeLoading(BiomeLoadingEvent event) {
+            if (event.getCategory() != Biome.Category.NETHER && event.getCategory() != Biome.Category.THEEND) {
+                event.getGeneration().getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).add(() -> SUSPENDIUM_ORE);
+                if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
+                    event.getSpawns().withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.REGULAR_ENTITY.get(), 8, 1, 8));
+                }
+            }
+        }
+
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -64,21 +77,6 @@ public class EventBusSubscriber {
             ShinsuItemColor color = new ShinsuItemColor();
             for (RegistryObject<? extends Item> item : RegistryHandler.SHINSU_ITEMS) {
                 event.getItemColors().register(color, item::get);
-            }
-        }
-
-        @SubscribeEvent
-        public static void onFMLLoadComplete(FMLLoadCompleteEvent event) {
-            for (Biome biome : ForgeRegistries.BIOMES) {
-                if (biome.getCategory() != Biome.Category.THEEND && biome.getCategory() != Biome.Category.NETHER) {
-                    CountRangeConfig range = new CountRangeConfig(3, 17, 0, 100);
-                    OreFeatureConfig feature = new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8);
-                    ConfiguredPlacement<CountRangeConfig> config = Placement.COUNT_RANGE.configure(range);
-                    biome.addFeature(GenerationStage.Decoration.UNDERGROUND_ORES, Feature.ORE.withConfiguration(feature).withPlacement(config));
-                    if (biome.getCategory() != Biome.Category.OCEAN && biome.getCategory() != Biome.Category.RIVER) {
-                        biome.getSpawns(EntityClassification.CREATURE).add(new Biome.SpawnListEntry(RegistryHandler.REGULAR_ENTITY.get(), 8, 1, 8));
-                    }
-                }
             }
         }
 
@@ -96,6 +94,10 @@ public class EventBusSubscriber {
             UpdateClientEquippedMessage.register(index++);
             ObserverChangeHighlightMessage.register(index++);
             RemoveObserverDataMessage.register(index++);
+            event.enqueueWork(() -> {
+                SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().func_242731_b(3);
+                Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);
+            });
         }
     }
 }

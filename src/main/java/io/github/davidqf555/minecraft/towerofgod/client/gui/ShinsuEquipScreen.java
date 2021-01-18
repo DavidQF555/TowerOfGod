@@ -104,11 +104,11 @@ public class ShinsuEquipScreen extends Screen {
         updateSlots();
         renderBackground(matrixStack);
         BACKGROUND.render(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
-        font.func_238422_b_(matrixStack, title, x + (xSize - font.func_238414_a_(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
+        font.func_243248_b(matrixStack, title, x + (xSize - font.getStringPropertyWidth(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
         ShinsuSlot hovered = null;
         for (Widget button : buttons) {
             button.render(matrixStack, mouseX, mouseY, partialTicks);
-            if (hovered == null && button instanceof ShinsuSlot && ((ShinsuSlot) button).technique != null && mouseX >= button.x && mouseY >= button.y && mouseX < button.x + button.getWidth() && mouseY < button.y + button.getHeight()) {
+            if (hovered == null && button instanceof ShinsuSlot && ((ShinsuSlot) button).technique != null && mouseX >= button.x && mouseY >= button.y && mouseX < button.x + button.getWidth() && mouseY < button.y + button.getHeightRealms()) {
                 hovered = (ShinsuSlot) button;
             }
         }
@@ -222,7 +222,7 @@ public class ShinsuEquipScreen extends Screen {
             List<ITextComponent> tooltip = new ArrayList<>(Arrays.asList(name, level));
             int maxLength = 0;
             for (ITextComponent t : tooltip) {
-                int length = screen.font.func_238414_a_(t);
+                int length = screen.font.getStringPropertyWidth(t);
                 if (length > maxLength) {
                     maxLength = length;
                 }

@@ -34,5 +34,10 @@ public class ShinsuToolLootModifier extends LootModifier {
         public ShinsuToolLootModifier read(ResourceLocation location, JsonObject object, ILootCondition[] condition) {
             return new ShinsuToolLootModifier(condition);
         }
+
+        @Override
+        public JsonObject write(ShinsuToolLootModifier instance) {
+            return makeConditions(instance.conditions);
+        }
     }
 }
