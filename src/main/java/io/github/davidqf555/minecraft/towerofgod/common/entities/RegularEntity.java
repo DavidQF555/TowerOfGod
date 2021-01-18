@@ -21,7 +21,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
@@ -30,11 +30,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@ParametersAreNonnullByDefault
 public class RegularEntity extends ShinsuUserEntity {
 
     public static final DataParameter<String> FAMILY = EntityDataManager.createKey(RegularEntity.class, DataSerializers.STRING);
@@ -65,7 +67,7 @@ public class RegularEntity extends ShinsuUserEntity {
     }
 
     @Override
-    public ILivingEntityData onInitialSpawn(@Nonnull IWorld worldIn, @Nonnull DifficultyInstance difficultyIn, @Nonnull SpawnReason reason, ILivingEntityData spawnDataIn, CompoundNBT dataTag) {
+    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         level = rand.nextInt(ShinsuTechnique.getObtainableTechniques().size()) + 1;
         Personality[] personalities = Personality.values();
         personality = personalities[rand.nextInt(personalities.length)];
@@ -188,7 +190,7 @@ public class RegularEntity extends ShinsuUserEntity {
     }
 
     @Override
-    public void readAdditional(@Nonnull CompoundNBT nbt) {
+    public void readAdditional(CompoundNBT nbt) {
         super.readAdditional(nbt);
         if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT reg = (CompoundNBT) nbt.get(TAG_KEY);
@@ -201,7 +203,7 @@ public class RegularEntity extends ShinsuUserEntity {
     }
 
     @Override
-    public void writeAdditional(@Nonnull CompoundNBT nbt) {
+    public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
         CompoundNBT reg = new CompoundNBT();
         reg.putString("Family", getFamily().name());
@@ -234,7 +236,7 @@ public class RegularEntity extends ShinsuUserEntity {
     public static class Factory implements EntityType.IFactory<RegularEntity> {
         @Nonnull
         @Override
-        public RegularEntity create(@Nullable EntityType<RegularEntity> type, @Nonnull World world) {
+        public RegularEntity create(@Nullable EntityType<RegularEntity> type, World world) {
             return new RegularEntity(world);
         }
     }
@@ -328,7 +330,7 @@ public class RegularEntity extends ShinsuUserEntity {
         }
 
         @Override
-        protected boolean isSuitableTarget(@Nullable LivingEntity potentialTarget, @Nonnull EntityPredicate targetPredicate) {
+        protected boolean isSuitableTarget(@Nullable LivingEntity potentialTarget, EntityPredicate targetPredicate) {
             return super.isSuitableTarget(potentialTarget, targetPredicate) && !team.getEntityMembers(world).contains(potentialTarget) && (potentialTarget instanceof RegularEntity || potentialTarget instanceof PlayerEntity);
         }
     }

@@ -257,7 +257,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             renderBackground(matrixStack);
             super.render(matrixStack, mouseX, mouseY, partialTicks);
-            func_230459_a_(matrixStack, mouseX, mouseY);
+            renderHoveredTooltip(matrixStack, mouseX, mouseY);
         }
 
         @Deprecated
@@ -270,8 +270,8 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
         @Override
         public void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-            this.font.func_238422_b_(matrixStack, title, (float) titleX, (float) titleY, TITLE_COLOR);
-            this.font.func_238422_b_(matrixStack, playerInventory.getDisplayName(), (float) playerInventoryTitleX, (float) playerInventoryTitleY, INVENTORY_TITLE_COLOR);
+            this.font.func_243248_b(matrixStack, title, (float) titleX, (float) titleY, TITLE_COLOR);
+            this.font.func_243248_b(matrixStack, playerInventory.getDisplayName(), (float) playerInventoryTitleX, (float) playerInventoryTitleY, INVENTORY_TITLE_COLOR);
         }
 
         public static class Factory implements IScreenFactory<LighthouseContainer, LighthouseScreen> {
