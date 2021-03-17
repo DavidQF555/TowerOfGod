@@ -5,20 +5,21 @@ import net.minecraft.item.IItemTier;
 import net.minecraft.item.crafting.Ingredient;
 
 import javax.annotation.Nonnull;
+import java.util.function.Supplier;
 
 public enum ModToolTier implements IItemTier {
 
-    SHINSU(1000, 12, 2, 3, 0, Ingredient.EMPTY),
-    SUSPENDIUM(1250, 14, 1, 2, 15, Ingredient.fromItems(RegistryHandler.SUSPENDIUM.get()));
+    SHINSU(1000, 12, 2, 3, 0, () -> Ingredient.EMPTY),
+    SUSPENDIUM(1250, 14, 1, 2, 15, () -> Ingredient.fromItems(RegistryHandler.SUSPENDIUM.get()));
 
     private final int uses;
     private final float efficiency;
     private final float damage;
     private final int harvest;
     private final int enchantability;
-    private final Ingredient repair;
+    private final Supplier<Ingredient> repair;
 
-    ModToolTier(int uses, float efficiency, float damage, int harvest, int enchantability, Ingredient repair) {
+    ModToolTier(int uses, float efficiency, float damage, int harvest, int enchantability, Supplier<Ingredient> repair) {
         this.uses = uses;
         this.efficiency = efficiency;
         this.damage = damage;
@@ -55,7 +56,7 @@ public enum ModToolTier implements IItemTier {
     @Nonnull
     @Override
     public Ingredient getRepairMaterial() {
-        return repair;
+        return repair.get();
     }
 
 }

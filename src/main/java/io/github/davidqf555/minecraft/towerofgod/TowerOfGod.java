@@ -30,7 +30,6 @@ public class TowerOfGod {
     public TowerOfGod() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-        RegistryHandler.init();
         KeyBindingsList.register();
 
         MinecraftForge.EVENT_BUS.register(this);
