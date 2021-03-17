@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod;
 
-import io.github.davidqf555.minecraft.towerofgod.client.util.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -20,8 +19,6 @@ public class TowerOfGod {
     };
 
     public TowerOfGod() {
-        KeyBindingsList.register();
-
         MinecraftForge.EVENT_BUS.register(this);
     }
 }
