@@ -3,6 +3,9 @@ package io.github.davidqf555.minecraft.towerofgod.common.util;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.ObserverEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuUserEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
@@ -25,6 +28,7 @@ import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
@@ -78,6 +82,13 @@ public class EventBusSubscriber {
             for (RegistryObject<? extends Item> item : RegistryHandler.SHINSU_ITEMS) {
                 event.getItemColors().register(color, item::get);
             }
+        }
+
+        @SubscribeEvent
+        public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
+            event.put(RegistryHandler.LIGHTHOUSE_ENTITY.get(), LighthouseEntity.setAttributes().create());
+            event.put(RegistryHandler.OBSERVER_ENTITY.get(), ObserverEntity.setAttributes().create());
+            event.put(RegistryHandler.REGULAR_ENTITY.get(), RegularEntity.setAttributes().create());
         }
 
         @SubscribeEvent
