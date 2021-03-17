@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.util.ClientEventBusSubscriber;
+import io.github.davidqf555.minecraft.towerofgod.client.util.ObserverEventBusSubscriber;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -44,8 +44,8 @@ public class RemoveObserverDataMessage {
         NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_CLIENT) {
             context.enqueueWork(() -> {
-                ClientEventBusSubscriber.highlight.remove(id);
-                ClientEventBusSubscriber.stopHighlight.remove(id);
+                ObserverEventBusSubscriber.highlight.remove(id);
+                ObserverEventBusSubscriber.stopHighlight.remove(id);
             });
             context.setPacketHandled(true);
         }

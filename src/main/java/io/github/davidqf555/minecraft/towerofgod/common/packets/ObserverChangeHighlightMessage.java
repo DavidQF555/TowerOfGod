@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.util.ClientEventBusSubscriber;
+import io.github.davidqf555.minecraft.towerofgod.client.util.ObserverEventBusSubscriber;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -61,12 +61,12 @@ public class ObserverChangeHighlightMessage {
         if (dir == NetworkDirection.PLAY_TO_CLIENT) {
             context.enqueueWork(() -> {
                 List<UUID> highlight;
-                if (ClientEventBusSubscriber.highlight.containsKey(id)) {
-                    highlight = ClientEventBusSubscriber.highlight.get(id);
+                if (ObserverEventBusSubscriber.highlight.containsKey(id)) {
+                    highlight = ObserverEventBusSubscriber.highlight.get(id);
                     highlight.addAll(getUnique(highlight, entities));
                 } else {
                     highlight = entities;
-                    ClientEventBusSubscriber.highlight.put(id, entities);
+                    ObserverEventBusSubscriber.highlight.put(id, entities);
                 }
                 List<UUID> remove = new ArrayList<>();
                 for (UUID id : highlight) {
@@ -74,11 +74,11 @@ public class ObserverChangeHighlightMessage {
                         remove.add(id);
                     }
                 }
-                if (ClientEventBusSubscriber.stopHighlight.containsKey(id)) {
-                    List<UUID> stop = ClientEventBusSubscriber.stopHighlight.get(id);
+                if (ObserverEventBusSubscriber.stopHighlight.containsKey(id)) {
+                    List<UUID> stop = ObserverEventBusSubscriber.stopHighlight.get(id);
                     stop.addAll(getUnique(stop, remove));
                 } else {
-                    ClientEventBusSubscriber.stopHighlight.put(id, remove);
+                    ObserverEventBusSubscriber.stopHighlight.put(id, remove);
                 }
             });
             context.setPacketHandled(true);

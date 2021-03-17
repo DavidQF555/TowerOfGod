@@ -8,16 +8,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntit
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -27,13 +24,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.*;
-
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
 
-    public static final Map<UUID, List<UUID>> highlight = new HashMap<>();
-    public static final Map<UUID, List<UUID>> stopHighlight = new HashMap<>();
     private static IShinsuStats clonedStats = null;
     private static IPlayerShinsuEquips clonedEquips = null;
 
@@ -42,29 +35,6 @@ public class ClientEventBusSubscriber {
         Minecraft client = Minecraft.getInstance();
         if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.currentScreen == null && client.player.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
             event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void preRenderLiving(RenderLivingEvent.Pre<LivingEntity, EntityModel<LivingEntity>> event) {
-        LivingEntity entity = event.getEntity();
-        UUID id = entity.getUniqueID();
-        boolean included = false;
-        boolean stillGlowing = false;
-        for (UUID key : highlight.keySet()) {
-            List<UUID> values = highlight.get(key);
-            List<UUID> stop = stopHighlight.containsKey(key) ? stopHighlight.get(key) : new ArrayList<>();
-            if (stop.contains(id)) {
-                values.remove(id);
-                stop.remove(id);
-                included = true;
-            } else if (values.contains(id)) {
-                stillGlowing = true;
-                included = true;
-            }
-        }
-        if (included) {
-            entity.setGlowing(stillGlowing);
         }
     }
 
@@ -96,12 +66,6 @@ public class ClientEventBusSubscriber {
                 clonedStats = IShinsuStats.get(original);
                 clonedEquips = IPlayerShinsuEquips.get(original);
             }
-        }
-
-        @SubscribeEvent
-        public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-            highlight.clear();
-            stopHighlight.clear();
         }
 
         @SubscribeEvent
