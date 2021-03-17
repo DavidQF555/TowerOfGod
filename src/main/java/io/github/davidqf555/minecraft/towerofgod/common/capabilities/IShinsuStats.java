@@ -251,9 +251,8 @@ public interface IShinsuStats {
 
         @Override
         public void tick(ServerWorld world) {
-            List<ShinsuTechniqueInstance> techniques = getTechniques();
-            for (int i = 0; i < techniques.size(); i++) {
-                ShinsuTechniqueInstance technique = techniques.get(i);
+            List<ShinsuTechniqueInstance> techniques = new ArrayList<>(getTechniques());
+            for (ShinsuTechniqueInstance technique : techniques) {
                 technique.tick(world);
                 if (technique.ticksLeft() <= 0) {
                     technique.remove(world);
