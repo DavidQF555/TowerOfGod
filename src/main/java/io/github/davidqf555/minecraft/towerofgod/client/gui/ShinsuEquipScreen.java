@@ -104,11 +104,11 @@ public class ShinsuEquipScreen extends Screen {
         updateSlots();
         renderBackground(matrixStack);
         BACKGROUND.render(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
-        font.func_243248_b(matrixStack, title, x + (xSize - font.getStringPropertyWidth(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
+        font.drawText(matrixStack, title, x + (xSize - font.getStringPropertyWidth(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
         ShinsuSlot hovered = null;
         for (Widget button : buttons) {
             button.render(matrixStack, mouseX, mouseY, partialTicks);
-            if (hovered == null && button instanceof ShinsuSlot && ((ShinsuSlot) button).technique != null && mouseX >= button.x && mouseY >= button.y && mouseX < button.x + button.getWidth() && mouseY < button.y + button.getHeightRealms()) {
+            if (hovered == null && button instanceof ShinsuSlot && ((ShinsuSlot) button).technique != null && mouseX >= button.x && mouseY >= button.y && mouseX < button.x + button.getWidth() && mouseY < button.y + button.getHeight()) {
                 hovered = (ShinsuSlot) button;
             }
         }
@@ -210,7 +210,7 @@ public class ShinsuEquipScreen extends Screen {
         }
 
         @Override
-        public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
+        public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             if (technique != null) {
                 technique.getIcon().render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             }
@@ -268,7 +268,7 @@ public class ShinsuEquipScreen extends Screen {
         }
 
         @Override
-        public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
+        public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
             RENDER.render(matrixStack, x, y, 0, width, height, color);
         }
     }
@@ -294,7 +294,7 @@ public class ShinsuEquipScreen extends Screen {
         }
 
         @Override
-        public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
+        public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
             if (isHovered()) {
                 HOVERED.render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             } else {

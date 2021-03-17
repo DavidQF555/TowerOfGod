@@ -270,8 +270,8 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
         @Override
         public void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-            this.font.func_243248_b(matrixStack, title, (float) titleX, (float) titleY, TITLE_COLOR);
-            this.font.func_243248_b(matrixStack, playerInventory.getDisplayName(), (float) playerInventoryTitleX, (float) playerInventoryTitleY, INVENTORY_TITLE_COLOR);
+            this.font.drawText(matrixStack, title, (float) titleX, (float) titleY, TITLE_COLOR);
+            this.font.drawText(matrixStack, playerInventory.getDisplayName(), (float) playerInventoryTitleX, (float) playerInventoryTitleY, INVENTORY_TITLE_COLOR);
         }
 
         public static class Factory implements IScreenFactory<LighthouseContainer, LighthouseScreen> {

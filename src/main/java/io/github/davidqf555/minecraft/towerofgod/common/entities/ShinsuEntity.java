@@ -78,7 +78,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     public void onEntityHit(EntityRayTraceResult rayTraceResult) {
         super.onEntityHit(rayTraceResult);
         if (world instanceof ServerWorld) {
-            Entity shooter = func_234616_v_();
+            Entity shooter = getShooter();
             Entity target = rayTraceResult.getEntity();
             ShinsuQuality quality = getQuality();
             float damage = (float) ((shooter == null) ? level * quality.getDamage() * DAMAGE : IShinsuStats.getTotalResistance(shooter, target) * level * quality.getDamage() * DAMAGE) / 3;
@@ -90,7 +90,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
 
     @Nullable
     public ShinsuTechniqueInstance getTechnique() {
-        Entity shooter = func_234616_v_();
+        Entity shooter = getShooter();
         if (technique != null && shooter != null) {
             return ShinsuTechniqueInstance.get(shooter, technique);
         }

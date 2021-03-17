@@ -117,7 +117,7 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
 
     @Nullable
     public ShinsuTechniqueInstance getTechnique() {
-        Entity shooter = func_234616_v_();
+        Entity shooter = getShooter();
         if (technique != null && shooter != null) {
             return ShinsuTechniqueInstance.get(shooter, technique);
         }

@@ -357,7 +357,7 @@ public class RegularEntity extends ShinsuUserEntity {
             if (!targets.isEmpty()) {
                 LivingEntity best = targets.get(0);
                 for (LivingEntity target : targets) {
-                    if (getDistanceSq(target) < getDistanceSq(best) && getNavigator().getPathToEntity(target, 1) != null) {
+                    if (getDistanceSq(target) < getDistanceSq(best) && getNavigator().pathfind(target, 1) != null) {
                         best = target;
                     }
                 }
