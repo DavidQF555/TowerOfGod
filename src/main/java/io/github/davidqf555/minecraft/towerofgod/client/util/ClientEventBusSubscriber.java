@@ -2,22 +2,15 @@ package io.github.davidqf555.minecraft.towerofgod.client.util;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.render.*;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -26,9 +19,6 @@ import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ClientEventBusSubscriber {
-
-    private static IShinsuStats clonedStats = null;
-    private static IPlayerShinsuEquips clonedEquips = null;
 
     @SubscribeEvent
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
@@ -55,37 +45,4 @@ public class ClientEventBusSubscriber {
             KeyBindingsList.register();
         }
     }
-
-    @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-    public static class ForgeBus {
-
-        @SubscribeEvent
-        public static void onClonePlayerEvent(PlayerEvent.Clone event) {
-            if (event.isWasDeath()) {
-                ServerPlayerEntity original = (ServerPlayerEntity) event.getOriginal();
-                clonedStats = IShinsuStats.get(original);
-                clonedEquips = IPlayerShinsuEquips.get(original);
-            }
-        }
-
-        @SubscribeEvent
-        public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-            ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
-            if (player.getUniqueID().equals(Minecraft.getInstance().player.getUniqueID())) {
-                IShinsuStats stats = IShinsuStats.get(player);
-                stats.deserialize(clonedStats.serialize());
-                IPlayerShinsuEquips equips = IPlayerShinsuEquips.get(player);
-                equips.deserialize(clonedEquips.serialize());
-            }
-        }
-
-        @SubscribeEvent(priority = EventPriority.LOWEST)
-        public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
-            LivingEntity entity = event.getEntityLiving();
-            if (entity.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
-                entity.setVelocity(0, 0, 0);
-            }
-        }
-    }
-
 }

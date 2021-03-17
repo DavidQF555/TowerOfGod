@@ -9,9 +9,12 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuUserEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
@@ -29,7 +32,10 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
@@ -40,6 +46,8 @@ public class EventBusSubscriber {
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
     private static ConfiguredFeature<?, ?> SUSPENDIUM_ORE;
+    private static IShinsuStats clonedStats = null;
+    private static IPlayerShinsuEquips clonedEquips = null;
     private static int index = 0;
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -71,6 +79,33 @@ public class EventBusSubscriber {
             }
         }
 
+        @SubscribeEvent
+        public static void onClonePlayerEvent(PlayerEvent.Clone event) {
+            if (event.isWasDeath()) {
+                ServerPlayerEntity original = (ServerPlayerEntity) event.getOriginal();
+                clonedStats = IShinsuStats.get(original);
+                clonedEquips = IPlayerShinsuEquips.get(original);
+            }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+            ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+            if (player.getUniqueID().equals(Minecraft.getInstance().player.getUniqueID())) {
+                IShinsuStats stats = IShinsuStats.get(player);
+                stats.deserialize(clonedStats.serialize());
+                IPlayerShinsuEquips equips = IPlayerShinsuEquips.get(player);
+                equips.deserialize(clonedEquips.serialize());
+            }
+        }
+
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
+            LivingEntity entity = event.getEntityLiving();
+            if (entity.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
+                entity.setVelocity(0, 0, 0);
+            }
+        }
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
