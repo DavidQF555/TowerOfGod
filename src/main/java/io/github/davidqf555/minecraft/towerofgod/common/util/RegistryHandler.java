@@ -96,10 +96,6 @@ public class RegistryHandler {
         );
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    public static void registerPriorityItems(RegistryEvent.Register<Item> event) {
-    }
-
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
         event.getRegistry().registerAll(
