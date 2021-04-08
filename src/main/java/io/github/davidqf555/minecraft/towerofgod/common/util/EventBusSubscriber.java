@@ -9,6 +9,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuUserEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
+import io.github.davidqf555.minecraft.towerofgod.common.world.FloorBiomeProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
@@ -45,7 +46,8 @@ public class EventBusSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
-    private static ConfiguredFeature<?, ?> SUSPENDIUM_ORE;
+    private static final ConfiguredFeature<?, ?> SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
+    ;
     private static IShinsuStats clonedStats = null;
     private static IPlayerShinsuEquips clonedEquips = null;
     private static int index = 0;
@@ -67,6 +69,7 @@ public class EventBusSubscriber {
         @SubscribeEvent
         public static void onRegisterCommands(RegisterCommandsEvent event) {
             StatsCommand.register(event.getDispatcher());
+            FloorCommand.register(event.getDispatcher());
         }
 
         @SubscribeEvent
@@ -140,9 +143,12 @@ public class EventBusSubscriber {
             UpdateClientEquippedMessage.register(index++);
             ObserverChangeHighlightMessage.register(index++);
             RemoveObserverDataMessage.register(index++);
+            UpdateClientDimensionsMessage.register(index++);
+            OpenFloorTeleportationTerminalMessage.register(index++);
+            ChangeFloorMessage.register(index++);
             event.enqueueWork(() -> {
-                SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
                 Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);
+                Registry.register(Registry.BIOME_PROVIDER_CODEC, new ResourceLocation(TowerOfGod.MOD_ID, "floor_biome_provider_codec"), FloorBiomeProvider.CODEC);
             });
         }
     }

@@ -47,6 +47,8 @@ public interface IShinsuStats {
 
     void addKnownTechnique(ShinsuTechnique technique, int amt);
 
+    int getLevel();
+
     int getShinsu();
 
     int getMaxShinsu();
@@ -113,6 +115,7 @@ public interface IShinsuStats {
         private final Map<ShinsuTechnique, Integer> known;
         private final Map<ShinsuTechnique, Integer> cooldowns;
         private final List<ShinsuTechniqueInstance> techniques;
+        private int level;
         private int shinsu;
         private int baangs;
         private double resistance;
@@ -121,10 +124,11 @@ public interface IShinsuStats {
         private ShinsuShape shape;
 
         public ShinsuStats() {
-            this(0, 0, 1, 1, ShinsuQuality.NONE, ShinsuShape.NONE, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());
+            this(1, 0, 0, 1, 1, ShinsuQuality.NONE, ShinsuShape.NONE, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());
         }
 
-        private ShinsuStats(int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, ShinsuShape shape, Map<ShinsuTechnique, Integer> known, Map<ShinsuTechnique, Integer> cooldowns, List<ShinsuTechniqueInstance> techniques) {
+        private ShinsuStats(int level, int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, ShinsuShape shape, Map<ShinsuTechnique, Integer> known, Map<ShinsuTechnique, Integer> cooldowns, List<ShinsuTechniqueInstance> techniques) {
+            this.level = level;
             this.shinsu = shinsu;
             this.baangs = baangs;
             this.resistance = resistance;
@@ -159,6 +163,11 @@ public interface IShinsuStats {
         @Override
         public void addKnownTechnique(ShinsuTechnique technique, int amt) {
             known.put(technique, getTechniqueLevel(technique) + amt);
+        }
+
+        @Override
+        public int getLevel() {
+            return level;
         }
 
         @Override
@@ -269,6 +278,7 @@ public interface IShinsuStats {
         @Override
         public CompoundNBT serialize() {
             CompoundNBT tag = new CompoundNBT();
+            tag.putInt("Level", level);
             tag.putInt("Shinsu", shinsu);
             tag.putInt("Baangs", baangs);
             tag.putDouble("Resistance", resistance);
@@ -298,6 +308,7 @@ public interface IShinsuStats {
 
         @Override
         public void deserialize(CompoundNBT nbt) {
+            level = nbt.getInt("Level");
             shinsu = nbt.getInt("Shinsu");
             baangs = nbt.getInt("Baangs");
             resistance = nbt.getDouble("Resistance");

@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.util;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.blocks.FloorTeleportationTerminalBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.LightBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumOre;
@@ -15,10 +16,10 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.*;
 import net.minecraft.potion.Effect;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
@@ -26,6 +27,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -34,7 +36,8 @@ public class RegistryHandler {
     public static final RegistryObject<Item> SUSPENDIUM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium"), ForgeRegistries.ITEMS);
     public static final RegistryObject<BlockItem> SUSPENDIUM_ORE_ITEM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), ForgeRegistries.ITEMS);
     public static final RegistryObject<BlockItem> SUSPENDIUM_BLOCK_ITEM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_block"), ForgeRegistries.ITEMS);
-    ;
+    public static final RegistryObject<BlockItem> FLOOR_TELEPORTATION_TERMINAL_BLOCK_ITEM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "floor_teleportation_terminal_block"), ForgeRegistries.ITEMS);
+
     public static final RegistryObject<ShovelItem> SUSPENDIUM_SHOVEL = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_shovel"), ForgeRegistries.ITEMS);
     public static final RegistryObject<PickaxeItem> SUSPENDIUM_PICKAXE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_pickaxe"), ForgeRegistries.ITEMS);
     public static final RegistryObject<AxeItem> SUSPENDIUM_AXE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_axe"), ForgeRegistries.ITEMS);
@@ -71,6 +74,7 @@ public class RegistryHandler {
     public static final RegistryObject<SuspendiumOre> SUSPENDIUM_ORE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), ForgeRegistries.BLOCKS);
     public static final RegistryObject<SuspendiumBlock> SUSPENDIUM_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_block"), ForgeRegistries.BLOCKS);
     public static final RegistryObject<LightBlock> LIGHT_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "light_block"), ForgeRegistries.BLOCKS);
+    public static final RegistryObject<FloorTeleportationTerminalBlock> FLOOR_TELEPORTATION_TERMINAL_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "floor_teleportation_terminal_block"), ForgeRegistries.BLOCKS);
 
     public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_entity"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<ObserverEntity>> OBSERVER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "observer_entity"), ForgeRegistries.ENTITIES);
@@ -85,6 +89,8 @@ public class RegistryHandler {
 
     public static final RegistryObject<ShinsuToolLootModifier.Serializer> SHINSU_TOOL_LOOT_MODIFIER = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_tool_loot_modifier"), ForgeRegistries.LOOT_MODIFIER_SERIALIZERS);
 
+    public static final RegistryObject<PointOfInterestType> FLOOR_TELEPORTATION_TERMINAL_POI = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "floor_teleportation_terminal"), ForgeRegistries.POI_TYPES);
+
     public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = new ArrayList<>(Arrays.asList(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW));
 
     @SubscribeEvent
@@ -92,7 +98,8 @@ public class RegistryHandler {
         event.getRegistry().registerAll(
                 new SuspendiumOre().setRegistryName(TowerOfGod.MOD_ID, "suspendium_ore"),
                 new SuspendiumBlock().setRegistryName(TowerOfGod.MOD_ID, "suspendium_block"),
-                new LightBlock().setRegistryName(TowerOfGod.MOD_ID, "light_block")
+                new LightBlock().setRegistryName(TowerOfGod.MOD_ID, "light_block"),
+                new FloorTeleportationTerminalBlock().setRegistryName(TowerOfGod.MOD_ID, "floor_teleportation_terminal_block")
         );
     }
 
@@ -102,6 +109,7 @@ public class RegistryHandler {
                 new Item(new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium"),
                 new BlockItem(SUSPENDIUM_ORE.get(), new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_ore"),
                 new BlockItem(SUSPENDIUM_BLOCK.get(), new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_block"),
+                new BlockItem(FLOOR_TELEPORTATION_TERMINAL_BLOCK.get(), new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "floor_teleportation_terminal_block"),
                 new ShovelItem(ModToolTier.SUSPENDIUM, 0.5f, -2, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_shovel"),
                 new PickaxeItem(ModToolTier.SUSPENDIUM, 0, -1.6f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_pickaxe"),
                 new AxeItem(ModToolTier.SUSPENDIUM, 4, -2, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_axe"),
@@ -167,6 +175,13 @@ public class RegistryHandler {
     public static void registerLootModifierSerializers(RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
         event.getRegistry().registerAll(
                 new ShinsuToolLootModifier.Serializer().setRegistryName(TowerOfGod.MOD_ID, "shinsu_tool_loot_modifier")
+        );
+    }
+
+    @SubscribeEvent
+    public static void registerPOITypes(RegistryEvent.Register<PointOfInterestType> event) {
+        event.getRegistry().registerAll(
+                new PointOfInterestType("floor_teleportation_terminal", new HashSet<>(FLOOR_TELEPORTATION_TERMINAL_BLOCK.get().getStateContainer().getValidStates()), 0, 1).setRegistryName(TowerOfGod.MOD_ID, "floor_teleportation_terminal")
         );
     }
 }
