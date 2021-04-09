@@ -20,8 +20,8 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -63,34 +63,46 @@ public class ClickerItem extends Item {
     }
 
     private ShinsuQuality getQuality(ServerPlayerEntity player) {
-        double max = 0;
-        List<ShinsuQuality> qualities = new ArrayList<>();
+        double total = 0;
+        Map<ShinsuQuality, Double> suitabilities = new EnumMap<>(ShinsuQuality.class);
         for (ShinsuQuality quality : ShinsuQuality.values()) {
-            double value = quality.getSuitability(player);
-            if (value == max) {
-                qualities.add(quality);
-            } else if (value > max) {
-                qualities.clear();
-                qualities.add(quality);
-                max = value;
+            double suitability = quality.getSuitability(player);
+            if (suitability > 0) {
+                total += suitability;
+                suitabilities.put(quality, suitability);
             }
         }
-        return qualities.get(player.getRNG().nextInt(qualities.size()));
+        double current = 0;
+        double random = player.getRNG().nextDouble() * total;
+        for (ShinsuQuality quality : suitabilities.keySet()) {
+            current += suitabilities.get(quality);
+            if (random < current) {
+                return quality;
+            }
+        }
+        ShinsuQuality[] all = ShinsuQuality.values();
+        return all[player.getRNG().nextInt(all.length)];
     }
 
     private ShinsuShape getShape(ServerPlayerEntity player) {
-        double max = 0;
-        List<ShinsuShape> shapes = new ArrayList<>();
+        double total = 0;
+        Map<ShinsuShape, Double> suitabilities = new EnumMap<>(ShinsuShape.class);
         for (ShinsuShape shape : ShinsuShape.values()) {
-            double value = shape.getSuitability(player);
-            if (value == max) {
-                shapes.add(shape);
-            } else if (value > max) {
-                shapes.clear();
-                shapes.add(shape);
-                max = value;
+            double suitability = shape.getSuitability(player);
+            if (suitability > 0) {
+                total += suitability;
+                suitabilities.put(shape, suitability);
             }
         }
-        return shapes.get(player.getRNG().nextInt(shapes.size()));
+        double current = 0;
+        double random = player.getRNG().nextDouble() * total;
+        for (ShinsuShape shape : suitabilities.keySet()) {
+            current += suitabilities.get(shape);
+            if (random < current) {
+                return shape;
+            }
+        }
+        ShinsuShape[] all = ShinsuShape.values();
+        return all[player.getRNG().nextInt(all.length)];
     }
 }

@@ -20,7 +20,9 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.stats.StatisticsManager;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -34,10 +36,13 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public enum ShinsuQuality {
 
@@ -72,7 +77,9 @@ public enum ShinsuQuality {
         return smelted;
     }, player -> {
         StatisticsManager stats = player.getStats();
-        return 3.0 * (stats.getValue(Stats.CUSTOM, Stats.INTERACT_WITH_BLAST_FURNACE) + stats.getValue(Stats.CUSTOM, Stats.INTERACT_WITH_CAMPFIRE) + stats.getValue(Stats.CUSTOM, Stats.INTERACT_WITH_FURNACE) + stats.getValue(Stats.CUSTOM, Stats.INTERACT_WITH_SMOKER) + stats.getValue(Stats.ENTITY_KILLED, EntityType.BLAZE));
+        double total = stats.getValue(Stats.CUSTOM, Stats.INTERACT_WITH_BLAST_FURNACE) + stats.getValue(Stats.CUSTOM, Stats.INTERACT_WITH_CAMPFIRE) + stats.getValue(Stats.CUSTOM, Stats.INTERACT_WITH_FURNACE) + stats.getValue(Stats.CUSTOM, Stats.INTERACT_WITH_SMOKER) + stats.getValue(Stats.ENTITY_KILLED, EntityType.BLAZE);
+        total += 0.25 * Tags.Blocks.NETHERRACK.getAllElements().stream().mapToInt(block -> stats.getValue(Stats.BLOCK_MINED, block) + stats.getValue(Stats.ITEM_USED, block.asItem()) + stats.getValue(Stats.ITEM_CRAFTED, block.asItem())).sum();
+        return total;
     }),
     ICE(ParticleTypes.POOF, DamageSource.MAGIC, 1, 1, 0xFFa8fbff, (entity, rayTrace) -> {
         Entity target = rayTrace.getEntity();
@@ -104,8 +111,10 @@ public enum ShinsuQuality {
                 }
             }
         }
-
-    }, (drops, context) -> drops, player -> player.getStats().getValue(Stats.CUSTOM, Stats.CROUCH_ONE_CM) / 10.0),
+    }, (drops, context) -> drops, player -> {
+        StatisticsManager stats = player.getStats();
+        return 1.0 * BlockTags.ICE.getAllElements().stream().mapToInt(block -> stats.getValue(Stats.BLOCK_MINED, block) + stats.getValue(Stats.ITEM_USED, block.asItem()) + stats.getValue(Stats.ITEM_CRAFTED, block.asItem())).sum();
+    }),
     STONE(new BlockParticleData(ParticleTypes.BLOCK, Blocks.STONE.getDefaultState()), DamageSource.FALLING_BLOCK, 0.8, 1.5, 0xFF999999, (entity, rayTrace) -> {
     }, (entity, rayTrace) -> {
         BlockPos pos = rayTrace.getPos();
@@ -114,12 +123,19 @@ public enum ShinsuQuality {
             entity.world.destroyBlock(pos, true, entity);
         }
     }, (drops, context) -> drops, player -> {
-        double amount = 0;
+        Set<Block> blocks = new HashSet<>(Tags.Blocks.STONE.getAllElements());
+        blocks.addAll(Tags.Blocks.COBBLESTONE.getAllElements());
+        blocks.addAll(Tags.Blocks.SANDSTONE.getAllElements());
+        blocks.addAll(Tags.Blocks.END_STONES.getAllElements());
+        blocks.addAll(BlockTags.STONE_BRICKS.getAllElements());
         StatisticsManager stats = player.getStats();
-        for (Block block : Tags.Blocks.STONE.getAllElements()) {
-            amount += stats.getValue(Stats.BLOCK_MINED, block);
-        }
-        return amount / 8;
+        int total = blocks.stream().mapToInt(block -> stats.getValue(Stats.BLOCK_MINED, block)).sum();
+        Set<Item> items = blocks.stream().map(Block::asItem).collect(Collectors.toSet());
+        items.addAll(ItemTags.STONE_CRAFTING_MATERIALS.getAllElements());
+        items.addAll(ItemTags.STONE_TOOL_MATERIALS.getAllElements());
+        items.addAll(ItemTags.STONE_BRICKS.getAllElements());
+        total += items.stream().mapToInt(item -> stats.getValue(Stats.ITEM_USED, item) + stats.getValue(Stats.ITEM_CRAFTED, item)).sum();
+        return total * 0.1;
     }),
     WIND(ParticleTypes.AMBIENT_ENTITY_EFFECT, DamageSource.CRAMMING, 1.4, 1, 0xAAabffac, (entity, rayTrace) -> {
         Vector3d dir = rayTrace.getHitVec().normalize();
@@ -140,23 +156,17 @@ public enum ShinsuQuality {
         }
     }, (drops, context) -> drops, player -> {
         StatisticsManager stats = player.getStats();
-        return (stats.getValue(Stats.CUSTOM, Stats.FALL_ONE_CM) + stats.getValue(Stats.CUSTOM, Stats.AVIATE_ONE_CM)) / 8.0;
+        return 0.1 * stats.getValue(Stats.CUSTOM, Stats.AVIATE_ONE_CM);
     }),
     CRYSTAL(new BlockParticleData(ParticleTypes.BLOCK, Blocks.GLASS.getDefaultState()), DamageSource.MAGIC, 0.9, 2, 0xFFf7f7f7, (entity, rayTrace) -> {
     }, (entity, rayTrace) -> {
     }, (drops, context) -> drops, player -> {
+        Set<Block> blocks = new HashSet<>(Tags.Blocks.ORES.getAllElements());
+        blocks.addAll(Tags.Blocks.GLASS.getAllElements());
+        blocks.addAll(Tags.Blocks.GLASS_PANES.getAllElements());
         StatisticsManager stats = player.getStats();
-        double amount = 0;
-        for (Block ore : Tags.Blocks.ORES.getAllElements()) {
-            amount += stats.getValue(Stats.BLOCK_MINED, ore);
-        }
-        for (Block glass : Tags.Blocks.GLASS.getAllElements()) {
-            amount += stats.getValue(Stats.BLOCK_MINED, glass);
-        }
-        for (Block panes : Tags.Blocks.GLASS_PANES.getAllElements()) {
-            amount += stats.getValue(Stats.BLOCK_MINED, panes);
-        }
-        return amount / 2;
+        int total = blocks.stream().mapToInt(block -> stats.getValue(Stats.BLOCK_MINED, block) + stats.getValue(Stats.ITEM_USED, block.asItem()) + stats.getValue(Stats.ITEM_CRAFTED, block.asItem())).sum();
+        return total * 0.5;
     }),
     PLANT(ParticleTypes.COMPOSTER, DamageSource.CACTUS, 1, 1, 0xFF03ff2d, (entity, rayTrace) -> {
         Entity target = rayTrace.getEntity();
@@ -192,11 +202,11 @@ public enum ShinsuQuality {
         return increased;
     }, player -> {
         StatisticsManager stats = player.getStats();
-        double amount = 0;
-        for (Item crop : Tags.Items.CROPS.getAllElements()) {
-            amount += stats.getValue(Stats.ITEM_PICKED_UP, crop);
-        }
-        return amount;
+        int amount = BlockTags.FLOWERS.getAllElements().stream().mapToInt(block -> stats.getValue(Stats.BLOCK_MINED, block)).sum();
+        Set<Item> items = new HashSet<>(ItemTags.FLOWERS.getAllElements());
+        items.addAll(Tags.Items.CROPS.getAllElements());
+        amount += items.stream().mapToInt(item -> stats.getValue(Stats.ITEM_USED, item) + stats.getValue(Stats.ITEM_CRAFTED, item)).sum();
+        return amount * 2.0;
     });
 
     private final IParticleData particleType;
