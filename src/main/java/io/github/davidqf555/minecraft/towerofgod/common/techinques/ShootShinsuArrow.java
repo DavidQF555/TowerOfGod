@@ -32,7 +32,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
                 arrow.setTechnique(getID());
                 float speed = BowItem.getArrowVelocity(getLevel()) * (float) quality.getSpeed();
                 Vector3d dir = getDirection();
-                arrow.shoot(dir.x, dir.y, dir.z, speed * 3, 1);
+                arrow.shoot(dir.x, dir.y, dir.z, speed * (float) IShinsuStats.get(user).getTension(world) * 3, 1);
                 Vector3d motion = user.getMotion();
                 arrow.setMotion(arrow.getMotion().add(motion.x, user.isOnGround() ? 0 : motion.y, motion.z));
                 arrow.setShooter(user);

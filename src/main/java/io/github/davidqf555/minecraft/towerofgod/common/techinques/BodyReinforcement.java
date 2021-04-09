@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
@@ -23,7 +24,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         Entity e = getUser(world);
         if (e instanceof LivingEntity) {
             LivingEntity user = (LivingEntity) e;
-            int level = getLevel();
+            int level = (int) (getLevel() * IShinsuStats.get(user).getTension(world));
             user.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 2, level / 2, true, false, false));
             user.addPotionEffect(new EffectInstance(Effects.SPEED, 2, level, true, false, false));
             user.addPotionEffect(new EffectInstance(Effects.HASTE, 2, level, true, false, false));

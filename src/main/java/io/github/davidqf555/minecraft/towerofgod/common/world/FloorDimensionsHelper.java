@@ -252,7 +252,7 @@ public class FloorDimensionsHelper {
             FloorProperty.Time[] times = FloorProperty.Time.values();
             time = times[rand.nextInt(times.length)];
         }
-        float density = 0.9f + level * rand.nextFloat() * 0.25f;
+        float density = 0.9f + level * 0.1f + rand.nextFloat() * 0.5f - 0.25f;
         return new FloorProperty(primary, attributes, bounds, time, density);
     }
 
