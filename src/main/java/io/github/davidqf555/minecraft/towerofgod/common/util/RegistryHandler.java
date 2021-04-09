@@ -148,8 +148,8 @@ public class RegistryHandler {
     @SubscribeEvent
     public static void registerEntityTypes(RegistryEvent.Register<EntityType<?>> event) {
         event.getRegistry().registerAll(
-                EntityType.Builder.create(new LighthouseEntity.Factory(), EntityClassification.AMBIENT).size(0.9f, 0.9f).build(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "lighthouse_entity"),
-                EntityType.Builder.create(new ObserverEntity.Factory(), EntityClassification.AMBIENT).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "observer_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "observer_entity"),
+                EntityType.Builder.create(new LighthouseEntity.Factory(), EntityClassification.MISC).size(0.9f, 0.9f).build(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "lighthouse_entity"),
+                EntityType.Builder.create(new ObserverEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "observer_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "observer_entity"),
                 EntityType.Builder.create(new RegularEntity.Factory(), EntityClassification.CREATURE).size(0.6f, 1.8f).build(new ResourceLocation(TowerOfGod.MOD_ID, "regular_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "regular_entity"),
                 EntityType.Builder.create(new ShinsuEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "shinsu_entity"),
                 EntityType.Builder.create(new ClickerEntity.Factory(), EntityClassification.MISC).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "clicker_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "clicker_entity"),
