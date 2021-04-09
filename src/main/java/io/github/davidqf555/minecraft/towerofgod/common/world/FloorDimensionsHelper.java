@@ -220,7 +220,7 @@ public class FloorDimensionsHelper {
         Set<FloorProperty.Attribute> attributes = EnumSet.noneOf(FloorProperty.Attribute.class);
         FloorProperty.Attribute[] all = FloorProperty.Attribute.values();
         FloorProperty.Attribute primary = all[rand.nextInt(all.length)];
-        for (FloorProperty.Attribute attribute : attributes) {
+        for (FloorProperty.Attribute attribute : all) {
             if (rand.nextDouble() < ATTRIBUTE_RATE) {
                 attributes.add(attribute);
             }
