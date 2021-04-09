@@ -5,12 +5,19 @@ import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
+import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.Dimension;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -31,10 +38,10 @@ public interface IShinsuStats {
         return user.getCapability(Provider.capability).orElseGet(ShinsuStats::new);
     }
 
-    static double getTotalResistance(Entity user, Entity target) {
+    static double getTotalResistance(ServerWorld world, Entity user, Entity target) {
         IShinsuStats targetStats = get(target);
         IShinsuStats userStats = get(user);
-        return targetStats.getResistance() / userStats.getTension();
+        return targetStats.getResistance(world) / userStats.getTension(world);
     }
 
     List<ShinsuTechniqueInstance> getTechniques();
@@ -61,13 +68,13 @@ public interface IShinsuStats {
 
     void addMaxBaangs(int amount);
 
-    double getResistance();
+    double getResistance(ServerWorld world);
 
-    void multiplyResistance(double factor);
+    void multiplyBaseResistance(double factor);
 
-    double getTension();
+    double getTension(ServerWorld world);
 
-    void multiplyTension(double factor);
+    void multiplyBaseTension(double factor);
 
     default ShinsuQuality getQuality() {
         return ShinsuQuality.NONE;
@@ -209,22 +216,30 @@ public interface IShinsuStats {
         }
 
         @Override
-        public double getResistance() {
+        public double getResistance(ServerWorld world) {
+            FloorProperty property = FloorDimensionsHelper.getFloorProperty(world);
+            if(property != null) {
+                return resistance * property.getShinsuDensity();
+            }
             return resistance;
         }
 
         @Override
-        public void multiplyResistance(double factor) {
+        public void multiplyBaseResistance(double factor) {
             resistance *= factor;
         }
 
         @Override
-        public double getTension() {
+        public double getTension(ServerWorld world) {
+            FloorProperty property = FloorDimensionsHelper.getFloorProperty(world);
+            if(property != null) {
+                return tension * property.getShinsuDensity();
+            }
             return tension;
         }
 
         @Override
-        public void multiplyTension(double factor) {
+        public void multiplyBaseTension(double factor) {
             tension *= factor;
         }
 

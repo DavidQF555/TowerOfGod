@@ -30,7 +30,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
         Entity t = getTarget(world);
         if (user != null && t instanceof LivingEntity && user.getDistanceSq(t) <= RANGE * RANGE) {
             LivingEntity target = (LivingEntity) t;
-            double resistance = IShinsuStats.getTotalResistance(user, target);
+            double resistance = IShinsuStats.getTotalResistance(world, user, target);
             target.attackEntityFrom(DamageSource.MAGIC, (float) (DAMAGE / resistance) * getLevel() / 2);
             target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 / resistance), getLevel(), true, false, false));
             double knock = KNOCKBACK / resistance;

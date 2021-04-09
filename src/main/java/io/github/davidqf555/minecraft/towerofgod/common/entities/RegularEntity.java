@@ -84,8 +84,8 @@ public class RegularEntity extends ShinsuUserEntity {
         Family family = getFamily();
         stats.addMaxShinsu(10 + (int) (15 * rand.nextDouble() * level * family.getShinsu()));
         stats.addMaxBaangs(1 + (int) (rand.nextDouble() * level * family.getBaangs() / 3));
-        stats.multiplyResistance(1 + rand.nextDouble() * level * family.getResistance() / 2);
-        stats.multiplyTension(1 + rand.nextDouble() * level * family.getTension() / 2);
+        stats.multiplyBaseResistance(1 + rand.nextDouble() * level * family.getResistance() / 2);
+        stats.multiplyBaseTension(1 + rand.nextDouble() * level * family.getTension() / 2);
         List<ShinsuTechnique> all = ShinsuTechnique.getObtainableTechniques();
         ShinsuTechnique[] preferred = family.getPreferredTechniques();
         int amount = level - rand.nextInt(level);

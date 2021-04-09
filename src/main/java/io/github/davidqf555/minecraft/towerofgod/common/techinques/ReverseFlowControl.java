@@ -31,7 +31,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
                 remove(world);
                 return;
             }
-            double resistance = IShinsuStats.getTotalResistance(user, target);
+            double resistance = IShinsuStats.getTotalResistance(world, user, target);
             ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), 2, (int) (1.5 * resistance * getLevel())));
         }
         super.tick(world);

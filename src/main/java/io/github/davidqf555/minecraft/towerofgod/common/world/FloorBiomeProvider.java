@@ -65,4 +65,8 @@ public class FloorBiomeProvider extends BiomeProvider {
                 .map(Supplier::get)
                 .orElse(BiomeRegistry.THE_VOID);
     }
+
+    public FloorProperty getProperty(){
+        return property;
+    }
 }

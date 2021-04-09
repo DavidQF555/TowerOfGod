@@ -19,19 +19,22 @@ public class FloorProperty {
             Attribute.CODEC.fieldOf("primaryAttribute").forGetter(property -> property.primaryAttribute),
             Codec.list(Attribute.CODEC).fieldOf("attributes").forGetter(property -> new ArrayList<>(property.attributes)),
             Codec.list(Bound.CODEC).fieldOf("bounds").forGetter(property -> new ArrayList<>(property.bounds)),
-            Time.CODEC.fieldOf("time").forGetter(property -> property.time)
-    ).apply(builder, builder.stable((primaryAttribute, attributes, bounds, time) -> new FloorProperty(primaryAttribute, EnumSet.copyOf(attributes), bounds.isEmpty() ? EnumSet.noneOf(Bound.class) : EnumSet.copyOf(bounds), time))));
+            Time.CODEC.fieldOf("time").forGetter(property -> property.time),
+            Codec.FLOAT.fieldOf("shinsuDensity").forGetter(property -> property.shinsuDensity)
+    ).apply(builder, builder.stable((primaryAttribute, attributes, bounds, time, shinsuDensity) -> new FloorProperty(primaryAttribute, EnumSet.copyOf(attributes), bounds.isEmpty() ? EnumSet.noneOf(Bound.class) : EnumSet.copyOf(bounds), time, shinsuDensity))));
 
     private final Attribute primaryAttribute;
     private final Set<Attribute> attributes;
     private final Set<Bound> bounds;
     private final Time time;
+    private final float shinsuDensity;
 
-    public FloorProperty(Attribute primaryAttribute, Set<Attribute> attributes, Set<Bound> bounds, Time time) {
+    public FloorProperty(Attribute primaryAttribute, Set<Attribute> attributes, Set<Bound> bounds, Time time, float shinsuDensity) {
         this.primaryAttribute = primaryAttribute;
         this.attributes = attributes;
         this.bounds = bounds;
         this.time = time;
+        this.shinsuDensity = shinsuDensity;
     }
 
     public Attribute getPrimaryAttribute() {
@@ -100,6 +103,10 @@ public class FloorProperty {
 
     public long getTime() {
         return time.getTime();
+    }
+
+    public float getShinsuDensity(){
+        return shinsuDensity;
     }
 
     public enum Attribute {

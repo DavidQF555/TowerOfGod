@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Dimension;
 import net.minecraft.world.DimensionType;
@@ -23,6 +24,7 @@ import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.border.IBorderListener;
 import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.chunk.listener.IChunkStatusListenerFactory;
+import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.DimensionSettings;
 import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraft.world.gen.settings.*;
@@ -35,12 +37,10 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 
@@ -65,6 +65,16 @@ public class FloorDimensionsHelper {
         if (serverPlayer.canChangeDimension()) {
             serverPlayer.changeDimension(world, new FloorTeleporter(world, teleporter, direction));
         }
+    }
+
+    @Nullable
+    public static FloorProperty getFloorProperty(ServerWorld world) {
+            Dimension dimension = world.getServer().getServerConfiguration().getDimensionGeneratorSettings().func_236224_e_().getValueForKey(RegistryKey.getOrCreateKey(Registry.DIMENSION_KEY, world.getDimensionKey().getLocation()));
+            BiomeProvider provider = dimension.getChunkGenerator().getBiomeProvider();
+            if (provider instanceof FloorBiomeProvider) {
+                return ((FloorBiomeProvider) provider).getProperty();
+            }
+        return null;
     }
 
     public static ServerWorld getOrCreateWorld(MinecraftServer server, int level) {
@@ -105,7 +115,7 @@ public class FloorDimensionsHelper {
         Registry<Biome> lookup = server.getDynamicRegistries().getRegistry(Registry.BIOME_KEY);
         long seed = overworld.getSeed() + level - 1;
         SharedSeedRandom random = new SharedSeedRandom(seed);
-        FloorProperty property = randomProperty(random);
+        FloorProperty property = randomProperty(level, random);
         float lighting = property.hasCeiling() ? random.nextFloat() * 0.5f + 0.1f : random.nextFloat() * 0.2f;
         ResourceLocation effect;
         int rand = random.nextInt(3);
@@ -216,7 +226,7 @@ public class FloorDimensionsHelper {
         }
     }
 
-    private static FloorProperty randomProperty(Random rand) {
+    private static FloorProperty randomProperty(int level, Random rand) {
         Set<FloorProperty.Attribute> attributes = EnumSet.noneOf(FloorProperty.Attribute.class);
         FloorProperty.Attribute[] all = FloorProperty.Attribute.values();
         FloorProperty.Attribute primary = all[rand.nextInt(all.length)];
@@ -241,7 +251,8 @@ public class FloorDimensionsHelper {
             FloorProperty.Time[] times = FloorProperty.Time.values();
             time = times[rand.nextInt(times.length)];
         }
-        return new FloorProperty(primary, attributes, bounds, time);
+        float density = 0.9f + level * rand.nextFloat() * 0.25f;
+        return new FloorProperty(primary, attributes, bounds, time, density);
     }
 
     @SuppressWarnings("unchecked")

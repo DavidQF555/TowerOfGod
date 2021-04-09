@@ -55,13 +55,13 @@ public class StatsCommand {
                         if (amount < 0) {
                             amount = -1 / amount;
                         }
-                        stats.multiplyResistance(amount);
+                        stats.multiplyBaseResistance(amount);
                         break;
                     case "tension":
                         if (amount < 0) {
                             amount = -1 / amount;
                         }
-                        stats.multiplyTension(amount);
+                        stats.multiplyBaseTension(amount);
                         break;
                     default:
                         ShinsuTechnique technique = ShinsuTechnique.get(type.toLowerCase());
