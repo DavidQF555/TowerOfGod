@@ -12,12 +12,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.Dimension;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -218,7 +213,7 @@ public interface IShinsuStats {
         @Override
         public double getResistance(ServerWorld world) {
             FloorProperty property = FloorDimensionsHelper.getFloorProperty(world);
-            if(property != null) {
+            if (property != null) {
                 return resistance * property.getShinsuDensity();
             }
             return resistance;
@@ -232,7 +227,7 @@ public interface IShinsuStats {
         @Override
         public double getTension(ServerWorld world) {
             FloorProperty property = FloorDimensionsHelper.getFloorProperty(world);
-            if(property != null) {
+            if (property != null) {
                 return tension * property.getShinsuDensity();
             }
             return tension;

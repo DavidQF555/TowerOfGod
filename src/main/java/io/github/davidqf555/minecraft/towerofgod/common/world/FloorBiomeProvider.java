@@ -66,7 +66,7 @@ public class FloorBiomeProvider extends BiomeProvider {
                 .orElse(BiomeRegistry.THE_VOID);
     }
 
-    public FloorProperty getProperty(){
+    public FloorProperty getProperty() {
         return property;
     }
 }

@@ -105,7 +105,7 @@ public class FloorProperty {
         return time.getTime();
     }
 
-    public float getShinsuDensity(){
+    public float getShinsuDensity() {
         return shinsuDensity;
     }
 

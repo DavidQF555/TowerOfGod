@@ -13,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Dimension;
 import net.minecraft.world.DimensionType;
@@ -24,7 +23,6 @@ import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.border.IBorderListener;
 import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.chunk.listener.IChunkStatusListenerFactory;
-import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.DimensionSettings;
 import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraft.world.gen.settings.*;
@@ -40,7 +38,10 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 
@@ -69,11 +70,11 @@ public class FloorDimensionsHelper {
 
     @Nullable
     public static FloorProperty getFloorProperty(ServerWorld world) {
-            Dimension dimension = world.getServer().getServerConfiguration().getDimensionGeneratorSettings().func_236224_e_().getValueForKey(RegistryKey.getOrCreateKey(Registry.DIMENSION_KEY, world.getDimensionKey().getLocation()));
-            BiomeProvider provider = dimension.getChunkGenerator().getBiomeProvider();
-            if (provider instanceof FloorBiomeProvider) {
-                return ((FloorBiomeProvider) provider).getProperty();
-            }
+        Dimension dimension = world.getServer().getServerConfiguration().getDimensionGeneratorSettings().func_236224_e_().getValueForKey(RegistryKey.getOrCreateKey(Registry.DIMENSION_KEY, world.getDimensionKey().getLocation()));
+        BiomeProvider provider = dimension.getChunkGenerator().getBiomeProvider();
+        if (provider instanceof FloorBiomeProvider) {
+            return ((FloorBiomeProvider) provider).getProperty();
+        }
         return null;
     }
 
