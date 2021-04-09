@@ -1,6 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingEntity;
@@ -28,6 +30,7 @@ import java.util.UUID;
 public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal {
 
     private static final String TAG_KEY = TowerOfGod.MOD_ID + ".flying_device";
+    private UUID technique;
     private UUID owner;
 
     public FlyingDevice(EntityType<? extends FlyingDevice> type, World worldIn) {
@@ -41,9 +44,30 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     }
 
     @Override
+    public void livingTick() {
+        if (technique != null && getTechnique() == null) {
+            remove();
+        }
+        super.livingTick();
+    }
+
+    @Override
     public void registerGoals() {
         super.registerGoals();
         goalSelector.addGoal(0, new FollowOwnerGoal());
+    }
+
+    @Nullable
+    public ShinsuTechniqueInstance getTechnique() {
+        Entity owner = getOwner();
+        if (technique != null && owner != null) {
+            return ShinsuTechniqueInstance.get(owner, technique);
+        }
+        return null;
+    }
+
+    public void setTechnique(@Nullable UUID technique) {
+        this.technique = technique;
     }
 
     @Nonnull
@@ -76,6 +100,10 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     @Override
     public void travel(Vector3d vec) {
         float speed = (float) getAttributeValue(Attributes.FLYING_SPEED);
+        Entity owner = getOwner();
+        if (owner != null) {
+            speed *= IShinsuStats.get(owner).getTension((ServerWorld) world);
+        }
         if (isInWater()) {
             moveRelative(speed, vec);
             move(MoverType.SELF, getMotion());

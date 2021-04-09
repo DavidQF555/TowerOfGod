@@ -97,7 +97,9 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public void tick(ServerWorld world) {
-        ticks++;
+        if (!technique.isIndefinite()) {
+            ticks++;
+        }
     }
 
     private void updateMeter(ServerWorld world) {

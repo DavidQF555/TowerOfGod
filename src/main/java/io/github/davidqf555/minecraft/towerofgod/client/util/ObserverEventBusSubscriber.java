@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client.util;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.entity.LivingEntity;
@@ -14,8 +15,7 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public class ObserverEventBusSubscriber {
 
-    public static final Map<UUID, List<UUID>> highlight = new HashMap<>();
-    public static final Map<UUID, List<UUID>> stopHighlight = new HashMap<>();
+    public static final Map<UUID, Pair<Set<UUID>, Set<UUID>>> startStopHighlight = new HashMap<>();
 
     @SubscribeEvent
     public static void preRenderLiving(RenderLivingEvent.Pre<LivingEntity, EntityModel<LivingEntity>> event) {
@@ -23,14 +23,18 @@ public class ObserverEventBusSubscriber {
         UUID id = entity.getUniqueID();
         boolean included = false;
         boolean stillGlowing = false;
-        for (UUID key : highlight.keySet()) {
-            List<UUID> values = highlight.get(key);
-            List<UUID> stop = stopHighlight.containsKey(key) ? stopHighlight.get(key) : new ArrayList<>();
+        for (UUID key : new HashSet<>(startStopHighlight.keySet())) {
+            Pair<Set<UUID>, Set<UUID>> pair = startStopHighlight.get(key);
+            Set<UUID> highlight = pair.getFirst();
+            Set<UUID> stop = pair.getSecond();
             if (stop.contains(id)) {
-                values.remove(id);
+                highlight.remove(id);
                 stop.remove(id);
                 included = true;
-            } else if (values.contains(id)) {
+                if (highlight.isEmpty()) {
+                    startStopHighlight.remove(key);
+                }
+            } else if (highlight.contains(id)) {
                 stillGlowing = true;
                 included = true;
             }
@@ -45,8 +49,7 @@ public class ObserverEventBusSubscriber {
 
         @SubscribeEvent
         public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-            highlight.clear();
-            stopHighlight.clear();
+            startStopHighlight.clear();
         }
 
     }

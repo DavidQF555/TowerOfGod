@@ -1,13 +1,14 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.util.ObserverEventBusSubscriber;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -24,7 +25,7 @@ public class ObserverChangeHighlightMessage {
     };
     private static final Function<PacketBuffer, ObserverChangeHighlightMessage> DECODER = buffer -> {
         UUID id = buffer.readUniqueId();
-        List<UUID> entities = new ArrayList<>();
+        Set<UUID> entities = new HashSet<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
             entities.add(buffer.readUniqueId());
@@ -36,9 +37,9 @@ public class ObserverChangeHighlightMessage {
         message.handle(cont);
     };
     private final UUID id;
-    private final List<UUID> entities;
+    private final Set<UUID> entities;
 
-    public ObserverChangeHighlightMessage(UUID id, List<UUID> entities) {
+    public ObserverChangeHighlightMessage(UUID id, Set<UUID> entities) {
         this.id = id;
         this.entities = entities;
     }
@@ -51,38 +52,18 @@ public class ObserverChangeHighlightMessage {
         NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_CLIENT) {
             context.enqueueWork(() -> {
-                List<UUID> highlight;
-                if (ObserverEventBusSubscriber.highlight.containsKey(id)) {
-                    highlight = ObserverEventBusSubscriber.highlight.get(id);
-                    highlight.addAll(getUnique(highlight, entities));
+                if (ObserverEventBusSubscriber.startStopHighlight.containsKey(id)) {
+                    Pair<Set<UUID>, Set<UUID>> pair = ObserverEventBusSubscriber.startStopHighlight.get(id);
+                    Set<UUID> highlight = pair.getFirst();
+                    Set<UUID> remove = pair.getSecond();
+                    remove.removeAll(entities);
+                    highlight.stream().filter(uuid -> !entities.contains(uuid)).forEach(remove::add);
+                    highlight.addAll(entities);
                 } else {
-                    highlight = entities;
-                    ObserverEventBusSubscriber.highlight.put(id, entities);
-                }
-                List<UUID> remove = new ArrayList<>();
-                for (UUID id : highlight) {
-                    if (!entities.contains(id)) {
-                        remove.add(id);
-                    }
-                }
-                if (ObserverEventBusSubscriber.stopHighlight.containsKey(id)) {
-                    List<UUID> stop = ObserverEventBusSubscriber.stopHighlight.get(id);
-                    stop.addAll(getUnique(stop, remove));
-                } else {
-                    ObserverEventBusSubscriber.stopHighlight.put(id, remove);
+                    ObserverEventBusSubscriber.startStopHighlight.put(id, Pair.of(entities, new HashSet<>()));
                 }
             });
             context.setPacketHandled(true);
         }
-    }
-
-    private List<UUID> getUnique(List<UUID> original, List<UUID> newer) {
-        List<UUID> unique = new ArrayList<>();
-        for (UUID id : newer) {
-            if (!original.contains(id)) {
-                unique.add(id);
-            }
-        }
-        return unique;
     }
 }

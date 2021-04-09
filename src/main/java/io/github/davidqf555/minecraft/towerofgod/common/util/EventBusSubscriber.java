@@ -142,7 +142,6 @@ public class EventBusSubscriber {
             UpdateClientKnownMessage.register(index++);
             UpdateClientEquippedMessage.register(index++);
             ObserverChangeHighlightMessage.register(index++);
-            RemoveObserverDataMessage.register(index++);
             UpdateClientDimensionsMessage.register(index++);
             OpenFloorTeleportationTerminalMessage.register(index++);
             ChangeFloorMessage.register(index++);

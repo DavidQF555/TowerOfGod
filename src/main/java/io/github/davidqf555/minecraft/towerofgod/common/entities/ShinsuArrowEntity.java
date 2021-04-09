@@ -88,13 +88,9 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
 
     @Override
     public void onRemovedFromWorld() {
-        ShinsuTechniqueInstance technique = getTechnique();
         if (world instanceof ServerWorld) {
             Vector3d motion = getMotion();
             getQuality().applyBlockEffect(this, latestHit == null || isAirBorne ? new BlockRayTraceResult(motion, Direction.getFacingFromVector(motion.x, motion.y, motion.z), getPosition(), true) : latestHit);
-            if (technique != null) {
-                technique.remove((ServerWorld) world);
-            }
         }
         super.onRemovedFromWorld();
     }

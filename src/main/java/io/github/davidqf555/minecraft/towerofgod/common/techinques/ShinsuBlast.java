@@ -10,12 +10,13 @@ import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
 
     private static final double BASE_SPEED = 0.5;
 
-    public ShinsuBlast(LivingEntity user, int level, @Nonnull Vector3d dir) {
+    public ShinsuBlast(LivingEntity user, int level, Vector3d dir) {
         super(ShinsuTechnique.SHINSU_BLAST, user, level, dir.normalize(), 200);
     }
 
@@ -34,6 +35,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
         }
     }
 
+    @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.Builder<ShinsuBlast> {
 
         private final int shinsu;
@@ -45,12 +47,12 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
         }
 
         @Override
-        public ShinsuBlast build(@Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
-            return dir != null ? new ShinsuBlast(user, level, dir) : null;
+        public ShinsuBlast build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return new ShinsuBlast(user, level, dir);
         }
 
         @Override
-        public boolean canCast(@Nonnull ShinsuTechnique technique, @Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        public boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && (!(user instanceof MobEntity) || ((MobEntity) user).getAttackTarget() != null);
         }
 

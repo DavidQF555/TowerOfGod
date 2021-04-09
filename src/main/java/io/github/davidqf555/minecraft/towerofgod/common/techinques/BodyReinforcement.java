@@ -10,6 +10,7 @@ import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class BodyReinforcement extends ShinsuTechniqueInstance {
 
@@ -39,6 +40,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         return getLevel() * BASE_DURATION;
     }
 
+    @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.Builder<BodyReinforcement> {
 
         private final int shinsu;
@@ -50,7 +52,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         }
 
         @Override
-        public BodyReinforcement build(@Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        public BodyReinforcement build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return new BodyReinforcement(user, level);
         }
 

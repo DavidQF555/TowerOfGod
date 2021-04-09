@@ -87,11 +87,11 @@ public interface IShinsuStats {
 
     void addCooldown(ShinsuTechnique technique, int time);
 
-    default void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, @Nullable Vector3d dir) {
+    default void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, Vector3d dir) {
         cast(user, technique, getTechniqueLevel(technique), target, dir);
     }
 
-    default void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+    default void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, Vector3d dir) {
         if (getCooldown(technique) <= 0 && user.world instanceof ServerWorld) {
             ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
             if (builder.canCast(technique, user, level, target, dir)) {

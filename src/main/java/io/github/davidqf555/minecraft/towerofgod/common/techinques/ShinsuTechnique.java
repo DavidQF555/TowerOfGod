@@ -19,21 +19,27 @@ import java.util.List;
 @ParametersAreNonnullByDefault
 public enum ShinsuTechnique {
 
-    BODY_REINFORCEMENT(true, new BodyReinforcement.Builder(10, 1), "body_reinforcement", ShinsuIcons.RESISTANCE),
-    BLACK_FISH(true, new BlackFish.Builder(10, 1), "black_fish", ShinsuIcons.SWIRL),
-    FLARE_WAVE_EXPLOSION(true, new FlareWaveExplosion.Builder(20, 1), "flare_wave_explosion", ShinsuIcons.TENSION),
-    REVERSE_FLOW_CONTROL(true, new ReverseFlowControl.Builder(10, 1), "reverse_flow_control", ShinsuIcons.REVERSE),
-    SHINSU_BLAST(true, new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.BAANGS),
-    MANIFEST(true, new Manifest.Builder(10, 1), "manifest", ShinsuIcons.SWIRL),
-    SHOOT_SHINSU_ARROW(false, new ShootShinsuArrow.Builder(3, 1), "shoot_shinsu_arrow", ShinsuIcons.BAANGS);
+    BODY_REINFORCEMENT(false, false, true, new BodyReinforcement.Builder(10, 1), "body_reinforcement", ShinsuIcons.RESISTANCE),
+    BLACK_FISH(false, false, true, new BlackFish.Builder(10, 1), "black_fish", ShinsuIcons.SWIRL),
+    FLARE_WAVE_EXPLOSION(true, false, true, new FlareWaveExplosion.Builder(20, 1), "flare_wave_explosion", ShinsuIcons.TENSION),
+    REVERSE_FLOW_CONTROL(true, false, true, new ReverseFlowControl.Builder(10, 1), "reverse_flow_control", ShinsuIcons.REVERSE),
+    SHINSU_BLAST(true, false, true, new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.BAANGS),
+    MANIFEST(false, false, true, new Manifest.Builder(10, 1), "manifest", ShinsuIcons.SWIRL),
+    SHOOT_SHINSU_ARROW(true, false, false, new ShootShinsuArrow.Builder(3, 1), "shoot_shinsu_arrow", ShinsuIcons.BAANGS),
+    USE_LIGHTHOUSE(true, true, false, new UseLighthouseTechnique.Builder(15, 1), "use_lighthouse", ShinsuIcons.BAANGS),
+    USE_OBSERVER(true, true, false, new UseObserverTechnique.Builder(10, 1), "use_observer", ShinsuIcons.BAANGS);
 
+    private final boolean canStack;
+    private final boolean indefinite;
     private final boolean obtainable;
     private final Builder<? extends ShinsuTechniqueInstance> builder;
     private final String name;
     private final TranslationTextComponent text;
     private final RenderInfo icon;
 
-    ShinsuTechnique(boolean obtainable, Builder<? extends ShinsuTechniqueInstance> builder, String name, RenderInfo icon) {
+    ShinsuTechnique(boolean canStack, boolean indefinite, boolean obtainable, Builder<? extends ShinsuTechniqueInstance> builder, String name, RenderInfo icon) {
+        this.canStack = canStack;
+        this.indefinite = indefinite;
         this.obtainable = obtainable;
         this.builder = builder;
         this.name = name;
@@ -71,8 +77,16 @@ public enum ShinsuTechnique {
         return obtainable;
     }
 
+    public boolean canStack() {
+        return canStack;
+    }
+
     public boolean isObtainable() {
         return obtainable;
+    }
+
+    public boolean isIndefinite() {
+        return indefinite;
     }
 
     public Builder<? extends ShinsuTechniqueInstance> getBuilder() {
@@ -102,7 +116,7 @@ public enum ShinsuTechnique {
     public interface Builder<T extends ShinsuTechniqueInstance> {
 
         @Nullable
-        T build(LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir);
+        T build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir);
 
         T emptyBuild();
 
@@ -110,9 +124,10 @@ public enum ShinsuTechnique {
 
         int getBaangUse();
 
-        default boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        default boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             IShinsuStats stats = IShinsuStats.get(user);
-            return level > 0 && stats.getCooldown(technique) <= 0 && stats.getShinsu() >= technique.getShinsuUse() && stats.getBaangs() >= technique.getBaangUse();
+            boolean casting = stats.getTechniques().stream().map(ShinsuTechniqueInstance::getTechnique).anyMatch(cast -> cast == technique);
+            return level > 0 && stats.getCooldown(technique) <= 0 && stats.getShinsu() >= technique.getShinsuUse() && stats.getBaangs() >= technique.getBaangUse() && (!casting || technique.canStack());
         }
     }
 
