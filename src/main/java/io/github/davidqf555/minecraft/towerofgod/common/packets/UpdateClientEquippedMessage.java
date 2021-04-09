@@ -6,12 +6,9 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShin
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -19,12 +16,6 @@ import java.util.function.Supplier;
 
 public class UpdateClientEquippedMessage {
 
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(TowerOfGod.MOD_ID, "update_equipped_packet"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals);
     private static final BiConsumer<UpdateClientEquippedMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.equipped.length);
         for (ShinsuTechnique technique : message.equipped) {
@@ -54,7 +45,7 @@ public class UpdateClientEquippedMessage {
     }
 
     public static void register(int index) {
-        INSTANCE.registerMessage(index, UpdateClientEquippedMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientEquippedMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {
@@ -63,7 +54,7 @@ public class UpdateClientEquippedMessage {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
                 IPlayerShinsuEquips equips = IPlayerShinsuEquips.get(player);
-                INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientEquippedMessage(equips.getEquipped()));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientEquippedMessage(equips.getEquipped()));
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {

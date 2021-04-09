@@ -107,7 +107,7 @@ public class FloorDimensionsHelper {
         map.put(worldKey, newWorld);
         server.markWorldsDirty();
         MinecraftForge.EVENT_BUS.post(new WorldEvent.Load(newWorld));
-        UpdateClientDimensionsMessage.INSTANCE.send(PacketDistributor.ALL.noArg(), new UpdateClientDimensionsMessage(worldKey));
+        TowerOfGod.CHANNEL.send(PacketDistributor.ALL.noArg(), new UpdateClientDimensionsMessage(worldKey));
         return newWorld;
     }
 

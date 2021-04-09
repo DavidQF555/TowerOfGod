@@ -105,7 +105,7 @@ public class GuiEventBusSubscriber {
                     int action = event.getAction();
                     if (wheel.isLocked()) {
                         if (action == GLFW.GLFW_RELEASE) {
-                            CastShinsuMessage.INSTANCE.sendToServer(new CastShinsuMessage(selected, client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
+                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuMessage(selected, client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
                             wheel = null;
                         }
                     } else if (action == GLFW.GLFW_PRESS) {
@@ -165,7 +165,7 @@ public class GuiEventBusSubscriber {
                     wheel.tick();
                 }
                 if (player != null) {
-                    ShinsuStatsTickMessage.INSTANCE.sendToServer(new ShinsuStatsTickMessage());
+                    TowerOfGod.CHANNEL.sendToServer(new ShinsuStatsTickMessage());
                 }
             }
         }
@@ -178,10 +178,10 @@ public class GuiEventBusSubscriber {
             for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                 known.put(technique, stats.getTechniqueLevel(technique));
             }
-            UpdateClientKnownMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
-            UpdateStatsMetersMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             IPlayerShinsuEquips equipped = IPlayerShinsuEquips.get(entity);
-            UpdateClientEquippedMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientEquippedMessage(equipped.getEquipped()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientEquippedMessage(equipped.getEquipped()));
         }
 
         @SubscribeEvent

@@ -197,7 +197,7 @@ public class ShinsuEquipScreen extends Screen {
                     }
                 }
             }
-            ChangeEquipsMessage.INSTANCE.sendToServer(new ChangeEquipsMessage(screen.equipped));
+            TowerOfGod.CHANNEL.sendToServer(new ChangeEquipsMessage(screen.equipped));
         }
 
         private boolean isSelected() {

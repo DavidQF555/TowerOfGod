@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
@@ -73,10 +74,10 @@ public class StatsCommand {
                             for (ShinsuTechnique t : ShinsuTechnique.values()) {
                                 known.put(t, stats.getTechniqueLevel(t));
                             }
-                            UpdateClientKnownMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientKnownMessage(known));
+                            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientKnownMessage(known));
                         }
                 }
-                UpdateStatsMetersMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             }
             return players.size() - fail;
         }

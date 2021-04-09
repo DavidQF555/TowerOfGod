@@ -7,12 +7,9 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStat
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -21,12 +18,6 @@ import java.util.function.Supplier;
 
 public class UpdateClientCooldownsMessage {
 
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(TowerOfGod.MOD_ID, "update_cooldowns_packet"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals);
     private static final BiConsumer<UpdateClientCooldownsMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.cooldowns.size());
         for (ShinsuTechnique technique : message.cooldowns.keySet()) {
@@ -57,7 +48,7 @@ public class UpdateClientCooldownsMessage {
     }
 
     public static void register(int index) {
-        INSTANCE.registerMessage(index, UpdateClientCooldownsMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientCooldownsMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {
@@ -69,7 +60,7 @@ public class UpdateClientCooldownsMessage {
                 for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                     cooldowns.put(technique, stats.getCooldown(technique));
                 }
-                INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientCooldownsMessage(cooldowns));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientCooldownsMessage(cooldowns));
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {

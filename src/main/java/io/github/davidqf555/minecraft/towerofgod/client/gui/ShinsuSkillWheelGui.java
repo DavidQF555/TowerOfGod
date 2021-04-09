@@ -103,8 +103,8 @@ public class ShinsuSkillWheelGui extends AbstractGui {
         yaw = client.player.rotationYawHead;
         prevPitch = pitch;
         pitch = client.player.rotationPitch;
-        UpdateClientCooldownsMessage.INSTANCE.sendToServer(new UpdateClientCooldownsMessage());
-        UpdateClientCanCastMessage.INSTANCE.sendToServer(new UpdateClientCanCastMessage(client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
+        TowerOfGod.CHANNEL.sendToServer(new UpdateClientCooldownsMessage());
+        TowerOfGod.CHANNEL.sendToServer(new UpdateClientCanCastMessage(client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
     }
 
     public void lock() {

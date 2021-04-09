@@ -172,7 +172,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
         public void onPress() {
             if (screen.display.isValid()) {
                 int level = Integer.parseInt(screen.display.value.toString());
-                ChangeFloorMessage.INSTANCE.sendToServer(new ChangeFloorMessage(level, screen.teleporter, screen.direction));
+                TowerOfGod.CHANNEL.sendToServer(new ChangeFloorMessage(level, screen.teleporter, screen.direction));
             }
         }
     }

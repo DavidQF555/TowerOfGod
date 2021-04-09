@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ObserverChangeHighlightMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.RemoveObserverDataMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
@@ -48,7 +49,7 @@ public class ObserverEntity extends FlyingDevice {
         }
         Entity owner = getOwner();
         if (owner instanceof ServerPlayerEntity) {
-            ObserverChangeHighlightMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverChangeHighlightMessage(getUniqueID(), targets));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverChangeHighlightMessage(getUniqueID(), targets));
         }
         super.livingTick();
     }
@@ -57,7 +58,7 @@ public class ObserverEntity extends FlyingDevice {
     public void setOwnerID(@Nonnull UUID id) {
         Entity owner = getOwner();
         if (owner instanceof ServerPlayerEntity) {
-            RemoveObserverDataMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new RemoveObserverDataMessage(getUniqueID()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new RemoveObserverDataMessage(getUniqueID()));
         }
         super.setOwnerID(id);
     }
@@ -66,7 +67,7 @@ public class ObserverEntity extends FlyingDevice {
     public void onRemovedFromWorld() {
         Entity owner = getOwner();
         if (owner instanceof ServerPlayerEntity) {
-            RemoveObserverDataMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new RemoveObserverDataMessage(getUniqueID()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new RemoveObserverDataMessage(getUniqueID()));
         }
         super.onRemovedFromWorld();
     }

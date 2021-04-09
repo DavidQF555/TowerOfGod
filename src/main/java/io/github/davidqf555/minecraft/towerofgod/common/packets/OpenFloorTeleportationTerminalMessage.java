@@ -5,12 +5,9 @@ import io.github.davidqf555.minecraft.towerofgod.client.gui.FloorTeleportationTe
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -18,12 +15,6 @@ import java.util.function.Supplier;
 
 public class OpenFloorTeleportationTerminalMessage {
 
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(TowerOfGod.MOD_ID, "open_floor_teleportation_terminal_packet"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals);
     private static final BiConsumer<OpenFloorTeleportationTerminalMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.teleporter.getX());
         buffer.writeInt(message.teleporter.getY());
@@ -51,7 +42,7 @@ public class OpenFloorTeleportationTerminalMessage {
     }
 
     public static void register(int index) {
-        INSTANCE.registerMessage(index, OpenFloorTeleportationTerminalMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, OpenFloorTeleportationTerminalMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

@@ -9,8 +9,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -18,12 +16,6 @@ import java.util.function.Supplier;
 
 public class UpdateClientDimensionsMessage {
 
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(TowerOfGod.MOD_ID, "update_dimensions_packet"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals);
     private static final BiConsumer<UpdateClientDimensionsMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeString(message.key.getLocation().toString());
     };
@@ -40,7 +32,7 @@ public class UpdateClientDimensionsMessage {
     }
 
     public static void register(int index) {
-        INSTANCE.registerMessage(index, UpdateClientDimensionsMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientDimensionsMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {
