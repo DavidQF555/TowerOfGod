@@ -86,8 +86,8 @@ public class EventBusSubscriber {
         }
 
         @SubscribeEvent
-        public static void onPlayerTick(TickEvent.PlayerTickEvent event){
-            if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START) {
+        public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+            if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START) {
                 IShinsuStats.get(event.player).tick((ServerWorld) event.player.world);
             }
         }
