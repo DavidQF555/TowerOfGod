@@ -164,9 +164,6 @@ public class GuiEventBusSubscriber {
                 if (wheel != null) {
                     wheel.tick();
                 }
-                if (player != null) {
-                    TowerOfGod.CHANNEL.sendToServer(new ShinsuStatsTickMessage());
-                }
             }
         }
 

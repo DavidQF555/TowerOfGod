@@ -28,16 +28,19 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.gen.placement.TopSolidRangeConfig;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -79,6 +82,13 @@ public class EventBusSubscriber {
                 if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
                     event.getSpawns().withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.REGULAR_ENTITY.get(), 8, 1, 8));
                 }
+            }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerTick(TickEvent.PlayerTickEvent event){
+            if(event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START) {
+                IShinsuStats.get(event.player).tick((ServerWorld) event.player.world);
             }
         }
 
@@ -135,7 +145,6 @@ public class EventBusSubscriber {
             CapabilityManager.INSTANCE.register(IPlayerShinsuEquips.class, new IPlayerShinsuEquips.Storage(), new IPlayerShinsuEquips.PlayerShinsuEquips.Factory());
             ChangeEquipsMessage.register(index++);
             CastShinsuMessage.register(index++);
-            ShinsuStatsTickMessage.register(index++);
             UpdateStatsMetersMessage.register(index++);
             UpdateClientCooldownsMessage.register(index++);
             UpdateClientCanCastMessage.register(index++);
