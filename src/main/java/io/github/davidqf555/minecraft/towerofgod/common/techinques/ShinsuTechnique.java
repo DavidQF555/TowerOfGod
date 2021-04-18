@@ -19,42 +19,30 @@ import java.util.List;
 @ParametersAreNonnullByDefault
 public enum ShinsuTechnique {
 
-    BODY_REINFORCEMENT(false, false, true, new BodyReinforcement.Builder(10, 1), "body_reinforcement", ShinsuIcons.RESISTANCE),
-    BLACK_FISH(false, false, true, new BlackFish.Builder(10, 1), "black_fish", ShinsuIcons.SWIRL),
-    FLARE_WAVE_EXPLOSION(true, false, true, new FlareWaveExplosion.Builder(20, 1), "flare_wave_explosion", ShinsuIcons.TENSION),
-    REVERSE_FLOW_CONTROL(true, false, true, new ReverseFlowControl.Builder(10, 1), "reverse_flow_control", ShinsuIcons.REVERSE),
-    SHINSU_BLAST(true, false, true, new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.BAANGS),
-    MANIFEST(false, true, true, new Manifest.Builder(10, 1), "manifest", ShinsuIcons.SWIRL),
-    SHOOT_SHINSU_ARROW(true, false, false, new ShootShinsuArrow.Builder(3, 1), "shoot_shinsu_arrow", ShinsuIcons.BAANGS),
-    USE_LIGHTHOUSE(true, true, false, new UseLighthouseTechnique.Builder(15, 1), "use_lighthouse", ShinsuIcons.BAANGS),
-    USE_OBSERVER(true, true, false, new UseObserverTechnique.Builder(10, 1), "use_observer", ShinsuIcons.BAANGS);
+    BODY_REINFORCEMENT(false, false, true, new BodyReinforcement.Builder(10, 1), ShinsuIcons.RESISTANCE),
+    BLACK_FISH(false, false, true, new BlackFish.Builder(10, 1), ShinsuIcons.SWIRL),
+    FLARE_WAVE_EXPLOSION(true, false, true, new FlareWaveExplosion.Builder(20, 1), ShinsuIcons.TENSION),
+    REVERSE_FLOW_CONTROL(true, false, true, new ReverseFlowControl.Builder(10, 1), ShinsuIcons.REVERSE),
+    SHINSU_BLAST(true, false, true, new ShinsuBlast.Builder(5, 1), ShinsuIcons.BAANGS),
+    MANIFEST(false, true, true, new Manifest.Builder(10, 1), ShinsuIcons.SWIRL),
+    SHOOT_SHINSU_ARROW(true, false, false, new ShootShinsuArrow.Builder(3, 1), ShinsuIcons.BAANGS),
+    USE_LIGHTHOUSE(true, true, false, new UseLighthouseTechnique.Builder(15, 1), ShinsuIcons.BAANGS),
+    USE_OBSERVER(true, true, false, new UseObserverTechnique.Builder(10, 1), ShinsuIcons.BAANGS);
 
     private final boolean canStack;
     private final boolean indefinite;
     private final boolean obtainable;
     private final Builder<? extends ShinsuTechniqueInstance> builder;
-    private final String name;
     private final TranslationTextComponent text;
     private final RenderInfo icon;
 
-    ShinsuTechnique(boolean canStack, boolean indefinite, boolean obtainable, Builder<? extends ShinsuTechniqueInstance> builder, String name, RenderInfo icon) {
+    ShinsuTechnique(boolean canStack, boolean indefinite, boolean obtainable, Builder<? extends ShinsuTechniqueInstance> builder, RenderInfo icon) {
         this.canStack = canStack;
         this.indefinite = indefinite;
         this.obtainable = obtainable;
         this.builder = builder;
-        this.name = name;
-        text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name);
+        text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name().toLowerCase());
         this.icon = icon;
-    }
-
-    @Nullable
-    public static ShinsuTechnique get(String name) {
-        for (ShinsuTechnique tech : values()) {
-            if (tech.getName().equals(name)) {
-                return tech;
-            }
-        }
-        return null;
     }
 
     @Nullable
@@ -91,10 +79,6 @@ public enum ShinsuTechnique {
 
     public Builder<? extends ShinsuTechniqueInstance> getBuilder() {
         return builder;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public TranslationTextComponent getText() {

@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
-import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuSkillWheelGui;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
@@ -13,6 +12,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -28,7 +28,7 @@ public class UpdateClientCanCastMessage {
         }
         buffer.writeInt(message.canCast.size());
         for (ShinsuTechnique technique : message.canCast.keySet()) {
-            buffer.writeString(technique.getName());
+            buffer.writeString(technique.name());
             buffer.writeBoolean(message.canCast.get(technique));
         }
     };
@@ -37,10 +37,10 @@ public class UpdateClientCanCastMessage {
         if (buffer.readBoolean()) {
             target = buffer.readUniqueId();
         }
-        Map<ShinsuTechnique, Boolean> canCast = Maps.newEnumMap(ShinsuTechnique.class);
+        Map<ShinsuTechnique, Boolean> canCast = new EnumMap<>(ShinsuTechnique.class);
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            canCast.put(ShinsuTechnique.get(buffer.readString()), buffer.readBoolean());
+            canCast.put(ShinsuTechnique.valueOf(buffer.readString()), buffer.readBoolean());
         }
         return new UpdateClientCanCastMessage(target, canCast);
     };
@@ -52,7 +52,7 @@ public class UpdateClientCanCastMessage {
     private final Map<ShinsuTechnique, Boolean> canCast;
 
     public UpdateClientCanCastMessage(@Nullable UUID target) {
-        this(target, Maps.newEnumMap(ShinsuTechnique.class));
+        this(target, new EnumMap<>(ShinsuTechnique.class));
     }
 
     public UpdateClientCanCastMessage(@Nullable UUID target, Map<ShinsuTechnique, Boolean> canCast) {

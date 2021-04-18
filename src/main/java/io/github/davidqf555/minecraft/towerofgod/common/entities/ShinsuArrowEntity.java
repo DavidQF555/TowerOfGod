@@ -96,7 +96,7 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     }
 
     public ShinsuQuality getQuality() {
-        return ShinsuQuality.get(dataManager.get(QUALITY));
+        return ShinsuQuality.valueOf(dataManager.get(QUALITY));
     }
 
     public void setQuality(ShinsuQuality quality) {
@@ -144,7 +144,7 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
         super.readAdditional(nbt);
         if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT e = (CompoundNBT) nbt.get(TAG_KEY);
-            setQuality(ShinsuQuality.get(e.getString("Quality")));
+            setQuality(ShinsuQuality.valueOf(e.getString("Quality")));
             setTechnique(e.contains("Technique", Constants.NBT.TAG_COMPOUND) ? e.getUniqueId("Technique") : null);
         }
     }

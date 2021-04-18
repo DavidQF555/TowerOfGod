@@ -105,10 +105,10 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
     public void readAdditional(CompoundNBT nbt) {
         super.readAdditional(nbt);
         if (nbt.contains("Personality", Constants.NBT.TAG_STRING)) {
-            personality = Personality.get(nbt.getString("Personality"));
+            personality = Personality.valueOf(nbt.getString("Personality"));
         }
         if (nbt.contains("Group", Constants.NBT.TAG_STRING)) {
-            setGroup(Group.get(nbt.getString("Group")));
+            setGroup(Group.valueOf(nbt.getString("Group")));
         }
         if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
             setShinsuLevel(nbt.getInt("Level"));
@@ -155,7 +155,7 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
 
     @Override
     public Group getGroup() {
-        return Group.get(dataManager.get(GROUP));
+        return Group.valueOf(dataManager.get(GROUP));
     }
 
     @Override
@@ -225,14 +225,6 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
         AGGRESSIVE(),
         NEUTRAL();
 
-        public static Personality get(String name) {
-            for (Personality personality : values()) {
-                if (personality.name().equals(name)) {
-                    return personality;
-                }
-            }
-            return null;
-        }
     }
 
     public static class Factory implements EntityType.IFactory<RegularEntity> {

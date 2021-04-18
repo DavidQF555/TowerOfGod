@@ -157,7 +157,7 @@ public class RankerEntity extends CreatureEntity implements IShinsuUser<RankerEn
             info.setName(getDisplayName());
         }
         if (compound.contains("Group", Constants.NBT.TAG_STRING)) {
-            setGroup(Group.get(compound.getString("Group")));
+            setGroup(Group.valueOf(compound.getString("Group")));
         }
         if (compound.contains("Level", Constants.NBT.TAG_INT)) {
             setShinsuLevel(compound.getInt("Level"));
@@ -218,7 +218,7 @@ public class RankerEntity extends CreatureEntity implements IShinsuUser<RankerEn
 
     @Override
     public Group getGroup() {
-        return Group.get(dataManager.get(GROUP));
+        return Group.valueOf(dataManager.get(GROUP));
     }
 
     @Override

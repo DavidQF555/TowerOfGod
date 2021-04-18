@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
-import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuEquipScreen;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
@@ -11,6 +10,7 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -21,15 +21,15 @@ public class UpdateClientKnownMessage {
     private static final BiConsumer<UpdateClientKnownMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.known.size());
         for (ShinsuTechnique technique : message.known.keySet()) {
-            buffer.writeString(technique.getName());
+            buffer.writeString(technique.name());
             buffer.writeInt(message.known.get(technique));
         }
     };
     private static final Function<PacketBuffer, UpdateClientKnownMessage> DECODER = buffer -> {
-        Map<ShinsuTechnique, Integer> known = Maps.newEnumMap(ShinsuTechnique.class);
+        Map<ShinsuTechnique, Integer> known = new EnumMap<>(ShinsuTechnique.class);
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            known.put(ShinsuTechnique.get(buffer.readString()), buffer.readInt());
+            known.put(ShinsuTechnique.valueOf(buffer.readString()), buffer.readInt());
         }
         return new UpdateClientKnownMessage(known);
     };
@@ -38,10 +38,6 @@ public class UpdateClientKnownMessage {
         message.handle(cont);
     };
     private final Map<ShinsuTechnique, Integer> known;
-
-    public UpdateClientKnownMessage() {
-        this(Maps.newEnumMap(ShinsuTechnique.class));
-    }
 
     public UpdateClientKnownMessage(Map<ShinsuTechnique, Integer> known) {
         this.known = known;
@@ -57,7 +53,7 @@ public class UpdateClientKnownMessage {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
                 IShinsuStats stats = IShinsuStats.get(player);
-                Map<ShinsuTechnique, Integer> known = Maps.newEnumMap(ShinsuTechnique.class);
+                Map<ShinsuTechnique, Integer> known = new EnumMap<>(ShinsuTechnique.class);
                 for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                     known.put(technique, stats.getTechniqueLevel(technique));
                 }

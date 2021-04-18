@@ -117,7 +117,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user != null) {
             nbt.putUniqueId("User", user);
         }
-        nbt.putString("Technique", technique.getName());
+        nbt.putString("Technique", technique.name());
         nbt.putInt("Duration", duration);
         nbt.putInt("Ticks", ticks);
         nbt.putInt("Level", level);
@@ -128,7 +128,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     public void deserializeNBT(CompoundNBT nbt) {
         id = nbt.getUniqueId("ID");
         user = nbt.getUniqueId("User");
-        technique = ShinsuTechnique.get(nbt.getString("Technique"));
+        technique = ShinsuTechnique.valueOf(nbt.getString("Technique"));
         duration = nbt.getInt("Duration");
         ticks = nbt.getInt("Ticks");
         level = nbt.getInt("Level");

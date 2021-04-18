@@ -55,15 +55,6 @@ public enum Group {
         this(new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/regular/" + texture + "_entity.png"), color, qualities, shapes, techniques, weapons, resistance, tension, shinsu, baangs);
     }
 
-    public static Group get(String name) {
-        for (Group family : values()) {
-            if (family.name().equals(name)) {
-                return family;
-            }
-        }
-        return Group.NONE;
-    }
-
     private static BossInfo.Color getBossInfoColor(int color) {
         int red = ColorHelper.PackedColor.getRed(color);
         int green = ColorHelper.PackedColor.getGreen(color);

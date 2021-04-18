@@ -60,7 +60,7 @@ public class ClickerEntity extends Entity {
     }
 
     public ShinsuQuality getQuality() {
-        return ShinsuQuality.get(dataManager.get(QUALITY));
+        return ShinsuQuality.valueOf(dataManager.get(QUALITY));
     }
 
     public void setQuality(ShinsuQuality quality) {
@@ -68,7 +68,7 @@ public class ClickerEntity extends Entity {
     }
 
     public ShinsuShape getShape() {
-        return ShinsuShape.get(dataManager.get(SHAPE));
+        return ShinsuShape.valueOf(dataManager.get(SHAPE));
     }
 
     public void setShape(ShinsuShape shape) {
@@ -80,8 +80,8 @@ public class ClickerEntity extends Entity {
         if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT data = (CompoundNBT) nbt.get(TAG_KEY);
             ticksLeft = data.getInt("Duration");
-            setQuality(ShinsuQuality.get(data.getString("Quality")));
-            setShape(ShinsuShape.get(data.getString("Shape")));
+            setQuality(ShinsuQuality.valueOf(data.getString("Quality")));
+            setShape(ShinsuShape.valueOf(data.getString("Shape")));
         }
     }
 

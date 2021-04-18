@@ -18,14 +18,17 @@ public class ChangeEquipsMessage {
     private static final BiConsumer<ChangeEquipsMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.equipped.length);
         for (ShinsuTechnique technique : message.equipped) {
-            buffer.writeString(technique == null ? "" : technique.getName());
+            buffer.writeString(technique == null ? "" : technique.name());
         }
     };
     private static final Function<PacketBuffer, ChangeEquipsMessage> DECODER = buffer -> {
         ShinsuTechnique[] techniques = new ShinsuTechnique[4];
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            techniques[i] = ShinsuTechnique.get(buffer.readString());
+            try {
+                techniques[i] = ShinsuTechnique.valueOf(buffer.readString());
+            } catch (IllegalArgumentException ignored) {
+            }
         }
         return new ChangeEquipsMessage(techniques);
     };

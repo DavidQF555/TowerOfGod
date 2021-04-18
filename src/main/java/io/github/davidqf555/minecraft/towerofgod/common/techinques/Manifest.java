@@ -29,7 +29,7 @@ public class Manifest extends ShinsuTechniqueInstance {
         ItemStack item = stats.getShape().createItem();
         CompoundNBT child = item.getOrCreateChildTag(TowerOfGod.MOD_ID);
         child.putUniqueId("Technique", getID());
-        child.putString("Quality", stats.getQuality().name());
+        ShinsuQuality.setQuality(item, stats.getQuality());
         IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         for (int i = 0; i < inventory.getSlots(); i++) {
             if (inventory.isItemValid(i, item)) {

@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 public class CastShinsuMessage {
 
     private static final BiConsumer<CastShinsuMessage, PacketBuffer> ENCODER = (message, buffer) -> {
-        buffer.writeString(message.technique.getName());
+        buffer.writeString(message.technique.name());
         boolean contains = message.target != null;
         buffer.writeBoolean(contains);
         if (contains) {
@@ -26,7 +26,7 @@ public class CastShinsuMessage {
         }
     };
     private static final Function<PacketBuffer, CastShinsuMessage> DECODER = buffer -> {
-        ShinsuTechnique technique = ShinsuTechnique.get(buffer.readString());
+        ShinsuTechnique technique = ShinsuTechnique.valueOf(buffer.readString());
         UUID target = null;
         if (buffer.readBoolean()) {
             target = buffer.readUniqueId();

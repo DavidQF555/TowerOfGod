@@ -67,7 +67,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     }
 
     public ShinsuQuality getQuality() {
-        return ShinsuQuality.get(dataManager.get(QUALITY));
+        return ShinsuQuality.valueOf(dataManager.get(QUALITY));
     }
 
     public void setQuality(ShinsuQuality quality) {
@@ -134,7 +134,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT e = (CompoundNBT) nbt.get(TAG_KEY);
             technique = e.contains("Technique", Constants.NBT.TAG_COMPOUND) ? e.getUniqueId("Technique") : null;
-            setQuality(ShinsuQuality.get(e.getString("Quality")));
+            setQuality(ShinsuQuality.valueOf(e.getString("Quality")));
             level = e.getInt("Level");
         }
     }

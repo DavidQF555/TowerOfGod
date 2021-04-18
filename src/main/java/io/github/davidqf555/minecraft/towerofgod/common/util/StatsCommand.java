@@ -68,16 +68,16 @@ public class StatsCommand {
                         stats.multiplyBaseTension(amount);
                         break;
                     default:
-                        ShinsuTechnique technique = ShinsuTechnique.get(type.toLowerCase());
-                        if (technique == null) {
-                            fail++;
-                        } else {
+                        try {
+                            ShinsuTechnique technique = ShinsuTechnique.valueOf(type.toUpperCase());
                             stats.addKnownTechnique(technique, (int) amount);
                             Map<ShinsuTechnique, Integer> known = Maps.newEnumMap(ShinsuTechnique.class);
                             for (ShinsuTechnique t : ShinsuTechnique.values()) {
                                 known.put(t, stats.getTechniqueLevel(t));
                             }
                             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientKnownMessage(known));
+                        } catch (IllegalArgumentException exception) {
+                            fail++;
                         }
                 }
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
@@ -97,7 +97,7 @@ public class StatsCommand {
             builder.suggest("resistance");
             builder.suggest("tension");
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                builder.suggest(technique.getName());
+                builder.suggest(technique.name().toLowerCase());
             }
             return builder.buildFuture();
         }

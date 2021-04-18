@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -13,6 +14,7 @@ import net.minecraft.item.crafting.FurnaceRecipe;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.loot.LootContext;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
@@ -33,6 +35,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
@@ -231,13 +234,19 @@ public enum ShinsuQuality {
         this.suitability = suitability;
     }
 
-    public static ShinsuQuality get(String name) {
-        for (ShinsuQuality quality : values()) {
-            if (quality.name().equals(name)) {
-                return quality;
+    public static void setQuality(ItemStack item, ShinsuQuality quality) {
+        item.getOrCreateChildTag(TowerOfGod.MOD_ID).putString("Quality", quality.name());
+    }
+
+    public static ShinsuQuality getQuality(ItemStack item) {
+        CompoundNBT nbt = item.getOrCreateChildTag(TowerOfGod.MOD_ID);
+        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
+            try {
+                return valueOf(nbt.getString("Quality"));
+            } catch (IllegalArgumentException ignored) {
             }
         }
-        return NONE;
+        return ShinsuQuality.NONE;
     }
 
     public IParticleData getParticleType() {

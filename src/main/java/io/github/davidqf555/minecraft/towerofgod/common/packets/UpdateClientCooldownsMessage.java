@@ -21,7 +21,7 @@ public class UpdateClientCooldownsMessage {
     private static final BiConsumer<UpdateClientCooldownsMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.cooldowns.size());
         for (ShinsuTechnique technique : message.cooldowns.keySet()) {
-            buffer.writeString(technique.getName());
+            buffer.writeString(technique.name());
             buffer.writeInt(message.cooldowns.get(technique));
         }
     };
@@ -29,7 +29,7 @@ public class UpdateClientCooldownsMessage {
         int size = buffer.readInt();
         Map<ShinsuTechnique, Integer> cooldowns = Maps.newEnumMap(ShinsuTechnique.class);
         for (int i = 0; i < size; i++) {
-            cooldowns.put(ShinsuTechnique.get(buffer.readString()), buffer.readInt());
+            cooldowns.put(ShinsuTechnique.valueOf(buffer.readString()), buffer.readInt());
         }
         return new UpdateClientCooldownsMessage(cooldowns);
     };

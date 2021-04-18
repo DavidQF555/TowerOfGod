@@ -53,7 +53,7 @@ public interface IPlayerShinsuEquips {
             nbt.putInt("Size", equipped.length);
             for (int i = 0; i < equipped.length; i++) {
                 ShinsuTechnique technique = equipped[i];
-                nbt.putString(i + 1 + "", technique == null ? "" : technique.getName());
+                nbt.putString(i + 1 + "", technique == null ? "" : technique.name());
             }
             return nbt;
         }
@@ -62,7 +62,10 @@ public interface IPlayerShinsuEquips {
         public void deserialize(CompoundNBT nbt) {
             equipped = new ShinsuTechnique[nbt.getInt("Size")];
             for (int i = 0; i < equipped.length; i++) {
-                equipped[i] = ShinsuTechnique.get(nbt.getString(i + 1 + ""));
+                try {
+                    equipped[i] = ShinsuTechnique.valueOf(nbt.getString(i + 1 + ""));
+                } catch (IllegalArgumentException ignored) {
+                }
             }
         }
 

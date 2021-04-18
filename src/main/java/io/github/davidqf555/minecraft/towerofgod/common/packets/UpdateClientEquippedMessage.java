@@ -19,14 +19,17 @@ public class UpdateClientEquippedMessage {
     private static final BiConsumer<UpdateClientEquippedMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.equipped.length);
         for (ShinsuTechnique technique : message.equipped) {
-            buffer.writeString(technique == null ? "" : technique.getName());
+            buffer.writeString(technique == null ? "" : technique.name());
         }
     };
     private static final Function<PacketBuffer, UpdateClientEquippedMessage> DECODER = buffer -> {
         int length = buffer.readInt();
         ShinsuTechnique[] equipped = new ShinsuTechnique[length];
         for (int i = 0; i < length; i++) {
-            equipped[i] = ShinsuTechnique.get(buffer.readString());
+            try {
+                equipped[i] = ShinsuTechnique.valueOf(buffer.readString());
+            } catch (IllegalArgumentException ignored) {
+            }
         }
         return new UpdateClientEquippedMessage(equipped);
     };
@@ -35,10 +38,6 @@ public class UpdateClientEquippedMessage {
         message.handle(cont);
     };
     private final ShinsuTechnique[] equipped;
-
-    public UpdateClientEquippedMessage() {
-        this(new ShinsuTechnique[0]);
-    }
 
     public UpdateClientEquippedMessage(ShinsuTechnique[] equipped) {
         this.equipped = equipped;

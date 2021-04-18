@@ -62,15 +62,6 @@ public enum ShinsuShape {
         this.suitability = suitability;
     }
 
-    public static ShinsuShape get(String name) {
-        for (ShinsuShape shape : values()) {
-            if (shape.name().equals(name)) {
-                return shape;
-            }
-        }
-        return NONE;
-    }
-
     public ItemStack createItem() {
         return item.get();
     }

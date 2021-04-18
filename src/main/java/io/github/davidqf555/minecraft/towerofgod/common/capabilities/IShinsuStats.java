@@ -310,7 +310,7 @@ public interface IShinsuStats {
             for (int i = 0; i < techniques.size(); i++) {
                 ShinsuTechniqueInstance tech = techniques.get(i);
                 instances.put(i + 1 + "", tech.serializeNBT());
-                instances.putString("Type" + (i + 1), ShinsuTechnique.get(tech).getName());
+                instances.putString("Type" + (i + 1), ShinsuTechnique.get(tech).name());
             }
             tag.put("Techniques", instances);
             tag.putString("Quality", quality.name());
@@ -339,13 +339,13 @@ public interface IShinsuStats {
             techniques.clear();
             CompoundNBT list = nbt.getCompound("Techniques");
             for (int i = 0; i < list.getInt("Size"); i++) {
-                ShinsuTechnique type = ShinsuTechnique.get(list.getString("Type" + (i + 1)));
+                ShinsuTechnique type = ShinsuTechnique.valueOf(list.getString("Type" + (i + 1)));
                 ShinsuTechniqueInstance tech = type.getBuilder().emptyBuild();
                 tech.deserializeNBT((CompoundNBT) list.get(i + 1 + ""));
                 techniques.add(tech);
             }
-            quality = ShinsuQuality.get(nbt.getString("Quality"));
-            shape = ShinsuShape.get(nbt.getString("Shape"));
+            quality = ShinsuQuality.valueOf(nbt.getString("Quality"));
+            shape = ShinsuShape.valueOf(nbt.getString("Shape"));
             cooldowns.clear();
             CompoundNBT cool = nbt.getCompound("Cooldowns");
             for (ShinsuTechnique tech : ShinsuTechnique.values()) {
