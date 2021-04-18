@@ -5,9 +5,10 @@ import io.github.davidqf555.minecraft.towerofgod.common.blocks.FloorTeleportatio
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.LightBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumOre;
+import io.github.davidqf555.minecraft.towerofgod.common.effects.BodyReinforcementEffect;
+import io.github.davidqf555.minecraft.towerofgod.common.effects.ReverseFlowEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.*;
 import io.github.davidqf555.minecraft.towerofgod.common.items.*;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ReverseFlowEffect;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -82,10 +83,12 @@ public class RegistryHandler {
     public static final RegistryObject<EntityType<ShinsuEntity>> SHINSU_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_entity"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<ClickerEntity>> CLICKER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "clicker_entity"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow_entity"), ForgeRegistries.ENTITIES);
+    public static final RegistryObject<EntityType<RankerEntity>> RANKER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "ranker_entity"), ForgeRegistries.ENTITIES);
 
     public static final RegistryObject<ContainerType<LighthouseEntity.LighthouseContainer>> LIGHTHOUSE_CONTAINER = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_container"), ForgeRegistries.CONTAINERS);
 
     public static final RegistryObject<ReverseFlowEffect> REVERSE_FLOW_EFFECT = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "reverse_flow_effect"), ForgeRegistries.POTIONS);
+    public static final RegistryObject<BodyReinforcementEffect> BODY_REINFORCEMENT_EFFECT = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "body_reinforcement_effect"), ForgeRegistries.POTIONS);
 
     public static final RegistryObject<ShinsuToolLootModifier.Serializer> SHINSU_TOOL_LOOT_MODIFIER = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_tool_loot_modifier"), ForgeRegistries.LOOT_MODIFIER_SERIALIZERS);
 
@@ -151,9 +154,10 @@ public class RegistryHandler {
                 EntityType.Builder.create(new LighthouseEntity.Factory(), EntityClassification.MISC).size(0.9f, 0.9f).build(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "lighthouse_entity"),
                 EntityType.Builder.create(new ObserverEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "observer_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "observer_entity"),
                 EntityType.Builder.create(new RegularEntity.Factory(), EntityClassification.CREATURE).size(0.6f, 1.8f).build(new ResourceLocation(TowerOfGod.MOD_ID, "regular_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "regular_entity"),
-                EntityType.Builder.create(new ShinsuEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "shinsu_entity"),
+                EntityType.Builder.create(new ShinsuEntity.Factory(), EntityClassification.MISC).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "shinsu_entity"),
                 EntityType.Builder.create(new ClickerEntity.Factory(), EntityClassification.MISC).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "clicker_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "clicker_entity"),
-                EntityType.Builder.create(new ShinsuArrowEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "shinsu_arrow_entity")
+                EntityType.Builder.create(new ShinsuArrowEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "shinsu_arrow_entity"),
+                EntityType.Builder.create(new RankerEntity.Factory(), EntityClassification.CREATURE).size(0.6f, 1.8f).build(new ResourceLocation(TowerOfGod.MOD_ID, "ranker_entity").toString()).setRegistryName(TowerOfGod.MOD_ID, "ranker_entity")
         );
     }
 
@@ -167,7 +171,8 @@ public class RegistryHandler {
     @SubscribeEvent
     public static void registerEffects(RegistryEvent.Register<Effect> event) {
         event.getRegistry().registerAll(
-                new ReverseFlowEffect().setRegistryName(TowerOfGod.MOD_ID, "reverse_flow_effect")
+                new ReverseFlowEffect().setRegistryName(TowerOfGod.MOD_ID, "reverse_flow_effect"),
+                new BodyReinforcementEffect().setRegistryName(TowerOfGod.MOD_ID, "body_reinforcement_effect")
         );
     }
 

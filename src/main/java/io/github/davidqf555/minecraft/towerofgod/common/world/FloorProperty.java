@@ -16,25 +16,32 @@ import java.util.function.Supplier;
 public class FloorProperty {
 
     public static Codec<FloorProperty> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            Codec.INT.fieldOf("level").forGetter(property -> property.level),
             Attribute.CODEC.fieldOf("primaryAttribute").forGetter(property -> property.primaryAttribute),
             Codec.list(Attribute.CODEC).fieldOf("attributes").forGetter(property -> new ArrayList<>(property.attributes)),
             Codec.list(Bound.CODEC).fieldOf("bounds").forGetter(property -> new ArrayList<>(property.bounds)),
             Time.CODEC.fieldOf("time").forGetter(property -> property.time),
             Codec.FLOAT.fieldOf("shinsuDensity").forGetter(property -> property.shinsuDensity)
-    ).apply(builder, builder.stable((primaryAttribute, attributes, bounds, time, shinsuDensity) -> new FloorProperty(primaryAttribute, EnumSet.copyOf(attributes), bounds.isEmpty() ? EnumSet.noneOf(Bound.class) : EnumSet.copyOf(bounds), time, shinsuDensity))));
+    ).apply(builder, builder.stable((level, primaryAttribute, attributes, bounds, time, shinsuDensity) -> new FloorProperty(level, primaryAttribute, EnumSet.copyOf(attributes), bounds.isEmpty() ? EnumSet.noneOf(Bound.class) : EnumSet.copyOf(bounds), time, shinsuDensity))));
 
+    private final int level;
     private final Attribute primaryAttribute;
     private final Set<Attribute> attributes;
     private final Set<Bound> bounds;
     private final Time time;
     private final float shinsuDensity;
 
-    public FloorProperty(Attribute primaryAttribute, Set<Attribute> attributes, Set<Bound> bounds, Time time, float shinsuDensity) {
+    public FloorProperty(int level, Attribute primaryAttribute, Set<Attribute> attributes, Set<Bound> bounds, Time time, float shinsuDensity) {
+        this.level = level;
         this.primaryAttribute = primaryAttribute;
         this.attributes = attributes;
         this.bounds = bounds;
         this.time = time;
         this.shinsuDensity = shinsuDensity;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public Attribute getPrimaryAttribute() {

@@ -38,7 +38,9 @@ public class ShinsuShovel extends ShovelItem {
                 ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
                 if (technique == null) {
                     IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
-                    inventory.extractItem(itemSlot, stack.getCount(), false);
+                    if (inventory.getSlots() > itemSlot) {
+                        inventory.extractItem(itemSlot, stack.getCount(), false);
+                    }
                 }
             }
         }

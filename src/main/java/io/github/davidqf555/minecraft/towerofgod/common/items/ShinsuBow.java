@@ -54,11 +54,11 @@ public class ShinsuBow extends BowItem {
             float speed = getArrowVelocity(charge);
             if (speed >= 0.1 && !worldIn.isRemote()) {
                 IShinsuStats stats = IShinsuStats.get(shooter);
-                if (ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().canCast(ShinsuTechnique.SHOOT_SHINSU_ARROW, shooter, charge, null, shooter.getLookVec())) {
+                if (ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().canCast(shooter, charge, null, shooter.getLookVec())) {
                     stats.cast(shooter, ShinsuTechnique.SHOOT_SHINSU_ARROW, charge, null, shooter.getLookVec());
+                    worldIn.playSound(null, shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1, 1 / (random.nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
+                    shooter.addStat(Stats.ITEM_USED.get(this));
                 }
-                worldIn.playSound(null, shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1, 1 / (random.nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
-                shooter.addStat(Stats.ITEM_USED.get(this));
             }
         }
     }
@@ -66,13 +66,18 @@ public class ShinsuBow extends BowItem {
     @Override
     public AbstractArrowEntity customArrow(AbstractArrowEntity arrow) {
         ShinsuArrowEntity shinsu = RegistryHandler.SHINSU_ARROW_ENTITY.get().create(arrow.world);
-        return shinsu == null ? arrow : shinsu;
+        if (shinsu == null) {
+            return arrow;
+        } else {
+            shinsu.setPositionAndRotation(arrow.getPosX(), arrow.getPosY(), arrow.getPosZ(), arrow.rotationYaw, arrow.rotationPitch);
+            return shinsu;
+        }
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
-        boolean canShoot = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().canCast(ShinsuTechnique.SHOOT_SHINSU_ARROW, playerIn, 1, null, playerIn.getLookVec());
+        boolean canShoot = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().canCast(playerIn, 1, null, playerIn.getLookVec());
         ActionResult<ItemStack> ret = ForgeEventFactory.onArrowNock(itemstack, worldIn, playerIn, handIn, true);
         if (ret != null) {
             return ret;
@@ -94,7 +99,9 @@ public class ShinsuBow extends BowItem {
                 ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
                 if (technique == null) {
                     IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
-                    inventory.extractItem(itemSlot, stack.getCount(), false);
+                    if (inventory.getSlots() > itemSlot) {
+                        inventory.extractItem(itemSlot, stack.getCount(), false);
+                    }
                 }
             }
         }

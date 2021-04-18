@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
@@ -25,6 +26,10 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
         super(ShinsuTechnique.SHOOT_SHINSU_ARROW, user, level, dir, DURATION);
     }
 
+    public static int getLevelForVelocity(float velocity, ShinsuQuality quality) {
+        return (int) (MathHelper.sqrt(400 + 400 * velocity / quality.getSpeed()) - 19.5);
+    }
+
     @Override
     public void onUse(ServerWorld world) {
         Entity user = getUser(world);
@@ -34,11 +39,9 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
                 ShinsuQuality quality = IShinsuStats.get(user).getQuality();
                 arrow.setQuality(quality);
                 arrow.setTechnique(getID());
-                float speed = BowItem.getArrowVelocity(getLevel()) * (float) quality.getSpeed();
+                float speed = BowItem.getArrowVelocity(getLevel()) * 3 * (float) quality.getSpeed();
                 Vector3d dir = getDirection();
-                arrow.shoot(dir.x, dir.y, dir.z, speed * (float) IShinsuStats.get(user).getTension(world) * 3, 1);
-                Vector3d motion = user.getMotion();
-                arrow.setMotion(arrow.getMotion().add(motion.x, user.isOnGround() ? 0 : motion.y, motion.z));
+                arrow.shoot(dir.x, dir.y, dir.z, speed, 1);
                 arrow.setShooter(user);
                 arrow.setPosition(user.getPosX(), user.getPosYEye() - 0.1, user.getPosZ());
                 this.arrow = arrow.getUniqueID();
@@ -86,8 +89,8 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
         }
 
         @Override
-        public boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && (!(user instanceof MobEntity) || ((MobEntity) user).getAttackTarget() != null);
+        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && (!(user instanceof MobEntity) || target != null);
         }
 
         @Nonnull
@@ -104,6 +107,11 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
         @Override
         public int getBaangUse() {
             return baangs;
+        }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.SHOOT_SHINSU_ARROW;
         }
     }
 }

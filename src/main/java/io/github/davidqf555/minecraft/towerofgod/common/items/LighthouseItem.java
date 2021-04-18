@@ -24,7 +24,7 @@ public class LighthouseItem extends Item {
     @Nonnull
     @Override
     public ActionResult<ItemStack> onItemRightClick(@Nonnull World worldIn, PlayerEntity playerIn, @Nonnull Hand handIn) {
-        if (ShinsuTechnique.USE_LIGHTHOUSE.getBuilder().canCast(ShinsuTechnique.USE_LIGHTHOUSE, playerIn, 1, null, playerIn.getLookVec())) {
+        if (ShinsuTechnique.USE_LIGHTHOUSE.getBuilder().canCast(playerIn, 1, null, playerIn.getLookVec())) {
             IShinsuStats stats = IShinsuStats.get(playerIn);
             stats.cast(playerIn, ShinsuTechnique.USE_LIGHTHOUSE, 1, null, playerIn.getLookVec());
             ItemStack item = playerIn.getHeldItem(handIn);

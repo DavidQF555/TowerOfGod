@@ -46,6 +46,9 @@ public class StatsCommand {
             for (ServerPlayerEntity player : players) {
                 IShinsuStats stats = IShinsuStats.get(player);
                 switch (type.toLowerCase()) {
+                    case "level":
+                        stats.addLevel((int) amount);
+                        break;
                     case "shinsu":
                         stats.addMaxShinsu((int) amount);
                         break;
@@ -88,6 +91,7 @@ public class StatsCommand {
 
         @Override
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSource> context, SuggestionsBuilder builder) {
+            builder.suggest("level");
             builder.suggest("shinsu");
             builder.suggest("baangs");
             builder.suggest("resistance");

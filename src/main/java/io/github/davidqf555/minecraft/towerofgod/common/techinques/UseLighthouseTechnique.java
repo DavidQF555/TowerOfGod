@@ -96,5 +96,10 @@ public class UseLighthouseTechnique extends ShinsuTechniqueInstance.Direction {
         public int getBaangUse() {
             return baangs;
         }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.USE_LIGHTHOUSE;
+        }
     }
 }

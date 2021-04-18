@@ -24,7 +24,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
         Entity e = getUser(world);
         int level = getLevel();
         if (e instanceof LivingEntity && world.getLight(e.getPosition()) <= level * 5) {
-            ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 2, 1, true, true, true));
+            ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 2, 0, true, true, true));
         }
         super.tick(world);
     }
@@ -64,6 +64,11 @@ public class BlackFish extends ShinsuTechniqueInstance {
         @Override
         public int getBaangUse() {
             return baangs;
+        }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.BLACK_FISH;
         }
     }
 }

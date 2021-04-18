@@ -96,5 +96,10 @@ public class UseObserverTechnique extends ShinsuTechniqueInstance.Direction {
         public int getBaangUse() {
             return baangs;
         }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.USE_OBSERVER;
+        }
     }
 }

@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
@@ -26,11 +26,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         if (e instanceof LivingEntity) {
             LivingEntity user = (LivingEntity) e;
             int level = (int) (getLevel() * IShinsuStats.get(user).getTension(world));
-            user.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 2, level / 2, true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.SPEED, 2, level, true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.HASTE, 2, level, true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.STRENGTH, 2, level / 3, true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 2, level / 2, true, false, false));
+            user.addPotionEffect(new EffectInstance(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get(), 2, level - 1, true, false, false));
         }
         super.tick(world);
     }
@@ -70,6 +66,11 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         @Override
         public int getBaangUse() {
             return baangs;
+        }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.BODY_REINFORCEMENT;
         }
     }
 }

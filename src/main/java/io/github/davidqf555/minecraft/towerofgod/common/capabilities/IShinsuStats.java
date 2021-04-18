@@ -51,6 +51,8 @@ public interface IShinsuStats {
 
     int getLevel();
 
+    void addLevel(int amount);
+
     int getShinsu();
 
     int getMaxShinsu();
@@ -94,7 +96,7 @@ public interface IShinsuStats {
     default void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, Vector3d dir) {
         if (getCooldown(technique) <= 0 && user.world instanceof ServerWorld) {
             ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
-            if (builder.canCast(technique, user, level, target, dir)) {
+            if (builder.canCast(user, level, target, dir)) {
                 ShinsuTechniqueInstance tech = technique.getBuilder().build(user, level, target, dir);
                 if (tech != null) {
                     addCooldown(technique, tech.getCooldown());
@@ -170,6 +172,11 @@ public interface IShinsuStats {
         @Override
         public int getLevel() {
             return level;
+        }
+
+        @Override
+        public void addLevel(int amount) {
+            level = Math.max(1, level + amount);
         }
 
         @Override

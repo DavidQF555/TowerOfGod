@@ -15,9 +15,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
 
     private static final double BASE_SPEED = 0.5;
+    private static final int DURATION = 400;
+    private static final int COOLDOWN = 40;
 
     public ShinsuBlast(LivingEntity user, int level, Vector3d dir) {
-        super(ShinsuTechnique.SHINSU_BLAST, user, level, dir.normalize(), 200);
+        super(ShinsuTechnique.SHINSU_BLAST, user, level, dir.normalize(), DURATION);
     }
 
     @Override
@@ -33,6 +35,11 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
             ShinsuEntity shinsuEntity = new ShinsuEntity(world, user, quality, this, getLevel(), user.getPosX(), user.getPosYEye(), user.getPosZ(), dir.x, dir.y, dir.z);
             user.getEntityWorld().addEntity(shinsuEntity);
         }
+    }
+
+    @Override
+    public int getCooldown() {
+        return COOLDOWN;
     }
 
     @ParametersAreNonnullByDefault
@@ -52,8 +59,8 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
         }
 
         @Override
-        public boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && (!(user instanceof MobEntity) || ((MobEntity) user).getAttackTarget() != null);
+        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && (!(user instanceof MobEntity) || ((MobEntity) user).getAttackTarget() != null);
         }
 
         @Nonnull
@@ -70,6 +77,11 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
         @Override
         public int getBaangUse() {
             return baangs;
+        }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.SHINSU_BLAST;
         }
     }
 }

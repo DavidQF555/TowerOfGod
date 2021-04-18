@@ -16,9 +16,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
 
-    private static final double RANGE = 3;
+    private static final double RANGE = 1;
+    private static final int COOLDOWN = 600;
     private static final float DAMAGE = 10;
-    private static final double KNOCKBACK = 2;
 
     public FlareWaveExplosion(LivingEntity user, int level, LivingEntity target) {
         super(ShinsuTechnique.FLARE_WAVE_EXPLOSION, user, level, target, 0);
@@ -33,15 +33,12 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
             double resistance = IShinsuStats.getTotalResistance(world, user, target);
             target.attackEntityFrom(DamageSource.MAGIC, (float) (DAMAGE / resistance) * getLevel() / 2);
             target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 / resistance), getLevel(), true, false, false));
-            double knock = KNOCKBACK / resistance;
-            Vector3d vel = target.getPositionVec().subtract(user.getPositionVec()).normalize().mul(knock, knock, knock);
-            target.addVelocity(vel.getX(), vel.getY(), vel.getZ());
         }
     }
 
     @Override
     public int getCooldown() {
-        return 100;
+        return COOLDOWN;
     }
 
     public static class Builder implements ShinsuTechnique.Builder<FlareWaveExplosion> {
@@ -66,8 +63,8 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
         }
 
         @Override
-        public boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE;
+        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE;
         }
 
         @Override
@@ -78,6 +75,11 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
         @Override
         public int getBaangUse() {
             return baangs;
+        }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.FLARE_WAVE_EXPLOSION;
         }
     }
 

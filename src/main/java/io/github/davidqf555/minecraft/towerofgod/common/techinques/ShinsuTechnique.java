@@ -24,7 +24,7 @@ public enum ShinsuTechnique {
     FLARE_WAVE_EXPLOSION(true, false, true, new FlareWaveExplosion.Builder(20, 1), "flare_wave_explosion", ShinsuIcons.TENSION),
     REVERSE_FLOW_CONTROL(true, false, true, new ReverseFlowControl.Builder(10, 1), "reverse_flow_control", ShinsuIcons.REVERSE),
     SHINSU_BLAST(true, false, true, new ShinsuBlast.Builder(5, 1), "shinsu_blast", ShinsuIcons.BAANGS),
-    MANIFEST(false, false, true, new Manifest.Builder(10, 1), "manifest", ShinsuIcons.SWIRL),
+    MANIFEST(false, true, true, new Manifest.Builder(10, 1), "manifest", ShinsuIcons.SWIRL),
     SHOOT_SHINSU_ARROW(true, false, false, new ShootShinsuArrow.Builder(3, 1), "shoot_shinsu_arrow", ShinsuIcons.BAANGS),
     USE_LIGHTHOUSE(true, true, false, new UseLighthouseTechnique.Builder(15, 1), "use_lighthouse", ShinsuIcons.BAANGS),
     USE_OBSERVER(true, true, false, new UseObserverTechnique.Builder(10, 1), "use_observer", ShinsuIcons.BAANGS);
@@ -124,7 +124,10 @@ public enum ShinsuTechnique {
 
         int getBaangUse();
 
-        default boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+        ShinsuTechnique getTechnique();
+
+        default boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            ShinsuTechnique technique = getTechnique();
             IShinsuStats stats = IShinsuStats.get(user);
             boolean casting = stats.getTechniques().stream().map(ShinsuTechniqueInstance::getTechnique).anyMatch(cast -> cast == technique);
             return level > 0 && stats.getCooldown(technique) <= 0 && stats.getShinsu() >= technique.getShinsuUse() && stats.getBaangs() >= technique.getBaangUse() && (!casting || technique.canStack());

@@ -3,13 +3,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.util;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.ObserverEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuUserEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.*;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorBiomeProvider;
+import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
@@ -17,7 +15,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.biome.Biome;
@@ -31,11 +31,13 @@ import net.minecraft.world.gen.placement.TopSolidRangeConfig;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.world.MobSpawnInfoBuilder;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -50,7 +52,6 @@ public class EventBusSubscriber {
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
     private static final ConfiguredFeature<?, ?> SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
-    ;
     private static IShinsuStats clonedStats = null;
     private static IPlayerShinsuEquips clonedEquips = null;
     private static int index = 0;
@@ -61,7 +62,7 @@ public class EventBusSubscriber {
         @SubscribeEvent
         public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
             Entity entity = event.getObject();
-            if (entity instanceof ShinsuUserEntity || entity instanceof PlayerEntity) {
+            if (entity instanceof IShinsuUser || entity instanceof PlayerEntity) {
                 event.addCapability(SHINSU_STATS, new IShinsuStats.Provider());
             }
             if (entity instanceof PlayerEntity) {
@@ -80,7 +81,9 @@ public class EventBusSubscriber {
             if (event.getCategory() != Biome.Category.NETHER && event.getCategory() != Biome.Category.THEEND) {
                 event.getGeneration().getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).add(() -> SUSPENDIUM_ORE);
                 if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
-                    event.getSpawns().withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.REGULAR_ENTITY.get(), 8, 1, 8));
+                    MobSpawnInfoBuilder builder = event.getSpawns();
+                    builder.withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.REGULAR_ENTITY.get(), 8, 1, 8));
+                    builder.withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.RANKER_ENTITY.get(), 2, 1, 1));
                 }
             }
         }
@@ -112,11 +115,40 @@ public class EventBusSubscriber {
             }
         }
 
+        @SubscribeEvent
+        public static void onWorldTick(TickEvent.WorldTickEvent event) {
+            if (event.world instanceof ServerWorld && event.phase == TickEvent.Phase.START) {
+                RegularTeamsSavedData.getOrCreate((ServerWorld) event.world).tick((ServerWorld) event.world);
+                ((ServerWorld) event.world).getEntities()
+                        .filter(entity -> entity instanceof IShinsuUser)
+                        .forEach(entity -> IShinsuStats.get(entity).tick((ServerWorld) event.world));
+            }
+        }
+
         @SubscribeEvent(priority = EventPriority.LOWEST)
-        public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
+        public static void onLivingJumpLast(LivingEvent.LivingJumpEvent event) {
             LivingEntity entity = event.getEntityLiving();
             if (entity.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
-                entity.setVelocity(0, 0, 0);
+                entity.setMotion(0, 0, 0);
+            }
+        }
+
+        @SubscribeEvent
+        public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
+            LivingEntity entity = event.getEntityLiving();
+            EffectInstance effect = entity.getActivePotionEffect(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get());
+            if (effect != null) {
+                Vector3d motion = entity.getMotion().add(0, effect.getAmplifier() * 0.05 + 0.05, 0);
+                entity.setMotion(motion);
+            }
+        }
+
+        @SubscribeEvent
+        public static void onLivingFall(LivingFallEvent event) {
+            LivingEntity entity = event.getEntityLiving();
+            EffectInstance effect = entity.getActivePotionEffect(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get());
+            if (effect != null) {
+                event.setDistance(event.getDistance() - effect.getAmplifier() * 0.5f - 0.5f);
             }
         }
     }
@@ -137,6 +169,7 @@ public class EventBusSubscriber {
             event.put(RegistryHandler.LIGHTHOUSE_ENTITY.get(), LighthouseEntity.setAttributes().create());
             event.put(RegistryHandler.OBSERVER_ENTITY.get(), ObserverEntity.setAttributes().create());
             event.put(RegistryHandler.REGULAR_ENTITY.get(), RegularEntity.setAttributes().create());
+            event.put(RegistryHandler.RANKER_ENTITY.get(), RankerEntity.setAttributes().create());
         }
 
         @SubscribeEvent

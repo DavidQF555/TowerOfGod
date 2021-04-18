@@ -72,7 +72,7 @@ public class UpdateClientCanCastMessage {
                 Entity target = this.target == null ? null : player.getServerWorld().getEntityByUuid(this.target);
                 IShinsuStats stats = IShinsuStats.get(player);
                 for (ShinsuTechnique technique : ShinsuTechnique.values()) {
-                    canCast.put(technique, technique.getBuilder().canCast(technique, player, stats.getTechniqueLevel(technique), target, player.getLookVec()));
+                    canCast.put(technique, technique.getBuilder().canCast(player, stats.getTechniqueLevel(technique), target, player.getLookVec()));
                 }
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientCanCastMessage(this.target, canCast));
             });
