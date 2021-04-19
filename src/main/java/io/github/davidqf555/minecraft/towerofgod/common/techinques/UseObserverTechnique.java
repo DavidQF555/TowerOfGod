@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,7 +63,9 @@ public class UseObserverTechnique extends ShinsuTechniqueInstance.Direction {
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
-        observer = nbt.getUniqueId("Observer");
+        if (nbt.contains("Observer", Constants.NBT.TAG_INT_ARRAY)) {
+            observer = nbt.getUniqueId("Observer");
+        }
     }
 
     @ParametersAreNonnullByDefault

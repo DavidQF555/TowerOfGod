@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,6 +25,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
 
     public ShootShinsuArrow(LivingEntity user, int level, Vector3d dir) {
         super(ShinsuTechnique.SHOOT_SHINSU_ARROW, user, level, dir, DURATION);
+        arrow = null;
     }
 
     public static int getLevelForVelocity(float velocity, ShinsuQuality quality) {
@@ -53,7 +55,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
 
     @Override
     public void tick(ServerWorld world) {
-        if (world.getEntityByUuid(arrow) == null) {
+        if (arrow == null || world.getEntityByUuid(arrow) == null) {
             remove(world);
         }
         super.tick(world);
@@ -62,14 +64,18 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
-        nbt.putUniqueId("Arrow", arrow);
+        if (arrow != null) {
+            nbt.putUniqueId("Arrow", arrow);
+        }
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
-        arrow = nbt.getUniqueId("Arrow");
+        if (nbt.contains("Arrow", Constants.NBT.TAG_INT_ARRAY)) {
+            arrow = nbt.getUniqueId("Arrow");
+        }
     }
 
     @ParametersAreNonnullByDefault

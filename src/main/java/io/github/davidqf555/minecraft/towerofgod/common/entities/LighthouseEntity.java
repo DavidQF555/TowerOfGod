@@ -41,14 +41,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class LighthouseEntity extends FlyingDevice implements INamedContainerProvider {
 
-    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".lighthouse_entity";
-    private static final int INVENTORY_SIZE = 27;
-    private Inventory inventory;
+    private final Inventory inventory;
     private BlockPos light;
 
     public LighthouseEntity(World worldIn) {
         super(RegistryHandler.LIGHTHOUSE_ENTITY.get(), worldIn);
-        inventory = new Inventory(INVENTORY_SIZE);
+        inventory = new Inventory(27);
         light = null;
     }
 
@@ -143,35 +141,28 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     @Override
     public void readAdditional(CompoundNBT nbt) {
         super.readAdditional(nbt);
-        inventory = new Inventory(INVENTORY_SIZE);
-        if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT lighthouse = (CompoundNBT) nbt.get(TAG_KEY);
-            if (lighthouse != null) {
-                ListNBT inv = (ListNBT) lighthouse.get("Inventory");
-                for (int i = 0; i < inv.size(); i++) {
-                    inventory.setInventorySlotContents(i, ItemStack.read(inv.getCompound(i)));
-                }
-                if (lighthouse.contains("X", Constants.NBT.TAG_COMPOUND)) {
-                    light = new BlockPos(lighthouse.getInt("X"), lighthouse.getInt("Y"), lighthouse.getInt("Z"));
-                }
+        if (nbt.contains("Inventory", Constants.NBT.TAG_LIST)) {
+            ListNBT inv = nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < inv.size(); i++) {
+                inventory.setInventorySlotContents(i, ItemStack.read(inv.getCompound(i)));
             }
+        }
+        if (nbt.contains("Light", Constants.NBT.TAG_INT_ARRAY)) {
+            int[] pos = nbt.getIntArray("Light");
+            light = new BlockPos(pos[0], pos[1], pos[2]);
         }
     }
 
     @Override
     public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
-        CompoundNBT lighthouse = new CompoundNBT();
         ListNBT inv = new ListNBT();
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
             inv.add(inventory.getStackInSlot(i).write(new CompoundNBT()));
         }
-        lighthouse.put("Inventory", inv);
+        nbt.put("Inventory", inv);
         if (light != null) {
-            lighthouse.putInt("X", light.getX());
-            lighthouse.putInt("Y", light.getY());
-            lighthouse.putInt("Z", light.getZ());
-            nbt.put(TAG_KEY, lighthouse);
+            nbt.putIntArray("Light", new int[]{light.getX(), light.getY(), light.getZ()});
         }
     }
 

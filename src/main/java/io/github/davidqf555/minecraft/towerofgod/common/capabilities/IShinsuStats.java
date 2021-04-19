@@ -11,12 +11,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -26,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public interface IShinsuStats {
+public interface IShinsuStats extends INBTSerializable<CompoundNBT> {
 
     @Nonnull
     static IShinsuStats get(Entity user) {
@@ -109,10 +112,6 @@ public interface IShinsuStats {
 
     default void tick(ServerWorld world) {
     }
-
-    CompoundNBT serialize();
-
-    void deserialize(CompoundNBT nbt);
 
     class ShinsuStats implements IShinsuStats {
 
@@ -293,7 +292,7 @@ public interface IShinsuStats {
         }
 
         @Override
-        public CompoundNBT serialize() {
+        public CompoundNBT serializeNBT() {
             CompoundNBT tag = new CompoundNBT();
             tag.putInt("Level", level);
             tag.putInt("Shinsu", shinsu);
@@ -305,12 +304,9 @@ public interface IShinsuStats {
                 knownTech.putInt(tech.name(), known.get(tech));
             }
             tag.put("Known", knownTech);
-            CompoundNBT instances = new CompoundNBT();
-            instances.putInt("Size", techniques.size());
-            for (int i = 0; i < techniques.size(); i++) {
-                ShinsuTechniqueInstance tech = techniques.get(i);
-                instances.put(i + 1 + "", tech.serializeNBT());
-                instances.putString("Type" + (i + 1), ShinsuTechnique.get(tech).name());
+            ListNBT instances = new ListNBT();
+            for (ShinsuTechniqueInstance instance : techniques) {
+                instances.add(instance.serializeNBT());
             }
             tag.put("Techniques", instances);
             tag.putString("Quality", quality.name());
@@ -324,33 +320,28 @@ public interface IShinsuStats {
         }
 
         @Override
-        public void deserialize(CompoundNBT nbt) {
+        public void deserializeNBT(CompoundNBT nbt) {
             level = nbt.getInt("Level");
             shinsu = nbt.getInt("Shinsu");
             baangs = nbt.getInt("Baangs");
             resistance = nbt.getDouble("Resistance");
             tension = nbt.getDouble("Tension");
-            known.clear();
             CompoundNBT knownTech = nbt.getCompound("Known");
             for (ShinsuTechnique tech : ShinsuTechnique.values()) {
-                String key = tech.name();
-                known.put(tech, knownTech.getInt(key));
+                known.put(tech, knownTech.getInt(tech.name()));
             }
-            techniques.clear();
-            CompoundNBT list = nbt.getCompound("Techniques");
-            for (int i = 0; i < list.getInt("Size"); i++) {
-                ShinsuTechnique type = ShinsuTechnique.valueOf(list.getString("Type" + (i + 1)));
+            ListNBT list = nbt.getList("Techniques", Constants.NBT.TAG_COMPOUND);
+            for (INBT data : list) {
+                ShinsuTechnique type = ShinsuTechnique.valueOf(((CompoundNBT) data).getString("Technique"));
                 ShinsuTechniqueInstance tech = type.getBuilder().emptyBuild();
-                tech.deserializeNBT((CompoundNBT) list.get(i + 1 + ""));
+                tech.deserializeNBT((CompoundNBT) data);
                 techniques.add(tech);
             }
             quality = ShinsuQuality.valueOf(nbt.getString("Quality"));
             shape = ShinsuShape.valueOf(nbt.getString("Shape"));
-            cooldowns.clear();
             CompoundNBT cool = nbt.getCompound("Cooldowns");
-            for (ShinsuTechnique tech : ShinsuTechnique.values()) {
-                String key = tech.name();
-                cooldowns.put(tech, cool.getInt(key));
+            for (String key : cool.keySet()) {
+                cooldowns.put(ShinsuTechnique.valueOf(key), cool.getInt(key));
             }
         }
 
@@ -383,12 +374,12 @@ public interface IShinsuStats {
 
         @Override
         public INBT writeNBT(Capability<IShinsuStats> capability, IShinsuStats instance, Direction side) {
-            return instance.serialize();
+            return instance.serializeNBT();
         }
 
         @Override
         public void readNBT(Capability<IShinsuStats> capability, IShinsuStats instance, Direction side, INBT nbt) {
-            instance.deserialize((CompoundNBT) nbt);
+            instance.deserializeNBT((CompoundNBT) nbt);
         }
     }
 }

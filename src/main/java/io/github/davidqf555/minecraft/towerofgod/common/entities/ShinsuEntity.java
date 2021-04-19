@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
@@ -8,7 +7,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -16,6 +14,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.IParticleData;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -33,7 +32,6 @@ import java.util.UUID;
 @MethodsReturnNonnullByDefault
 public class ShinsuEntity extends DamagingProjectileEntity {
 
-    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".shinsu_entity";
     private static final int PARTICLES = 3;
     private static final float DAMAGE = 5;
     private static final DataParameter<String> QUALITY = EntityDataManager.createKey(ShinsuEntity.class, DataSerializers.STRING);
@@ -41,12 +39,10 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     private int level;
     private BlockRayTraceResult latestHit;
 
-    public ShinsuEntity(World world, @Nullable LivingEntity shooter, ShinsuQuality quality, @Nullable ShinsuTechniqueInstance technique, int level, double x, double y, double z, double dX, double dY, double dZ) {
-        super(RegistryHandler.SHINSU_ENTITY.get(), x, y, z, dX, dY, dZ, world);
-        this.technique = technique == null ? null : technique.getID();
-        setShooter(shooter);
-        setQuality(quality);
-        this.level = level;
+    public ShinsuEntity(World world) {
+        super(RegistryHandler.SHINSU_ENTITY.get(), world);
+        technique = null;
+        level = 1;
         latestHit = null;
     }
 
@@ -62,6 +58,11 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     }
 
     @Override
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+        return false;
+    }
+
+    @Override
     public IParticleData getParticle() {
         return getQuality().getParticleType();
     }
@@ -72,6 +73,15 @@ public class ShinsuEntity extends DamagingProjectileEntity {
 
     public void setQuality(ShinsuQuality quality) {
         dataManager.set(QUALITY, quality.name());
+    }
+
+    @Override
+    public void setMotion(Vector3d motionIn) {
+        super.setMotion(motionIn);
+        double length = motionIn.length();
+        accelerationX = motionIn.getX() / length * 0.1;
+        accelerationY = motionIn.getY() / length * 0.1;
+        accelerationZ = motionIn.getZ() / length * 0.1;
     }
 
     @Override
@@ -97,6 +107,14 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         return null;
     }
 
+    public void setTechnique(ShinsuTechniqueInstance technique) {
+        this.technique = technique.getID();
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     @Override
     public void tick() {
         if (technique != null && getTechnique() == null) {
@@ -117,13 +135,9 @@ public class ShinsuEntity extends DamagingProjectileEntity {
 
     @Override
     public void onRemovedFromWorld() {
-        ShinsuTechniqueInstance technique = getTechnique();
         if (world instanceof ServerWorld) {
             Vector3d motion = getMotion();
             getQuality().applyBlockEffect(this, latestHit == null || isAirBorne ? new BlockRayTraceResult(motion, Direction.getFacingFromVector(motion.x, motion.y, motion.z), getPosition(), true) : latestHit);
-            if (technique != null) {
-                technique.remove((ServerWorld) world);
-            }
         }
         super.onRemovedFromWorld();
     }
@@ -131,24 +145,25 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     @Override
     public void readAdditional(CompoundNBT nbt) {
         super.readAdditional(nbt);
-        if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT e = (CompoundNBT) nbt.get(TAG_KEY);
-            technique = e.contains("Technique", Constants.NBT.TAG_COMPOUND) ? e.getUniqueId("Technique") : null;
-            setQuality(ShinsuQuality.valueOf(e.getString("Quality")));
-            level = e.getInt("Level");
+        if (nbt.contains("Technique", Constants.NBT.TAG_INT_ARRAY)) {
+            technique = nbt.getUniqueId("Technique");
+        }
+        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
+            setQuality(ShinsuQuality.valueOf(nbt.getString("Quality")));
+        }
+        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
+            level = nbt.getInt("Level");
         }
     }
 
     @Override
     public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
-        CompoundNBT e = new CompoundNBT();
         if (technique != null) {
-            e.putUniqueId("Technique", technique);
+            nbt.putUniqueId("Technique", technique);
         }
-        e.putString("Quality", getQuality().name());
-        e.putInt("Level", level);
-        nbt.put(TAG_KEY, e);
+        nbt.putString("Quality", getQuality().name());
+        nbt.putInt("Level", level);
     }
 
     @Override
@@ -159,7 +174,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     public static class Factory implements EntityType.IFactory<ShinsuEntity> {
         @Override
         public ShinsuEntity create(@Nullable EntityType<ShinsuEntity> type, World world) {
-            return new ShinsuEntity(world, null, ShinsuQuality.NONE, null, 1, 0, 0, 0, 0, 0, 0);
+            return new ShinsuEntity(world);
         }
     }
 }

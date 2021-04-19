@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
@@ -29,7 +28,6 @@ import java.util.UUID;
 @ParametersAreNonnullByDefault
 public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal {
 
-    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".flying_device";
     private UUID technique;
     private UUID owner;
 
@@ -124,8 +122,8 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     @Override
     public void readAdditional(CompoundNBT nbt) {
         super.readAdditional(nbt);
-        if (nbt.contains(TAG_KEY, Constants.NBT.TAG_INT_ARRAY)) {
-            owner = nbt.getUniqueId(TAG_KEY);
+        if (nbt.contains("Owner", Constants.NBT.TAG_INT_ARRAY)) {
+            owner = nbt.getUniqueId("Owner");
         }
     }
 
@@ -133,7 +131,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
         if (owner != null) {
-            nbt.putUniqueId(TAG_KEY, owner);
+            nbt.putUniqueId("Owner", owner);
         }
     }
 

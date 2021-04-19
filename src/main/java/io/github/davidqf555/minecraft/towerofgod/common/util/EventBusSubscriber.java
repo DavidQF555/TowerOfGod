@@ -109,9 +109,9 @@ public class EventBusSubscriber {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
             if (player.getUniqueID().equals(Minecraft.getInstance().player.getUniqueID())) {
                 IShinsuStats stats = IShinsuStats.get(player);
-                stats.deserialize(clonedStats.serialize());
+                stats.deserializeNBT(clonedStats.serializeNBT());
                 IPlayerShinsuEquips equips = IPlayerShinsuEquips.get(player);
-                equips.deserialize(clonedEquips.serialize());
+                equips.deserializeNBT(clonedEquips.serializeNBT());
             }
         }
 
