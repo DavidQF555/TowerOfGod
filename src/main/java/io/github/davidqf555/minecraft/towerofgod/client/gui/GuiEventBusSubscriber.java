@@ -45,7 +45,7 @@ public class GuiEventBusSubscriber {
         @SubscribeEvent
         public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
             Minecraft client = Minecraft.getInstance();
-            if (usingValid()) {
+            if (usingValid(client)) {
                 if (!client.gameSettings.hideGUI && !client.player.isCreative()) {
                     if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
                         event.getMatrixStack().translate(0, -10, 0);
@@ -70,7 +70,7 @@ public class GuiEventBusSubscriber {
         @SubscribeEvent
         public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
             Minecraft client = Minecraft.getInstance();
-            if (usingValid() && !client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
+            if (usingValid(client) && !client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
                 event.getMatrixStack().translate(0, 10, 0);
             }
         }
@@ -84,7 +84,7 @@ public class GuiEventBusSubscriber {
             return false;
         }
 
-        private static boolean usingValid() {
+        private static boolean usingValid(Minecraft client) {
             boolean equipped = false;
             for (ShinsuTechnique technique : ShinsuSkillWheelGui.equipped) {
                 if (technique != null) {
@@ -92,7 +92,7 @@ public class GuiEventBusSubscriber {
                     break;
                 }
             }
-            return equipped && validStats();
+            return equipped && validStats() && client.player != null && !client.player.isSpectator();
         }
 
         private static boolean validStats() {
