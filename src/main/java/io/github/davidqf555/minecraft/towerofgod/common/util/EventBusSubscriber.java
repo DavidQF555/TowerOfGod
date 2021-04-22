@@ -78,13 +78,11 @@ public class EventBusSubscriber {
 
         @SubscribeEvent
         public static void onBiomeLoading(BiomeLoadingEvent event) {
-            if (event.getCategory() != Biome.Category.NETHER && event.getCategory() != Biome.Category.THEEND) {
-                event.getGeneration().getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).add(() -> SUSPENDIUM_ORE);
-                if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
-                    MobSpawnInfoBuilder builder = event.getSpawns();
-                    builder.withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.REGULAR_ENTITY.get(), 8, 1, 8));
-                    builder.withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.RANKER_ENTITY.get(), 2, 1, 1));
-                }
+            event.getGeneration().getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).add(() -> SUSPENDIUM_ORE);
+            if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
+                MobSpawnInfoBuilder builder = event.getSpawns();
+                builder.withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.REGULAR_ENTITY.get(), 8, 1, 8));
+                builder.withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.RANKER_ENTITY.get(), 2, 1, 1));
             }
         }
 

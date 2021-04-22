@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.world;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import com.mojang.serialization.Lifecycle;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientDimensionsMessage;
@@ -24,7 +25,9 @@ import net.minecraft.world.border.IBorderListener;
 import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.chunk.listener.IChunkStatusListenerFactory;
 import net.minecraft.world.gen.DimensionSettings;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.NoiseChunkGenerator;
+import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.settings.*;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DerivedWorldInfo;
@@ -38,10 +41,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 
@@ -127,11 +127,9 @@ public class FloorDimensionsHelper {
         } else {
             effect = DimensionType.THE_END_ID;
         }
-        DimensionType type = new FloorDimensionType(property, 1, effect, lighting);
-        DimensionSettings settings = createSettings(property);
         BiomeProvider provider = new FloorBiomeProvider(seed, property, lookup);
-        NoiseChunkGenerator generator = new NoiseChunkGenerator(provider, seed, () -> settings);
-        return new Dimension(() -> type, generator);
+        NoiseChunkGenerator generator = new NoiseChunkGenerator(provider, seed, () -> createSettings(property));
+        return new Dimension(() -> new FloorDimensionType(property, 1, effect, lighting), generator);
     }
 
     private static DimensionSettings createSettings(FloorProperty property) {
@@ -220,8 +218,17 @@ public class FloorDimensionsHelper {
         SlideSettings bottomSlide = new SlideSettings(bottomTarget, bottomSize, bottomOffset);
         ScalingSettings sampling = new ScalingSettings(xzScale, yScale, xzFactor, yFactor);
         NoiseSettings noise = new NoiseSettings(height, sampling, topSlide, bottomSlide, sizeHorizontal, sizeVertical, densityFactor, densityOffset, false, true, false, false);
+        Map<Structure<?>, StructureSeparationSettings> map = Maps.newHashMap(DimensionStructuresSettings.field_236191_b_);
+        if (hasCeiling) {
+            for (Structure<?> structure : new HashSet<>(map.keySet())) {
+                if (structure.getDecorationStage() == GenerationStage.Decoration.SURFACE_STRUCTURES) {
+                    map.remove(structure);
+                }
+            }
+        }
+        DimensionStructuresSettings structures = new DimensionStructuresSettings(Optional.empty(), map);
         try {
-            return SETTINGS_CONSTRUCTOR.newInstance(new DimensionStructuresSettings(false), noise, property.getBlockState(), property.getFluid(), ceilingOffset, floorOffset, seaLevel, false);
+            return SETTINGS_CONSTRUCTOR.newInstance(structures, noise, property.getBlockState(), property.getFluid(), ceilingOffset, floorOffset, seaLevel, false);
         } catch (Exception e) {
             return DimensionSettings.getDefaultDimensionSettings();
         }
