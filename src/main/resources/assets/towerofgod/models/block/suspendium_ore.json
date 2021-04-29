@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "towerofgod:blocks/suspendium_ore"
+    "all": "towerofgod:block/suspendium_ore"
   }
 }

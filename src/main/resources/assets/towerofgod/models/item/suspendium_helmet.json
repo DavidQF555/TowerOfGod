@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "towerofgod:items/suspendium_helmet"
+    "layer0": "towerofgod:item/suspendium_helmet"
   }
 }

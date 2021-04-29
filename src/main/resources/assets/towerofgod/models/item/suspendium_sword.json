@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "towerofgod:items/suspendium_sword"
+    "layer0": "towerofgod:item/suspendium_sword"
   }
 }

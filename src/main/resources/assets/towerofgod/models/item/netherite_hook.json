@@ -1,7 +1,7 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "towerofgod:items/netherite_hook"
+    "layer0": "towerofgod:item/netherite_hook"
   },
   "display": {
     "thirdperson_righthand": {

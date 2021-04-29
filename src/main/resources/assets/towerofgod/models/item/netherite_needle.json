@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "towerofgod:items/netherite_needle"
+    "layer0": "towerofgod:item/netherite_needle"
   }
 }

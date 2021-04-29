@@ -1,7 +1,7 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "towerofgod:items/wooden_hook"
+    "layer0": "towerofgod:item/wooden_hook"
   },
   "display": {
     "thirdperson_righthand": {
