@@ -26,7 +26,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         if (e instanceof LivingEntity) {
             LivingEntity user = (LivingEntity) e;
             int level = (int) (getLevel() * IShinsuStats.get(user).getTension(world));
-            user.addPotionEffect(new EffectInstance(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get(), 2, level - 1, true, false, false));
+            user.addPotionEffect(new EffectInstance(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get(), 2, level - 1, false, true, true));
         }
         super.tick(world);
     }

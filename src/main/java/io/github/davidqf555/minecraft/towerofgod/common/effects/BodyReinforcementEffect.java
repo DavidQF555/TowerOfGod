@@ -7,7 +7,7 @@ import net.minecraft.potion.EffectType;
 
 public class BodyReinforcementEffect extends Effect {
 
-    private static final int COLOR = 0xFF696969;
+    private static final int COLOR = 0xAA24a6d1;
     private static final String ID = "ecd380c6-ffd3-4d77-8752-fc0109c1aa7a";
 
     public BodyReinforcementEffect() {
