@@ -18,6 +18,7 @@ import java.util.UUID;
 public class RegularTeamsSavedData extends WorldSavedData {
 
     private static final String NAME = TowerOfGod.MOD_ID + "_RegularTeams";
+    private static final double RANGE = 32;
     private final List<RegularTeam> teams;
 
     public RegularTeamsSavedData() {
@@ -48,7 +49,7 @@ public class RegularTeamsSavedData extends WorldSavedData {
         for (int i = teams.size() - 1; i >= 0; i--) {
             RegularTeam team = teams.get(i);
             List<RegularEntity> entities = new ArrayList<>();
-            UUID max = null;
+            RegularEntity max = null;
             int maxLevel = 0;
             for (int j = team.members.size() - 1; j >= 0; j--) {
                 UUID id = team.members.get(j);
@@ -57,7 +58,7 @@ public class RegularTeamsSavedData extends WorldSavedData {
                     entities.add((RegularEntity) entity);
                     int level = ((RegularEntity) entity).getShinsuLevel();
                     if (level > maxLevel) {
-                        max = id;
+                        max = (RegularEntity) entity;
                         maxLevel = level;
                     }
                 } else {
@@ -67,10 +68,15 @@ public class RegularTeamsSavedData extends WorldSavedData {
                     }
                 }
             }
-            if (entities.isEmpty()) {
+            if (max == null) {
                 teams.remove(i);
             } else {
-                team.leader = max;
+                team.leader = max.getUniqueID();
+                for (RegularEntity entity : entities) {
+                    if (!entity.equals(max) && entity.getDistanceSq(max) > RANGE * RANGE) {
+                        team.members.remove(entity.getUniqueID());
+                    }
+                }
             }
         }
     }

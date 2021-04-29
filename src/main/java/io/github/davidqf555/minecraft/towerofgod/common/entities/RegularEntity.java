@@ -12,6 +12,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
@@ -66,8 +67,7 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
     public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         initializeShinsuStats(worldIn);
         initializeWeapons();
-        Personality[] personalities = Personality.values();
-        personality = personalities[rand.nextInt(personalities.length)];
+        personality = MonsterEntity.isValidLightLevel(worldIn, getPosition().down(), rand) && rand.nextBoolean() ? Personality.AGGRESSIVE : Personality.NEUTRAL;
         setCustomName(new TranslationTextComponent(NAME, getShinsuLevel()).mergeStyle(getGroup().getTextFormattingColor()));
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
@@ -206,6 +206,11 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
     }
 
     @Override
+    public boolean canDespawn(double distanceToClosestPlayer) {
+        return false;
+    }
+
+    @Override
     public int getGearLevel() {
         return getShinsuLevel();
     }
@@ -286,7 +291,7 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
     private static class RegularNearestAttackableTargetGoal extends NearestAttackableTargetGoal<LivingEntity> {
 
         public RegularNearestAttackableTargetGoal(RegularEntity entity) {
-            super(entity, LivingEntity.class, 10, true, false, target -> (target instanceof RegularEntity || target instanceof PlayerEntity) && !target.isOnSameTeam(entity));
+            super(entity, LivingEntity.class, 10, true, false, target -> (target instanceof RegularEntity || target instanceof PlayerEntity) && !entity.isOnSameTeam(target));
         }
 
         @Override

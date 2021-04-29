@@ -103,6 +103,11 @@ public class RankerEntity extends CreatureEntity implements IShinsuUser<RankerEn
     }
 
     @Override
+    public boolean canDespawn(double distanceToClosestPlayer) {
+        return false;
+    }
+
+    @Override
     public void onDeath(DamageSource cause) {
         super.onDeath(cause);
         Entity best = cause.getTrueSource();

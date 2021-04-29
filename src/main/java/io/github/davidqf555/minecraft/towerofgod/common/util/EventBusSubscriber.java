@@ -11,18 +11,21 @@ import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedD
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.gen.GenerationStage;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
@@ -81,8 +84,8 @@ public class EventBusSubscriber {
             event.getGeneration().getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).add(() -> SUSPENDIUM_ORE);
             if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
                 MobSpawnInfoBuilder builder = event.getSpawns();
-                builder.withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.REGULAR_ENTITY.get(), 8, 1, 8));
-                builder.withSpawner(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(RegistryHandler.RANKER_ENTITY.get(), 2, 1, 1));
+                builder.withSpawner(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(RegistryHandler.REGULAR_ENTITY.get(), 3, 1, 1));
+                builder.withSpawner(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(RegistryHandler.RANKER_ENTITY.get(), 1, 1, 1));
             }
         }
 
@@ -188,6 +191,8 @@ public class EventBusSubscriber {
             event.enqueueWork(() -> {
                 Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);
                 Registry.register(Registry.BIOME_PROVIDER_CODEC, new ResourceLocation(TowerOfGod.MOD_ID, "floor_biome_provider_codec"), FloorBiomeProvider.CODEC);
+                EntitySpawnPlacementRegistry.register(RegistryHandler.REGULAR_ENTITY.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesWithinAABB(RegularEntity.class, new AxisAlignedBB(pos).grow(64)).size() < 10);
+                EntitySpawnPlacementRegistry.register(RegistryHandler.RANKER_ENTITY.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesWithinAABB(RankerEntity.class, new AxisAlignedBB(pos).grow(64)).size() < 1);
             });
         }
     }

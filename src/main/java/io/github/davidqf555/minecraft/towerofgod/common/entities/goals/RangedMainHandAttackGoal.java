@@ -35,7 +35,7 @@ public class RangedMainHandAttackGoal<T extends MobEntity & IRangedAttackMob> ex
 
     @Override
     public boolean shouldExecute() {
-        return entity.getAttackTarget() != null && entity.getHeldItemMainhand().getItem() instanceof ShootableItem;
+        return entity.getAttackTarget() != null && entity.isAlive() && entity.getHeldItemMainhand().getItem() instanceof ShootableItem;
     }
 
     @Override
