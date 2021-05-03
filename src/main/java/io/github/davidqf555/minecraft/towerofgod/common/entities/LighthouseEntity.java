@@ -16,13 +16,11 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -30,9 +28,14 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -41,12 +44,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class LighthouseEntity extends FlyingDevice implements INamedContainerProvider {
 
-    private final Inventory inventory;
+    private final ItemStackHandler inventory;
     private BlockPos light;
 
     public LighthouseEntity(World worldIn) {
         super(RegistryHandler.LIGHTHOUSE_ENTITY.get(), worldIn);
-        inventory = new Inventory(27);
+        inventory = createInventory();
         light = null;
     }
 
@@ -57,17 +60,24 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
                 .createMutableAttribute(Attributes.MAX_HEALTH, 10);
     }
 
-    private Inventory getInventory() {
-        return inventory;
+    public static ItemStackHandler createInventory() {
+        return new ItemStackHandler(27);
+    }
+
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return LazyOptional.of(() -> inventory).cast();
+        }
+        return super.getCapability(capability, facing);
     }
 
     @Override
     public void dropInventory() {
-        for (ItemStack item : inventory.func_233543_f_()) {
-            ItemEntity en = new ItemEntity(world, getPosX(), getPosY(), getPosZ(), item);
-            world.addEntity(en);
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            ItemEntity item = new ItemEntity(world, getPosX(), getPosY(), getPosZ(), inventory.extractItem(i, inventory.getSlotLimit(i), false));
+            world.addEntity(item);
         }
-        inventory.clear();
     }
 
     @Override
@@ -141,11 +151,8 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     @Override
     public void readAdditional(CompoundNBT nbt) {
         super.readAdditional(nbt);
-        if (nbt.contains("Inventory", Constants.NBT.TAG_LIST)) {
-            ListNBT inv = nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND);
-            for (int i = 0; i < inv.size(); i++) {
-                inventory.setInventorySlotContents(i, ItemStack.read(inv.getCompound(i)));
-            }
+        if (nbt.contains("Inventory", Constants.NBT.TAG_COMPOUND)) {
+            inventory.deserializeNBT(nbt.getCompound("Inventory"));
         }
         if (nbt.contains("Light", Constants.NBT.TAG_INT_ARRAY)) {
             int[] pos = nbt.getIntArray("Light");
@@ -156,11 +163,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     @Override
     public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
-        ListNBT inv = new ListNBT();
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            inv.add(inventory.getStackInSlot(i).write(new CompoundNBT()));
-        }
-        nbt.put("Inventory", inv);
+        nbt.put("Inventory", inventory.serializeNBT());
         if (light != null) {
             nbt.putIntArray("Light", new int[]{light.getX(), light.getY(), light.getZ()});
         }
@@ -168,14 +171,13 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
     public static class LighthouseContainer extends Container {
 
-        private final LighthouseEntity en;
+        private final LighthouseEntity lighthouse;
 
-        public LighthouseContainer(int id, PlayerInventory player, LighthouseEntity en) {
+        public LighthouseContainer(int id, PlayerInventory player, LighthouseEntity lighthouse) {
             super(RegistryHandler.LIGHTHOUSE_CONTAINER.get(), id);
-            Inventory inv = en.getInventory();
             for (int row = 0; row < 3; row++) {
                 for (int column = 0; column < 9; column++) {
-                    addSlot(new Slot(inv, column + row * 9, 8 + column * 18, 11 + row * 18));
+                    addSlot(new SlotItemHandler(lighthouse.inventory, column + row * 9, 8 + column * 18, 11 + row * 18));
                 }
             }
             for (int row = 0; row < 3; row++) {
@@ -186,12 +188,12 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
             for (int index = 0; index < 9; index++) {
                 addSlot(new Slot(player, index, 8 + index * 18, 142));
             }
-            this.en = en;
+            this.lighthouse = lighthouse;
         }
 
         @Override
         public boolean canInteractWith(PlayerEntity playerIn) {
-            return playerIn.equals(en.getOwner());
+            return playerIn.equals(lighthouse.getOwner());
         }
 
         @Override
