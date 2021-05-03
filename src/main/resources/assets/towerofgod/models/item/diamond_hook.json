@@ -1,7 +1,7 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "towerofgod:items/diamond_hook"
+    "layer0": "towerofgod:item/diamond_hook"
   },
   "display": {
     "thirdperson_righthand": {

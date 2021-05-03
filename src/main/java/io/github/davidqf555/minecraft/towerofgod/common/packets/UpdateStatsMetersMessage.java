@@ -5,12 +5,9 @@ import io.github.davidqf555.minecraft.towerofgod.client.gui.GuiEventBusSubscribe
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -18,12 +15,6 @@ import java.util.function.Supplier;
 
 public class UpdateStatsMetersMessage {
 
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(TowerOfGod.MOD_ID, "update_meter_packet"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals);
     private static final BiConsumer<UpdateStatsMetersMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.shinsu);
         buffer.writeInt(message.maxShinsu);
@@ -49,7 +40,7 @@ public class UpdateStatsMetersMessage {
     }
 
     public static void register(int index) {
-        INSTANCE.registerMessage(index, UpdateStatsMetersMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateStatsMetersMessage.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {
@@ -58,7 +49,7 @@ public class UpdateStatsMetersMessage {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
                 IShinsuStats stats = IShinsuStats.get(player);
-                INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {

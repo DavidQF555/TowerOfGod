@@ -5,7 +5,10 @@ import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.util.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientEquippedMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -42,7 +45,7 @@ public class GuiEventBusSubscriber {
         @SubscribeEvent
         public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
             Minecraft client = Minecraft.getInstance();
-            if (usingValid()) {
+            if (usingValid(client)) {
                 if (!client.gameSettings.hideGUI && !client.player.isCreative()) {
                     if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
                         event.getMatrixStack().translate(0, -10, 0);
@@ -67,7 +70,7 @@ public class GuiEventBusSubscriber {
         @SubscribeEvent
         public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
             Minecraft client = Minecraft.getInstance();
-            if (usingValid() && !client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
+            if (usingValid(client) && !client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
                 event.getMatrixStack().translate(0, 10, 0);
             }
         }
@@ -81,7 +84,7 @@ public class GuiEventBusSubscriber {
             return false;
         }
 
-        private static boolean usingValid() {
+        private static boolean usingValid(Minecraft client) {
             boolean equipped = false;
             for (ShinsuTechnique technique : ShinsuSkillWheelGui.equipped) {
                 if (technique != null) {
@@ -89,7 +92,7 @@ public class GuiEventBusSubscriber {
                     break;
                 }
             }
-            return equipped && validStats();
+            return equipped && validStats() && client.player != null && !client.player.isSpectator();
         }
 
         private static boolean validStats() {
@@ -105,7 +108,7 @@ public class GuiEventBusSubscriber {
                     int action = event.getAction();
                     if (wheel.isLocked()) {
                         if (action == GLFW.GLFW_RELEASE) {
-                            CastShinsuMessage.INSTANCE.sendToServer(new CastShinsuMessage(selected, client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
+                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuMessage(selected, client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
                             wheel = null;
                         }
                     } else if (action == GLFW.GLFW_PRESS) {
@@ -164,9 +167,6 @@ public class GuiEventBusSubscriber {
                 if (wheel != null) {
                     wheel.tick();
                 }
-                if (player != null) {
-                    ShinsuStatsTickMessage.INSTANCE.sendToServer(new ShinsuStatsTickMessage());
-                }
             }
         }
 
@@ -178,10 +178,10 @@ public class GuiEventBusSubscriber {
             for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                 known.put(technique, stats.getTechniqueLevel(technique));
             }
-            UpdateClientKnownMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
-            UpdateStatsMetersMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             IPlayerShinsuEquips equipped = IPlayerShinsuEquips.get(entity);
-            UpdateClientEquippedMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientEquippedMessage(equipped.getEquipped()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientEquippedMessage(equipped.getEquipped()));
         }
 
         @SubscribeEvent

@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "towerofgod:items/suspendium_pickaxe"
+    "layer0": "towerofgod:item/suspendium_pickaxe"
   }
 }

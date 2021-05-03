@@ -9,10 +9,12 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 
+import java.util.function.Supplier;
+
 @MethodsReturnNonnullByDefault
 public enum ModArmorTier implements IArmorMaterial {
 
-    SUSPENDIUM(TowerOfGod.MOD_ID + ":suspendium", 15, new int[]{2, 6, 5, 2}, 15, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 0.5f, Ingredient.fromItems(RegistryHandler.SUSPENDIUM.get()), -2);
+    SUSPENDIUM(TowerOfGod.MOD_ID + ":suspendium", 15, new int[]{2, 6, 5, 2}, 15, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 0.5f, () -> Ingredient.fromItems(RegistryHandler.SUSPENDIUM.get()), -2);
 
     private static final int[] MAX_DAMAGE_ARRAY = new int[]{11, 16, 15, 13};
     private final String name;
@@ -21,10 +23,10 @@ public enum ModArmorTier implements IArmorMaterial {
     private final int enchantability;
     private final SoundEvent sound;
     private final float toughness;
-    private final Ingredient repair;
+    private final Supplier<Ingredient> repair;
     private final float knockback;
 
-    ModArmorTier(String name, int max, int[] damageReduction, int enchantability, SoundEvent sound, float toughness, Ingredient repair, float knockback) {
+    ModArmorTier(String name, int max, int[] damageReduction, int enchantability, SoundEvent sound, float toughness, Supplier<Ingredient> repair, float knockback) {
         this.name = name;
         this.max = max;
         this.damageReduction = damageReduction;
@@ -57,7 +59,7 @@ public enum ModArmorTier implements IArmorMaterial {
 
     @Override
     public Ingredient getRepairMaterial() {
-        return repair;
+        return repair.get();
     }
 
     @Override

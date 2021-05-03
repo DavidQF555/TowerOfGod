@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
@@ -24,7 +23,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class ClickerEntity extends Entity {
 
-    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".clicker_entity";
     private static final int PARTICLES = 2;
     private static final int SPEED = 5;
     private static final int DURATION = 200;
@@ -60,7 +58,7 @@ public class ClickerEntity extends Entity {
     }
 
     public ShinsuQuality getQuality() {
-        return ShinsuQuality.get(dataManager.get(QUALITY));
+        return ShinsuQuality.valueOf(dataManager.get(QUALITY));
     }
 
     public void setQuality(ShinsuQuality quality) {
@@ -68,7 +66,7 @@ public class ClickerEntity extends Entity {
     }
 
     public ShinsuShape getShape() {
-        return ShinsuShape.get(dataManager.get(SHAPE));
+        return ShinsuShape.valueOf(dataManager.get(SHAPE));
     }
 
     public void setShape(ShinsuShape shape) {
@@ -77,21 +75,22 @@ public class ClickerEntity extends Entity {
 
     @Override
     public void readAdditional(CompoundNBT nbt) {
-        if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT data = (CompoundNBT) nbt.get(TAG_KEY);
-            ticksLeft = data.getInt("Duration");
-            setQuality(ShinsuQuality.get(data.getString("Quality")));
-            setShape(ShinsuShape.get(data.getString("Shape")));
+        if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
+            ticksLeft = nbt.getInt("Duration");
+        }
+        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
+            setQuality(ShinsuQuality.valueOf(nbt.getString("Quality")));
+        }
+        if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
+            setShape(ShinsuShape.valueOf(nbt.getString("Shape")));
         }
     }
 
     @Override
     public void writeAdditional(CompoundNBT nbt) {
-        CompoundNBT data = new CompoundNBT();
-        data.putInt("Duration", ticksLeft);
-        data.putString("Quality", getQuality().name());
-        data.putString("Shape", getShape().name());
-        nbt.put(TAG_KEY, data);
+        nbt.putInt("Duration", ticksLeft);
+        nbt.putString("Quality", getQuality().name());
+        nbt.putString("Shape", getShape().name());
     }
 
     @Override

@@ -1,14 +1,16 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class BodyReinforcement extends ShinsuTechniqueInstance {
 
@@ -23,12 +25,8 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         Entity e = getUser(world);
         if (e instanceof LivingEntity) {
             LivingEntity user = (LivingEntity) e;
-            int level = getLevel();
-            user.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 2, level / 2, true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.SPEED, 2, level, true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.HASTE, 2, level, true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.STRENGTH, 2, level / 3, true, false, false));
-            user.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, 2, level / 2, true, false, false));
+            int level = (int) (getLevel() * IShinsuStats.get(user).getTension(world));
+            user.addPotionEffect(new EffectInstance(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get(), 2, level - 1, false, true, true));
         }
         super.tick(world);
     }
@@ -38,6 +36,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         return getLevel() * BASE_DURATION;
     }
 
+    @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.Builder<BodyReinforcement> {
 
         private final int shinsu;
@@ -49,7 +48,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         }
 
         @Override
-        public BodyReinforcement build(@Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        public BodyReinforcement build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return new BodyReinforcement(user, level);
         }
 
@@ -67,6 +66,11 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         @Override
         public int getBaangUse() {
             return baangs;
+        }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.BODY_REINFORCEMENT;
         }
     }
 }

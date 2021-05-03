@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "towerofgod:items/diamond_needle"
+    "layer0": "towerofgod:item/diamond_needle"
   }
 }

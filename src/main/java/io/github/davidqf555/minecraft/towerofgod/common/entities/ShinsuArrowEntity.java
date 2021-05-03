@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
@@ -33,7 +32,6 @@ import java.util.UUID;
 public class ShinsuArrowEntity extends AbstractArrowEntity {
 
     private static final int PARTICLES = 2;
-    private static final String TAG_KEY = TowerOfGod.MOD_ID + ".shinsu_arrow_entity";
     private static final DataParameter<String> QUALITY = EntityDataManager.createKey(ShinsuArrowEntity.class, DataSerializers.STRING);
     private UUID technique;
     private BlockRayTraceResult latestHit;
@@ -88,19 +86,15 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
 
     @Override
     public void onRemovedFromWorld() {
-        ShinsuTechniqueInstance technique = getTechnique();
         if (world instanceof ServerWorld) {
             Vector3d motion = getMotion();
             getQuality().applyBlockEffect(this, latestHit == null || isAirBorne ? new BlockRayTraceResult(motion, Direction.getFacingFromVector(motion.x, motion.y, motion.z), getPosition(), true) : latestHit);
-            if (technique != null) {
-                technique.remove((ServerWorld) world);
-            }
         }
         super.onRemovedFromWorld();
     }
 
     public ShinsuQuality getQuality() {
-        return ShinsuQuality.get(dataManager.get(QUALITY));
+        return ShinsuQuality.valueOf(dataManager.get(QUALITY));
     }
 
     public void setQuality(ShinsuQuality quality) {
@@ -117,7 +111,7 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
 
     @Nullable
     public ShinsuTechniqueInstance getTechnique() {
-        Entity shooter = func_234616_v_();
+        Entity shooter = getShooter();
         if (technique != null && shooter != null) {
             return ShinsuTechniqueInstance.get(shooter, technique);
         }
@@ -146,22 +140,21 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     @Override
     public void readAdditional(CompoundNBT nbt) {
         super.readAdditional(nbt);
-        if (nbt.contains(TAG_KEY, Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT e = (CompoundNBT) nbt.get(TAG_KEY);
-            setQuality(ShinsuQuality.get(e.getString("Quality")));
-            setTechnique(e.contains("Technique", Constants.NBT.TAG_COMPOUND) ? e.getUniqueId("Technique") : null);
+        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
+            setQuality(ShinsuQuality.valueOf(nbt.getString("Quality")));
+        }
+        if (nbt.contains("Technique", Constants.NBT.TAG_INT_ARRAY)) {
+            setTechnique(nbt.getUniqueId("Technique"));
         }
     }
 
     @Override
     public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
-        CompoundNBT e = new CompoundNBT();
-        e.putString("Quality", getQuality().name());
+        nbt.putString("Quality", getQuality().name());
         if (technique != null) {
-            e.putUniqueId("Technique", technique);
+            nbt.putUniqueId("Technique", technique);
         }
-        nbt.put(TAG_KEY, e);
     }
 
     public static class Factory implements EntityType.IFactory<ShinsuArrowEntity> {

@@ -5,16 +5,21 @@ import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
+import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -24,17 +29,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public interface IShinsuStats {
+public interface IShinsuStats extends INBTSerializable<CompoundNBT> {
 
     @Nonnull
     static IShinsuStats get(Entity user) {
         return user.getCapability(Provider.capability).orElseGet(ShinsuStats::new);
     }
 
-    static double getTotalResistance(Entity user, Entity target) {
+    static double getTotalResistance(ServerWorld world, Entity user, Entity target) {
         IShinsuStats targetStats = get(target);
         IShinsuStats userStats = get(user);
-        return targetStats.getResistance() / userStats.getTension();
+        return targetStats.getResistance(world) / userStats.getTension(world);
     }
 
     List<ShinsuTechniqueInstance> getTechniques();
@@ -46,6 +51,10 @@ public interface IShinsuStats {
     int getTechniqueLevel(ShinsuTechnique technique);
 
     void addKnownTechnique(ShinsuTechnique technique, int amt);
+
+    int getLevel();
+
+    void addLevel(int amount);
 
     int getShinsu();
 
@@ -59,13 +68,13 @@ public interface IShinsuStats {
 
     void addMaxBaangs(int amount);
 
-    double getResistance();
+    double getResistance(ServerWorld world);
 
-    void multiplyResistance(double factor);
+    void multiplyBaseResistance(double factor);
 
-    double getTension();
+    double getTension(ServerWorld world);
 
-    void multiplyTension(double factor);
+    void multiplyBaseTension(double factor);
 
     default ShinsuQuality getQuality() {
         return ShinsuQuality.NONE;
@@ -83,14 +92,14 @@ public interface IShinsuStats {
 
     void addCooldown(ShinsuTechnique technique, int time);
 
-    default void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, @Nullable Vector3d dir) {
+    default void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, Vector3d dir) {
         cast(user, technique, getTechniqueLevel(technique), target, dir);
     }
 
-    default void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+    default void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, Vector3d dir) {
         if (getCooldown(technique) <= 0 && user.world instanceof ServerWorld) {
             ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
-            if (builder.canCast(technique, user, level, target, dir)) {
+            if (builder.canCast(user, level, target, dir)) {
                 ShinsuTechniqueInstance tech = technique.getBuilder().build(user, level, target, dir);
                 if (tech != null) {
                     addCooldown(technique, tech.getCooldown());
@@ -104,15 +113,12 @@ public interface IShinsuStats {
     default void tick(ServerWorld world) {
     }
 
-    CompoundNBT serialize();
-
-    void deserialize(CompoundNBT nbt);
-
     class ShinsuStats implements IShinsuStats {
 
         private final Map<ShinsuTechnique, Integer> known;
         private final Map<ShinsuTechnique, Integer> cooldowns;
         private final List<ShinsuTechniqueInstance> techniques;
+        private int level;
         private int shinsu;
         private int baangs;
         private double resistance;
@@ -121,10 +127,11 @@ public interface IShinsuStats {
         private ShinsuShape shape;
 
         public ShinsuStats() {
-            this(0, 0, 1, 1, ShinsuQuality.NONE, ShinsuShape.NONE, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());
+            this(1, 0, 0, 1, 1, ShinsuQuality.NONE, ShinsuShape.NONE, Maps.newEnumMap(ShinsuTechnique.class), Maps.newEnumMap(ShinsuTechnique.class), new ArrayList<>());
         }
 
-        private ShinsuStats(int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, ShinsuShape shape, Map<ShinsuTechnique, Integer> known, Map<ShinsuTechnique, Integer> cooldowns, List<ShinsuTechniqueInstance> techniques) {
+        private ShinsuStats(int level, int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, ShinsuShape shape, Map<ShinsuTechnique, Integer> known, Map<ShinsuTechnique, Integer> cooldowns, List<ShinsuTechniqueInstance> techniques) {
+            this.level = level;
             this.shinsu = shinsu;
             this.baangs = baangs;
             this.resistance = resistance;
@@ -159,6 +166,16 @@ public interface IShinsuStats {
         @Override
         public void addKnownTechnique(ShinsuTechnique technique, int amt) {
             known.put(technique, getTechniqueLevel(technique) + amt);
+        }
+
+        @Override
+        public int getLevel() {
+            return level;
+        }
+
+        @Override
+        public void addLevel(int amount) {
+            level = Math.max(1, level + amount);
         }
 
         @Override
@@ -200,22 +217,30 @@ public interface IShinsuStats {
         }
 
         @Override
-        public double getResistance() {
+        public double getResistance(ServerWorld world) {
+            FloorProperty property = FloorDimensionsHelper.getFloorProperty(world);
+            if (property != null) {
+                return resistance * property.getShinsuDensity();
+            }
             return resistance;
         }
 
         @Override
-        public void multiplyResistance(double factor) {
+        public void multiplyBaseResistance(double factor) {
             resistance *= factor;
         }
 
         @Override
-        public double getTension() {
+        public double getTension(ServerWorld world) {
+            FloorProperty property = FloorDimensionsHelper.getFloorProperty(world);
+            if (property != null) {
+                return tension * property.getShinsuDensity();
+            }
             return tension;
         }
 
         @Override
-        public void multiplyTension(double factor) {
+        public void multiplyBaseTension(double factor) {
             tension *= factor;
         }
 
@@ -251,9 +276,8 @@ public interface IShinsuStats {
 
         @Override
         public void tick(ServerWorld world) {
-            List<ShinsuTechniqueInstance> techniques = getTechniques();
-            for (int i = 0; i < techniques.size(); i++) {
-                ShinsuTechniqueInstance technique = techniques.get(i);
+            List<ShinsuTechniqueInstance> techniques = new ArrayList<>(getTechniques());
+            for (ShinsuTechniqueInstance technique : techniques) {
                 technique.tick(world);
                 if (technique.ticksLeft() <= 0) {
                     technique.remove(world);
@@ -268,8 +292,9 @@ public interface IShinsuStats {
         }
 
         @Override
-        public CompoundNBT serialize() {
+        public CompoundNBT serializeNBT() {
             CompoundNBT tag = new CompoundNBT();
+            tag.putInt("Level", level);
             tag.putInt("Shinsu", shinsu);
             tag.putInt("Baangs", baangs);
             tag.putDouble("Resistance", resistance);
@@ -279,12 +304,9 @@ public interface IShinsuStats {
                 knownTech.putInt(tech.name(), known.get(tech));
             }
             tag.put("Known", knownTech);
-            CompoundNBT instances = new CompoundNBT();
-            instances.putInt("Size", techniques.size());
-            for (int i = 0; i < techniques.size(); i++) {
-                ShinsuTechniqueInstance tech = techniques.get(i);
-                instances.put(i + 1 + "", tech.serializeNBT());
-                instances.putString("Type" + (i + 1), ShinsuTechnique.get(tech).getName());
+            ListNBT instances = new ListNBT();
+            for (ShinsuTechniqueInstance instance : techniques) {
+                instances.add(instance.serializeNBT());
             }
             tag.put("Techniques", instances);
             tag.putString("Quality", quality.name());
@@ -298,32 +320,28 @@ public interface IShinsuStats {
         }
 
         @Override
-        public void deserialize(CompoundNBT nbt) {
+        public void deserializeNBT(CompoundNBT nbt) {
+            level = nbt.getInt("Level");
             shinsu = nbt.getInt("Shinsu");
             baangs = nbt.getInt("Baangs");
             resistance = nbt.getDouble("Resistance");
             tension = nbt.getDouble("Tension");
-            known.clear();
             CompoundNBT knownTech = nbt.getCompound("Known");
             for (ShinsuTechnique tech : ShinsuTechnique.values()) {
-                String key = tech.name();
-                known.put(tech, knownTech.getInt(key));
+                known.put(tech, knownTech.getInt(tech.name()));
             }
-            techniques.clear();
-            CompoundNBT list = nbt.getCompound("Techniques");
-            for (int i = 0; i < list.getInt("Size"); i++) {
-                ShinsuTechnique type = ShinsuTechnique.get(list.getString("Type" + (i + 1)));
+            ListNBT list = nbt.getList("Techniques", Constants.NBT.TAG_COMPOUND);
+            for (INBT data : list) {
+                ShinsuTechnique type = ShinsuTechnique.valueOf(((CompoundNBT) data).getString("Technique"));
                 ShinsuTechniqueInstance tech = type.getBuilder().emptyBuild();
-                tech.deserializeNBT((CompoundNBT) list.get(i + 1 + ""));
+                tech.deserializeNBT((CompoundNBT) data);
                 techniques.add(tech);
             }
-            quality = ShinsuQuality.get(nbt.getString("Quality"));
-            shape = ShinsuShape.get(nbt.getString("Shape"));
-            cooldowns.clear();
+            quality = ShinsuQuality.valueOf(nbt.getString("Quality"));
+            shape = ShinsuShape.valueOf(nbt.getString("Shape"));
             CompoundNBT cool = nbt.getCompound("Cooldowns");
-            for (ShinsuTechnique tech : ShinsuTechnique.values()) {
-                String key = tech.name();
-                cooldowns.put(tech, cool.getInt(key));
+            for (String key : cool.keySet()) {
+                cooldowns.put(ShinsuTechnique.valueOf(key), cool.getInt(key));
             }
         }
 
@@ -356,12 +374,12 @@ public interface IShinsuStats {
 
         @Override
         public INBT writeNBT(Capability<IShinsuStats> capability, IShinsuStats instance, Direction side) {
-            return instance.serialize();
+            return instance.serializeNBT();
         }
 
         @Override
         public void readNBT(Capability<IShinsuStats> capability, IShinsuStats instance, Direction side, INBT nbt) {
-            instance.deserialize((CompoundNBT) nbt);
+            instance.deserializeNBT((CompoundNBT) nbt);
         }
     }
 }

@@ -38,7 +38,9 @@ public class ShinsuAxe extends AxeItem {
                 ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
                 if (technique == null) {
                     IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
-                    inventory.extractItem(itemSlot, stack.getCount(), false);
+                    if (inventory.getSlots() > itemSlot) {
+                        inventory.extractItem(itemSlot, stack.getCount(), false);
+                    }
                 }
             }
         }
@@ -52,7 +54,7 @@ public class ShinsuAxe extends AxeItem {
     @Override
     public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         Vector3d dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
-        ShinsuQuality quality = ShinsuQuality.get(stack.getOrCreateChildTag(TowerOfGod.MOD_ID).getString("Quality"));
+        ShinsuQuality quality = ShinsuQuality.getQuality(stack);
         quality.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
         return super.hitEntity(stack, target, attacker);
     }

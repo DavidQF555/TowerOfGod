@@ -1,14 +1,18 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.DoubleNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -96,14 +100,16 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public void tick(ServerWorld world) {
-        ticks++;
+        if (!technique.isIndefinite()) {
+            ticks++;
+        }
     }
 
     private void updateMeter(ServerWorld world) {
         Entity user = getUser(world);
         if (user instanceof ServerPlayerEntity) {
             IShinsuStats stats = IShinsuStats.get(user);
-            UpdateStatsMetersMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
         }
     }
 
@@ -114,7 +120,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user != null) {
             nbt.putUniqueId("User", user);
         }
-        nbt.putString("Technique", technique.getName());
+        nbt.putString("Technique", technique.name());
         nbt.putInt("Duration", duration);
         nbt.putInt("Ticks", ticks);
         nbt.putInt("Level", level);
@@ -123,12 +129,24 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
-        id = nbt.getUniqueId("ID");
-        user = nbt.getUniqueId("User");
-        technique = ShinsuTechnique.get(nbt.getString("Technique"));
-        duration = nbt.getInt("Duration");
-        ticks = nbt.getInt("Ticks");
-        level = nbt.getInt("Level");
+        if (nbt.contains("ID", Constants.NBT.TAG_INT_ARRAY)) {
+            id = nbt.getUniqueId("ID");
+        }
+        if (nbt.contains("User", Constants.NBT.TAG_INT_ARRAY)) {
+            user = nbt.getUniqueId("User");
+        }
+        if (nbt.contains("Technique", Constants.NBT.TAG_STRING)) {
+            technique = ShinsuTechnique.valueOf(nbt.getString("Technique"));
+        }
+        if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
+            duration = nbt.getInt("Duration");
+        }
+        if (nbt.contains("Ticks", Constants.NBT.TAG_INT)) {
+            ticks = nbt.getInt("Ticks");
+        }
+        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
+            level = nbt.getInt("Level");
+        }
     }
 
     public static abstract class Targetable extends ShinsuTechniqueInstance {
@@ -161,7 +179,9 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         @Override
         public void deserializeNBT(CompoundNBT nbt) {
             super.deserializeNBT(nbt);
-            target = nbt.getUniqueId("Target");
+            if (nbt.contains("Target", Constants.NBT.TAG_INT_ARRAY)) {
+                target = nbt.getUniqueId("Target");
+            }
         }
 
     }
@@ -182,16 +202,21 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         @Override
         public CompoundNBT serializeNBT() {
             CompoundNBT nbt = super.serializeNBT();
-            nbt.putDouble("X", dir.getX());
-            nbt.putDouble("Y", dir.getY());
-            nbt.putDouble("Z", dir.getZ());
+            ListNBT direction = new ListNBT();
+            direction.add(DoubleNBT.valueOf(dir.getX()));
+            direction.add(DoubleNBT.valueOf(dir.getY()));
+            direction.add(DoubleNBT.valueOf(dir.getZ()));
+            nbt.put("Direction", direction);
             return nbt;
         }
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) {
             super.deserializeNBT(nbt);
-            dir = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
+            if (nbt.contains("Direction", Constants.NBT.TAG_LIST)) {
+                ListNBT direction = nbt.getList("Direction", Constants.NBT.TAG_DOUBLE);
+                dir = new Vector3d(direction.getDouble(0), direction.getDouble(1), direction.getDouble(2));
+            }
         }
     }
 }

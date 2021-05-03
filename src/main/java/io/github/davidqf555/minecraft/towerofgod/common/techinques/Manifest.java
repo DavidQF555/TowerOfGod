@@ -10,7 +10,6 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -19,10 +18,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class Manifest extends ShinsuTechniqueInstance {
 
-    private static final int DURATION = 2400;
-
     public Manifest(LivingEntity user, int level) {
-        super(ShinsuTechnique.MANIFEST, user, level, DURATION);
+        super(ShinsuTechnique.MANIFEST, user, level, 1);
     }
 
     @Override
@@ -32,9 +29,16 @@ public class Manifest extends ShinsuTechniqueInstance {
         ItemStack item = stats.getShape().createItem();
         CompoundNBT child = item.getOrCreateChildTag(TowerOfGod.MOD_ID);
         child.putUniqueId("Technique", getID());
-        child.putString("Quality", stats.getQuality().name());
+        ShinsuQuality.setQuality(item, stats.getQuality());
         IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
-        ItemHandlerHelper.insertItem(inventory, item, false);
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            if (inventory.isItemValid(i, item)) {
+                item = inventory.insertItem(i, item, false);
+                if (item.isEmpty()) {
+                    break;
+                }
+            }
+        }
         super.onUse(world);
     }
 
@@ -68,7 +72,7 @@ public class Manifest extends ShinsuTechniqueInstance {
         }
 
         @Override
-        public Manifest build(LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        public Manifest build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return new Manifest(user, level);
         }
 
@@ -79,8 +83,8 @@ public class Manifest extends ShinsuTechniqueInstance {
         }
 
         @Override
-        public boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && IShinsuStats.get(user).getShape() != ShinsuShape.NONE;
+        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && IShinsuStats.get(user).getShape() != ShinsuShape.NONE;
         }
 
         @Override
@@ -91,6 +95,11 @@ public class Manifest extends ShinsuTechniqueInstance {
         @Override
         public int getBaangUse() {
             return baangs;
+        }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.MANIFEST;
         }
     }
 }

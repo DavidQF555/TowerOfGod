@@ -15,11 +15,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
 
-    private static final double RANGE = 4;
-    private static final int BASE_DURATION = 40;
+    private static final double RANGE = 3;
+    private static final int DURATION = 20;
 
     public ReverseFlowControl(LivingEntity user, int level, LivingEntity target) {
-        super(ShinsuTechnique.REVERSE_FLOW_CONTROL, user, level, target, level * BASE_DURATION);
+        super(ShinsuTechnique.REVERSE_FLOW_CONTROL, user, level, target, DURATION);
     }
 
     @Override
@@ -31,15 +31,16 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
                 remove(world);
                 return;
             }
-            double resistance = IShinsuStats.getTotalResistance(user, target);
-            ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), 2, (int) (1.5 * resistance * getLevel())));
+            double resistance = IShinsuStats.getTotalResistance(world, user, target);
+            int level = (int) (resistance * getLevel());
+            ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), 2, level - 1));
         }
         super.tick(world);
     }
 
     @Override
     public int getCooldown() {
-        return BASE_DURATION * 2;
+        return DURATION * 8;
     }
 
     public static class Builder implements ShinsuTechnique.Builder<ReverseFlowControl> {
@@ -53,7 +54,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
         }
 
         @Override
-        public ReverseFlowControl build(LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        public ReverseFlowControl build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return target instanceof LivingEntity ? new ReverseFlowControl(user, level, (LivingEntity) target) : null;
         }
 
@@ -64,8 +65,8 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
         }
 
         @Override
-        public boolean canCast(ShinsuTechnique technique, LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(technique, user, level, target, dir) && target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE;
+        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE;
         }
 
         @Override
@@ -76,6 +77,11 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
         @Override
         public int getBaangUse() {
             return baangs;
+        }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.REVERSE_FLOW_CONTROL;
         }
     }
 }

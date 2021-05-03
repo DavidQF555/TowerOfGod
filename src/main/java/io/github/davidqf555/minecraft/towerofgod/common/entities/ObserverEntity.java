@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ObserverChangeHighlightMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.RemoveObserverDataMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,17 +16,18 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class ObserverEntity extends FlyingDevice {
 
     private static final double RANGE = 24;
-    private final ArrayList<UUID> targets;
+    private final Set<UUID> targets;
 
     public ObserverEntity(World worldIn) {
         super(RegistryHandler.OBSERVER_ENTITY.get(), worldIn);
-        targets = new ArrayList<>();
+        targets = new HashSet<>();
     }
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
@@ -48,7 +49,7 @@ public class ObserverEntity extends FlyingDevice {
         }
         Entity owner = getOwner();
         if (owner instanceof ServerPlayerEntity) {
-            ObserverChangeHighlightMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverChangeHighlightMessage(getUniqueID(), targets));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverChangeHighlightMessage(getUniqueID(), targets));
         }
         super.livingTick();
     }
@@ -57,7 +58,7 @@ public class ObserverEntity extends FlyingDevice {
     public void setOwnerID(@Nonnull UUID id) {
         Entity owner = getOwner();
         if (owner instanceof ServerPlayerEntity) {
-            RemoveObserverDataMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new RemoveObserverDataMessage(getUniqueID()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverChangeHighlightMessage(getUniqueID(), new HashSet<>()));
         }
         super.setOwnerID(id);
     }
@@ -66,7 +67,7 @@ public class ObserverEntity extends FlyingDevice {
     public void onRemovedFromWorld() {
         Entity owner = getOwner();
         if (owner instanceof ServerPlayerEntity) {
-            RemoveObserverDataMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new RemoveObserverDataMessage(getUniqueID()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverChangeHighlightMessage(getUniqueID(), new HashSet<>()));
         }
         super.onRemovedFromWorld();
     }

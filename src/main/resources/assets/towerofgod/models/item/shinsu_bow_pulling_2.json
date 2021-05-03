@@ -1,6 +1,6 @@
 {
   "parent": "towerofgod:item/shinsu_bow",
   "textures": {
-    "layer0": "towerofgod:items/shinsu_bow_pulling_2"
+    "layer0": "towerofgod:item/shinsu_bow_pulling_2"
   }
 }

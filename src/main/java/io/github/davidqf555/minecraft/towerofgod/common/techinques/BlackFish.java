@@ -9,6 +9,7 @@ import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class BlackFish extends ShinsuTechniqueInstance {
 
@@ -23,7 +24,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
         Entity e = getUser(world);
         int level = getLevel();
         if (e instanceof LivingEntity && world.getLight(e.getPosition()) <= level * 5) {
-            ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 2, 1, true, true, true));
+            ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 2, 0, true, true, true));
         }
         super.tick(world);
     }
@@ -33,6 +34,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
         return getLevel() * BASE_DURATION;
     }
 
+    @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.Builder<BlackFish> {
 
         private final int shinsu;
@@ -44,7 +46,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
         }
 
         @Override
-        public BlackFish build(@Nonnull LivingEntity user, int level, @Nullable Entity target, @Nullable Vector3d dir) {
+        public BlackFish build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return new BlackFish(user, level);
         }
 
@@ -62,6 +64,11 @@ public class BlackFish extends ShinsuTechniqueInstance {
         @Override
         public int getBaangUse() {
             return baangs;
+        }
+
+        @Override
+        public ShinsuTechnique getTechnique() {
+            return ShinsuTechnique.BLACK_FISH;
         }
     }
 }

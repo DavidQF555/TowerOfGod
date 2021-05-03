@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
@@ -45,6 +46,9 @@ public class StatsCommand {
             for (ServerPlayerEntity player : players) {
                 IShinsuStats stats = IShinsuStats.get(player);
                 switch (type.toLowerCase()) {
+                    case "level":
+                        stats.addLevel((int) amount);
+                        break;
                     case "shinsu":
                         stats.addMaxShinsu((int) amount);
                         break;
@@ -55,28 +59,28 @@ public class StatsCommand {
                         if (amount < 0) {
                             amount = -1 / amount;
                         }
-                        stats.multiplyResistance(amount);
+                        stats.multiplyBaseResistance(amount);
                         break;
                     case "tension":
                         if (amount < 0) {
                             amount = -1 / amount;
                         }
-                        stats.multiplyTension(amount);
+                        stats.multiplyBaseTension(amount);
                         break;
                     default:
-                        ShinsuTechnique technique = ShinsuTechnique.get(type.toLowerCase());
-                        if (technique == null) {
-                            fail++;
-                        } else {
+                        try {
+                            ShinsuTechnique technique = ShinsuTechnique.valueOf(type.toUpperCase());
                             stats.addKnownTechnique(technique, (int) amount);
                             Map<ShinsuTechnique, Integer> known = Maps.newEnumMap(ShinsuTechnique.class);
                             for (ShinsuTechnique t : ShinsuTechnique.values()) {
                                 known.put(t, stats.getTechniqueLevel(t));
                             }
-                            UpdateClientKnownMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientKnownMessage(known));
+                            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientKnownMessage(known));
+                        } catch (IllegalArgumentException exception) {
+                            fail++;
                         }
                 }
-                UpdateStatsMetersMessage.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             }
             return players.size() - fail;
         }
@@ -87,12 +91,13 @@ public class StatsCommand {
 
         @Override
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSource> context, SuggestionsBuilder builder) {
+            builder.suggest("level");
             builder.suggest("shinsu");
             builder.suggest("baangs");
             builder.suggest("resistance");
             builder.suggest("tension");
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                builder.suggest(technique.getName());
+                builder.suggest(technique.name().toLowerCase());
             }
             return builder.buildFuture();
         }

@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "towerofgod:items/shinsu_pickaxe"
+    "layer0": "towerofgod:item/shinsu_pickaxe"
   }
 }
