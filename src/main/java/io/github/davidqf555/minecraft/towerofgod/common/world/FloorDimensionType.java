@@ -11,7 +11,7 @@ import java.util.OptionalLong;
 public class FloorDimensionType extends DimensionType {
 
     protected FloorDimensionType(FloorProperty property, double coordinateScale, ResourceLocation effects, float ambientLight) {
-        super(property.isTimeFixed() ? OptionalLong.of(property.getTime()) : OptionalLong.empty(), !property.hasCeiling(), property.hasCeiling(), property.isUltrawarm(), true, coordinateScale, false, property.isPiglinSafe(), true, true, true, property.hasCeiling() ? 128 : 256, property.hasCeiling() ? FuzzedBiomeMagnifier.INSTANCE : ColumnFuzzedBiomeMagnifier.INSTANCE, BlockTags.INFINIBURN_OVERWORLD.getName(), effects, ambientLight);
+        super(property.isTimeFixed() ? OptionalLong.of(property.getTime()) : OptionalLong.empty(), !property.hasCeiling(), property.hasCeiling(), false, true, coordinateScale, false, false, true, true, true, property.hasCeiling() ? 128 : 256, property.hasCeiling() ? FuzzedBiomeMagnifier.INSTANCE : ColumnFuzzedBiomeMagnifier.INSTANCE, BlockTags.INFINIBURN_OVERWORLD.getName(), effects, ambientLight);
     }
 
 }
