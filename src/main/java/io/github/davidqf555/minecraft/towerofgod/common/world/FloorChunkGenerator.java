@@ -455,10 +455,10 @@ public class FloorChunkGenerator extends ChunkGenerator {
             fillNoiseColumn(adouble[0][i5], i * noiseSizeX, j * noiseSizeZ + i5);
             adouble[1][i5] = new double[noiseSizeY + 1];
         }
+        Biome biome = getBiomeProvider().getNoiseBiome(k, 0, l);
         ChunkPrimer chunkprimer = (ChunkPrimer) p_230352_3_;
         Heightmap heightmap = chunkprimer.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
         Heightmap heightmap1 = chunkprimer.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
-        BiomeProvider provider = getBiomeProvider();
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
         ObjectListIterator<StructurePiece> objectlistiterator = objectlist.iterator();
         ObjectListIterator<JigsawJunction> objectlistiterator1 = objectlist1.iterator();
@@ -523,7 +523,7 @@ public class FloorChunkGenerator extends ChunkGenerator {
                                     d18 += func_222556_a(k5, j4, k4) * 0.4D;
                                 }
                                 objectlistiterator1.back(objectlist1.size());
-                                BlockState blockstate = func_236086_a_(provider.getNoiseBiome(i3, i2, l3), d18, i2);
+                                BlockState blockstate = func_236086_a_(biome, d18, i2);
                                 if (blockstate != AIR) {
                                     blockpos$mutable.setPos(i3, i2, l3);
                                     if (blockstate.getLightValue(chunkprimer, blockpos$mutable) != 0) {

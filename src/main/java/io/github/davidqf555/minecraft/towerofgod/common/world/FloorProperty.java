@@ -49,7 +49,7 @@ public class FloorProperty {
         return biomes;
     }
 
-    private List<Supplier<Biome>> getBiomes(Registry<Biome> lookup) {
+    public List<Supplier<Biome>> getBiomes(Registry<Biome> lookup) {
         List<Supplier<Biome>> biomes = new ArrayList<>();
         for (Map.Entry<RegistryKey<Biome>, Biome> entry : lookup.getEntries()) {
             RegistryKey<Biome> key = entry.getKey();
