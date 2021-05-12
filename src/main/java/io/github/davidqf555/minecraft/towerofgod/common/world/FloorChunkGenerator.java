@@ -77,8 +77,6 @@ public class FloorChunkGenerator extends ChunkGenerator {
     private static final Function<NoiseChunkGenerator, Supplier<DimensionSettings>> SETTINGS = FloorDimensionsHelper.getInstanceField(NoiseChunkGenerator.class, "field_236080_h_");
     private static final BlockState AIR = Blocks.AIR.getDefaultState();
     private static final Map<Biome, Pair<BlockState, BlockState>> defaults = new HashMap<>();
-    private final BlockState defaultBlock;
-    private final BlockState defaultFluid;
     private final Supplier<DimensionSettings> settings;
     private final int verticalNoiseGranularity;
     private final int horizontalNoiseGranularity;
@@ -107,8 +105,6 @@ public class FloorChunkGenerator extends ChunkGenerator {
         max = noisesettings.func_236169_a_();
         verticalNoiseGranularity = noisesettings.func_236175_f_() * 4;
         horizontalNoiseGranularity = noisesettings.func_236174_e_() * 4;
-        defaultBlock = dimensionsettings.getDefaultBlock();
-        defaultFluid = dimensionsettings.getDefaultFluid();
         noiseSizeX = 16 / horizontalNoiseGranularity;
         noiseSizeY = noisesettings.func_236169_a_() / verticalNoiseGranularity;
         noiseSizeZ = 16 / horizontalNoiseGranularity;
@@ -338,10 +334,21 @@ public class FloorChunkGenerator extends ChunkGenerator {
     }
 
     private BlockState func_236086_a_(Biome biome, double p_236086_1_, int y) {
-        Pair<BlockState, BlockState> states = null;
-        if (defaults.containsKey(biome)) {
-            states = defaults.get(biome);
+        Pair<BlockState, BlockState> states = getDefaults(biome);
+        if (p_236086_1_ > 0) {
+            return states.getFirst();
+        } else if (y < getSeaLevel()) {
+            return states.getSecond();
         } else {
+            return AIR;
+        }
+    }
+
+    private Pair<BlockState, BlockState> getDefaults(Biome biome) {
+        if (defaults.containsKey(biome)) {
+            return defaults.get(biome);
+        } else {
+            Pair<BlockState, BlockState> states = null;
             for (Dimension dim : ServerLifecycleHooks.getCurrentServer().getServerConfiguration().getDimensionGeneratorSettings().func_236224_e_()) {
                 ChunkGenerator gen = dim.getChunkGenerator();
                 if (gen instanceof NoiseChunkGenerator && gen.getBiomeProvider().getBiomes().contains(biome)) {
@@ -354,13 +361,7 @@ public class FloorChunkGenerator extends ChunkGenerator {
                 states = Pair.of(Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState());
             }
             defaults.put(biome, states);
-        }
-        if (p_236086_1_ > 0) {
-            return states.getFirst();
-        } else if (y < getSeaLevel()) {
-            return states.getSecond();
-        } else {
-            return AIR;
+            return states;
         }
     }
 
@@ -374,6 +375,9 @@ public class FloorChunkGenerator extends ChunkGenerator {
         ChunkPos chunkpos1 = p_225551_2_.getPos();
         int k = chunkpos1.getXStart();
         int l = chunkpos1.getZStart();
+        Pair<BlockState, BlockState> defaults = getDefaults(p_225551_1_.getNoiseBiome(k, 0, l));
+        BlockState block = defaults.getFirst();
+        BlockState fluid = defaults.getSecond();
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
         for (int i1 = 0; i1 < 16; ++i1) {
             for (int j1 = 0; j1 < 16; ++j1) {
@@ -381,7 +385,7 @@ public class FloorChunkGenerator extends ChunkGenerator {
                 int l1 = l + j1;
                 int i2 = p_225551_2_.getTopBlockY(Heightmap.Type.WORLD_SURFACE_WG, i1, j1) + 1;
                 double d1 = surfaceNoise.noiseAt((double) k1 * 0.0625D, (double) l1 * 0.0625D, 0.0625D, (double) i1 * 0.0625D) * 15;
-                p_225551_1_.getBiome(blockpos$mutable.setPos(k + i1, i2, l + j1)).buildSurface(sharedseedrandom, p_225551_2_, k1, l1, i2, d1, defaultBlock, defaultFluid, getSeaLevel(), p_225551_1_.getSeed());
+                p_225551_1_.getBiome(blockpos$mutable.setPos(k1, i2, l1)).buildSurface(sharedseedrandom, p_225551_2_, k1, l1, i2, d1, block, fluid, getSeaLevel(), p_225551_1_.getSeed());
             }
         }
         makeBedrock(p_225551_2_, sharedseedrandom);
@@ -455,7 +459,7 @@ public class FloorChunkGenerator extends ChunkGenerator {
             fillNoiseColumn(adouble[0][i5], i * noiseSizeX, j * noiseSizeZ + i5);
             adouble[1][i5] = new double[noiseSizeY + 1];
         }
-        Biome biome = getBiomeProvider().getNoiseBiome(k, 0, l);
+        Biome biome = p_230352_1_.getBiome(new BlockPos(k, 0, l));
         ChunkPrimer chunkprimer = (ChunkPrimer) p_230352_3_;
         Heightmap heightmap = chunkprimer.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
         Heightmap heightmap1 = chunkprimer.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
