@@ -15,6 +15,7 @@ import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.gen.MaxMinNoiseMixer;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -34,9 +35,10 @@ public class FloorBiomeProvider extends BiomeProvider {
     private final MaxMinNoiseMixer altitudeMixer;
     private final MaxMinNoiseMixer weirdnessMixer;
     private final FloorProperty property;
+    private final List<Pair<Supplier<Biome>, Biome.Attributes>> attributes;
 
     protected FloorBiomeProvider(long seed, FloorProperty property, Registry<Biome> lookup) {
-        super(property.getBiomeAttributesList(lookup).stream().map(Pair::getFirst).map(Supplier::get).collect(Collectors.toList()));
+        super(property.getBiomes(lookup).stream().map(Supplier::get).collect(Collectors.toList()));
         this.seed = seed;
         this.property = property;
         this.lookup = lookup;
@@ -44,6 +46,7 @@ public class FloorBiomeProvider extends BiomeProvider {
         humidityMixer = MaxMinNoiseMixer.func_242930_a(new SharedSeedRandom(seed + 1), -7, new DoubleArrayList(ImmutableList.of(1.0, 1.0)));
         altitudeMixer = MaxMinNoiseMixer.func_242930_a(new SharedSeedRandom(seed + 2), -7, new DoubleArrayList(ImmutableList.of(1.0, 1.0)));
         weirdnessMixer = MaxMinNoiseMixer.func_242930_a(new SharedSeedRandom(seed + 3), -7, new DoubleArrayList(ImmutableList.of(1.0, 1.0)));
+        attributes = property.getBiomeAttributesList(lookup);
     }
 
     @Override
@@ -59,7 +62,7 @@ public class FloorBiomeProvider extends BiomeProvider {
     @Override
     public Biome getNoiseBiome(int x, int y, int z) {
         Biome.Attributes attributes = new Biome.Attributes((float) temperatureMixer.func_237211_a_(x, y, z), (float) humidityMixer.func_237211_a_(x, y, z), (float) altitudeMixer.func_237211_a_(x, y, z), (float) weirdnessMixer.func_237211_a_(x, y, z), 0);
-        return property.getBiomeAttributesList(lookup).stream()
+        return this.attributes.stream()
                 .min(Comparator.comparing(pair -> pair.getSecond().getAttributeDifference(attributes)))
                 .map(Pair::getFirst)
                 .map(Supplier::get)

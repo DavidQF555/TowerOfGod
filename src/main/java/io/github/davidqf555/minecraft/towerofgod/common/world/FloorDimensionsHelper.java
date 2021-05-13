@@ -6,6 +6,7 @@ import com.mojang.serialization.Lifecycle;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientDimensionsMessage;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Direction;
@@ -24,15 +25,16 @@ import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.border.IBorderListener;
 import net.minecraft.world.chunk.listener.IChunkStatusListener;
 import net.minecraft.world.chunk.listener.IChunkStatusListenerFactory;
+import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.DimensionSettings;
 import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.NoiseChunkGenerator;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.settings.*;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DerivedWorldInfo;
 import net.minecraft.world.storage.IServerConfiguration;
 import net.minecraft.world.storage.SaveFormat;
+import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -53,7 +55,7 @@ public class FloorDimensionsHelper {
     private static final Function<Integer, RegistryKey<World>> WORLD_KEY = level -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(TowerOfGod.MOD_ID, "floor_" + level));
     private static final Constructor<DimensionSettings> SETTINGS_CONSTRUCTOR = ObfuscationReflectionHelper.findConstructor(DimensionSettings.class, DimensionStructuresSettings.class, NoiseSettings.class, BlockState.class, BlockState.class, int.class, int.class, int.class, boolean.class);
 
-    private static final double ATTRIBUTE_RATE = 0.05;
+    private static final double TYPE_RATE = 0.1;
 
     public static void forceSendPlayerToFloor(ServerPlayerEntity player, int floor, Vector3d pos) {
         ServerWorld world = getOrCreateWorld(player.server, floor);
@@ -128,7 +130,7 @@ public class FloorDimensionsHelper {
             effect = DimensionType.THE_END_ID;
         }
         BiomeProvider provider = new FloorBiomeProvider(seed, property, lookup);
-        NoiseChunkGenerator generator = new NoiseChunkGenerator(provider, seed, () -> createSettings(property));
+        ChunkGenerator generator = new FloorChunkGenerator(provider, seed, () -> createSettings(property));
         return new Dimension(() -> new FloorDimensionType(property, 1, effect, lighting), generator);
     }
 
@@ -228,20 +230,22 @@ public class FloorDimensionsHelper {
         }
         DimensionStructuresSettings structures = new DimensionStructuresSettings(Optional.empty(), map);
         try {
-            return SETTINGS_CONSTRUCTOR.newInstance(structures, noise, property.getBlockState(), property.getFluid(), ceilingOffset, floorOffset, seaLevel, false);
+            return SETTINGS_CONSTRUCTOR.newInstance(structures, noise, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), ceilingOffset, floorOffset, seaLevel, false);
         } catch (Exception e) {
             return DimensionSettings.getDefaultDimensionSettings();
         }
     }
 
     private static FloorProperty randomProperty(int level, Random rand) {
-        Set<FloorProperty.Attribute> attributes = EnumSet.noneOf(FloorProperty.Attribute.class);
-        FloorProperty.Attribute[] all = FloorProperty.Attribute.values();
-        FloorProperty.Attribute primary = all[rand.nextInt(all.length)];
-        for (FloorProperty.Attribute attribute : all) {
-            if (rand.nextDouble() < ATTRIBUTE_RATE) {
-                attributes.add(attribute);
+        Set<BiomeDictionary.Type> types = new HashSet<>();
+        List<BiomeDictionary.Type> all = new ArrayList<>(BiomeDictionary.Type.getAll());
+        for (BiomeDictionary.Type type : all) {
+            if (rand.nextDouble() < TYPE_RATE) {
+                types.add(type);
             }
+        }
+        if (types.isEmpty()) {
+            types.add(all.get(rand.nextInt(all.size())));
         }
         EnumSet<FloorProperty.Bound> bounds = EnumSet.noneOf(FloorProperty.Bound.class);
         for (FloorProperty.Bound bound : FloorProperty.Bound.values()) {
@@ -249,7 +253,6 @@ public class FloorDimensionsHelper {
                 bounds.add(bound);
             }
         }
-        attributes.add(primary);
         FloorProperty.Time time;
         if (bounds.contains(FloorProperty.Bound.CEILING)) {
             time = FloorProperty.Time.MIDNIGHT;
@@ -260,7 +263,7 @@ public class FloorDimensionsHelper {
             time = times[rand.nextInt(times.length)];
         }
         float density = 0.9f + level * 0.1f + rand.nextFloat() * 0.5f - 0.25f;
-        return new FloorProperty(level, primary, attributes, bounds, time, density);
+        return new FloorProperty(level, types, bounds, time, density);
     }
 
     @SuppressWarnings("unchecked")

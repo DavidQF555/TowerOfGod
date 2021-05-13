@@ -3,38 +3,34 @@ package io.github.davidqf555.minecraft.towerofgod.common.world;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.BiomeDictionary;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class FloorProperty {
 
     public static Codec<FloorProperty> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             Codec.INT.fieldOf("level").forGetter(property -> property.level),
-            Attribute.CODEC.fieldOf("primaryAttribute").forGetter(property -> property.primaryAttribute),
-            Codec.list(Attribute.CODEC).fieldOf("attributes").forGetter(property -> new ArrayList<>(property.attributes)),
+            Codec.list(Codec.STRING).fieldOf("type").forGetter(property -> property.types.stream().map(BiomeDictionary.Type::getName).collect(Collectors.toList())),
             Codec.list(Bound.CODEC).fieldOf("bounds").forGetter(property -> new ArrayList<>(property.bounds)),
             Time.CODEC.fieldOf("time").forGetter(property -> property.time),
             Codec.FLOAT.fieldOf("shinsuDensity").forGetter(property -> property.shinsuDensity)
-    ).apply(builder, builder.stable((level, primaryAttribute, attributes, bounds, time, shinsuDensity) -> new FloorProperty(level, primaryAttribute, EnumSet.copyOf(attributes), bounds.isEmpty() ? EnumSet.noneOf(Bound.class) : EnumSet.copyOf(bounds), time, shinsuDensity))));
+    ).apply(builder, builder.stable((level, types, bounds, time, shinsuDensity) -> new FloorProperty(level, types.stream().map(BiomeDictionary.Type::getType).collect(Collectors.toSet()), bounds.isEmpty() ? EnumSet.noneOf(Bound.class) : EnumSet.copyOf(bounds), time, shinsuDensity))));
 
     private final int level;
-    private final Attribute primaryAttribute;
-    private final Set<Attribute> attributes;
+    private final Set<BiomeDictionary.Type> types;
     private final Set<Bound> bounds;
     private final Time time;
     private final float shinsuDensity;
 
-    public FloorProperty(int level, Attribute primaryAttribute, Set<Attribute> attributes, Set<Bound> bounds, Time time, float shinsuDensity) {
+    public FloorProperty(int level, Set<BiomeDictionary.Type> types, Set<Bound> bounds, Time time, float shinsuDensity) {
         this.level = level;
-        this.primaryAttribute = primaryAttribute;
-        this.attributes = attributes;
+        this.types = types;
         this.bounds = bounds;
         this.time = time;
         this.shinsuDensity = shinsuDensity;
@@ -42,14 +38,6 @@ public class FloorProperty {
 
     public int getLevel() {
         return level;
-    }
-
-    public Attribute getPrimaryAttribute() {
-        return primaryAttribute;
-    }
-
-    public Set<Attribute> getAttributes() {
-        return attributes;
     }
 
     public List<Pair<Supplier<Biome>, Biome.Attributes>> getBiomeAttributesList(Registry<Biome> lookup) {
@@ -61,39 +49,18 @@ public class FloorProperty {
         return biomes;
     }
 
-    private List<Supplier<Biome>> getBiomes(Registry<Biome> lookup) {
-        Predicate<Biome> condition = biome -> false;
-        Set<FloorProperty.Attribute> attributes = getAttributes();
-        if (attributes.isEmpty()) {
-            condition = biome -> true;
-        } else {
-            for (FloorProperty.Attribute attribute : attributes) {
-                condition = condition.or(attribute.getConditions());
-            }
-        }
+    public List<Supplier<Biome>> getBiomes(Registry<Biome> lookup) {
         List<Supplier<Biome>> biomes = new ArrayList<>();
         for (Map.Entry<RegistryKey<Biome>, Biome> entry : lookup.getEntries()) {
-            if (condition.test(entry.getValue())) {
-                biomes.add(() -> lookup.getOrThrow(entry.getKey()));
+            RegistryKey<Biome> key = entry.getKey();
+            for (BiomeDictionary.Type type : types) {
+                if (BiomeDictionary.hasType(key, type)) {
+                    biomes.add(() -> lookup.getOrThrow(entry.getKey()));
+                    break;
+                }
             }
         }
         return biomes;
-    }
-
-    public BlockState getBlockState() {
-        return primaryAttribute.getBlockState();
-    }
-
-    public BlockState getFluid() {
-        return primaryAttribute.getFluid();
-    }
-
-    public boolean isUltrawarm() {
-        return primaryAttribute.isUltrawarm();
-    }
-
-    public boolean isPiglinSafe() {
-        return primaryAttribute.piglinSafe;
     }
 
     public boolean hasCeiling() {
@@ -114,52 +81,6 @@ public class FloorProperty {
 
     public float getShinsuDensity() {
         return shinsuDensity;
-    }
-
-    public enum Attribute {
-
-        NETHER(Blocks.NETHERRACK::getDefaultState, Blocks.LAVA::getDefaultState, true, true, biome -> biome.getCategory() == Biome.Category.NETHER),
-        COLD(Blocks.STONE::getDefaultState, Blocks.WATER::getDefaultState, false, false, biome -> biome.getCategory() == Biome.Category.ICY || biome.getCategory() == Biome.Category.TAIGA),
-        END(Blocks.END_STONE::getDefaultState, Blocks.AIR::getDefaultState, false, false, biome -> biome.getCategory() == Biome.Category.THEEND),
-        DESERT(Blocks.SANDSTONE::getDefaultState, Blocks.WATER::getDefaultState, false, false, biome -> biome.getCategory() == Biome.Category.DESERT),
-        MUSHROOM(Blocks.STONE::getDefaultState, Blocks.WATER::getDefaultState, false, false, biome -> biome.getCategory() == Biome.Category.MUSHROOM);
-
-        public static final Codec<Attribute> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                Codec.STRING.fieldOf("name").stable().forGetter(Enum::name)
-        ).apply(builder, builder.stable(Attribute::valueOf)));
-        private final Supplier<BlockState> block;
-        private final Supplier<BlockState> fluid;
-        private final boolean ultrawarm;
-        private final boolean piglinSafe;
-        private final Predicate<Biome> conditions;
-
-        Attribute(Supplier<BlockState> block, Supplier<BlockState> fluid, boolean ultrawarm, boolean piglinSafe, Predicate<Biome> conditions) {
-            this.block = block;
-            this.fluid = fluid;
-            this.ultrawarm = ultrawarm;
-            this.piglinSafe = piglinSafe;
-            this.conditions = conditions;
-        }
-
-        public BlockState getBlockState() {
-            return block.get();
-        }
-
-        public BlockState getFluid() {
-            return fluid.get();
-        }
-
-        public boolean isUltrawarm() {
-            return ultrawarm;
-        }
-
-        public boolean isPiglinSafe() {
-            return piglinSafe;
-        }
-
-        public Predicate<Biome> getConditions() {
-            return conditions;
-        }
     }
 
     public enum Bound {
