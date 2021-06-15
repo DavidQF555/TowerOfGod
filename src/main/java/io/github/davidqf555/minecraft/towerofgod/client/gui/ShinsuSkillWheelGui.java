@@ -1,12 +1,13 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
-import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
+import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCanCastMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCooldownsMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.TechniqueSettings;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -17,10 +18,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Map;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -29,9 +30,6 @@ public class ShinsuSkillWheelGui extends AbstractGui {
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/wheel.png");
     private static final int RADIUS = 100;
     private static final double MIN_MOVEMENT = 1.5;
-    public static ShinsuTechnique[] equipped = new ShinsuTechnique[0];
-    public static Map<ShinsuTechnique, Integer> cooldowns = Maps.newEnumMap(ShinsuTechnique.class);
-    public static Map<ShinsuTechnique, Boolean> canCast = Maps.newEnumMap(ShinsuTechnique.class);
     private final Part[] parts;
     private Part selected;
     private float yaw, prevYaw, pitch, prevPitch;
@@ -55,6 +53,11 @@ public class ShinsuSkillWheelGui extends AbstractGui {
     @Nullable
     public ShinsuTechnique getSelected() {
         return selected == null ? null : selected.technique;
+    }
+
+    @Nullable
+    public String getSettings() {
+        return selected == null ? null : (selected.settings == null ? selected.technique.getSettings().getDefault() : selected.settings);
     }
 
     public void render(MatrixStack matrixStack) {
@@ -83,7 +86,8 @@ public class ShinsuSkillWheelGui extends AbstractGui {
                 }
             }
             for (int i = 0; i < parts.length; i++) {
-                parts[i].technique = i < equipped.length ? equipped[i] : null;
+                parts[i].technique = i < ClientReference.equipped.length ? ClientReference.equipped[i] : null;
+                parts[i].settings = i < ClientReference.settings.length ? ClientReference.settings[i] : null;
                 parts[i].render(matrixStack);
             }
             for (Part part : parts) {
@@ -91,7 +95,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
                 int xOff = (int) (Math.cos(angle * Math.PI / 180) * RADIUS / 2);
                 int yOff = -(int) (Math.sin(angle * Math.PI / 180) * RADIUS / 2);
                 if (part.technique != null) {
-                    part.renderName(matrixStack, cenX + xOff, cenY + yOff, cooldowns.getOrDefault(part.technique, 0));
+                    part.renderName(matrixStack, cenX + xOff, cenY + yOff, ClientReference.cooldowns.getOrDefault(part.technique, 0));
                 }
             }
         }
@@ -125,14 +129,17 @@ public class ShinsuSkillWheelGui extends AbstractGui {
         private static final int CANNOT_CAST_COLOR = 0x88FF0000;
         private static final int CAN_CAST_NAME_COLOR = 0xFF00FF00;
         private static final int CANNOT_CAST_NAME_COLOR = 0xFFFF0000;
+        private static final String SETTINGS_TRANSLATION_KEY = "gui." + TowerOfGod.MOD_ID + ".settings";
         private final float angle;
         private final ShinsuSkillWheelGui gui;
         private ShinsuTechnique technique;
+        private String settings;
 
         private Part(ShinsuSkillWheelGui gui, float angle) {
             this.angle = angle;
             this.gui = gui;
             technique = null;
+            settings = null;
         }
 
         private void render(MatrixStack matrixStack) {
@@ -151,14 +158,19 @@ public class ShinsuSkillWheelGui extends AbstractGui {
 
         private void renderName(MatrixStack matrixStack, int x, int y, int cooldown) {
             FontRenderer font = Minecraft.getInstance().fontRenderer;
-            float scale = cooldown <= 0 ? 1 : 0.75f;
             int color = canCast() ? CAN_CAST_NAME_COLOR : CANNOT_CAST_NAME_COLOR;
-            drawCenteredString(matrixStack, font, technique == null ? StringTextComponent.EMPTY : technique.getText(), x, y - font.FONT_HEIGHT / 2, color);
-            if (cooldown > 0) {
-                matrixStack.push();
-                matrixStack.scale(scale, scale, scale);
-                drawCenteredString(matrixStack, font, technique == null ? StringTextComponent.EMPTY : new StringTextComponent(getRoundedString(cooldown / 20.0, 1) + "s"), (int) (x / scale), (int) ((y + font.FONT_HEIGHT / 2.0) / scale), color);
-                matrixStack.pop();
+            if (technique != null) {
+                int current = y;
+                drawCenteredString(matrixStack, font, technique.getText(), x, current, color);
+                current += font.FONT_HEIGHT;
+                if (!settings.isEmpty()) {
+                    TechniqueSettings set = technique.getSettings();
+                    drawCenteredString(matrixStack, font, new TranslationTextComponent(SETTINGS_TRANSLATION_KEY, set.getTitle(), set.getText(settings)), x, current, color);
+                    current += font.FONT_HEIGHT;
+                }
+                if (cooldown > 0) {
+                    drawCenteredString(matrixStack, font, new StringTextComponent(getRoundedString(cooldown / 20.0, 1) + "s"), x, current, color);
+                }
             }
         }
 
@@ -173,7 +185,7 @@ public class ShinsuSkillWheelGui extends AbstractGui {
         }
 
         private boolean canCast() {
-            return technique != null && canCast.containsKey(technique) && canCast.get(technique);
+            return technique != null && ClientReference.canCast.containsKey(technique) && ClientReference.canCast.get(technique).contains(settings);
         }
     }
 }

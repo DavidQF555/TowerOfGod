@@ -28,8 +28,8 @@ public class HookItem extends ToolItem {
 
     @Override
     public boolean hitEntity(@Nonnull ItemStack stack, @Nonnull LivingEntity target, @Nonnull LivingEntity attacker) {
-        float mul = attacker.getDistance(target) / 4;
-        Vector3d vel = attacker.getPositionVec().subtract(target.getPositionVec()).normalize().mul(mul, mul, mul);
+        float scale = attacker.getDistance(target) / 4;
+        Vector3d vel = attacker.getPositionVec().subtract(target.getPositionVec()).normalize().scale(scale);
         target.addVelocity(vel.getX(), vel.getY(), vel.getZ());
         return super.hitEntity(stack, target, attacker);
     }

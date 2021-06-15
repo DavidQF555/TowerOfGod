@@ -36,9 +36,9 @@ public class ClickerItem extends Item {
         ClickerEntity entity = RegistryHandler.CLICKER_ENTITY.get().create(worldIn);
         if (entity != null) {
             Vector3d eye = playerIn.getEyePosition(1);
-            Vector3d change = playerIn.getLookVec().mul(4, 4, 4);
+            Vector3d change = playerIn.getLookVec().scale(4);
             while (worldIn.getBlockState(new BlockPos(eye.add(change))).isSolid() && change.lengthSquared() > 0.625) {
-                change = change.mul(0.9, 0.9, 0.9);
+                change = change.scale(0.9);
             }
             Vector3d spawn = eye.add(change);
             entity.setPosition(spawn.x, spawn.y, spawn.z);

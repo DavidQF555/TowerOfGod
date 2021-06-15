@@ -14,34 +14,39 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public enum ShinsuTechnique {
 
-    BODY_REINFORCEMENT(false, false, true, new BodyReinforcement.Builder(10, 1), ShinsuIcons.RESISTANCE),
-    BLACK_FISH(false, false, true, new BlackFish.Builder(10, 1), ShinsuIcons.SWIRL),
-    FLARE_WAVE_EXPLOSION(true, false, true, new FlareWaveExplosion.Builder(20, 1), ShinsuIcons.TENSION),
-    REVERSE_FLOW_CONTROL(true, false, true, new ReverseFlowControl.Builder(10, 1), ShinsuIcons.REVERSE),
-    SHINSU_BLAST(true, false, true, new ShinsuBlast.Builder(5, 1), ShinsuIcons.BAANGS),
-    MANIFEST(false, true, true, new Manifest.Builder(10, 1), ShinsuIcons.SWIRL),
-    SHOOT_SHINSU_ARROW(true, false, false, new ShootShinsuArrow.Builder(3, 1), ShinsuIcons.BAANGS),
-    USE_LIGHTHOUSE(true, true, false, new UseLighthouseTechnique.Builder(15, 1), ShinsuIcons.BAANGS),
-    USE_OBSERVER(true, true, false, new UseObserverTechnique.Builder(10, 1), ShinsuIcons.BAANGS);
+    BODY_REINFORCEMENT(Repeat.DENY, false, true, new BodyReinforcement.Builder(), null, ShinsuIcons.RESISTANCE),
+    BLACK_FISH(Repeat.DENY, false, true, new BlackFish.Builder(), null, ShinsuIcons.SWIRL),
+    FLARE_WAVE_EXPLOSION(Repeat.ALLOW, false, true, new FlareWaveExplosion.Builder(), null, ShinsuIcons.TENSION),
+    REVERSE_FLOW_CONTROL(Repeat.ALLOW, false, true, new ReverseFlowControl.Builder(), null, ShinsuIcons.REVERSE),
+    SHINSU_BLAST(Repeat.ALLOW, false, true, new ShinsuBlast.Builder(), null, ShinsuIcons.BAANGS),
+    MANIFEST(Repeat.DENY, true, true, new Manifest.Builder(), null, ShinsuIcons.SWIRL),
+    SHOOT_SHINSU_ARROW(Repeat.ALLOW, false, false, new ShootShinsuArrow.Builder(), null, ShinsuIcons.BAANGS),
+    MOVE_DEVICES(Repeat.ALLOW, true, true, new MoveDevices.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.SHINSU),
+    LIGHTHOUSE_FLOW_CONTROL(Repeat.DENY, false, true, new LighthouseFlowControl.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.BAANGS),
+    SCOUT(Repeat.ALLOW, false, true, new Scout.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.BAANGS),
+    FOLLOW_OWNER(Repeat.TOGGLE, true, true, new FollowOwner.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.BAANGS);
 
-    private final boolean canStack;
+    private final Repeat repeat;
     private final boolean indefinite;
     private final boolean obtainable;
-    private final Builder<? extends ShinsuTechniqueInstance> builder;
+    private final IBuilder<? extends ShinsuTechniqueInstance> builder;
     private final TranslationTextComponent text;
+    private final TechniqueSettings settings;
     private final RenderInfo icon;
 
-    ShinsuTechnique(boolean canStack, boolean indefinite, boolean obtainable, Builder<? extends ShinsuTechniqueInstance> builder, RenderInfo icon) {
-        this.canStack = canStack;
+    ShinsuTechnique(Repeat repeat, boolean indefinite, boolean obtainable, IBuilder<? extends ShinsuTechniqueInstance> builder, @Nullable TechniqueSettings settings, RenderInfo icon) {
+        this.repeat = repeat;
         this.indefinite = indefinite;
         this.obtainable = obtainable;
         this.builder = builder;
         text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name().toLowerCase());
+        this.settings = settings == null ? TechniqueSettings.SINGLE : settings;
         this.icon = icon;
     }
 
@@ -65,8 +70,8 @@ public enum ShinsuTechnique {
         return obtainable;
     }
 
-    public boolean canStack() {
-        return canStack;
+    public Repeat getRepeatEffect() {
+        return repeat;
     }
 
     public boolean isObtainable() {
@@ -77,7 +82,7 @@ public enum ShinsuTechnique {
         return indefinite;
     }
 
-    public Builder<? extends ShinsuTechniqueInstance> getBuilder() {
+    public IBuilder<? extends ShinsuTechniqueInstance> getBuilder() {
         return builder;
     }
 
@@ -85,37 +90,51 @@ public enum ShinsuTechnique {
         return text;
     }
 
-    public int getShinsuUse() {
-        return builder.getShinsuUse();
-    }
-
-    public int getBaangUse() {
-        return builder.getBaangUse();
+    public TechniqueSettings getSettings() {
+        return settings;
     }
 
     public RenderInfo getIcon() {
         return icon;
     }
 
-    public interface Builder<T extends ShinsuTechniqueInstance> {
+    public enum Repeat {
+        DENY(),
+        ALLOW(),
+        TOGGLE()
+    }
+
+    public interface IBuilder<T extends ShinsuTechniqueInstance> {
 
         @Nullable
-        T build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir);
+        T build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings);
 
         T emptyBuild();
 
-        int getShinsuUse();
-
-        int getBaangUse();
-
         ShinsuTechnique getTechnique();
 
-        default boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+        @Nullable
+        default T doBuild(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
             ShinsuTechnique technique = getTechnique();
             IShinsuStats stats = IShinsuStats.get(user);
-            boolean casting = stats.getTechniques().stream().map(ShinsuTechniqueInstance::getTechnique).anyMatch(cast -> cast == technique);
-            return level > 0 && stats.getCooldown(technique) <= 0 && stats.getShinsu() >= technique.getShinsuUse() && stats.getBaangs() >= technique.getBaangUse() && (!casting || technique.canStack());
+            if ((!technique.isObtainable() || level > 0) && stats.getCooldown(technique) <= 0) {
+                T instance = build(user, level, target, dir, settings);
+                if (instance != null) {
+                    List<ShinsuTechniqueInstance> conflicting = stats.getTechniques().stream().filter(instance::isConflicting).collect(Collectors.toList());
+                    if (technique.getRepeatEffect() != Repeat.DENY || conflicting.isEmpty()) {
+                        int netShinsuUse = instance.getShinsuUse();
+                        int netBaangsUse = instance.getBaangsUse();
+                        for (ShinsuTechniqueInstance inst : conflicting) {
+                            netShinsuUse -= inst.getShinsuUse();
+                            netBaangsUse -= inst.getBaangsUse();
+                        }
+                        if (stats.getShinsu() >= netShinsuUse && stats.getBaangs() >= netBaangsUse) {
+                            return instance;
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
-
 }

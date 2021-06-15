@@ -5,6 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStat
 import io.github.davidqf555.minecraft.towerofgod.common.entities.goals.RangedMainHandAttackGoal;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.goals.SwapWeaponToMainHandGoal;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShootShinsuArrow;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
@@ -179,12 +180,12 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
         if (arrow instanceof ShinsuArrowEntity) {
             Vector3d dir = new Vector3d(dX, dY, dZ);
             IShinsuStats stats = IShinsuStats.get(this);
-            int level = ShootShinsuArrow.getLevelForVelocity(velocity, stats.getQuality());
-            if (ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().canCast(this, level, target, dir)) {
-                stats.cast(this, ShinsuTechnique.SHOOT_SHINSU_ARROW, level, target, dir);
-                return;
-            } else {
+            ShinsuTechniqueInstance technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(this, ShootShinsuArrow.getLevelForVelocity(velocity, stats.getQuality()), target, dir, null);
+            if (technique == null) {
                 arrow = ((ArrowItem) Items.ARROW).createArrow(world, new ItemStack(Items.ARROW), this);
+            } else {
+                stats.cast((ServerWorld) world, technique);
+                return;
             }
         }
         arrow.shoot(dX, dY, dZ, velocity, inaccuracy);

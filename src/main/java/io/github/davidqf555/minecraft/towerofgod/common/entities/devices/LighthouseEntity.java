@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.entities;
+package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
@@ -73,6 +73,11 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     }
 
     @Override
+    protected ItemStack getDeviceItem() {
+        return RegistryHandler.LIGHTHOUSE_ITEM.get().getDefaultInstance();
+    }
+
+    @Override
     public void dropInventory() {
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemEntity item = new ItemEntity(world, getPosX(), getPosY(), getPosZ(), inventory.extractItem(i, inventory.getSlotLimit(i), false));
@@ -83,17 +88,11 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     @Override
     public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d vec, Hand hand) {
         ActionResultType ret = super.applyPlayerInteraction(player, vec, hand);
-        if (getOwner() != null && player.equals(getOwner())) {
-            openInventory(player);
+        if (player instanceof ServerPlayerEntity && player.equals(getOwner())) {
+            NetworkHooks.openGui((ServerPlayerEntity) player, this, buf -> buf.writeVarInt(getEntityId()));
             return ActionResultType.SUCCESS;
         }
         return ret;
-    }
-
-    public void openInventory(PlayerEntity player) {
-        if (player instanceof ServerPlayerEntity) {
-            NetworkHooks.openGui((ServerPlayerEntity) player, this, buf -> buf.writeVarInt(getEntityId()));
-        }
     }
 
     @Override
@@ -236,8 +235,8 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
     public static class LighthouseScreen extends ContainerScreen<LighthouseContainer> {
 
-        private static final RenderInfo RENDER = new RenderInfo(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 166, 0, 0, 176, 166);
-        private static final int TITLE_COLOR = 0xFFFFFFFF;
+        private static final RenderInfo LIGHTHOUSE = new RenderInfo(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 0, 176, 71);
+        private static final RenderInfo INVENTORY = new RenderInfo(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 71, 176, 94);
         private static final int INVENTORY_TITLE_COLOR = 0xFF404040;
 
         public LighthouseScreen(LighthouseContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
@@ -253,18 +252,22 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
             renderHoveredTooltip(matrixStack, mouseX, mouseY);
         }
 
-        @Deprecated
         @Override
         public void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
             int x = (width - xSize) / 2;
             int y = (height - ySize) / 2;
-            RENDER.render(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
+            int offset = getBlitOffset();
+            INVENTORY.render(matrixStack, x, y + 72, offset, xSize, 94, 0xFFFFFFFF);
+            int hex = container.lighthouse.getColor().getColorValue();
+            LIGHTHOUSE.render(matrixStack, x, y, offset, xSize, 71, ColorHelper.PackedColor.packColor(255, ColorHelper.PackedColor.getRed(hex), ColorHelper.PackedColor.getGreen(hex), ColorHelper.PackedColor.getBlue(hex)));
         }
 
         @Override
         public void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-            this.font.drawText(matrixStack, title, (float) titleX, (float) titleY, TITLE_COLOR);
-            this.font.drawText(matrixStack, playerInventory.getDisplayName(), (float) playerInventoryTitleX, (float) playerInventoryTitleY, INVENTORY_TITLE_COLOR);
+            int hex = container.lighthouse.getColor().getColorValue();
+            int color = ColorHelper.PackedColor.packColor(255, Math.min(255, ColorHelper.PackedColor.getRed(hex) + 64), Math.min(255, ColorHelper.PackedColor.getGreen(hex) + 64), Math.min(255, ColorHelper.PackedColor.getBlue(hex) + 64));
+            font.drawText(matrixStack, title, (float) titleX, (float) titleY, color);
+            font.drawText(matrixStack, playerInventory.getDisplayName(), (float) playerInventoryTitleX, (float) playerInventoryTitleY, INVENTORY_TITLE_COLOR);
         }
 
         public static class Factory implements IScreenFactory<LighthouseContainer, LighthouseScreen> {

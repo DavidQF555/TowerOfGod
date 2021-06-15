@@ -16,7 +16,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
     private static final int BASE_DURATION = 600;
 
     public BlackFish(LivingEntity user, int level) {
-        super(ShinsuTechnique.BLACK_FISH, user, level, level * BASE_DURATION);
+        super(null, user, level, level * BASE_DURATION);
     }
 
     @Override
@@ -30,23 +30,30 @@ public class BlackFish extends ShinsuTechniqueInstance {
     }
 
     @Override
+    public ShinsuTechnique getTechnique() {
+        return ShinsuTechnique.BLACK_FISH;
+    }
+
+    @Override
     public int getCooldown() {
         return getLevel() * BASE_DURATION;
     }
 
+    @Override
+    public int getShinsuUse() {
+        return 10;
+    }
+
+    @Override
+    public int getBaangsUse() {
+        return 1;
+    }
+
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.Builder<BlackFish> {
-
-        private final int shinsu;
-        private final int baangs;
-
-        public Builder(int shinsu, int baangs) {
-            this.shinsu = shinsu;
-            this.baangs = baangs;
-        }
+    public static class Builder implements ShinsuTechnique.IBuilder<BlackFish> {
 
         @Override
-        public BlackFish build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+        public BlackFish build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
             return new BlackFish(user, level);
         }
 
@@ -54,16 +61,6 @@ public class BlackFish extends ShinsuTechniqueInstance {
         @Override
         public BlackFish emptyBuild() {
             return new BlackFish(null, 0);
-        }
-
-        @Override
-        public int getShinsuUse() {
-            return shinsu;
-        }
-
-        @Override
-        public int getBaangUse() {
-            return baangs;
         }
 
         @Override

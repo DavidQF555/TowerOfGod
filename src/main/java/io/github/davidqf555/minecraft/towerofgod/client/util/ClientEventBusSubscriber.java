@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.util;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.render.*;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;

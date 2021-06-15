@@ -21,16 +21,16 @@ import java.util.UUID;
 
 public abstract class ShinsuTechniqueInstance implements INBTSerializable<CompoundNBT> {
 
+    private String settings;
     private UUID id;
-    private ShinsuTechnique technique;
     private UUID user;
     private int level;
     private int duration;
     private int ticks;
 
-    public ShinsuTechniqueInstance(ShinsuTechnique technique, LivingEntity user, int level, int duration) {
+    public ShinsuTechniqueInstance(String settings, LivingEntity user, int level, int duration) {
         id = UUID.randomUUID();
-        this.technique = technique;
+        this.settings = settings;
         this.user = user == null ? null : user.getUniqueID();
         this.level = level;
         this.duration = duration;
@@ -69,8 +69,14 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         return world.getEntityByUuid(user);
     }
 
-    public ShinsuTechnique getTechnique() {
-        return technique;
+    public abstract ShinsuTechnique getTechnique();
+
+    public String getSettings() {
+        TechniqueSettings settings = getTechnique().getSettings();
+        if (!settings.getOptions().contains(this.settings)) {
+            this.settings = settings.getDefault();
+        }
+        return this.settings;
     }
 
     public int getLevel() {
@@ -78,7 +84,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public void onEnd(ServerWorld world) {
-
     }
 
     public void onUse(ServerWorld world) {
@@ -88,6 +93,10 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     public int getCooldown() {
         return 0;
     }
+
+    public abstract int getShinsuUse();
+
+    public abstract int getBaangsUse();
 
     public void remove(ServerWorld world) {
         onEnd(world);
@@ -100,12 +109,17 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public void tick(ServerWorld world) {
-        if (!technique.isIndefinite()) {
+        if (!getTechnique().isIndefinite()) {
             ticks++;
         }
     }
 
-    private void updateMeter(ServerWorld world) {
+    public boolean isConflicting(ShinsuTechniqueInstance instance) {
+        ShinsuTechnique technique = getTechnique();
+        return technique.getRepeatEffect() == ShinsuTechnique.Repeat.DENY && technique == instance.getTechnique() && getSettings().equals(instance.getSettings());
+    }
+
+    protected void updateMeter(ServerWorld world) {
         Entity user = getUser(world);
         if (user instanceof ServerPlayerEntity) {
             IShinsuStats stats = IShinsuStats.get(user);
@@ -120,7 +134,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user != null) {
             nbt.putUniqueId("User", user);
         }
-        nbt.putString("Technique", technique.name());
+        nbt.putString("Technique", getTechnique().name());
+        nbt.putString("Settings", getSettings());
         nbt.putInt("Duration", duration);
         nbt.putInt("Ticks", ticks);
         nbt.putInt("Level", level);
@@ -135,8 +150,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (nbt.contains("User", Constants.NBT.TAG_INT_ARRAY)) {
             user = nbt.getUniqueId("User");
         }
-        if (nbt.contains("Technique", Constants.NBT.TAG_STRING)) {
-            technique = ShinsuTechnique.valueOf(nbt.getString("Technique"));
+        if (nbt.contains("Settings", Constants.NBT.TAG_STRING)) {
+            settings = nbt.getString("Settings");
         }
         if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
             duration = nbt.getInt("Duration");
@@ -153,8 +168,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         private UUID target;
 
-        public Targetable(ShinsuTechnique technique, LivingEntity user, int level, Entity target, int duration) {
-            super(technique, user, level, duration);
+        public Targetable(String settings, LivingEntity user, int level, Entity target, int duration) {
+            super(settings, user, level, duration);
             this.target = target == null ? null : target.getUniqueID();
         }
 
@@ -190,8 +205,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         private Vector3d dir;
 
-        public Direction(ShinsuTechnique technique, LivingEntity user, int level, Vector3d dir, int duration) {
-            super(technique, user, level, duration);
+        public Direction(String settings, LivingEntity user, int level, Vector3d dir, int duration) {
+            super(settings, user, level, duration);
             this.dir = dir;
         }
 

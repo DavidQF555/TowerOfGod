@@ -17,7 +17,12 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
     private static final int BASE_DURATION = 300;
 
     public BodyReinforcement(LivingEntity user, int level) {
-        super(ShinsuTechnique.BODY_REINFORCEMENT, user, level, level * BASE_DURATION);
+        super(null, user, level, level * BASE_DURATION);
+    }
+
+    @Override
+    public ShinsuTechnique getTechnique() {
+        return ShinsuTechnique.BODY_REINFORCEMENT;
     }
 
     @Override
@@ -36,19 +41,21 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         return getLevel() * BASE_DURATION;
     }
 
+    @Override
+    public int getShinsuUse() {
+        return 10;
+    }
+
+    @Override
+    public int getBaangsUse() {
+        return 1;
+    }
+
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.Builder<BodyReinforcement> {
-
-        private final int shinsu;
-        private final int baangs;
-
-        public Builder(int shinsu, int baangs) {
-            this.shinsu = shinsu;
-            this.baangs = baangs;
-        }
+    public static class Builder implements ShinsuTechnique.IBuilder<BodyReinforcement> {
 
         @Override
-        public BodyReinforcement build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+        public BodyReinforcement build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
             return new BodyReinforcement(user, level);
         }
 
@@ -56,16 +63,6 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         @Override
         public BodyReinforcement emptyBuild() {
             return new BodyReinforcement(null, 0);
-        }
-
-        @Override
-        public int getShinsuUse() {
-            return shinsu;
-        }
-
-        @Override
-        public int getBaangUse() {
-            return baangs;
         }
 
         @Override

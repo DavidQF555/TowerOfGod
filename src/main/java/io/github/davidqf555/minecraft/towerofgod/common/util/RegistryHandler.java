@@ -8,6 +8,8 @@ import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumOre;
 import io.github.davidqf555.minecraft.towerofgod.common.effects.BodyReinforcementEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.effects.ReverseFlowEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.*;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.items.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityClassification;
@@ -15,6 +17,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.*;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.potion.Effect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.PointOfInterestType;
@@ -62,8 +66,8 @@ public class RegistryHandler {
     public static final RegistryObject<HookItem> DIAMOND_HOOK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "diamond_hook"), ForgeRegistries.ITEMS);
     public static final RegistryObject<HookItem> NETHERITE_HOOK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "netherite_hook"), ForgeRegistries.ITEMS);
     public static final RegistryObject<HookItem> SUSPENDIUM_HOOK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_hook"), ForgeRegistries.ITEMS);
-    public static final RegistryObject<LighthouseItem> LIGHTHOUSE_ITEM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_item"), ForgeRegistries.ITEMS);
-    public static final RegistryObject<ObserverItem> OBSERVER_ITEM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "observer_item"), ForgeRegistries.ITEMS);
+    public static final RegistryObject<DeviceItem> LIGHTHOUSE_ITEM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_item"), ForgeRegistries.ITEMS);
+    public static final RegistryObject<DeviceItem> OBSERVER_ITEM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "observer_item"), ForgeRegistries.ITEMS);
     public static final RegistryObject<ClickerItem> CLICKER_ITEM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "clicker_item"), ForgeRegistries.ITEMS);
     public static final RegistryObject<ShinsuShovel> SHINSU_SHOVEL = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_shovel"), ForgeRegistries.ITEMS);
     public static final RegistryObject<ShinsuPickaxe> SHINSU_PICKAXE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_pickaxe"), ForgeRegistries.ITEMS);
@@ -94,7 +98,10 @@ public class RegistryHandler {
 
     public static final RegistryObject<PointOfInterestType> FLOOR_TELEPORTATION_TERMINAL_POI = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "floor_teleportation_terminal"), ForgeRegistries.POI_TYPES);
 
+    public static final RegistryObject<IRecipeSerializer<DeviceDyeRecipe>> DEVICE_DYE_RECIPE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "device_dye_recipe"), ForgeRegistries.RECIPE_SERIALIZERS);
+
     public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = new ArrayList<>(Arrays.asList(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW));
+    public static final List<RegistryObject<? extends Item>> COLORED_DEVICE_ITEMS = new ArrayList<>(Arrays.asList(LIGHTHOUSE_ITEM, OBSERVER_ITEM));
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -136,8 +143,8 @@ public class RegistryHandler {
                 new HookItem(ItemTier.DIAMOND, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "diamond_hook"),
                 new HookItem(ItemTier.NETHERITE, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "netherite_hook"),
                 new HookItem(ModToolTier.SUSPENDIUM, 3, -2.4f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_hook"),
-                new LighthouseItem().setRegistryName(TowerOfGod.MOD_ID, "lighthouse_item"),
-                new ObserverItem().setRegistryName(TowerOfGod.MOD_ID, "observer_item"),
+                new DeviceItem((world, item) -> LIGHTHOUSE_ENTITY.get().create(world)).setRegistryName(TowerOfGod.MOD_ID, "lighthouse_item"),
+                new DeviceItem((world, item) -> OBSERVER_ENTITY.get().create(world)).setRegistryName(TowerOfGod.MOD_ID, "observer_item"),
                 new ClickerItem().setRegistryName(TowerOfGod.MOD_ID, "clicker_item"),
                 new ShinsuShovel(0.5f, -2).setRegistryName(TowerOfGod.MOD_ID, "shinsu_shovel"),
                 new ShinsuPickaxe(0, -1.6f).setRegistryName(TowerOfGod.MOD_ID, "shinsu_pickaxe"),
@@ -187,6 +194,13 @@ public class RegistryHandler {
     public static void registerPOITypes(RegistryEvent.Register<PointOfInterestType> event) {
         event.getRegistry().registerAll(
                 new PointOfInterestType("floor_teleportation_terminal", new HashSet<>(FLOOR_TELEPORTATION_TERMINAL_BLOCK.get().getStateContainer().getValidStates()), 0, 1).setRegistryName(TowerOfGod.MOD_ID, "floor_teleportation_terminal")
+        );
+    }
+
+    @SubscribeEvent
+    public static void registryRecipeSerializers(RegistryEvent.Register<IRecipeSerializer<?>> event) {
+        event.getRegistry().registerAll(
+                new SpecialRecipeSerializer<>(DeviceDyeRecipe::new).setRegistryName(TowerOfGod.MOD_ID, "device_dye_recipe")
         );
     }
 }

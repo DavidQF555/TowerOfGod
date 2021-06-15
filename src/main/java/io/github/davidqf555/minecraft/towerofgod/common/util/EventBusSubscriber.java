@@ -3,7 +3,12 @@ package io.github.davidqf555.minecraft.towerofgod.common.util;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.*;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.RankerEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.items.DeviceItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorBiomeProvider;
@@ -160,9 +165,13 @@ public class EventBusSubscriber {
 
         @SubscribeEvent
         public static void onHandleColors(ColorHandlerEvent.Item event) {
-            ShinsuItemColor color = new ShinsuItemColor();
+            ShinsuItemColor shinsu = new ShinsuItemColor();
             for (RegistryObject<? extends Item> item : RegistryHandler.SHINSU_ITEMS) {
-                event.getItemColors().register(color, item::get);
+                event.getItemColors().register(shinsu, item::get);
+            }
+            DeviceItemColor device = new DeviceItemColor();
+            for (RegistryObject<? extends Item> item : RegistryHandler.COLORED_DEVICE_ITEMS) {
+                event.getItemColors().register(device, item::get);
             }
         }
 
@@ -184,7 +193,6 @@ public class EventBusSubscriber {
             UpdateClientCooldownsMessage.register(index++);
             UpdateClientCanCastMessage.register(index++);
             UpdateClientKnownMessage.register(index++);
-            UpdateClientEquippedMessage.register(index++);
             ObserverChangeHighlightMessage.register(index++);
             UpdateClientDimensionsMessage.register(index++);
             OpenFloorTeleportationTerminalMessage.register(index++);

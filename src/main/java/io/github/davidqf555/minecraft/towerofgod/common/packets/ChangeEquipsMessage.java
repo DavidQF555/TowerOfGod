@@ -1,13 +1,13 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -20,17 +20,25 @@ public class ChangeEquipsMessage {
         for (ShinsuTechnique technique : message.equipped) {
             buffer.writeString(technique == null ? "" : technique.name());
         }
+        buffer.writeInt(message.settings.length);
+        for (String settings : message.settings) {
+            buffer.writeString(settings == null ? "" : settings);
+        }
     };
     private static final Function<PacketBuffer, ChangeEquipsMessage> DECODER = buffer -> {
-        ShinsuTechnique[] techniques = new ShinsuTechnique[4];
         int size = buffer.readInt();
+        ShinsuTechnique[] techniques = new ShinsuTechnique[size];
         for (int i = 0; i < size; i++) {
-            try {
-                techniques[i] = ShinsuTechnique.valueOf(buffer.readString());
-            } catch (IllegalArgumentException ignored) {
-            }
+            String value = buffer.readString();
+            techniques[i] = value.isEmpty() ? null : ShinsuTechnique.valueOf(value);
         }
-        return new ChangeEquipsMessage(techniques);
+        int length = buffer.readInt();
+        String[] settings = new String[length];
+        for (int i = 0; i < length; i++) {
+            String value = buffer.readString();
+            settings[i] = i >= size || techniques[i] == null ? null : value;
+        }
+        return new ChangeEquipsMessage(techniques, settings);
     };
     private static final BiConsumer<ChangeEquipsMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
@@ -38,9 +46,11 @@ public class ChangeEquipsMessage {
     };
 
     private final ShinsuTechnique[] equipped;
+    private final String[] settings;
 
-    public ChangeEquipsMessage(ShinsuTechnique[] equipped) {
+    public ChangeEquipsMessage(ShinsuTechnique[] equipped, String[] settings) {
         this.equipped = equipped;
+        this.settings = settings;
     }
 
     public static void register(int index) {
@@ -54,7 +64,13 @@ public class ChangeEquipsMessage {
             context.enqueueWork(() -> {
                 IPlayerShinsuEquips tar = IPlayerShinsuEquips.get(player);
                 tar.setEquipped(equipped);
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientEquippedMessage(tar.getEquipped()));
+                tar.setSettings(settings);
+            });
+            context.setPacketHandled(true);
+        } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
+            context.enqueueWork(() -> {
+                ClientReference.equipped = equipped;
+                ClientReference.settings = settings;
             });
             context.setPacketHandled(true);
         }

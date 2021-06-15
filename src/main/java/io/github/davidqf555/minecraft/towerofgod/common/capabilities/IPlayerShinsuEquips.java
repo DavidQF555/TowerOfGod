@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.StringNBT;
@@ -9,6 +10,7 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -16,7 +18,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-public interface IPlayerShinsuEquips extends INBTSerializable<ListNBT> {
+public interface IPlayerShinsuEquips extends INBTSerializable<CompoundNBT> {
 
     @Nonnull
     static IPlayerShinsuEquips get(Entity user) {
@@ -27,12 +29,18 @@ public interface IPlayerShinsuEquips extends INBTSerializable<ListNBT> {
 
     void setEquipped(ShinsuTechnique[] equipped);
 
+    String[] getSettings();
+
+    void setSettings(String[] settings);
+
     class PlayerShinsuEquips implements IPlayerShinsuEquips {
 
         private final ShinsuTechnique[] equipped;
+        private final String[] settings;
 
         public PlayerShinsuEquips() {
             equipped = new ShinsuTechnique[4];
+            settings = new String[4];
         }
 
         @Override
@@ -47,23 +55,53 @@ public interface IPlayerShinsuEquips extends INBTSerializable<ListNBT> {
         }
 
         @Override
-        public ListNBT serializeNBT() {
-            ListNBT nbt = new ListNBT();
-            for (ShinsuTechnique technique : equipped) {
-                nbt.add(StringNBT.valueOf(technique == null ? "" : technique.name()));
+        public String[] getSettings() {
+            return settings;
+        }
+
+        @Override
+        public void setSettings(String[] settings) {
+            int size = Math.min(settings.length, this.settings.length);
+            System.arraycopy(settings, 0, this.settings, 0, size);
+        }
+
+        @Override
+        public CompoundNBT serializeNBT() {
+            CompoundNBT nbt = new CompoundNBT();
+            ListNBT equipped = new ListNBT();
+            for (ShinsuTechnique technique : this.equipped) {
+                equipped.add(StringNBT.valueOf(technique == null ? "" : technique.name()));
             }
+            nbt.put("Equipped", equipped);
+            ListNBT settings = new ListNBT();
+            for (String value : this.settings) {
+                settings.add(StringNBT.valueOf(value == null ? "" : value));
+            }
+            nbt.put("Settings", settings);
             return nbt;
         }
 
         @Override
-        public void deserializeNBT(ListNBT nbt) {
-            setEquipped(nbt.stream().map(data -> {
-                try {
-                    return ShinsuTechnique.valueOf(data.getString());
-                } catch (IllegalArgumentException exception) {
-                    return null;
+        public void deserializeNBT(CompoundNBT nbt) {
+            if (nbt.contains("Equipped", Constants.NBT.TAG_LIST)) {
+                setEquipped(nbt.getList("Equipped", Constants.NBT.TAG_STRING).stream().map(data -> {
+                    try {
+                        return ShinsuTechnique.valueOf(data.getString());
+                    } catch (IllegalArgumentException exception) {
+                        return null;
+                    }
+                }).toArray(ShinsuTechnique[]::new));
+            }
+            if (nbt.contains("Settings", Constants.NBT.TAG_LIST)) {
+                String[] settings = nbt.getList("Settings", Constants.NBT.TAG_STRING).stream().map(INBT::getString).toArray(String[]::new);
+                ShinsuTechnique[] equipped = getEquipped();
+                for (int i = 0; i < settings.length; i++) {
+                    if (i >= equipped.length || equipped[i] == null) {
+                        settings[i] = null;
+                    }
                 }
-            }).toArray(ShinsuTechnique[]::new));
+                setSettings(settings);
+            }
         }
 
         public static class Factory implements Callable<IPlayerShinsuEquips> {
@@ -106,7 +144,7 @@ public interface IPlayerShinsuEquips extends INBTSerializable<ListNBT> {
 
         @Override
         public void readNBT(Capability<IPlayerShinsuEquips> capability, IPlayerShinsuEquips instance, Direction side, INBT nbt) {
-            instance.deserializeNBT((ListNBT) nbt);
+            instance.deserializeNBT((CompoundNBT) nbt);
         }
     }
 }

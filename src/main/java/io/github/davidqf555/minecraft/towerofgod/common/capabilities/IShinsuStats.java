@@ -24,10 +24,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public interface IShinsuStats extends INBTSerializable<CompoundNBT> {
 
@@ -92,22 +89,34 @@ public interface IShinsuStats extends INBTSerializable<CompoundNBT> {
 
     void addCooldown(ShinsuTechnique technique, int time);
 
-    default void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, Vector3d dir) {
-        cast(user, technique, getTechniqueLevel(technique), target, dir);
+    default void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+        cast(user, technique, getTechniqueLevel(technique), target, dir, settings);
     }
 
-    default void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, Vector3d dir) {
-        if (getCooldown(technique) <= 0 && user.world instanceof ServerWorld) {
-            ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
-            if (builder.canCast(user, level, target, dir)) {
-                ShinsuTechniqueInstance tech = technique.getBuilder().build(user, level, target, dir);
+    default void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+        if (user.world instanceof ServerWorld) {
+            Optional<ShinsuTechniqueInstance> used = getTechniques().stream().filter(instance -> instance.getTechnique() == technique && instance.getSettings().equals(settings)).findAny();
+            if (technique.getRepeatEffect() == ShinsuTechnique.Repeat.TOGGLE && used.isPresent()) {
+                used.get().remove((ServerWorld) user.world);
+            } else if (getCooldown(technique) <= 0) {
+                ShinsuTechniqueInstance tech = technique.getBuilder().doBuild(user, level, target, dir, settings);
                 if (tech != null) {
-                    addCooldown(technique, tech.getCooldown());
-                    addTechnique(tech);
-                    tech.onUse((ServerWorld) user.world);
+                    cast((ServerWorld) user.world, tech);
                 }
             }
         }
+    }
+
+    default void cast(ServerWorld world, ShinsuTechniqueInstance instance) {
+        ShinsuTechnique technique = instance.getTechnique();
+        for (ShinsuTechniqueInstance inst : new ArrayList<>(getTechniques())) {
+            if (instance.isConflicting(inst)) {
+                inst.remove(world);
+            }
+        }
+        addCooldown(technique, instance.getCooldown());
+        addTechnique(instance);
+        instance.onUse(world);
     }
 
     default void tick(ServerWorld world) {
@@ -180,9 +189,9 @@ public interface IShinsuStats extends INBTSerializable<CompoundNBT> {
 
         @Override
         public int getShinsu() {
-            int shinsu = this.shinsu;
+            int shinsu = getMaxShinsu();
             for (ShinsuTechniqueInstance technique : getTechniques()) {
-                shinsu -= technique.getTechnique().getShinsuUse();
+                shinsu -= technique.getShinsuUse();
             }
             return shinsu;
         }
@@ -199,9 +208,9 @@ public interface IShinsuStats extends INBTSerializable<CompoundNBT> {
 
         @Override
         public int getBaangs() {
-            int baangs = this.baangs;
+            int baangs = getMaxBaangs();
             for (ShinsuTechniqueInstance technique : getTechniques()) {
-                baangs -= technique.getTechnique().getBaangUse();
+                baangs -= technique.getBaangsUse();
             }
             return baangs;
         }

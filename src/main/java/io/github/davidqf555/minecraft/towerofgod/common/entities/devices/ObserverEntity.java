@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.entities;
+package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ObserverChangeHighlightMessage;
@@ -9,8 +9,9 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -40,18 +41,20 @@ public class ObserverEntity extends FlyingDevice {
     @Override
     public void livingTick() {
         targets.clear();
-        Vector3d pos = getPositionVec();
-        AxisAlignedBB bounds = new AxisAlignedBB(pos.subtract(RANGE, RANGE, RANGE), pos.add(RANGE, RANGE, RANGE));
-        for (Entity e : world.getEntitiesInAABBexcluding(this, bounds, null)) {
-            if (e.getDistanceSq(this) <= RANGE * RANGE && canEntityBeSeen(e)) {
-                targets.add(e.getUniqueID());
-            }
+        AxisAlignedBB bounds = AxisAlignedBB.fromVector(getPositionVec()).grow(RANGE);
+        for (Entity entity : world.getEntitiesInAABBexcluding(this, bounds, target -> EntityPredicates.CAN_AI_TARGET.test(target) && getDistanceSq(target) <= RANGE * RANGE && canEntityBeSeen(target))) {
+            targets.add(entity.getUniqueID());
         }
         Entity owner = getOwner();
         if (owner instanceof ServerPlayerEntity) {
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new ObserverChangeHighlightMessage(getUniqueID(), targets));
         }
         super.livingTick();
+    }
+
+    @Override
+    protected ItemStack getDeviceItem() {
+        return RegistryHandler.OBSERVER_ITEM.get().getDefaultInstance();
     }
 
     @Override

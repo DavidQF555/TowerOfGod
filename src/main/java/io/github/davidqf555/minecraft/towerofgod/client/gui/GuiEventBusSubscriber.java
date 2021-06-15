@@ -2,11 +2,12 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.util.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientEquippedMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeEquipsMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -76,8 +77,8 @@ public class GuiEventBusSubscriber {
         }
 
         private static boolean unlockedTechniques() {
-            for (ShinsuTechnique technique : ShinsuEquipScreen.known.keySet()) {
-                if (ShinsuEquipScreen.known.get(technique) > 0) {
+            for (ShinsuTechnique technique : ClientReference.known.keySet()) {
+                if (ClientReference.known.get(technique) > 0) {
                     return true;
                 }
             }
@@ -86,7 +87,7 @@ public class GuiEventBusSubscriber {
 
         private static boolean usingValid(Minecraft client) {
             boolean equipped = false;
-            for (ShinsuTechnique technique : ShinsuSkillWheelGui.equipped) {
+            for (ShinsuTechnique technique : ClientReference.equipped) {
                 if (technique != null) {
                     equipped = true;
                     break;
@@ -104,11 +105,11 @@ public class GuiEventBusSubscriber {
             Minecraft client = Minecraft.getInstance();
             if (wheel != null) {
                 ShinsuTechnique selected = wheel.getSelected();
-                if (selected != null && ShinsuSkillWheelGui.cooldowns.getOrDefault(selected, 0) <= 0 && event.getButton() == 0) {
+                if (selected != null && ClientReference.cooldowns.getOrDefault(selected, 0) <= 0 && event.getButton() == 0) {
                     int action = event.getAction();
                     if (wheel.isLocked()) {
                         if (action == GLFW.GLFW_RELEASE) {
-                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuMessage(selected, client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
+                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuMessage(selected, wheel.getSettings(), client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
                             wheel = null;
                         }
                     } else if (action == GLFW.GLFW_PRESS) {
@@ -181,7 +182,7 @@ public class GuiEventBusSubscriber {
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             IPlayerShinsuEquips equipped = IPlayerShinsuEquips.get(entity);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientEquippedMessage(equipped.getEquipped()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsMessage(equipped.getEquipped(), equipped.getSettings()));
         }
 
         @SubscribeEvent

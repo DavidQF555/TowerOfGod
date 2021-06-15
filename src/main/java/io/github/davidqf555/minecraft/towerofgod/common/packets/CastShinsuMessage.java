@@ -19,6 +19,7 @@ public class CastShinsuMessage {
 
     private static final BiConsumer<CastShinsuMessage, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeString(message.technique.name());
+        buffer.writeString(message.settings);
         boolean contains = message.target != null;
         buffer.writeBoolean(contains);
         if (contains) {
@@ -27,11 +28,12 @@ public class CastShinsuMessage {
     };
     private static final Function<PacketBuffer, CastShinsuMessage> DECODER = buffer -> {
         ShinsuTechnique technique = ShinsuTechnique.valueOf(buffer.readString());
+        String settings = buffer.readString();
         UUID target = null;
         if (buffer.readBoolean()) {
             target = buffer.readUniqueId();
         }
-        return new CastShinsuMessage(technique, target);
+        return new CastShinsuMessage(technique, settings, target);
     };
     private static final BiConsumer<CastShinsuMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
@@ -39,10 +41,12 @@ public class CastShinsuMessage {
     };
 
     private final ShinsuTechnique technique;
+    private final String settings;
     private final UUID target;
 
-    public CastShinsuMessage(ShinsuTechnique technique, @Nullable UUID target) {
+    public CastShinsuMessage(ShinsuTechnique technique, String settings, @Nullable UUID target) {
         this.technique = technique;
+        this.settings = settings;
         this.target = target;
     }
 
@@ -57,7 +61,7 @@ public class CastShinsuMessage {
             context.enqueueWork(() -> {
                 Entity t = player.getServerWorld().getEntityByUuid(target);
                 IShinsuStats stats = IShinsuStats.get(player);
-                stats.cast(player, technique, t, player.getLookVec());
+                stats.cast(player, technique, t, player.getLookVec(), settings);
             });
             context.setPacketHandled(true);
         }

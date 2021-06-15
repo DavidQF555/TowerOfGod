@@ -19,7 +19,12 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
     private static final int DURATION = 20;
 
     public ReverseFlowControl(LivingEntity user, int level, LivingEntity target) {
-        super(ShinsuTechnique.REVERSE_FLOW_CONTROL, user, level, target, DURATION);
+        super(null, user, level, target, DURATION);
+    }
+
+    @Override
+    public ShinsuTechnique getTechnique() {
+        return ShinsuTechnique.REVERSE_FLOW_CONTROL;
     }
 
     @Override
@@ -43,40 +48,27 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
         return DURATION * 8;
     }
 
-    public static class Builder implements ShinsuTechnique.Builder<ReverseFlowControl> {
+    @Override
+    public int getShinsuUse() {
+        return 10;
+    }
 
-        private final int shinsu;
-        private final int baangs;
+    @Override
+    public int getBaangsUse() {
+        return 1;
+    }
 
-        public Builder(int shinsu, int baangs) {
-            this.shinsu = shinsu;
-            this.baangs = baangs;
-        }
+    public static class Builder implements ShinsuTechnique.IBuilder<ReverseFlowControl> {
 
         @Override
-        public ReverseFlowControl build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return target instanceof LivingEntity ? new ReverseFlowControl(user, level, (LivingEntity) target) : null;
+        public ReverseFlowControl build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+            return target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE ? new ReverseFlowControl(user, level, (LivingEntity) target) : null;
         }
 
         @Nonnull
         @Override
         public ReverseFlowControl emptyBuild() {
             return new ReverseFlowControl(null, 0, null);
-        }
-
-        @Override
-        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE;
-        }
-
-        @Override
-        public int getShinsuUse() {
-            return shinsu;
-        }
-
-        @Override
-        public int getBaangUse() {
-            return baangs;
         }
 
         @Override

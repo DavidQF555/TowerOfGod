@@ -54,8 +54,9 @@ public class ShinsuBow extends BowItem {
             float speed = getArrowVelocity(charge);
             if (speed >= 0.1 && !worldIn.isRemote()) {
                 IShinsuStats stats = IShinsuStats.get(shooter);
-                if (ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().canCast(shooter, charge, null, shooter.getLookVec())) {
-                    stats.cast(shooter, ShinsuTechnique.SHOOT_SHINSU_ARROW, charge, null, shooter.getLookVec());
+                ShinsuTechniqueInstance technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(shooter, charge, null, shooter.getLookVec(), null);
+                if (technique != null) {
+                    stats.cast((ServerWorld) worldIn, technique);
                     worldIn.playSound(null, shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1, 1 / (random.nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
                     shooter.addStat(Stats.ITEM_USED.get(this));
                 }
@@ -77,11 +78,10 @@ public class ShinsuBow extends BowItem {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
-        boolean canShoot = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().canCast(playerIn, 1, null, playerIn.getLookVec());
         ActionResult<ItemStack> ret = ForgeEventFactory.onArrowNock(itemstack, worldIn, playerIn, handIn, true);
         if (ret != null) {
             return ret;
-        } else if (canShoot) {
+        } else if (ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(playerIn, 1, null, playerIn.getLookVec(), null) != null) {
             playerIn.setActiveHand(handIn);
             return ActionResult.resultConsume(itemstack);
         } else {

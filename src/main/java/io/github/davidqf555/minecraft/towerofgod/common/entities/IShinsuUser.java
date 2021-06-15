@@ -12,6 +12,7 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IServerWorld;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -168,7 +169,7 @@ public interface IShinsuUser<T extends LivingEntity> {
 
         private final T entity;
         private final IShinsuStats stats;
-        private ShinsuTechnique technique;
+        private ShinsuTechniqueInstance technique;
         private LivingEntity target;
 
         public CastShinsuGoal(T entity) {
@@ -184,12 +185,13 @@ public interface IShinsuUser<T extends LivingEntity> {
             if (target == null || !target.isAlive()) {
                 return false;
             }
-            List<ShinsuTechnique> tech = new ArrayList<>();
+            List<ShinsuTechniqueInstance> tech = new ArrayList<>();
             for (ShinsuTechnique technique : ShinsuTechnique.values()) {
-                ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
+                ShinsuTechnique.IBuilder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
                 Vector3d dir = entity.canEntityBeSeen(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookVec();
-                if (stats.getCooldown(technique) <= 0 && builder.canCast(entity, stats.getTechniqueLevel(technique), target, dir)) {
-                    tech.add(technique);
+                ShinsuTechniqueInstance instance = builder.doBuild(entity, stats.getTechniqueLevel(technique), target, dir, null);
+                if (instance != null) {
+                    tech.add(instance);
                 }
             }
             if (tech.isEmpty()) {
@@ -201,8 +203,7 @@ public interface IShinsuUser<T extends LivingEntity> {
 
         @Override
         public void startExecuting() {
-            Vector3d dir = (target != null && entity.canEntityBeSeen(target)) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookVec();
-            stats.cast(entity, technique, target, dir);
+            stats.cast((ServerWorld) entity.world, technique);
         }
 
         @Override
