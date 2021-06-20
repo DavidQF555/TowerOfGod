@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.util;
 
+import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
@@ -11,6 +12,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.Observe
 import io.github.davidqf555.minecraft.towerofgod.common.items.DeviceItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorBiomeProvider;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorChunkGenerator;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
@@ -55,6 +57,9 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
+
+import java.util.Map;
 
 public class EventBusSubscriber {
 
@@ -69,7 +74,7 @@ public class EventBusSubscriber {
     public static class ForgeBus {
 
         @SubscribeEvent
-        public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
+        public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
             Entity entity = event.getObject();
             if (entity instanceof IShinsuUser || entity instanceof PlayerEntity) {
                 event.addCapability(SHINSU_STATS, new IShinsuStats.Provider());
@@ -77,6 +82,20 @@ public class EventBusSubscriber {
             if (entity instanceof PlayerEntity) {
                 event.addCapability(PLAYER_EQUIPS, new IPlayerShinsuEquips.Provider());
             }
+        }
+
+        @SubscribeEvent
+        public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+            Entity entity = event.getEntity();
+            IShinsuStats stats = IShinsuStats.get(entity);
+            Map<ShinsuTechnique, Integer> known = Maps.newEnumMap(ShinsuTechnique.class);
+            for (ShinsuTechnique technique : ShinsuTechnique.values()) {
+                known.put(technique, stats.getTechniqueLevel(technique));
+            }
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+            IPlayerShinsuEquips equipped = IPlayerShinsuEquips.get(entity);
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsMessage(equipped.getEquipped()));
         }
 
         @SubscribeEvent
@@ -197,6 +216,7 @@ public class EventBusSubscriber {
             UpdateClientDimensionsMessage.register(index++);
             OpenFloorTeleportationTerminalMessage.register(index++);
             ChangeFloorMessage.register(index++);
+            UpdateInitialCooldownsMessage.register(index++);
             event.enqueueWork(() -> {
                 Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);
                 Registry.register(Registry.BIOME_PROVIDER_CODEC, new ResourceLocation(TowerOfGod.MOD_ID, "floor_biome_provider_codec"), FloorBiomeProvider.CODEC);

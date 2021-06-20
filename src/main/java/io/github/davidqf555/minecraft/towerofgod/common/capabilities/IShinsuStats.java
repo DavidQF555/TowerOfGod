@@ -1,6 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
 import com.google.common.collect.Maps;
+import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateInitialCooldownsMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -9,6 +11,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHel
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -21,6 +24,7 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -114,7 +118,12 @@ public interface IShinsuStats extends INBTSerializable<CompoundNBT> {
                 inst.remove(world);
             }
         }
-        addCooldown(technique, instance.getCooldown());
+        int cooldown = instance.getCooldown();
+        Entity user = instance.getUser(world);
+        if (user instanceof ServerPlayerEntity) {
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateInitialCooldownsMessage(technique, cooldown));
+        }
+        addCooldown(technique, cooldown);
         addTechnique(instance);
         instance.onUse(world);
     }

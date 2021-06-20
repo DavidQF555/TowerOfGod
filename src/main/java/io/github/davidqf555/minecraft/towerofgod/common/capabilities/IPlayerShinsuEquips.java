@@ -1,6 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.TechniqueSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -15,6 +17,8 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
@@ -25,82 +29,61 @@ public interface IPlayerShinsuEquips extends INBTSerializable<CompoundNBT> {
         return user.getCapability(Provider.capability).orElseGet(PlayerShinsuEquips::new);
     }
 
-    ShinsuTechnique[] getEquipped();
+    List<Pair<ShinsuTechnique, String>> getEquipped();
 
-    void setEquipped(ShinsuTechnique[] equipped);
-
-    String[] getSettings();
-
-    void setSettings(String[] settings);
+    void setEquipped(List<Pair<ShinsuTechnique, String>> equipped);
 
     class PlayerShinsuEquips implements IPlayerShinsuEquips {
 
-        private final ShinsuTechnique[] equipped;
-        private final String[] settings;
+        private final List<Pair<ShinsuTechnique, String>> equipped;
 
         public PlayerShinsuEquips() {
-            equipped = new ShinsuTechnique[4];
-            settings = new String[4];
+            equipped = new ArrayList<>();
         }
 
         @Override
-        public ShinsuTechnique[] getEquipped() {
+        public List<Pair<ShinsuTechnique, String>> getEquipped() {
             return equipped;
         }
 
         @Override
-        public void setEquipped(ShinsuTechnique[] equipped) {
-            int size = Math.min(equipped.length, this.equipped.length);
-            System.arraycopy(equipped, 0, this.equipped, 0, size);
-        }
-
-        @Override
-        public String[] getSettings() {
-            return settings;
-        }
-
-        @Override
-        public void setSettings(String[] settings) {
-            int size = Math.min(settings.length, this.settings.length);
-            System.arraycopy(settings, 0, this.settings, 0, size);
+        public void setEquipped(List<Pair<ShinsuTechnique, String>> equipped) {
+            this.equipped.clear();
+            this.equipped.addAll(equipped);
         }
 
         @Override
         public CompoundNBT serializeNBT() {
             CompoundNBT nbt = new CompoundNBT();
-            ListNBT equipped = new ListNBT();
-            for (ShinsuTechnique technique : this.equipped) {
-                equipped.add(StringNBT.valueOf(technique == null ? "" : technique.name()));
-            }
-            nbt.put("Equipped", equipped);
+            ListNBT techniques = new ListNBT();
             ListNBT settings = new ListNBT();
-            for (String value : this.settings) {
-                settings.add(StringNBT.valueOf(value == null ? "" : value));
+            for (Pair<ShinsuTechnique, String> pair : this.equipped) {
+                techniques.add(StringNBT.valueOf(pair.getFirst().name()));
+                settings.add(StringNBT.valueOf(pair.getSecond()));
             }
+            nbt.put("Techniques", techniques);
             nbt.put("Settings", settings);
             return nbt;
         }
 
         @Override
         public void deserializeNBT(CompoundNBT nbt) {
-            if (nbt.contains("Equipped", Constants.NBT.TAG_LIST)) {
-                setEquipped(nbt.getList("Equipped", Constants.NBT.TAG_STRING).stream().map(data -> {
-                    try {
-                        return ShinsuTechnique.valueOf(data.getString());
-                    } catch (IllegalArgumentException exception) {
-                        return null;
-                    }
-                }).toArray(ShinsuTechnique[]::new));
-            }
-            if (nbt.contains("Settings", Constants.NBT.TAG_LIST)) {
-                String[] settings = nbt.getList("Settings", Constants.NBT.TAG_STRING).stream().map(INBT::getString).toArray(String[]::new);
-                ShinsuTechnique[] equipped = getEquipped();
-                for (int i = 0; i < settings.length; i++) {
-                    if (i >= equipped.length || equipped[i] == null) {
-                        settings[i] = null;
-                    }
+            if (nbt.contains("Techniques", Constants.NBT.TAG_LIST)) {
+                ListNBT techniques = nbt.getList("Techniques", Constants.NBT.TAG_STRING);
+                ListNBT settings;
+                if (nbt.contains("Settings", Constants.NBT.TAG_LIST)) {
+                    settings = nbt.getList("Settings", Constants.NBT.TAG_STRING);
+                } else {
+                    settings = new ListNBT();
                 }
-                setSettings(settings);
+                List<Pair<ShinsuTechnique, String>> equipped = new ArrayList<>();
+                for (int i = 0; i < techniques.size(); i++) {
+                    ShinsuTechnique technique = ShinsuTechnique.valueOf(techniques.getString(i));
+                    String s = i < settings.size() ? settings.getString(i) : "";
+                    TechniqueSettings set = technique.getSettings();
+                    equipped.add(Pair.of(technique, set.getOptions().contains(s) ? s : set.getDefault()));
+                }
+                setEquipped(equipped);
             }
         }
 

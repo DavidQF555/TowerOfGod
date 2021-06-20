@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
@@ -9,6 +10,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -16,41 +19,29 @@ import java.util.function.Supplier;
 public class ChangeEquipsMessage {
 
     private static final BiConsumer<ChangeEquipsMessage, PacketBuffer> ENCODER = (message, buffer) -> {
-        buffer.writeInt(message.equipped.length);
-        for (ShinsuTechnique technique : message.equipped) {
-            buffer.writeString(technique == null ? "" : technique.name());
-        }
-        buffer.writeInt(message.settings.length);
-        for (String settings : message.settings) {
-            buffer.writeString(settings == null ? "" : settings);
+        buffer.writeInt(message.equipped.size());
+        for (Pair<ShinsuTechnique, String> pair : message.equipped) {
+            buffer.writeString(pair.getFirst().name());
+            buffer.writeString(pair.getSecond());
         }
     };
     private static final Function<PacketBuffer, ChangeEquipsMessage> DECODER = buffer -> {
+        List<Pair<ShinsuTechnique, String>> equipped = new ArrayList<>();
         int size = buffer.readInt();
-        ShinsuTechnique[] techniques = new ShinsuTechnique[size];
         for (int i = 0; i < size; i++) {
-            String value = buffer.readString();
-            techniques[i] = value.isEmpty() ? null : ShinsuTechnique.valueOf(value);
+            equipped.add(Pair.of(ShinsuTechnique.valueOf(buffer.readString()), buffer.readString()));
         }
-        int length = buffer.readInt();
-        String[] settings = new String[length];
-        for (int i = 0; i < length; i++) {
-            String value = buffer.readString();
-            settings[i] = i >= size || techniques[i] == null ? null : value;
-        }
-        return new ChangeEquipsMessage(techniques, settings);
+        return new ChangeEquipsMessage(equipped);
     };
     private static final BiConsumer<ChangeEquipsMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
 
-    private final ShinsuTechnique[] equipped;
-    private final String[] settings;
+    private final List<Pair<ShinsuTechnique, String>> equipped;
 
-    public ChangeEquipsMessage(ShinsuTechnique[] equipped, String[] settings) {
+    public ChangeEquipsMessage(List<Pair<ShinsuTechnique, String>> equipped) {
         this.equipped = equipped;
-        this.settings = settings;
     }
 
     public static void register(int index) {
@@ -64,13 +55,11 @@ public class ChangeEquipsMessage {
             context.enqueueWork(() -> {
                 IPlayerShinsuEquips tar = IPlayerShinsuEquips.get(player);
                 tar.setEquipped(equipped);
-                tar.setSettings(settings);
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
             context.enqueueWork(() -> {
                 ClientReference.equipped = equipped;
-                ClientReference.settings = settings;
             });
             context.setPacketHandled(true);
         }

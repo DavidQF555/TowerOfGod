@@ -1,44 +1,31 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
-import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.util.KeyBindingsList;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeEquipsMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Map;
 
 public class GuiEventBusSubscriber {
 
     public static StatsMeterGui.Shinsu shinsu = null;
     public static StatsMeterGui.Baangs baangs = null;
-    private static ShinsuSkillWheelGui wheel = null;
+    private static ShinsuTechniqueBarGui bar = null;
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
     public static class ClientBus {
@@ -55,15 +42,16 @@ public class GuiEventBusSubscriber {
                         baangs.render(event.getMatrixStack());
                     }
                 }
-                if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || wheel != null && wheel.isLocked()) {
-                    if (wheel == null) {
-                        wheel = new ShinsuSkillWheelGui();
+                if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || bar != null && bar.isLocked()) {
+                    if (bar == null) {
+                        MainWindow window = client.getMainWindow();
+                        bar = new ShinsuTechniqueBarGui(window.getScaledWidth() / 2, window.getScaledHeight() / 2 + 20, client.player.rotationYawHead, ClientReference.equipped);
                     }
                     if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
-                        wheel.render(event.getMatrixStack());
+                        bar.render(event.getMatrixStack(), (int) client.mouseHelper.getMouseX(), (int) client.mouseHelper.getMouseY(), client.getRenderPartialTicks());
                     }
                 } else {
-                    wheel = null;
+                    bar = null;
                 }
             }
         }
@@ -86,14 +74,7 @@ public class GuiEventBusSubscriber {
         }
 
         private static boolean usingValid(Minecraft client) {
-            boolean equipped = false;
-            for (ShinsuTechnique technique : ClientReference.equipped) {
-                if (technique != null) {
-                    equipped = true;
-                    break;
-                }
-            }
-            return equipped && validStats() && client.player != null && !client.player.isSpectator();
+            return !ClientReference.equipped.isEmpty() && validStats() && client.player != null && !client.player.isSpectator();
         }
 
         private static boolean validStats() {
@@ -103,17 +84,18 @@ public class GuiEventBusSubscriber {
         @SubscribeEvent
         public static void onMouseInput(InputEvent.MouseInputEvent event) {
             Minecraft client = Minecraft.getInstance();
-            if (wheel != null) {
-                ShinsuTechnique selected = wheel.getSelected();
-                if (selected != null && ClientReference.cooldowns.getOrDefault(selected, 0) <= 0 && event.getButton() == 0) {
+            if (bar != null) {
+                Pair<ShinsuTechnique, String> selected = bar.getSelected();
+                ShinsuTechnique technique = selected.getFirst();
+                if (ClientReference.cooldowns.getOrDefault(technique, 0) <= 0 && event.getButton() == 0) {
                     int action = event.getAction();
-                    if (wheel.isLocked()) {
+                    if (bar.isLocked()) {
                         if (action == GLFW.GLFW_RELEASE) {
-                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuMessage(selected, wheel.getSettings(), client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
-                            wheel = null;
+                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuMessage(technique, selected.getSecond(), client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
+                            bar.setLocked(false);
                         }
                     } else if (action == GLFW.GLFW_PRESS) {
-                        wheel.lock();
+                        bar.setLocked(true);
                     }
                 }
             }
@@ -121,15 +103,11 @@ public class GuiEventBusSubscriber {
 
         @SubscribeEvent
         public static void onClickInput(InputEvent.ClickInputEvent event) {
-            if (wheel != null) {
+            if (bar != null) {
                 event.setSwingHand(false);
-            }
-        }
-
-        @SubscribeEvent
-        public static void onPlayerInteract(PlayerInteractEvent event) {
-            if (wheel != null && event.isCancelable()) {
-                event.setCanceled(true);
+                if (event.isCancelable()) {
+                    event.setCanceled(true);
+                }
             }
         }
 
@@ -162,27 +140,11 @@ public class GuiEventBusSubscriber {
 
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {
-            Minecraft client = Minecraft.getInstance();
             if (event.phase == TickEvent.Phase.START) {
-                ClientPlayerEntity player = client.player;
-                if (wheel != null) {
-                    wheel.tick();
+                if (bar != null) {
+                    bar.tick();
                 }
             }
-        }
-
-        @SubscribeEvent
-        public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-            Entity entity = event.getEntity();
-            IShinsuStats stats = IShinsuStats.get(entity);
-            Map<ShinsuTechnique, Integer> known = Maps.newEnumMap(ShinsuTechnique.class);
-            for (ShinsuTechnique technique : ShinsuTechnique.values()) {
-                known.put(technique, stats.getTechniqueLevel(technique));
-            }
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
-            IPlayerShinsuEquips equipped = IPlayerShinsuEquips.get(entity);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsMessage(equipped.getEquipped(), equipped.getSettings()));
         }
 
         @SubscribeEvent
@@ -194,7 +156,7 @@ public class GuiEventBusSubscriber {
         public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
             shinsu = null;
             baangs = null;
-            wheel = null;
+            bar = null;
         }
 
         private static void initializeMeters() {
