@@ -100,7 +100,7 @@ public class EventBusSubscriber {
 
         @SubscribeEvent
         public static void onRegisterCommands(RegisterCommandsEvent event) {
-            StatsCommand.register(event.getDispatcher());
+            ShinsuCommand.register(event.getDispatcher());
             FloorCommand.register(event.getDispatcher());
         }
 
