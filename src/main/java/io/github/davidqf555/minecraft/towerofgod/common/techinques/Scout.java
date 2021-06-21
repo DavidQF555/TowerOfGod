@@ -6,10 +6,9 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.Observe
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ScoutCommand;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.item.DyeColor;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
@@ -61,9 +60,16 @@ public class Scout extends BasicCommandTechnique {
         Entity user = getUser(world);
         Vector3d eye = user.getEyePosition(1);
         double range = 32 + level * 16;
-        BlockRayTraceResult result = world.rayTraceBlocks(new RayTraceContext(eye, eye.add(user.getLookVec().scale(range)), RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity));
-        BlockPos pos = result.getPos().offset(result.getFace());
-        return new ScoutCommand(entity, getID(), pos, 1, 16 + 8 * level, DURATION);
+        Vector3d end = eye.add(user.getLookVec().scale(range));
+        BlockPos target;
+        EntityRayTraceResult trace = ProjectileHelper.rayTraceEntities(world, user, eye, end, AxisAlignedBB.fromVector(eye).grow(range), null);
+        if (trace == null) {
+            BlockRayTraceResult result = world.rayTraceBlocks(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity));
+            target = result.getPos().offset(result.getFace());
+        } else {
+            target = trace.getEntity().getPosition();
+        }
+        return new ScoutCommand(entity, getID(), target, 1, 16 + 8 * level, DURATION);
     }
 
     @ParametersAreNonnullByDefault

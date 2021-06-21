@@ -8,10 +8,13 @@ import java.util.UUID;
 public class FollowOwnerCommand extends DeviceCommand {
 
     private static final double DISTANCE = 5;
+    private static final int RECALCULATE_PERIOD = 10;
+    private int recalculate;
     private Entity owner;
 
     public FollowOwnerCommand(FlyingDevice entity, UUID technique) {
         super(entity, technique, 1);
+        recalculate = 0;
         owner = null;
         setMutexFlags(EnumSet.of(Flag.MOVE));
     }
@@ -28,13 +31,22 @@ public class FollowOwnerCommand extends DeviceCommand {
     }
 
     @Override
+    public boolean shouldContinueExecuting() {
+        return shouldExecute() && !getEntity().getNavigator().noPath();
+    }
+
+    @Override
     public void resetTask() {
         getEntity().getNavigator().clearPath();
+        recalculate = 0;
     }
 
     @Override
     public void tick() {
-        getEntity().getNavigator().tryMoveToXYZ(owner.getPosX(), owner.getPosYEye(), owner.getPosZ(), 1);
+        if (--recalculate <= 0) {
+            getEntity().getNavigator().tryMoveToEntityLiving(owner, 1);
+            recalculate = RECALCULATE_PERIOD;
+        }
     }
 
     @Override

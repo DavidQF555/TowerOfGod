@@ -5,8 +5,10 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingD
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.MoveCommand;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.item.DyeColor;
-import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
@@ -56,9 +58,10 @@ public class MoveDevices extends BasicCommandTechnique {
         Entity user = getUser(world);
         Vector3d eye = user.getEyePosition(1);
         double range = 32 + getLevel() * 16;
-        BlockRayTraceResult result = world.rayTraceBlocks(new RayTraceContext(eye, eye.add(user.getLookVec().scale(range)), RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity));
-        Vector3d vec = result.getHitVec();
-        return new MoveCommand(entity, getID(), vec, 1);
+        Vector3d end = eye.add(user.getLookVec().scale(range));
+        EntityRayTraceResult trace = ProjectileHelper.rayTraceEntities(world, user, eye, end, AxisAlignedBB.fromVector(eye).grow(range), null);
+        Vector3d target = trace == null ? world.rayTraceBlocks(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity)).getHitVec() : trace.getHitVec();
+        return new MoveCommand(entity, getID(), target, 1);
     }
 
     @ParametersAreNonnullByDefault
