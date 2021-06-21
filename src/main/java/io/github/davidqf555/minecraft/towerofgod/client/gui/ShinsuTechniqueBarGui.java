@@ -16,6 +16,7 @@ import net.minecraft.client.gui.IRenderable;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
@@ -136,10 +137,12 @@ public class ShinsuTechniqueBarGui extends AbstractGui implements IRenderable {
             int color = canCast() ? CAN_CAST_COLOR : CANNOT_CAST_COLOR;
             Minecraft client = Minecraft.getInstance();
             int x = this.x + WIDTH / 2;
-            drawCenteredString(matrixStack, client.fontRenderer, technique.getText(), x, y + HEIGHT + 1, color);
+            ITextComponent title = technique.getText();
+            client.fontRenderer.drawText(matrixStack, title, x - client.fontRenderer.getStringPropertyWidth(title) / 2f, y + HEIGHT + 1, color);
             if (!settings.isEmpty()) {
                 TechniqueSettings settings = technique.getSettings();
-                drawCenteredString(matrixStack, client.fontRenderer, new TranslationTextComponent(SETTINGS_KEY, settings.getTitle(), settings.getText(this.settings)), x, y + HEIGHT + client.fontRenderer.FONT_HEIGHT + 2, color);
+                TranslationTextComponent text = new TranslationTextComponent(SETTINGS_KEY, settings.getTitle(), settings.getText(this.settings));
+                client.fontRenderer.drawText(matrixStack, text, x - client.fontRenderer.getStringPropertyWidth(text) / 2f, y + HEIGHT + client.fontRenderer.FONT_HEIGHT + 2, color);
             }
         }
 

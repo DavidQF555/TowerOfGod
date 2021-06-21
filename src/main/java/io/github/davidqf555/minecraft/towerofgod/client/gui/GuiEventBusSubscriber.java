@@ -42,7 +42,7 @@ public class GuiEventBusSubscriber {
                         baangs.render(event.getMatrixStack());
                     }
                 }
-                if (KeyBindingsList.OPEN_WHEEL.isKeyDown() || bar != null && bar.isLocked()) {
+                if (KeyBindingsList.OPEN_SHINSU_TECHNIQUES_GUI.isKeyDown() || bar != null && bar.isLocked()) {
                     if (bar == null) {
                         MainWindow window = client.getMainWindow();
                         bar = new ShinsuTechniqueBarGui(window.getScaledWidth() / 2, window.getScaledHeight() / 2 + 20, client.player.rotationYawHead, ClientReference.equipped);
