@@ -2,8 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.util;
 
 import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IPlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RankerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
@@ -67,7 +67,7 @@ public class EventBusSubscriber {
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
     private static final ConfiguredFeature<?, ?> SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
     private static IShinsuStats clonedStats = null;
-    private static IPlayerShinsuEquips clonedEquips = null;
+    private static PlayerShinsuEquips clonedEquips = null;
     private static int index = 0;
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -80,7 +80,7 @@ public class EventBusSubscriber {
                 event.addCapability(SHINSU_STATS, new IShinsuStats.Provider());
             }
             if (entity instanceof PlayerEntity) {
-                event.addCapability(PLAYER_EQUIPS, new IPlayerShinsuEquips.Provider());
+                event.addCapability(PLAYER_EQUIPS, new PlayerShinsuEquips.Provider());
             }
         }
 
@@ -94,7 +94,7 @@ public class EventBusSubscriber {
             }
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
-            IPlayerShinsuEquips equipped = IPlayerShinsuEquips.get(entity);
+            PlayerShinsuEquips equipped = PlayerShinsuEquips.get(entity);
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsMessage(equipped.getEquipped()));
         }
 
@@ -126,7 +126,7 @@ public class EventBusSubscriber {
             if (event.isWasDeath()) {
                 ServerPlayerEntity original = (ServerPlayerEntity) event.getOriginal();
                 clonedStats = IShinsuStats.get(original);
-                clonedEquips = IPlayerShinsuEquips.get(original);
+                clonedEquips = PlayerShinsuEquips.get(original);
             }
         }
 
@@ -136,7 +136,7 @@ public class EventBusSubscriber {
             if (player.getUniqueID().equals(Minecraft.getInstance().player.getUniqueID())) {
                 IShinsuStats stats = IShinsuStats.get(player);
                 stats.deserializeNBT(clonedStats.serializeNBT());
-                IPlayerShinsuEquips equips = IPlayerShinsuEquips.get(player);
+                PlayerShinsuEquips equips = PlayerShinsuEquips.get(player);
                 equips.deserializeNBT(clonedEquips.serializeNBT());
             }
         }
@@ -205,7 +205,7 @@ public class EventBusSubscriber {
         @SubscribeEvent
         public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
             CapabilityManager.INSTANCE.register(IShinsuStats.class, new IShinsuStats.Storage(), IShinsuStats.ShinsuStats::new);
-            CapabilityManager.INSTANCE.register(IPlayerShinsuEquips.class, new IPlayerShinsuEquips.Storage(), new IPlayerShinsuEquips.PlayerShinsuEquips.Factory());
+            CapabilityManager.INSTANCE.register(PlayerShinsuEquips.class, new PlayerShinsuEquips.Storage(), PlayerShinsuEquips::new);
             ChangeEquipsMessage.register(index++);
             CastShinsuMessage.register(index++);
             UpdateStatsMetersMessage.register(index++);
