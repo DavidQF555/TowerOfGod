@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingEntity;
@@ -153,7 +153,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
         float speed = (float) getAttributeValue(Attributes.FLYING_SPEED);
         Entity owner = getOwner();
         if (owner != null) {
-            speed *= IShinsuStats.get(owner).getTension((ServerWorld) world);
+            speed *= ShinsuStats.get(owner).getTension((ServerWorld) world);
         }
         moveRelative(speed, vec);
         move(MoverType.SELF, getMotion());

@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.GuiEventBusSubscriber;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -48,7 +48,7 @@ public class UpdateStatsMetersMessage {
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
-                IShinsuStats stats = IShinsuStats.get(player);
+                ShinsuStats stats = ShinsuStats.get(player);
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             });
             context.setPacketHandled(true);

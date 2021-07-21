@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.goals.RangedMainHandAttackGoal;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.goals.SwapWeaponToMainHandGoal;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -114,7 +114,7 @@ public class RankerEntity extends CreatureEntity implements IShinsuUser<RankerEn
         super.onDeath(cause);
         Entity best = cause.getTrueSource();
         if (best != null) {
-            IShinsuStats stats = IShinsuStats.get(best);
+            ShinsuStats stats = ShinsuStats.get(best);
             if (stats.getLevel() == floorLevel) {
                 stats.addLevel(1);
                 best.sendMessage(new TranslationTextComponent(DEFEAT, floorLevel, floorLevel + 1).mergeStyle(getGroup().getTextFormattingColor()), getUniqueID());
@@ -249,7 +249,7 @@ public class RankerEntity extends CreatureEntity implements IShinsuUser<RankerEn
         float inaccuracy = (14 - world.getDifficulty().getId() * 4f) / getShinsuLevel();
         if (arrow instanceof ShinsuArrowEntity) {
             Vector3d dir = new Vector3d(dX, dY, dZ);
-            IShinsuStats stats = IShinsuStats.get(this);
+            ShinsuStats stats = ShinsuStats.get(this);
             ShinsuTechniqueInstance technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(this, ShootShinsuArrow.getLevelForVelocity(velocity, stats.getQuality()), target, dir, null);
             if (technique == null) {
                 arrow = ((ArrowItem) Items.ARROW).createArrow(world, new ItemStack(Items.ARROW), this);

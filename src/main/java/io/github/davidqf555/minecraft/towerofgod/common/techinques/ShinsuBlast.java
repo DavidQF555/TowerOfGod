@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
@@ -39,7 +39,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
             ShinsuEntity shinsu = RegistryHandler.SHINSU_ENTITY.get().create(world);
             if (shinsu != null) {
                 LivingEntity user = (LivingEntity) u;
-                IShinsuStats stats = IShinsuStats.get(u);
+                ShinsuStats stats = ShinsuStats.get(u);
                 ShinsuQuality quality = stats.getQuality();
                 shinsu.setShooter(user);
                 shinsu.setQuality(quality);

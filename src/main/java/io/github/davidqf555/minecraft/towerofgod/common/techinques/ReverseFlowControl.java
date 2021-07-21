@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -36,7 +36,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
                 remove(world);
                 return;
             }
-            double resistance = IShinsuStats.getTotalResistance(world, user, target);
+            double resistance = ShinsuStats.getNetResistance(world, user, target);
             int level = (int) (resistance * getLevel());
             ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), 2, level - 1));
         }

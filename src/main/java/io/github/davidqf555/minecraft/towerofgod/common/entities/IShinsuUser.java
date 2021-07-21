@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -45,7 +45,7 @@ public interface IShinsuUser<T extends LivingEntity> {
         int floor = property == null ? 1 : property.getLevel();
         setShinsuLevel(getInitialShinsuLevel(floor));
         setGroup(getInitialGroup());
-        IShinsuStats stats = IShinsuStats.get(entity);
+        ShinsuStats stats = ShinsuStats.get(entity);
         stats.addLevel(floor - stats.getLevel());
         stats.addMaxShinsu(getInitialMaxShinsu());
         stats.addMaxBaangs(getInitialMaxBaangs());
@@ -168,13 +168,13 @@ public interface IShinsuUser<T extends LivingEntity> {
     class CastShinsuGoal<T extends MobEntity & IShinsuUser<T>> extends Goal {
 
         private final T entity;
-        private final IShinsuStats stats;
+        private final ShinsuStats stats;
         private ShinsuTechniqueInstance technique;
         private LivingEntity target;
 
         public CastShinsuGoal(T entity) {
             this.entity = entity;
-            stats = IShinsuStats.get(entity);
+            stats = ShinsuStats.get(entity);
             technique = null;
             target = null;
         }

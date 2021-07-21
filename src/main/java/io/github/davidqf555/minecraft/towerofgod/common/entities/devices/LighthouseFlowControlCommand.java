@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -45,7 +45,7 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
         targets.addAll(device.world.getLoadedEntitiesWithinAABB(LivingEntity.class, AxisAlignedBB.fromVector(device.getPositionVec()).grow(range), EntityPredicates.CAN_AI_TARGET.and(entity -> entity.getDistanceSq(device) <= range * range && !device.isOnSameTeam(entity))));
         Effect effect = RegistryHandler.REVERSE_FLOW_EFFECT.get();
         for (LivingEntity entity : targets) {
-            double resistance = IShinsuStats.getTotalResistance((ServerWorld) device.world, owner, entity);
+            double resistance = ShinsuStats.getNetResistance((ServerWorld) device.world, owner, entity);
             int amplifier = (int) (getAffectingLighthouses(entity) / resistance);
             entity.addPotionEffect(new EffectInstance(effect, 2, amplifier - 1, false, true));
         }

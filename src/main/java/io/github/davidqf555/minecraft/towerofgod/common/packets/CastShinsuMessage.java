@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -60,7 +60,7 @@ public class CastShinsuMessage {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
                 Entity t = player.getServerWorld().getEntityByUuid(target);
-                IShinsuStats stats = IShinsuStats.get(player);
+                ShinsuStats stats = ShinsuStats.get(player);
                 stats.cast(player, technique, t, player.getLookVec(), settings);
             });
             context.setPacketHandled(true);

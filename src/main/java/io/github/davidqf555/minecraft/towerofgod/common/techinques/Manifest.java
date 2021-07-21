@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -32,7 +32,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     @Override
     public void onUse(ServerWorld world) {
         Entity user = getUser(world);
-        IShinsuStats stats = IShinsuStats.get(user);
+        ShinsuStats stats = ShinsuStats.get(user);
         ItemStack item = stats.getShape().createItem();
         item.getOrCreateChildTag(TowerOfGod.MOD_ID).putUniqueId("Technique", getID());
         ShinsuQuality.setQuality(item, stats.getQuality());
@@ -82,7 +82,7 @@ public class Manifest extends ShinsuTechniqueInstance {
 
         @Override
         public Manifest build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
-            return IShinsuStats.get(user).getShape() == ShinsuShape.NONE ? null : new Manifest(user, level);
+            return ShinsuStats.get(user).getShape() == ShinsuShape.NONE ? null : new Manifest(user, level);
         }
 
         @Nonnull

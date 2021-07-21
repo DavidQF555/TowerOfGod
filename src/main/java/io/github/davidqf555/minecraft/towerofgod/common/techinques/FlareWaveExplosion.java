@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
@@ -35,7 +35,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
         Entity t = getTarget(world);
         if (user != null && t instanceof LivingEntity && user.getDistanceSq(t) <= RANGE * RANGE) {
             LivingEntity target = (LivingEntity) t;
-            double resistance = IShinsuStats.getTotalResistance(world, user, target);
+            double resistance = ShinsuStats.getNetResistance(world, user, target);
             target.attackEntityFrom(DamageSource.MAGIC, (float) (DAMAGE / resistance) * getLevel() / 2);
             target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 / resistance), getLevel(), true, false, false));
         }

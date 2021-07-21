@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -77,7 +77,7 @@ public class UpdateClientCanCastMessage {
                 Vector3d eye = player.getEyePosition(1);
                 EntityRayTraceResult result = ProjectileHelper.rayTraceEntities(player.world, player, eye, eye.add(player.getLookVec().scale(distance)), AxisAlignedBB.fromVector(eye).grow(distance), null);
                 Entity target = result == null ? null : result.getEntity();
-                IShinsuStats stats = IShinsuStats.get(player);
+                ShinsuStats stats = ShinsuStats.get(player);
                 for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                     int level = stats.getTechniqueLevel(technique);
                     Set<String> can = new HashSet<>();

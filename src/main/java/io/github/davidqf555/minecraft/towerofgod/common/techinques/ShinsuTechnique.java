@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -116,7 +116,7 @@ public enum ShinsuTechnique {
         @Nullable
         default T doBuild(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
             ShinsuTechnique technique = getTechnique();
-            IShinsuStats stats = IShinsuStats.get(user);
+            ShinsuStats stats = ShinsuStats.get(user);
             if ((!technique.isObtainable() || level > 0) && stats.getCooldown(technique) <= 0) {
                 T instance = build(user, level, target, dir, settings);
                 if (instance != null) {

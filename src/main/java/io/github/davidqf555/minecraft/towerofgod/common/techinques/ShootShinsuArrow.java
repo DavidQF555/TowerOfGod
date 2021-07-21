@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
@@ -42,7 +42,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
         if (user != null) {
             ShinsuArrowEntity arrow = RegistryHandler.SHINSU_ARROW_ENTITY.get().create(world);
             if (arrow != null) {
-                ShinsuQuality quality = IShinsuStats.get(user).getQuality();
+                ShinsuQuality quality = ShinsuStats.get(user).getQuality();
                 arrow.setQuality(quality);
                 arrow.setTechnique(getID());
                 float speed = BowItem.getArrowVelocity(getLevel()) * 3 * (float) quality.getSpeed();

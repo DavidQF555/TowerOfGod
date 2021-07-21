@@ -8,7 +8,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
@@ -62,7 +62,7 @@ public class ShinsuCommand {
             int fail = 0;
             for (Entity entity : entities) {
                 if (entity instanceof IShinsuUser || entity instanceof ServerPlayerEntity) {
-                    IShinsuStats stats = IShinsuStats.get(entity);
+                    ShinsuStats stats = ShinsuStats.get(entity);
                     switch (type.toLowerCase()) {
                         case "level":
                             stats.addLevel((int) amount);

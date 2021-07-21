@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -39,7 +39,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     @Nullable
     public static ShinsuTechniqueInstance get(Entity user, UUID id) {
-        IShinsuStats stats = IShinsuStats.get(user);
+        ShinsuStats stats = ShinsuStats.get(user);
         for (ShinsuTechniqueInstance instance : stats.getTechniques()) {
             if (instance.id.equals(id)) {
                 return instance;
@@ -102,7 +102,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         onEnd(world);
         Entity user = getUser(world);
         if (user != null) {
-            IShinsuStats stats = IShinsuStats.get(user);
+            ShinsuStats stats = ShinsuStats.get(user);
             stats.removeTechnique(this);
             updateMeter(world);
         }
@@ -122,7 +122,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     protected void updateMeter(ServerWorld world) {
         Entity user = getUser(world);
         if (user instanceof ServerPlayerEntity) {
-            IShinsuStats stats = IShinsuStats.get(user);
+            ShinsuStats stats = ShinsuStats.get(user);
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
         }
     }
