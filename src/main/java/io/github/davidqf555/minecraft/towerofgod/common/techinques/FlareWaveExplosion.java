@@ -17,11 +17,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
 
     private static final double RANGE = 1;
-    private static final int COOLDOWN = 600;
-    private static final float DAMAGE = 10;
 
     public FlareWaveExplosion(LivingEntity user, int level, LivingEntity target) {
-        super(null, user, level, target, 0);
+        super(null, user, level, target);
     }
 
     @Override
@@ -36,19 +34,19 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
         if (user != null && t instanceof LivingEntity && user.getDistanceSq(t) <= RANGE * RANGE) {
             LivingEntity target = (LivingEntity) t;
             double resistance = ShinsuStats.getNetResistance(world, user, target);
-            target.attackEntityFrom(DamageSource.MAGIC, (float) (DAMAGE / resistance) * getLevel() / 2);
+            target.attackEntityFrom(DamageSource.MAGIC, (float) (5 / resistance) * getLevel() / 2);
             target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 / resistance), getLevel(), true, false, false));
         }
     }
 
     @Override
     public int getCooldown() {
-        return COOLDOWN;
+        return 200;
     }
 
     @Override
     public int getShinsuUse() {
-        return 20;
+        return getLevel() * 3 + 10;
     }
 
     @Override

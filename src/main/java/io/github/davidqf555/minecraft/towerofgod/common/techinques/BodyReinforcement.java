@@ -14,10 +14,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class BodyReinforcement extends ShinsuTechniqueInstance {
 
-    private static final int BASE_DURATION = 300;
-
     public BodyReinforcement(LivingEntity user, int level) {
-        super(null, user, level, level * BASE_DURATION);
+        super(null, user, level);
+    }
+
+    @Override
+    public int getInitialDuration() {
+        return 200 + getLevel() * 100;
     }
 
     @Override
@@ -38,12 +41,12 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return getLevel() * BASE_DURATION;
+        return getInitialDuration() + 150;
     }
 
     @Override
     public int getShinsuUse() {
-        return 10;
+        return getLevel() * 5;
     }
 
     @Override

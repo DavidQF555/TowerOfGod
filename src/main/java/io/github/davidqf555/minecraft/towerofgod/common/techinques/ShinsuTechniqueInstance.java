@@ -28,13 +28,13 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     private int duration;
     private int ticks;
 
-    public ShinsuTechniqueInstance(String settings, LivingEntity user, int level, int duration) {
+    public ShinsuTechniqueInstance(String settings, LivingEntity user, int level) {
         id = UUID.randomUUID();
         this.settings = settings;
         this.user = user == null ? null : user.getUniqueID();
         this.level = level;
-        this.duration = duration;
         ticks = 0;
+        duration = getInitialDuration();
     }
 
     @Nullable
@@ -46,6 +46,10 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
             }
         }
         return null;
+    }
+
+    public int getInitialDuration() {
+        return 0;
     }
 
     public UUID getID() {
@@ -168,8 +172,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         private UUID target;
 
-        public Targetable(String settings, LivingEntity user, int level, Entity target, int duration) {
-            super(settings, user, level, duration);
+        public Targetable(String settings, LivingEntity user, int level, Entity target) {
+            super(settings, user, level);
             this.target = target == null ? null : target.getUniqueID();
         }
 
@@ -205,8 +209,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         private Vector3d dir;
 
-        public Direction(String settings, LivingEntity user, int level, Vector3d dir, int duration) {
-            super(settings, user, level, duration);
+        public Direction(String settings, LivingEntity user, int level, Vector3d dir) {
+            super(settings, user, level);
             this.dir = dir;
         }
 

@@ -176,7 +176,7 @@ public class EventBusSubscriber {
             LivingEntity entity = event.getEntityLiving();
             EffectInstance effect = entity.getActivePotionEffect(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get());
             if (effect != null) {
-                Vector3d motion = entity.getMotion().add(0, effect.getAmplifier() * 0.05 + 0.05, 0);
+                Vector3d motion = entity.getMotion().add(0, effect.getAmplifier() * 0.025 + 0.025, 0);
                 entity.setMotion(motion);
             }
         }

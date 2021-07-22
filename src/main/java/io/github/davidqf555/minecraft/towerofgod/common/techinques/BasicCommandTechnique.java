@@ -41,8 +41,8 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance.Dire
 
     private final List<UUID> devices;
 
-    public BasicCommandTechnique(@Nullable String settings, LivingEntity user, int level, Vector3d dir, int duration) {
-        super(settings, user, level, dir, duration);
+    public BasicCommandTechnique(@Nullable String settings, LivingEntity user, int level, Vector3d dir) {
+        super(settings, user, level, dir);
         devices = user == null ? new ArrayList<>() : ((ServerWorld) user.world).getEntities()
                 .filter(entity -> entity instanceof FlyingDevice)
                 .map(entity -> (FlyingDevice) entity)

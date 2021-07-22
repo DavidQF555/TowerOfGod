@@ -16,7 +16,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class FollowOwner extends BasicCommandTechnique {
 
     public FollowOwner(LivingEntity user, @Nullable String settings, int level) {
-        super(settings, user, level, Vector3d.ZERO, 1);
+        super(settings, user, level, Vector3d.ZERO);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class FollowOwner extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 5;
+        return getDevices().size() * 3;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class FollowOwner extends BasicCommandTechnique {
 
     @Override
     protected DeviceCommand createCommand(FlyingDevice entity, ServerWorld world) {
-        return new FollowOwnerCommand(entity, getID());
+        return new FollowOwnerCommand(entity, getID(), 1 + getLevel() / 20f);
     }
 
     @ParametersAreNonnullByDefault

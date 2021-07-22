@@ -9,18 +9,20 @@ public class FollowOwnerCommand extends DeviceCommand {
 
     private static final double DISTANCE = 5;
     private static final int RECALCULATE_PERIOD = 10;
+    private final float speed;
     private int recalculate;
     private Entity owner;
 
-    public FollowOwnerCommand(FlyingDevice entity, UUID technique) {
+    public FollowOwnerCommand(FlyingDevice entity, UUID technique, float speed) {
         super(entity, technique, 1);
+        this.speed = speed;
         recalculate = 0;
         owner = null;
         setMutexFlags(EnumSet.of(Flag.MOVE));
     }
 
     public static FollowOwnerCommand emptyBuild(FlyingDevice device) {
-        return new FollowOwnerCommand(device, null);
+        return new FollowOwnerCommand(device, null, 1);
     }
 
     @Override
@@ -44,7 +46,7 @@ public class FollowOwnerCommand extends DeviceCommand {
     @Override
     public void tick() {
         if (--recalculate <= 0) {
-            getEntity().getNavigator().tryMoveToEntityLiving(owner, 1);
+            getEntity().getNavigator().tryMoveToEntityLiving(owner, speed);
             recalculate = RECALCULATE_PERIOD;
         }
     }

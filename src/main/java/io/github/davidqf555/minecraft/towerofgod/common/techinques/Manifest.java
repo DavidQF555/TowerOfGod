@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Manifest extends ShinsuTechniqueInstance {
 
     public Manifest(LivingEntity user, int level) {
-        super(null, user, level, 1);
+        super(null, user, level);
     }
 
     @Override

@@ -20,7 +20,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class MoveDevices extends BasicCommandTechnique {
 
     public MoveDevices(LivingEntity user, @Nullable String settings, int level, Vector3d dir) {
-        super(settings, user, level, dir, 1);
+        super(settings, user, level, dir);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class MoveDevices extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 10;
+        return getDevices().size() * 2;
     }
 
     @Override
@@ -57,11 +57,12 @@ public class MoveDevices extends BasicCommandTechnique {
     protected DeviceCommand createCommand(FlyingDevice entity, ServerWorld world) {
         Entity user = getUser(world);
         Vector3d eye = user.getEyePosition(1);
-        double range = 32 + getLevel() * 16;
+        int level = getLevel();
+        double range = level * 4;
         Vector3d end = eye.add(user.getLookVec().scale(range));
         EntityRayTraceResult trace = ProjectileHelper.rayTraceEntities(world, user, eye, end, AxisAlignedBB.fromVector(eye).grow(range), null);
         Vector3d target = trace == null ? world.rayTraceBlocks(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity)).getHitVec() : trace.getHitVec();
-        return new MoveCommand(entity, getID(), target, 1);
+        return new MoveCommand(entity, getID(), target, 1 + level / 20f);
     }
 
     @ParametersAreNonnullByDefault

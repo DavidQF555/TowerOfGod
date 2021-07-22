@@ -22,19 +22,23 @@ import java.util.Random;
 public interface IShinsuUser<T extends LivingEntity> {
 
     default int getInitialMaxShinsu() {
-        return 10 + (int) (getShinsuLevel() * getGroup().getShinsu() * (getShinsuUserEntity().getRNG().nextGaussian() * 0.25 + 1) + 0.5);
+        T entity = getShinsuUserEntity();
+        return 10 + (int) (ShinsuStats.get(entity).getLevel() * getGroup().getShinsu() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default int getInitialMaxBaangs() {
-        return 1 + (int) (0.05 * getShinsuLevel() * getGroup().getBaangs() * (getShinsuUserEntity().getRNG().nextGaussian() * 0.25 + 1) + 0.5);
+        T entity = getShinsuUserEntity();
+        return 1 + (int) (0.05 * ShinsuStats.get(entity).getLevel() * getGroup().getBaangs() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default double getInitialResistance() {
-        return 1 + getShinsuLevel() * 0.025 * getGroup().getResistance() * (getShinsuUserEntity().getRNG().nextGaussian() * 0.25 + 1);
+        T entity = getShinsuUserEntity();
+        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * getGroup().getResistance() * (entity.getRNG().nextGaussian() * 0.25 + 1);
     }
 
     default double getInitialTension() {
-        return 1 + getShinsuLevel() * 0.025 * getGroup().getTension() * (getShinsuUserEntity().getRNG().nextGaussian() * 0.25 + 1);
+        T entity = getShinsuUserEntity();
+        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * getGroup().getTension() * (entity.getRNG().nextGaussian() * 0.25 + 1);
     }
 
     T getShinsuUserEntity();
@@ -43,14 +47,13 @@ public interface IShinsuUser<T extends LivingEntity> {
         T entity = getShinsuUserEntity();
         FloorProperty property = FloorDimensionsHelper.getFloorProperty(world.getWorld());
         int floor = property == null ? 1 : property.getLevel();
-        setShinsuLevel(getInitialShinsuLevel(floor));
-        setGroup(getInitialGroup());
         ShinsuStats stats = ShinsuStats.get(entity);
-        stats.addLevel(floor - stats.getLevel());
-        stats.addMaxShinsu(getInitialMaxShinsu());
-        stats.addMaxBaangs(getInitialMaxBaangs());
-        stats.multiplyBaseResistance(getInitialResistance());
-        stats.multiplyBaseTension(getInitialTension());
+        stats.addLevel(getInitialShinsuLevel(floor) - stats.getLevel());
+        setGroup(getInitialGroup());
+        stats.addMaxShinsu(getInitialMaxShinsu() - stats.getMaxShinsu());
+        stats.addMaxBaangs(getInitialMaxBaangs() - stats.getMaxBaangs());
+        stats.multiplyBaseResistance(getInitialResistance() / stats.getRawResistance());
+        stats.multiplyBaseTension(getInitialTension() / stats.getRawTension());
         for (ShinsuTechnique technique : getInitialShinsuTechniques()) {
             stats.addKnownTechnique(technique, 1);
         }
@@ -78,7 +81,8 @@ public interface IShinsuUser<T extends LivingEntity> {
     }
 
     default int getInitialTechniquesTotalLevel() {
-        return getShinsuLevel() / 4 + getShinsuUserEntity().getRNG().nextInt(4);
+        T entity = getShinsuUserEntity();
+        return 1 + (int) (ShinsuStats.get(entity).getLevel() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default double getPreferredQualityChance() {
@@ -152,14 +156,10 @@ public interface IShinsuUser<T extends LivingEntity> {
     }
 
     default int getMinInitialLevel(int floor) {
-        return 1;
+        return floor;
     }
 
     int getMaxInitialLevel(int floor);
-
-    int getShinsuLevel();
-
-    void setShinsuLevel(int level);
 
     Group getGroup();
 

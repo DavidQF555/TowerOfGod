@@ -16,10 +16,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
 
     private static final double RANGE = 3;
-    private static final int DURATION = 20;
 
     public ReverseFlowControl(LivingEntity user, int level, LivingEntity target) {
-        super(null, user, level, target, DURATION);
+        super(null, user, level, target);
+    }
+
+    @Override
+    public int getInitialDuration() {
+        return 20 + getLevel() * 10;
     }
 
     @Override
@@ -45,12 +49,12 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
 
     @Override
     public int getCooldown() {
-        return DURATION * 8;
+        return getInitialDuration() + 500;
     }
 
     @Override
     public int getShinsuUse() {
-        return 10;
+        return 15 + getLevel() * 5;
     }
 
     @Override

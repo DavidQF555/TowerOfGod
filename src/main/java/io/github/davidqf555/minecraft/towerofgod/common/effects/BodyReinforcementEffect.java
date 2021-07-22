@@ -12,12 +12,12 @@ public class BodyReinforcementEffect extends Effect {
 
     public BodyReinforcementEffect() {
         super(EffectType.BENEFICIAL, COLOR);
-        addAttributesModifier(Attributes.MOVEMENT_SPEED, ID, 0.15, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        addAttributesModifier(Attributes.ATTACK_SPEED, ID, 0.75, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        addAttributesModifier(Attributes.ATTACK_DAMAGE, ID, 0.25, AttributeModifier.Operation.ADDITION);
-        addAttributesModifier(Attributes.KNOCKBACK_RESISTANCE, ID, 0.1, AttributeModifier.Operation.ADDITION);
-        addAttributesModifier(Attributes.ARMOR, ID, 1, AttributeModifier.Operation.ADDITION);
-        addAttributesModifier(Attributes.FLYING_SPEED, ID, 0.1, AttributeModifier.Operation.MULTIPLY_BASE);
-        addAttributesModifier(Attributes.HORSE_JUMP_STRENGTH, ID, 0.1, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributesModifier(Attributes.MOVEMENT_SPEED, ID, 0.075, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributesModifier(Attributes.ATTACK_SPEED, ID, 0.0375, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributesModifier(Attributes.ATTACK_DAMAGE, ID, 0.125, AttributeModifier.Operation.ADDITION);
+        addAttributesModifier(Attributes.KNOCKBACK_RESISTANCE, ID, 0.05, AttributeModifier.Operation.ADDITION);
+        addAttributesModifier(Attributes.ARMOR, ID, 0.5, AttributeModifier.Operation.ADDITION);
+        addAttributesModifier(Attributes.FLYING_SPEED, ID, 0.05, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributesModifier(Attributes.HORSE_JUMP_STRENGTH, ID, 0.05, AttributeModifier.Operation.MULTIPLY_BASE);
     }
 }

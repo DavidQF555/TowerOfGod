@@ -18,13 +18,16 @@ import java.util.UUID;
 public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
 
     private static final double BASE_SPEED = 0.5;
-    private static final int DURATION = 400;
-    private static final int COOLDOWN = 40;
     private UUID blast;
 
     public ShinsuBlast(LivingEntity user, String settings, int level, Vector3d dir) {
-        super(settings, user, level, dir.normalize(), DURATION);
+        super(settings, user, level, dir.normalize());
         blast = null;
+    }
+
+    @Override
+    public int getInitialDuration() {
+        return 400;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
 
     @Override
     public int getCooldown() {
-        return COOLDOWN;
+        return 40;
     }
 
     @Override

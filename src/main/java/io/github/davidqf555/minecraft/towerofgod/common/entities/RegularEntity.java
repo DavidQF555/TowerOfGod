@@ -1,12 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.goals.RangedMainHandAttackGoal;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.goals.SwapWeaponToMainHandGoal;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShootShinsuArrow;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
 import net.minecraft.entity.*;
@@ -15,19 +11,9 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
@@ -42,17 +28,13 @@ import java.util.List;
 import java.util.UUID;
 
 @ParametersAreNonnullByDefault
-public class RegularEntity extends CreatureEntity implements IShinsuUser<RegularEntity>, IGeared<RegularEntity>, IRangedAttackMob {
+public class RegularEntity extends BasicShinsuUserEntity {
 
-    public static final DataParameter<String> GROUP = EntityDataManager.createKey(RegularEntity.class, DataSerializers.STRING);
-    private static final String NAME = "entity." + TowerOfGod.MOD_ID + ".regular_entity.name";
-    private int level;
     private Personality personality;
 
     public RegularEntity(World worldIn) {
         super(RegistryHandler.REGULAR_ENTITY.get(), worldIn);
         personality = Personality.NEUTRAL;
-        this.level = 1;
     }
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
@@ -66,23 +48,8 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
     @Nullable
     @Override
     public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        initializeShinsuStats(worldIn);
-        initializeWeapons();
-        personality = MonsterEntity.isValidLightLevel(worldIn, getPosition().down(), rand) && rand.nextBoolean() ? Personality.AGGRESSIVE : Personality.NEUTRAL;
-        setCustomName(new TranslationTextComponent(NAME, getShinsuLevel()).mergeStyle(getGroup().getTextFormattingColor()));
+        personality = MonsterEntity.isValidLightLevel(worldIn, getPosition().down(), rand) && rand.nextBoolean() ? RegularEntity.Personality.AGGRESSIVE : RegularEntity.Personality.NEUTRAL;
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-    }
-
-    @Override
-    protected void registerData() {
-        super.registerData();
-        dataManager.register(GROUP, Group.NONE.name());
-    }
-
-    @Override
-    public void livingTick() {
-        super.livingTick();
-        heal(0.025f);
     }
 
     @Override
@@ -108,88 +75,22 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
         if (nbt.contains("Personality", Constants.NBT.TAG_STRING)) {
             personality = Personality.valueOf(nbt.getString("Personality"));
         }
-        if (nbt.contains("Group", Constants.NBT.TAG_STRING)) {
-            setGroup(Group.valueOf(nbt.getString("Group")));
-        }
-        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
-            setShinsuLevel(nbt.getInt("Level"));
-        }
     }
 
     @Override
     public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
         nbt.putString("Personality", personality.name());
-        nbt.putString("Group", getGroup().name());
-        nbt.putInt("Level", getShinsuLevel());
-    }
-
-    @Override
-    public RegularEntity getShinsuUserEntity() {
-        return this;
     }
 
     @Override
     public int getMaxInitialLevel(int floor) {
-        return floor * 10;
-    }
-
-    @Override
-    public int getMinInitialLevel(int floor) {
-        return floor * 3;
-    }
-
-    @Override
-    public int getShinsuLevel() {
-        return level;
-    }
-
-    @Override
-    public void setShinsuLevel(int level) {
-        this.level = level;
+        return floor * 2 + 3;
     }
 
     @Override
     protected int getExperiencePoints(PlayerEntity player) {
-        return level - rand.nextInt(3) + 7;
-    }
-
-    @Override
-    public Group getGroup() {
-        return Group.valueOf(dataManager.get(GROUP));
-    }
-
-    @Override
-    public void setGroup(Group group) {
-        dataManager.set(GROUP, group.name());
-    }
-
-    @Override
-    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
-        ItemStack hand = getHeldItem(Hand.MAIN_HAND);
-        ItemStack ammo = findAmmo(hand);
-        AbstractArrowEntity arrow = ProjectileHelper.fireArrow(this, ammo, distanceFactor);
-        if (getHeldItemMainhand().getItem() instanceof BowItem) {
-            arrow = ((BowItem) getHeldItemMainhand().getItem()).customArrow(arrow);
-        }
-        double dX = target.getPosX() - getPosX();
-        double dZ = target.getPosZ() - getPosZ();
-        double dY = target.getPosYHeight(0.3333333333333333) - arrow.getPosY() + MathHelper.sqrt(dX * dX + dZ * dZ) * 0.2;
-        float velocity = 1.6f;
-        float inaccuracy = (14 - world.getDifficulty().getId() * 4f) / getShinsuLevel();
-        if (arrow instanceof ShinsuArrowEntity) {
-            Vector3d dir = new Vector3d(dX, dY, dZ);
-            ShinsuStats stats = ShinsuStats.get(this);
-            ShinsuTechniqueInstance technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(this, ShootShinsuArrow.getLevelForVelocity(velocity, stats.getQuality()), target, dir, null);
-            if (technique == null) {
-                arrow = ((ArrowItem) Items.ARROW).createArrow(world, new ItemStack(Items.ARROW), this);
-            } else {
-                stats.cast((ServerWorld) world, technique);
-                return;
-            }
-        }
-        arrow.shoot(dX, dY, dZ, velocity, inaccuracy);
-        world.addEntity(arrow);
+        return ShinsuStats.get(this).getLevel() - rand.nextInt(3) + 7;
     }
 
     @Nullable
@@ -204,26 +105,6 @@ public class RegularEntity extends CreatureEntity implements IShinsuUser<Regular
     public boolean isOnSameTeam(Entity entityIn) {
         RegularTeamsSavedData.RegularTeam team = getRegularTeam();
         return super.isOnSameTeam(entityIn) || (team != null && team.getMembers().contains(entityIn.getUniqueID()));
-    }
-
-    @Override
-    public boolean canDespawn(double distanceToClosestPlayer) {
-        return false;
-    }
-
-    @Override
-    public int getGearLevel() {
-        return getShinsuLevel();
-    }
-
-    @Override
-    public RegularEntity getGearedEntity() {
-        return this;
-    }
-
-    @Override
-    public boolean isWeaponPreferred(Item weapon) {
-        return getGroup().isPreferredWeapon(weapon);
     }
 
     private enum Personality {

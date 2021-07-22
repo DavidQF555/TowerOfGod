@@ -18,10 +18,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class Scout extends BasicCommandTechnique {
 
-    private static final int DURATION = 600;
-
     public Scout(LivingEntity user, String settings, int level, Vector3d dir) {
-        super(settings, user, level, dir, DURATION);
+        super(settings, user, level, dir);
+    }
+
+    @Override
+    public int getInitialDuration() {
+        return 600;
     }
 
     @Override
@@ -46,12 +49,12 @@ public class Scout extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 10;
+        return getDevices().size() * 5;
     }
 
     @Override
     public int getBaangsUse() {
-        return 0;
+        return 1 + getDevices().size() / 3;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class Scout extends BasicCommandTechnique {
         int level = getLevel();
         Entity user = getUser(world);
         Vector3d eye = user.getEyePosition(1);
-        double range = 32 + level * 16;
+        double range = 4 + level * 4;
         Vector3d end = eye.add(user.getLookVec().scale(range));
         BlockPos target;
         EntityRayTraceResult trace = ProjectileHelper.rayTraceEntities(world, user, eye, end, AxisAlignedBB.fromVector(eye).grow(range), null);
@@ -69,7 +72,7 @@ public class Scout extends BasicCommandTechnique {
         } else {
             target = trace.getEntity().getPosition();
         }
-        return new ScoutCommand(entity, getID(), target, 1, 16 + 8 * level, DURATION);
+        return new ScoutCommand(entity, getID(), target, 1 + level / 20f, 8 + 4 * level, getDuration());
     }
 
     @ParametersAreNonnullByDefault

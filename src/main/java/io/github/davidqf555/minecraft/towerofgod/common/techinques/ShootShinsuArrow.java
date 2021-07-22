@@ -19,16 +19,20 @@ import java.util.UUID;
 
 public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
 
-    private static final int DURATION = 200;
     private UUID arrow;
 
     public ShootShinsuArrow(LivingEntity user, int level, Vector3d dir) {
-        super(null, user, level, dir, DURATION);
+        super(null, user, level, dir);
         arrow = null;
     }
 
     public static int getLevelForVelocity(float velocity, ShinsuQuality quality) {
         return (int) (MathHelper.sqrt(400 + 400 * velocity / quality.getSpeed()) - 19.5);
+    }
+
+    @Override
+    public int getInitialDuration() {
+        return 200;
     }
 
     @Override

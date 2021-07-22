@@ -16,10 +16,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class LighthouseFlowControl extends BasicCommandTechnique {
 
-    private static final int DURATION = 600;
-
     public LighthouseFlowControl(LivingEntity user, @Nullable String settings, int level) {
-        super(settings, user, level, Vector3d.ZERO, DURATION);
+        super(settings, user, level, Vector3d.ZERO);
+    }
+
+    @Override
+    public int getInitialDuration() {
+        return 40 + getLevel() * 20;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 15;
+        return getDevices().size() * 10;
     }
 
     @Override
@@ -45,7 +48,12 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
 
     @Override
     protected DeviceCommand createCommand(FlyingDevice entity, ServerWorld world) {
-        return new LighthouseFlowControlCommand(entity, getID(), 3 + getLevel(), DURATION);
+        return new LighthouseFlowControlCommand(entity, getID(), 3 + getLevel(), getDuration());
+    }
+
+    @Override
+    public int getCooldown() {
+        return getInitialDuration() + 200;
     }
 
     @ParametersAreNonnullByDefault
