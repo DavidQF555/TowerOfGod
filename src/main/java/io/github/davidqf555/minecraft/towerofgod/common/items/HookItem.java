@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentType;
@@ -11,11 +10,12 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.Set;
 
 public class HookItem extends ToolItem {
 
-    private static final Set<Block> EFFECTIVE = Sets.newHashSet();
+    private static final Set<Block> EFFECTIVE = new HashSet<>();
 
     public HookItem(IItemTier tier, float attackDamage, float attackSpeed, Properties properties) {
         super(attackDamage, attackSpeed, tier, EFFECTIVE, properties);

@@ -16,8 +16,8 @@ public class LighthouseModel extends EntityModel<LighthouseEntity> {
         textureWidth = 64;
         textureHeight = 32;
         lighthouse = new ModelRenderer(this);
-        lighthouse.setRotationPoint(0.0F, 16.0F, 0.0F);
-        lighthouse.setTextureOffset(0, 0).addBox(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F, 0.0F, false);
+        lighthouse.setRotationPoint(0, 16, 0);
+        lighthouse.setTextureOffset(0, 0).addBox(-8, -8, -8, 16, 16, 16, 0, false);
     }
 
     @Override

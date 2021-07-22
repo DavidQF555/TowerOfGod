@@ -43,7 +43,7 @@ public interface IGeared<T extends LivingEntity> {
                     total += modifier.getAmount() * base;
                     break;
                 case MULTIPLY_TOTAL:
-                    total *= modifier.getAmount();
+                    total *= modifier.getAmount() + 1;
             }
         }
         return total;

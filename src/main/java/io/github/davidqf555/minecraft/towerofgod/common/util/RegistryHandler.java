@@ -2,9 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.util;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.FloorTeleportationTerminalBlock;
-import io.github.davidqf555.minecraft.towerofgod.common.blocks.LightBlock;
-import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumBlock;
-import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumOre;
 import io.github.davidqf555.minecraft.towerofgod.common.effects.BodyReinforcementEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.effects.ReverseFlowEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.*;
@@ -12,6 +9,8 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.Lightho
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.items.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -22,6 +21,7 @@ import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.potion.Effect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
@@ -76,9 +76,9 @@ public class RegistryHandler {
     public static final RegistryObject<ShinsuHoe> SHINSU_HOE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_hoe"), ForgeRegistries.ITEMS);
     public static final RegistryObject<ShinsuBow> SHINSU_BOW = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_bow"), ForgeRegistries.ITEMS);
 
-    public static final RegistryObject<SuspendiumOre> SUSPENDIUM_ORE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), ForgeRegistries.BLOCKS);
-    public static final RegistryObject<SuspendiumBlock> SUSPENDIUM_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_block"), ForgeRegistries.BLOCKS);
-    public static final RegistryObject<LightBlock> LIGHT_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "light_block"), ForgeRegistries.BLOCKS);
+    public static final RegistryObject<Block> SUSPENDIUM_ORE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), ForgeRegistries.BLOCKS);
+    public static final RegistryObject<Block> SUSPENDIUM_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_block"), ForgeRegistries.BLOCKS);
+    public static final RegistryObject<Block> LIGHT_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "light_block"), ForgeRegistries.BLOCKS);
     public static final RegistryObject<FloorTeleportationTerminalBlock> FLOOR_TELEPORTATION_TERMINAL_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "floor_teleportation_terminal_block"), ForgeRegistries.BLOCKS);
 
     public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse_entity"), ForgeRegistries.ENTITIES);
@@ -106,9 +106,9 @@ public class RegistryHandler {
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
-                new SuspendiumOre().setRegistryName(TowerOfGod.MOD_ID, "suspendium_ore"),
-                new SuspendiumBlock().setRegistryName(TowerOfGod.MOD_ID, "suspendium_block"),
-                new LightBlock().setRegistryName(TowerOfGod.MOD_ID, "light_block"),
+                new Block(Block.Properties.create(Material.ROCK).hardnessAndResistance(5f, 5f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_ore"),
+                new Block(Block.Properties.create(Material.ROCK).hardnessAndResistance(3f, 3f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_block"),
+                new Block(Block.Properties.create(Material.AIR).setLightLevel(state -> 15)).setRegistryName(TowerOfGod.MOD_ID, "light_block"),
                 new FloorTeleportationTerminalBlock().setRegistryName(TowerOfGod.MOD_ID, "floor_teleportation_terminal_block")
         );
     }

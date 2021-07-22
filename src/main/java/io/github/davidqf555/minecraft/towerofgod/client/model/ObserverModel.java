@@ -16,8 +16,8 @@ public class ObserverModel extends EntityModel<ObserverEntity> {
         textureWidth = 32;
         textureHeight = 16;
         observer = new ModelRenderer(this);
-        observer.setRotationPoint(0.0F, 24.0F, 0.0F);
-        observer.setTextureOffset(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, 0.0F, false);
+        observer.setRotationPoint(0, 24, 0);
+        observer.setTextureOffset(0, 0).addBox(-4, -8, -4, 8, 8, 8, 0, false);
     }
 
     @Override
