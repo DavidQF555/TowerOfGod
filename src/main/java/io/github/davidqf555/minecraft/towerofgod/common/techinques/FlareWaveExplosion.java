@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
@@ -17,11 +17,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
 
     private static final double RANGE = 1;
-    private static final int COOLDOWN = 600;
-    private static final float DAMAGE = 10;
 
     public FlareWaveExplosion(LivingEntity user, int level, LivingEntity target) {
-        super(ShinsuTechnique.FLARE_WAVE_EXPLOSION, user, level, target, 0);
+        super(null, user, level, target);
+    }
+
+    @Override
+    public ShinsuTechnique getTechnique() {
+        return ShinsuTechnique.FLARE_WAVE_EXPLOSION;
     }
 
     @Override
@@ -30,51 +33,38 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
         Entity t = getTarget(world);
         if (user != null && t instanceof LivingEntity && user.getDistanceSq(t) <= RANGE * RANGE) {
             LivingEntity target = (LivingEntity) t;
-            double resistance = IShinsuStats.getTotalResistance(world, user, target);
-            target.attackEntityFrom(DamageSource.MAGIC, (float) (DAMAGE / resistance) * getLevel() / 2);
+            double resistance = ShinsuStats.getNetResistance(world, user, target);
+            target.attackEntityFrom(DamageSource.MAGIC, (float) (5 / resistance) * getLevel() / 2);
             target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 / resistance), getLevel(), true, false, false));
         }
     }
 
     @Override
     public int getCooldown() {
-        return COOLDOWN;
+        return 200;
     }
 
-    public static class Builder implements ShinsuTechnique.Builder<FlareWaveExplosion> {
+    @Override
+    public int getShinsuUse() {
+        return getLevel() * 3 + 10;
+    }
 
-        private final int shinsu;
-        private final int baangs;
+    @Override
+    public int getBaangsUse() {
+        return 1;
+    }
 
-        public Builder(int shinsu, int baangs) {
-            this.shinsu = shinsu;
-            this.baangs = baangs;
-        }
+    public static class Builder implements ShinsuTechnique.IBuilder<FlareWaveExplosion> {
 
         @Override
-        public FlareWaveExplosion build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return target instanceof LivingEntity ? new FlareWaveExplosion(user, level, (LivingEntity) target) : null;
+        public FlareWaveExplosion build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+            return target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE ? new FlareWaveExplosion(user, level, (LivingEntity) target) : null;
         }
 
         @Nonnull
         @Override
         public FlareWaveExplosion emptyBuild() {
             return new FlareWaveExplosion(null, 0, null);
-        }
-
-        @Override
-        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE;
-        }
-
-        @Override
-        public int getShinsuUse() {
-            return shinsu;
-        }
-
-        @Override
-        public int getBaangUse() {
-            return baangs;
         }
 
         @Override

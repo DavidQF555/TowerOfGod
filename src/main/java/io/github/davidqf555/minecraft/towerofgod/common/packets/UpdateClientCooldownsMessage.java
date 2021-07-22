@@ -2,8 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import com.google.common.collect.Maps;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuSkillWheelGui;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -56,7 +56,7 @@ public class UpdateClientCooldownsMessage {
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
-                IShinsuStats stats = IShinsuStats.get(player);
+                ShinsuStats stats = ShinsuStats.get(player);
                 for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                     cooldowns.put(technique, stats.getCooldown(technique));
                 }
@@ -65,7 +65,7 @@ public class UpdateClientCooldownsMessage {
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
             context.enqueueWork(() -> {
-                ShinsuSkillWheelGui.cooldowns = cooldowns;
+                ClientReference.cooldowns = cooldowns;
             });
             context.setPacketHandled(true);
         }

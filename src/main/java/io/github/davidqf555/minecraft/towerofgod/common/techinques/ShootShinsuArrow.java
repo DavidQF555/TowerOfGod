@@ -1,11 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
@@ -20,11 +19,10 @@ import java.util.UUID;
 
 public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
 
-    private static final int DURATION = 200;
     private UUID arrow;
 
     public ShootShinsuArrow(LivingEntity user, int level, Vector3d dir) {
-        super(ShinsuTechnique.SHOOT_SHINSU_ARROW, user, level, dir, DURATION);
+        super(null, user, level, dir);
         arrow = null;
     }
 
@@ -33,12 +31,22 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
     }
 
     @Override
+    public int getInitialDuration() {
+        return 200;
+    }
+
+    @Override
+    public ShinsuTechnique getTechnique() {
+        return ShinsuTechnique.SHOOT_SHINSU_ARROW;
+    }
+
+    @Override
     public void onUse(ServerWorld world) {
         Entity user = getUser(world);
         if (user != null) {
             ShinsuArrowEntity arrow = RegistryHandler.SHINSU_ARROW_ENTITY.get().create(world);
             if (arrow != null) {
-                ShinsuQuality quality = IShinsuStats.get(user).getQuality();
+                ShinsuQuality quality = ShinsuStats.get(user).getQuality();
                 arrow.setQuality(quality);
                 arrow.setTechnique(getID());
                 float speed = BowItem.getArrowVelocity(getLevel()) * 3 * (float) quality.getSpeed();
@@ -51,6 +59,16 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
             }
         }
         super.onUse(world);
+    }
+
+    @Override
+    public int getShinsuUse() {
+        return 3;
+    }
+
+    @Override
+    public int getBaangsUse() {
+        return 1;
     }
 
     @Override
@@ -79,40 +97,17 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
     }
 
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.Builder<ShootShinsuArrow> {
-
-        private final int shinsu;
-        private final int baangs;
-
-        public Builder(int shinsu, int baangs) {
-            this.shinsu = shinsu;
-            this.baangs = baangs;
-        }
+    public static class Builder implements ShinsuTechnique.IBuilder<ShootShinsuArrow> {
 
         @Override
-        public ShootShinsuArrow build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+        public ShootShinsuArrow build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
             return new ShootShinsuArrow(user, level, dir);
-        }
-
-        @Override
-        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && (!(user instanceof MobEntity) || target != null);
         }
 
         @Nonnull
         @Override
         public ShootShinsuArrow emptyBuild() {
             return new ShootShinsuArrow(null, 0, Vector3d.ZERO);
-        }
-
-        @Override
-        public int getShinsuUse() {
-            return shinsu;
-        }
-
-        @Override
-        public int getBaangUse() {
-            return baangs;
         }
 
         @Override

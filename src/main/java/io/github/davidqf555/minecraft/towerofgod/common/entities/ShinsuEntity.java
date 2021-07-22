@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
@@ -91,7 +91,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             Entity shooter = getShooter();
             Entity target = rayTraceResult.getEntity();
             ShinsuQuality quality = getQuality();
-            float damage = (float) ((shooter == null) ? level * quality.getDamage() * DAMAGE : IShinsuStats.getTotalResistance((ServerWorld) world, shooter, target) * level * quality.getDamage() * DAMAGE) / 3;
+            float damage = (float) ((shooter == null) ? level * quality.getDamage() * DAMAGE : ShinsuStats.getNetResistance((ServerWorld) world, shooter, target) * level * quality.getDamage() * DAMAGE) / 8;
             quality.applyEntityEffect(this, rayTraceResult);
             target.attackEntityFrom(quality.getSource(), damage);
         }

@@ -13,40 +13,49 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class BlackFish extends ShinsuTechniqueInstance {
 
-    private static final int BASE_DURATION = 600;
-
     public BlackFish(LivingEntity user, int level) {
-        super(ShinsuTechnique.BLACK_FISH, user, level, level * BASE_DURATION);
+        super(null, user, level);
+    }
+
+    @Override
+    public int getInitialDuration() {
+        return 100 + getLevel() * 40;
     }
 
     @Override
     public void tick(ServerWorld world) {
         Entity e = getUser(world);
-        int level = getLevel();
-        if (e instanceof LivingEntity && world.getLight(e.getPosition()) <= level * 5) {
+        if (e instanceof LivingEntity && world.getLight(e.getPosition()) <= getLevel()) {
             ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 2, 0, true, true, true));
         }
         super.tick(world);
     }
 
     @Override
+    public ShinsuTechnique getTechnique() {
+        return ShinsuTechnique.BLACK_FISH;
+    }
+
+    @Override
     public int getCooldown() {
-        return getLevel() * BASE_DURATION;
+        return getInitialDuration() + 40;
+    }
+
+    @Override
+    public int getShinsuUse() {
+        return getLevel() * 3;
+    }
+
+    @Override
+    public int getBaangsUse() {
+        return 1;
     }
 
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.Builder<BlackFish> {
-
-        private final int shinsu;
-        private final int baangs;
-
-        public Builder(int shinsu, int baangs) {
-            this.shinsu = shinsu;
-            this.baangs = baangs;
-        }
+    public static class Builder implements ShinsuTechnique.IBuilder<BlackFish> {
 
         @Override
-        public BlackFish build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+        public BlackFish build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
             return new BlackFish(user, level);
         }
 
@@ -54,16 +63,6 @@ public class BlackFish extends ShinsuTechniqueInstance {
         @Override
         public BlackFish emptyBuild() {
             return new BlackFish(null, 0);
-        }
-
-        @Override
-        public int getShinsuUse() {
-            return shinsu;
-        }
-
-        @Override
-        public int getBaangUse() {
-            return baangs;
         }
 
         @Override

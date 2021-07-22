@@ -14,4 +14,10 @@ public class ShinsuIcons {
     public static final RenderInfo TENSION = new RenderInfo(ICONS, 64, 64, 48, 0, 16, 16);
     public static final RenderInfo REVERSE = new RenderInfo(ICONS, 64, 64, 0, 16, 16, 16);
     public static final RenderInfo SHINSU = new RenderInfo(ICONS, 64, 64, 16, 16, 16, 14);
+    public static final RenderInfo PICKAXE = new RenderInfo(ICONS, 64, 64, 32, 16, 16, 16);
+    public static final RenderInfo MOVE = new RenderInfo(ICONS, 64, 64, 48, 16, 16, 16);
+    public static final RenderInfo LIGHTHOUSE_FLOW_CONTROL = new RenderInfo(ICONS, 64, 64, 0, 32, 16, 16);
+    public static final RenderInfo EYE = new RenderInfo(ICONS, 64, 64, 16, 32, 16, 16);
+    public static final RenderInfo FOLLOW = new RenderInfo(ICONS, 64, 64, 32, 32, 16, 16);
+
 }

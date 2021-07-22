@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -51,7 +51,7 @@ public class ChangeFloorMessage {
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
-                if (IShinsuStats.get(player).getLevel() >= level) {
+                if (ShinsuStats.get(player).getLevel() >= level) {
                     FloorDimensionsHelper.sendPlayerToFloor(player, teleporter, direction, level);
                 }
             });

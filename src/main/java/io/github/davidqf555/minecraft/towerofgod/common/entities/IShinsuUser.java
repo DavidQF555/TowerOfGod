@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -12,6 +12,7 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IServerWorld;
+import net.minecraft.world.server.ServerWorld;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,19 +22,23 @@ import java.util.Random;
 public interface IShinsuUser<T extends LivingEntity> {
 
     default int getInitialMaxShinsu() {
-        return 10 + (int) (getShinsuLevel() * getGroup().getShinsu() * (getShinsuUserEntity().getRNG().nextGaussian() * 0.25 + 1) + 0.5);
+        T entity = getShinsuUserEntity();
+        return 10 + (int) (ShinsuStats.get(entity).getLevel() * getGroup().getShinsu() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default int getInitialMaxBaangs() {
-        return 1 + (int) (0.05 * getShinsuLevel() * getGroup().getBaangs() * (getShinsuUserEntity().getRNG().nextGaussian() * 0.25 + 1) + 0.5);
+        T entity = getShinsuUserEntity();
+        return 1 + (int) (0.05 * ShinsuStats.get(entity).getLevel() * getGroup().getBaangs() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default double getInitialResistance() {
-        return 1 + getShinsuLevel() * 0.025 * getGroup().getResistance() * (getShinsuUserEntity().getRNG().nextGaussian() * 0.25 + 1);
+        T entity = getShinsuUserEntity();
+        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * getGroup().getResistance() * (entity.getRNG().nextGaussian() * 0.25 + 1);
     }
 
     default double getInitialTension() {
-        return 1 + getShinsuLevel() * 0.025 * getGroup().getTension() * (getShinsuUserEntity().getRNG().nextGaussian() * 0.25 + 1);
+        T entity = getShinsuUserEntity();
+        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * getGroup().getTension() * (entity.getRNG().nextGaussian() * 0.25 + 1);
     }
 
     T getShinsuUserEntity();
@@ -42,14 +47,13 @@ public interface IShinsuUser<T extends LivingEntity> {
         T entity = getShinsuUserEntity();
         FloorProperty property = FloorDimensionsHelper.getFloorProperty(world.getWorld());
         int floor = property == null ? 1 : property.getLevel();
-        setShinsuLevel(getInitialShinsuLevel(floor));
+        ShinsuStats stats = ShinsuStats.get(entity);
+        stats.addLevel(getInitialShinsuLevel(floor) - stats.getLevel());
         setGroup(getInitialGroup());
-        IShinsuStats stats = IShinsuStats.get(entity);
-        stats.addLevel(floor - stats.getLevel());
-        stats.addMaxShinsu(getInitialMaxShinsu());
-        stats.addMaxBaangs(getInitialMaxBaangs());
-        stats.multiplyBaseResistance(getInitialResistance());
-        stats.multiplyBaseTension(getInitialTension());
+        stats.addMaxShinsu(getInitialMaxShinsu() - stats.getMaxShinsu());
+        stats.addMaxBaangs(getInitialMaxBaangs() - stats.getMaxBaangs());
+        stats.multiplyBaseResistance(getInitialResistance() / stats.getRawResistance());
+        stats.multiplyBaseTension(getInitialTension() / stats.getRawTension());
         for (ShinsuTechnique technique : getInitialShinsuTechniques()) {
             stats.addKnownTechnique(technique, 1);
         }
@@ -77,7 +81,8 @@ public interface IShinsuUser<T extends LivingEntity> {
     }
 
     default int getInitialTechniquesTotalLevel() {
-        return getShinsuLevel() / 4 + getShinsuUserEntity().getRNG().nextInt(4);
+        T entity = getShinsuUserEntity();
+        return 1 + (int) (ShinsuStats.get(entity).getLevel() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default double getPreferredQualityChance() {
@@ -151,14 +156,10 @@ public interface IShinsuUser<T extends LivingEntity> {
     }
 
     default int getMinInitialLevel(int floor) {
-        return 1;
+        return floor;
     }
 
     int getMaxInitialLevel(int floor);
-
-    int getShinsuLevel();
-
-    void setShinsuLevel(int level);
 
     Group getGroup();
 
@@ -167,13 +168,13 @@ public interface IShinsuUser<T extends LivingEntity> {
     class CastShinsuGoal<T extends MobEntity & IShinsuUser<T>> extends Goal {
 
         private final T entity;
-        private final IShinsuStats stats;
-        private ShinsuTechnique technique;
+        private final ShinsuStats stats;
+        private ShinsuTechniqueInstance technique;
         private LivingEntity target;
 
         public CastShinsuGoal(T entity) {
             this.entity = entity;
-            stats = IShinsuStats.get(entity);
+            stats = ShinsuStats.get(entity);
             technique = null;
             target = null;
         }
@@ -184,12 +185,13 @@ public interface IShinsuUser<T extends LivingEntity> {
             if (target == null || !target.isAlive()) {
                 return false;
             }
-            List<ShinsuTechnique> tech = new ArrayList<>();
+            List<ShinsuTechniqueInstance> tech = new ArrayList<>();
             for (ShinsuTechnique technique : ShinsuTechnique.values()) {
-                ShinsuTechnique.Builder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
+                ShinsuTechnique.IBuilder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
                 Vector3d dir = entity.canEntityBeSeen(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookVec();
-                if (stats.getCooldown(technique) <= 0 && builder.canCast(entity, stats.getTechniqueLevel(technique), target, dir)) {
-                    tech.add(technique);
+                ShinsuTechniqueInstance instance = builder.doBuild(entity, stats.getTechniqueLevel(technique), target, dir, null);
+                if (instance != null) {
+                    tech.add(instance);
                 }
             }
             if (tech.isEmpty()) {
@@ -201,8 +203,7 @@ public interface IShinsuUser<T extends LivingEntity> {
 
         @Override
         public void startExecuting() {
-            Vector3d dir = (target != null && entity.canEntityBeSeen(target)) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookVec();
-            stats.cast(entity, technique, target, dir);
+            stats.cast((ServerWorld) entity.world, technique);
         }
 
         @Override

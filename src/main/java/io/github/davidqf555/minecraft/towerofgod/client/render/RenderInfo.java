@@ -11,12 +11,13 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class RenderInfo {
+public class RenderInfo implements IRenderInfo {
 
     private final ResourceLocation texture;
     private final int textureWidth;
@@ -36,6 +37,7 @@ public class RenderInfo {
         this.blitHeight = blitHeight;
     }
 
+    @Override
     public void render(MatrixStack matrixStack, float x, float y, float blitOffset, int width, int height, int color) {
         Matrix4f matrix = matrixStack.getLast().getMatrix();
         float x2 = x + width;
@@ -50,7 +52,7 @@ public class RenderInfo {
         float maxV = (startY + blitHeight) * 1f / textureHeight;
         Minecraft.getInstance().getTextureManager().bindTexture(texture);
         BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR_TEX);
+        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX);
         bufferbuilder.pos(matrix, x, y2, blitOffset).color(r, g, b, a).tex(minU, maxV).endVertex();
         bufferbuilder.pos(matrix, x2, y2, blitOffset).color(r, g, b, a).tex(maxU, maxV).endVertex();
         bufferbuilder.pos(matrix, x2, y, blitOffset).color(r, g, b, a).tex(maxU, minV).endVertex();

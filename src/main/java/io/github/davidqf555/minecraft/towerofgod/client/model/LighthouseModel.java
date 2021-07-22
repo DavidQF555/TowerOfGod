@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.LighthouseEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 
@@ -14,15 +14,15 @@ public class LighthouseModel extends EntityModel<LighthouseEntity> {
 
     public LighthouseModel() {
         textureWidth = 64;
-        textureHeight = 64;
+        textureHeight = 32;
         lighthouse = new ModelRenderer(this);
-        lighthouse.setRotationPoint(0.0F, 16.0F, 0.0F);
-        lighthouse.setTextureOffset(0, 0).addBox(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F, 0.0F, false);
+        lighthouse.setRotationPoint(0, 16, 0);
+        lighthouse.setTextureOffset(0, 0).addBox(-8, -8, -8, 16, 16, 16, 0, false);
     }
 
     @Override
     public void render(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        lighthouse.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha * 0.8f);
+        lighthouse.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
     @Override

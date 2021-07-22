@@ -153,7 +153,7 @@ public enum ShinsuQuality {
             double length = dir.length();
             if (length <= radius) {
                 double inverse = 3 / (length + 1);
-                Vector3d vec = dir.normalize().mul(inverse, inverse, inverse);
+                Vector3d vec = dir.normalize().scale(inverse);
                 target.addVelocity(vec.x, vec.y, vec.z);
             }
         }

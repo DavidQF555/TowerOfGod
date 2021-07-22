@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.world;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
@@ -56,7 +57,7 @@ public class RegularTeamsSavedData extends WorldSavedData {
                 Entity entity = world.getEntityByUuid(id);
                 if (entity instanceof RegularEntity) {
                     entities.add((RegularEntity) entity);
-                    int level = ((RegularEntity) entity).getShinsuLevel();
+                    int level = ShinsuStats.get(entity).getLevel();
                     if (level > maxLevel) {
                         max = (RegularEntity) entity;
                         maxLevel = level;

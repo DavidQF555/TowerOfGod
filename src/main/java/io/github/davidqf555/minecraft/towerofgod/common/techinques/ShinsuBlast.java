@@ -1,11 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
@@ -19,13 +18,21 @@ import java.util.UUID;
 public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
 
     private static final double BASE_SPEED = 0.5;
-    private static final int DURATION = 400;
-    private static final int COOLDOWN = 40;
     private UUID blast;
 
-    public ShinsuBlast(LivingEntity user, int level, Vector3d dir) {
-        super(ShinsuTechnique.SHINSU_BLAST, user, level, dir.normalize(), DURATION);
+    public ShinsuBlast(LivingEntity user, String settings, int level, Vector3d dir) {
+        super(settings, user, level, dir.normalize());
         blast = null;
+    }
+
+    @Override
+    public int getInitialDuration() {
+        return 400;
+    }
+
+    @Override
+    public ShinsuTechnique getTechnique() {
+        return ShinsuTechnique.SHINSU_BLAST;
     }
 
     @Override
@@ -35,7 +42,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
             ShinsuEntity shinsu = RegistryHandler.SHINSU_ENTITY.get().create(world);
             if (shinsu != null) {
                 LivingEntity user = (LivingEntity) u;
-                IShinsuStats stats = IShinsuStats.get(u);
+                ShinsuStats stats = ShinsuStats.get(u);
                 ShinsuQuality quality = stats.getQuality();
                 shinsu.setShooter(user);
                 shinsu.setQuality(quality);
@@ -48,6 +55,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
                 world.addEntity(shinsu);
             }
         }
+        super.onUse(world);
     }
 
     @Override
@@ -60,7 +68,17 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
 
     @Override
     public int getCooldown() {
-        return COOLDOWN;
+        return 40;
+    }
+
+    @Override
+    public int getShinsuUse() {
+        return 10;
+    }
+
+    @Override
+    public int getBaangsUse() {
+        return 1;
     }
 
     @Override
@@ -81,40 +99,17 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
     }
 
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.Builder<ShinsuBlast> {
-
-        private final int shinsu;
-        private final int baangs;
-
-        public Builder(int shinsu, int baangs) {
-            this.shinsu = shinsu;
-            this.baangs = baangs;
-        }
+    public static class Builder implements ShinsuTechnique.IBuilder<ShinsuBlast> {
 
         @Override
-        public ShinsuBlast build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return new ShinsuBlast(user, level, dir);
-        }
-
-        @Override
-        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && (!(user instanceof MobEntity) || ((MobEntity) user).getAttackTarget() != null);
+        public ShinsuBlast build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+            return new ShinsuBlast(user, settings, level, dir);
         }
 
         @Nonnull
         @Override
         public ShinsuBlast emptyBuild() {
-            return new ShinsuBlast(null, 0, Vector3d.ZERO);
-        }
-
-        @Override
-        public int getShinsuUse() {
-            return shinsu;
-        }
-
-        @Override
-        public int getBaangUse() {
-            return baangs;
+            return new ShinsuBlast(null, null, 0, Vector3d.ZERO);
         }
 
         @Override

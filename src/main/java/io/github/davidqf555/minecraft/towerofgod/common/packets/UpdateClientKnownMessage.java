@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuEquipScreen;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -52,7 +52,7 @@ public class UpdateClientKnownMessage {
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
-                IShinsuStats stats = IShinsuStats.get(player);
+                ShinsuStats stats = ShinsuStats.get(player);
                 Map<ShinsuTechnique, Integer> known = new EnumMap<>(ShinsuTechnique.class);
                 for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                     known.put(technique, stats.getTechniqueLevel(technique));
@@ -61,7 +61,7 @@ public class UpdateClientKnownMessage {
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> ShinsuEquipScreen.known = known);
+            context.enqueueWork(() -> ClientReference.known = known);
             context.setPacketHandled(true);
         }
     }

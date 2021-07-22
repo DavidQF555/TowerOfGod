@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.ObserverEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 
@@ -14,10 +14,10 @@ public class ObserverModel extends EntityModel<ObserverEntity> {
 
     public ObserverModel() {
         textureWidth = 32;
-        textureHeight = 32;
+        textureHeight = 16;
         observer = new ModelRenderer(this);
-        observer.setRotationPoint(0.0F, 24.0F, 0.0F);
-        observer.setTextureOffset(0, 0).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, 0.0F, false);
+        observer.setRotationPoint(0, 24, 0);
+        observer.setTextureOffset(0, 0).addBox(-4, -8, -4, 8, 8, 8, 0, false);
     }
 
     @Override

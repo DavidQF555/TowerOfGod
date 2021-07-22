@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.IShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -16,10 +16,19 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
 
     private static final double RANGE = 3;
-    private static final int DURATION = 20;
 
     public ReverseFlowControl(LivingEntity user, int level, LivingEntity target) {
-        super(ShinsuTechnique.REVERSE_FLOW_CONTROL, user, level, target, DURATION);
+        super(null, user, level, target);
+    }
+
+    @Override
+    public int getInitialDuration() {
+        return 20 + getLevel() * 10;
+    }
+
+    @Override
+    public ShinsuTechnique getTechnique() {
+        return ShinsuTechnique.REVERSE_FLOW_CONTROL;
     }
 
     @Override
@@ -31,7 +40,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
                 remove(world);
                 return;
             }
-            double resistance = IShinsuStats.getTotalResistance(world, user, target);
+            double resistance = ShinsuStats.getNetResistance(world, user, target);
             int level = (int) (resistance * getLevel());
             ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), 2, level - 1));
         }
@@ -40,43 +49,30 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
 
     @Override
     public int getCooldown() {
-        return DURATION * 8;
+        return getInitialDuration() + 500;
     }
 
-    public static class Builder implements ShinsuTechnique.Builder<ReverseFlowControl> {
+    @Override
+    public int getShinsuUse() {
+        return 15 + getLevel() * 5;
+    }
 
-        private final int shinsu;
-        private final int baangs;
+    @Override
+    public int getBaangsUse() {
+        return 1;
+    }
 
-        public Builder(int shinsu, int baangs) {
-            this.shinsu = shinsu;
-            this.baangs = baangs;
-        }
+    public static class Builder implements ShinsuTechnique.IBuilder<ReverseFlowControl> {
 
         @Override
-        public ReverseFlowControl build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return target instanceof LivingEntity ? new ReverseFlowControl(user, level, (LivingEntity) target) : null;
+        public ReverseFlowControl build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+            return target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE ? new ReverseFlowControl(user, level, (LivingEntity) target) : null;
         }
 
         @Nonnull
         @Override
         public ReverseFlowControl emptyBuild() {
             return new ReverseFlowControl(null, 0, null);
-        }
-
-        @Override
-        public boolean canCast(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuTechnique.Builder.super.canCast(user, level, target, dir) && target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE;
-        }
-
-        @Override
-        public int getShinsuUse() {
-            return shinsu;
-        }
-
-        @Override
-        public int getBaangUse() {
-            return baangs;
         }
 
         @Override
