@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
+
 PRG="$0"
+
 while [ -h "$PRG" ]; do
   ls=$(ls -ld "$PRG")
   link=$(expr "$ls" : '.*-> \(.*\)$')
@@ -17,7 +19,7 @@ cd "$SAVED" >/dev/null
 APP_NAME="Gradle"
 APP_BASE_NAME=$(basename "$0")
 
-DEFAULT_JVM_OPTS=""
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
 
 MAX_FD="maximum"
 
@@ -92,9 +94,10 @@ if $darwin; then
   GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
 fi
 
-if $cygwin; then
+if [ "$cygwin" = "true" -o "$msys" = "true" ]; then
   APP_HOME=$(cygpath --path --mixed "$APP_HOME")
   CLASSPATH=$(cygpath --path --mixed "$CLASSPATH")
+
   JAVACMD=$(cygpath --unix "$JAVACMD")
 
   ROOTDIRSRAW=$(find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null)
@@ -110,14 +113,14 @@ if $cygwin; then
   i=0
   for arg in "$@"; do
     CHECK=$(echo "$arg" | egrep -c "$OURCYGPATTERN" -)
-    CHECK2=$(echo "$arg" | egrep -c "^-") ### Determine if an option
+    CHECK2=$(echo "$arg" | egrep -c "^-")
 
-    if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ]; then ### Added a condition
+    if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ]; then
       eval $(echo args$i)=$(cygpath --path --ignore --mixed "$arg")
     else
       eval $(echo args$i)="\"$arg\""
     fi
-    i=$((i + 1))
+    i=$(expr $i + 1)
   done
   case $i in
   0) set -- ;;
@@ -140,9 +143,5 @@ save() {
 APP_ARGS=$(save "$@")
 
 eval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS "\"-Dorg.gradle.appname=$APP_BASE_NAME\"" -classpath "\"$CLASSPATH\"" org.gradle.wrapper.GradleWrapperMain "$APP_ARGS"
-
-if [ "$(uname)" = "Darwin" ] && [ "$HOME" = "$PWD" ]; then
-  cd "$(dirname "$0")"
-fi
 
 exec "$JAVACMD" "$@"
