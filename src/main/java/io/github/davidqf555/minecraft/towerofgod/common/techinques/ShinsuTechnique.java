@@ -25,12 +25,12 @@ public enum ShinsuTechnique {
     FLARE_WAVE_EXPLOSION(Repeat.ALLOW, false, true, new FlareWaveExplosion.Builder(), null, ShinsuIcons.TENSION),
     REVERSE_FLOW_CONTROL(Repeat.ALLOW, false, true, new ReverseFlowControl.Builder(), null, ShinsuIcons.REVERSE),
     SHINSU_BLAST(Repeat.ALLOW, false, true, new ShinsuBlast.Builder(), null, ShinsuIcons.BAANGS),
-    MANIFEST(Repeat.DENY, true, true, new Manifest.Builder(), null, ShinsuIcons.SWIRL),
+    MANIFEST(Repeat.DENY, true, true, new Manifest.Builder(), null, ShinsuIcons.PICKAXE),
     SHOOT_SHINSU_ARROW(Repeat.ALLOW, false, false, new ShootShinsuArrow.Builder(), null, ShinsuIcons.BAANGS),
-    MOVE_DEVICES(Repeat.ALLOW, true, true, new MoveDevices.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.SHINSU),
-    LIGHTHOUSE_FLOW_CONTROL(Repeat.DENY, false, true, new LighthouseFlowControl.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.BAANGS),
-    SCOUT(Repeat.ALLOW, false, true, new Scout.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.BAANGS),
-    FOLLOW_OWNER(Repeat.TOGGLE, true, true, new FollowOwner.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.BAANGS);
+    MOVE_DEVICES(Repeat.ALLOW, true, true, new MoveDevices.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.MOVE),
+    LIGHTHOUSE_FLOW_CONTROL(Repeat.DENY, false, true, new LighthouseFlowControl.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL),
+    SCOUT(Repeat.ALLOW, false, true, new Scout.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.EYE),
+    FOLLOW_OWNER(Repeat.TOGGLE, true, true, new FollowOwner.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.FOLLOW);
 
     private final Repeat repeat;
     private final boolean indefinite;
