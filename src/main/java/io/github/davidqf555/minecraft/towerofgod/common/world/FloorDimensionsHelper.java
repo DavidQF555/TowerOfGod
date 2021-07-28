@@ -49,9 +49,9 @@ import java.util.function.Function;
 
 public class FloorDimensionsHelper {
 
-    private static final Function<MinecraftServer, IChunkStatusListenerFactory> CHUNK_STATUS_LISTENER_FACTORY_FIELD = getInstanceField(MinecraftServer.class, "chunkStatusListenerFactory");
-    private static final Function<MinecraftServer, Executor> BACKGROUND_EXECUTOR_FIELD = getInstanceField(MinecraftServer.class, "backgroundExecutor");
-    private static final Function<MinecraftServer, SaveFormat.LevelSave> ANVIL_CONVERTER_FOR_ANVIL_FILE_FIELD = getInstanceField(MinecraftServer.class, "anvilConverterForAnvilFile");
+    private static final Function<MinecraftServer, IChunkStatusListenerFactory> CHUNK_STATUS_LISTENER_FACTORY_FIELD = getInstanceField(MinecraftServer.class, "field_213220_d");
+    private static final Function<MinecraftServer, Executor> BACKGROUND_EXECUTOR_FIELD = getInstanceField(MinecraftServer.class, "field_213217_au");
+    private static final Function<MinecraftServer, SaveFormat.LevelSave> ANVIL_CONVERTER_FOR_ANVIL_FILE_FIELD = getInstanceField(MinecraftServer.class, "field_71310_m");
     private static final Function<Integer, RegistryKey<World>> WORLD_KEY = level -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(TowerOfGod.MOD_ID, "floor_" + level));
     private static final Constructor<DimensionSettings> SETTINGS_CONSTRUCTOR = ObfuscationReflectionHelper.findConstructor(DimensionSettings.class, DimensionStructuresSettings.class, NoiseSettings.class, BlockState.class, BlockState.class, int.class, int.class, int.class, boolean.class);
 
