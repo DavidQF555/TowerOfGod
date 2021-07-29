@@ -105,7 +105,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     }
 
     protected int getGainedShinsu(int killed) {
-        int cap = getLevel() * 15;
+        int cap = getLevel() * 15 + 15;
         int current = getMaxShinsu();
         if (current < cap) {
             int change = Math.min(cap - current, killed / 7);
@@ -116,7 +116,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
 
     protected int getGainedBaangs(int killed) {
         int current = getMaxBaangs();
-        int cap = 1 + getLevel() / 3;
+        int cap = 2 + getLevel() / 2;
         if (current < cap) {
             int change = Math.min(cap - current, killed / 3);
             return current <= 0 ? Math.max(1, change) : change;

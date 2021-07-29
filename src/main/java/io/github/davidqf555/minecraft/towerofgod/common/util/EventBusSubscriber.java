@@ -51,7 +51,6 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.RegistryObject;
@@ -163,21 +162,18 @@ public class EventBusSubscriber {
             }
         }
 
-        @SubscribeEvent(priority = EventPriority.LOWEST)
-        public static void onLivingJumpLast(LivingEvent.LivingJumpEvent event) {
-            LivingEntity entity = event.getEntityLiving();
-            if (entity.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
-                entity.setMotion(0, 0, 0);
-            }
-        }
-
         @SubscribeEvent
         public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
             LivingEntity entity = event.getEntityLiving();
-            EffectInstance effect = entity.getActivePotionEffect(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get());
-            if (effect != null) {
-                Vector3d motion = entity.getMotion().add(0, effect.getAmplifier() * 0.025 + 0.025, 0);
+            EffectInstance reinforcement = entity.getActivePotionEffect(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get());
+            if (reinforcement != null) {
+                Vector3d motion = entity.getMotion().add(0, reinforcement.getAmplifier() * 0.025 + 0.025, 0);
                 entity.setMotion(motion);
+            }
+            EffectInstance reverse = entity.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get());
+            if (reverse != null) {
+                Vector3d motion = entity.getMotion();
+                entity.setMotion(motion.getX(), motion.getY() / reverse.getAmplifier(), motion.getZ());
             }
         }
 

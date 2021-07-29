@@ -79,8 +79,8 @@ public class RankerEntity extends BasicShinsuUserEntity {
     public void onDeath(DamageSource cause) {
         super.onDeath(cause);
         Entity best = cause.getTrueSource();
-        if (best != null) {
-            ShinsuStats stats = ShinsuStats.get(this);
+        if (best instanceof PlayerEntity || best instanceof IShinsuUser) {
+            ShinsuStats stats = ShinsuStats.get(best);
             if (stats.getLevel() == floorLevel) {
                 stats.addLevel(1);
                 best.sendMessage(new TranslationTextComponent(DEFEAT, floorLevel, floorLevel + 1).mergeStyle(getGroup().getTextFormattingColor()), getUniqueID());

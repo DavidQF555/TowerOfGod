@@ -46,7 +46,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return getLevel() * 5;
+        return getLevel() + 3;
     }
 
     @Override
