@@ -44,12 +44,6 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        setCustomName(new TranslationTextComponent("entity" + TowerOfGod.MOD_ID + "." + getType().getRegistryName().getPath() + ".name", ShinsuStats.get(this).getLevel()).mergeStyle(getGroup().getTextFormattingColor()));
-    }
-
-    @Override
     protected void registerData() {
         super.registerData();
         dataManager.register(GROUP, Group.NONE.name());
@@ -59,6 +53,9 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     public void livingTick() {
         super.livingTick();
         heal(0.025f);
+        if (isServerWorld()) {
+            setCustomName(new TranslationTextComponent("entity." + TowerOfGod.MOD_ID + "." + getType().getRegistryName().getPath() + ".name", ShinsuStats.get(this).getLevel()).mergeStyle(getGroup().getTextFormattingColor()));
+        }
     }
 
     @Override
