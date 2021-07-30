@@ -35,6 +35,7 @@ import java.util.*;
 
 public class ShinsuStats implements INBTSerializable<CompoundNBT> {
 
+    public static final int ENTITY_RANGE = 32;
     private static final String LEVEL_UP = "entity." + TowerOfGod.MOD_ID + ".level_up";
     private final Map<ShinsuTechnique, Integer> known;
     private final Map<ShinsuTechnique, Integer> cooldowns;
@@ -178,7 +179,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     }
 
     public void addKnownTechnique(ShinsuTechnique technique, int amt) {
-        known.put(technique, getTechniqueLevel(technique) + amt);
+        known.put(technique, Math.max(0, getTechniqueLevel(technique) + amt));
     }
 
     public int getLevel() {
