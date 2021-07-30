@@ -108,7 +108,7 @@ public class RegistryHandler {
         event.getRegistry().registerAll(
                 new Block(Block.Properties.create(Material.ROCK).hardnessAndResistance(5f, 5f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_ore"),
                 new Block(Block.Properties.create(Material.ROCK).hardnessAndResistance(3f, 3f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_block"),
-                new Block(Block.Properties.create(Material.AIR).setLightLevel(state -> 15)).setRegistryName(TowerOfGod.MOD_ID, "light_block"),
+                new Block(Block.Properties.create(Material.AIR).setAir().setLightLevel(state -> 15)).setRegistryName(TowerOfGod.MOD_ID, "light_block"),
                 new FloorTeleportationTerminalBlock().setRegistryName(TowerOfGod.MOD_ID, "floor_teleportation_terminal_block")
         );
     }
