@@ -5,7 +5,7 @@ issueTrackerURL = "https://github.com/DavidQF555/TowerOfGod/issues"
 [[mods]]
 modId = "towerofgod"
 version = "${file.jarVersion}"
-displayName = "Tower of God Mod"
+displayName = "Tower of God"
 displayURL = "https://github.com/DavidQF555/TowerOfGod"
 logoFile = "logo.png"
 credits = "Thanks for this mod goes to SIU and his manhwa, Tower of God"

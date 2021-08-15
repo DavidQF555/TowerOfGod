@@ -91,7 +91,7 @@ public class GuiEventBusSubscriber {
                     int action = event.getAction();
                     if (bar.isLocked()) {
                         if (action == GLFW.GLFW_RELEASE) {
-                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuMessage(technique, selected.getSecond(), client.pointedEntity == null ? null : client.pointedEntity.getUniqueID()));
+                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuMessage(technique, selected.getSecond()));
                             bar.setLocked(false);
                         }
                     } else if (action == GLFW.GLFW_PRESS) {

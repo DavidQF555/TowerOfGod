@@ -54,7 +54,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
 
     @Override
     public int getShinsuUse() {
-        return 15 + getLevel() * 5;
+        return 5 + getLevel() * 5;
     }
 
     @Override

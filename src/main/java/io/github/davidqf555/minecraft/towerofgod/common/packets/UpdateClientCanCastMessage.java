@@ -73,9 +73,8 @@ public class UpdateClientCanCastMessage {
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
-                int distance = 32;
                 Vector3d eye = player.getEyePosition(1);
-                EntityRayTraceResult result = ProjectileHelper.rayTraceEntities(player.world, player, eye, eye.add(player.getLookVec().scale(distance)), AxisAlignedBB.fromVector(eye).grow(distance), null);
+                EntityRayTraceResult result = ProjectileHelper.rayTraceEntities(player.world, player, eye, eye.add(player.getLookVec().scale(ShinsuStats.ENTITY_RANGE)), AxisAlignedBB.fromVector(eye).grow(ShinsuStats.ENTITY_RANGE), null);
                 Entity target = result == null ? null : result.getEntity();
                 ShinsuStats stats = ShinsuStats.get(player);
                 for (ShinsuTechnique technique : ShinsuTechnique.values()) {

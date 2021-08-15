@@ -6,9 +6,10 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.Lightho
 import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.Items;
-import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
@@ -25,9 +26,11 @@ public class ClientEventBusSubscriber {
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
         Minecraft client = Minecraft.getInstance();
         if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.currentScreen == null) {
-            EffectInstance effect = client.player.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get());
-            if (effect != null && effect.getAmplifier() > 7) {
-                event.setCanceled(true);
+            if (client.player.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
+                ModifiableAttributeInstance attribute = client.player.getAttribute(Attributes.ATTACK_SPEED);
+                if (attribute == null || attribute.getValue() <= 0) {
+                    event.setCanceled(true);
+                }
             }
         }
     }

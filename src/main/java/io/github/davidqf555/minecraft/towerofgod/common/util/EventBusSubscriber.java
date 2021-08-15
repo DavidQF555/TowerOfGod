@@ -173,7 +173,7 @@ public class EventBusSubscriber {
             EffectInstance reverse = entity.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get());
             if (reverse != null) {
                 Vector3d motion = entity.getMotion();
-                entity.setMotion(motion.getX(), motion.getY() / reverse.getAmplifier(), motion.getZ());
+                entity.setMotion(motion.getX(), Math.max(0, motion.getY() - reverse.getAmplifier() * 0.025 - 0.025), motion.getZ());
             }
         }
 
