@@ -49,7 +49,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public int getInitialDuration() {
-        return 0;
+        return 1;
     }
 
     public UUID getID() {
@@ -62,10 +62,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     public int getDuration() {
         return duration;
-    }
-
-    public int getTicks() {
-        return ticks;
     }
 
     @Nullable
