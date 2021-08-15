@@ -73,7 +73,7 @@ public class FloorChunkGenerator extends ChunkGenerator {
         }
 
     });
-    private static final Function<DimensionSettings, Boolean> MOB_GENERATION_DISABLED = FloorDimensionsHelper.getInstanceField(DimensionSettings.class, "disableMobGeneration");
+    private static final Function<DimensionSettings, Boolean> MOB_GENERATION_DISABLED = FloorDimensionsHelper.getInstanceField(DimensionSettings.class, "field_236106_j_");
     private static final Function<NoiseChunkGenerator, Supplier<DimensionSettings>> SETTINGS = FloorDimensionsHelper.getInstanceField(NoiseChunkGenerator.class, "field_236080_h_");
     private static final BlockState AIR = Blocks.AIR.getDefaultState();
     private static final Map<Biome, Pair<BlockState, BlockState>> defaults = new HashMap<>();
