@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.FloorTeleportationTerminalBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.effects.BodyReinforcementEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.effects.ReverseFlowEffect;

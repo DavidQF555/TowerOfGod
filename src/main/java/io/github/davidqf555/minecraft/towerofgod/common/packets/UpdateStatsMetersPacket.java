@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.GuiEventBusSubscriber;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import net.minecraft.entity.player.ServerPlayerEntity;

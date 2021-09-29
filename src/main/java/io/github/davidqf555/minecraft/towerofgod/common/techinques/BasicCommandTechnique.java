@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import com.mojang.datafixers.util.Pair;
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.IRenderInfo;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ItemStackRenderInfo;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuIcons;

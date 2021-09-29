@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client.render;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.model.LighthouseModel;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
