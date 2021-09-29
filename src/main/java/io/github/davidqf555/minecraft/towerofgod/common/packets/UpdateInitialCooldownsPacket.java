@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
@@ -11,14 +11,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class UpdateInitialCooldownsMessage {
+public class UpdateInitialCooldownsPacket {
 
-    private static final BiConsumer<UpdateInitialCooldownsMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<UpdateInitialCooldownsPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeString(message.technique.name());
         buffer.writeInt(message.cooldown);
     };
-    private static final Function<PacketBuffer, UpdateInitialCooldownsMessage> DECODER = buffer -> new UpdateInitialCooldownsMessage(ShinsuTechnique.valueOf(buffer.readString()), buffer.readInt());
-    private static final BiConsumer<UpdateInitialCooldownsMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final Function<PacketBuffer, UpdateInitialCooldownsPacket> DECODER = buffer -> new UpdateInitialCooldownsPacket(ShinsuTechnique.valueOf(buffer.readString()), buffer.readInt());
+    private static final BiConsumer<UpdateInitialCooldownsPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
@@ -26,13 +26,13 @@ public class UpdateInitialCooldownsMessage {
     private final ShinsuTechnique technique;
     private final int cooldown;
 
-    public UpdateInitialCooldownsMessage(ShinsuTechnique technique, int cooldown) {
+    public UpdateInitialCooldownsPacket(ShinsuTechnique technique, int cooldown) {
         this.technique = technique;
         this.cooldown = cooldown;
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, UpdateInitialCooldownsMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateInitialCooldownsPacket.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod;
 
-import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
+import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;

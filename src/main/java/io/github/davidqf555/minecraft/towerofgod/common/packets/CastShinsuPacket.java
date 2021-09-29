@@ -16,18 +16,18 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class CastShinsuMessage {
+public class CastShinsuPacket {
 
-    private static final BiConsumer<CastShinsuMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<CastShinsuPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeString(message.technique.name());
         buffer.writeString(message.settings);
     };
-    private static final Function<PacketBuffer, CastShinsuMessage> DECODER = buffer -> {
+    private static final Function<PacketBuffer, CastShinsuPacket> DECODER = buffer -> {
         ShinsuTechnique technique = ShinsuTechnique.valueOf(buffer.readString());
         String settings = buffer.readString();
-        return new CastShinsuMessage(technique, settings);
+        return new CastShinsuPacket(technique, settings);
     };
-    private static final BiConsumer<CastShinsuMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final BiConsumer<CastShinsuPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
@@ -35,13 +35,13 @@ public class CastShinsuMessage {
     private final ShinsuTechnique technique;
     private final String settings;
 
-    public CastShinsuMessage(ShinsuTechnique technique, String settings) {
+    public CastShinsuPacket(ShinsuTechnique technique, String settings) {
         this.technique = technique;
         this.settings = settings;
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, CastShinsuMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, CastShinsuPacket.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

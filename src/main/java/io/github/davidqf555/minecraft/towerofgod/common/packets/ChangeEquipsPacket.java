@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -16,36 +16,36 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class ChangeEquipsMessage {
+public class ChangeEquipsPacket {
 
-    private static final BiConsumer<ChangeEquipsMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<ChangeEquipsPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.equipped.size());
         for (Pair<ShinsuTechnique, String> pair : message.equipped) {
             buffer.writeString(pair.getFirst().name());
             buffer.writeString(pair.getSecond());
         }
     };
-    private static final Function<PacketBuffer, ChangeEquipsMessage> DECODER = buffer -> {
+    private static final Function<PacketBuffer, ChangeEquipsPacket> DECODER = buffer -> {
         List<Pair<ShinsuTechnique, String>> equipped = new ArrayList<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
             equipped.add(Pair.of(ShinsuTechnique.valueOf(buffer.readString()), buffer.readString()));
         }
-        return new ChangeEquipsMessage(equipped);
+        return new ChangeEquipsPacket(equipped);
     };
-    private static final BiConsumer<ChangeEquipsMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final BiConsumer<ChangeEquipsPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
 
     private final List<Pair<ShinsuTechnique, String>> equipped;
 
-    public ChangeEquipsMessage(List<Pair<ShinsuTechnique, String>> equipped) {
+    public ChangeEquipsPacket(List<Pair<ShinsuTechnique, String>> equipped) {
         this.equipped = equipped;
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ChangeEquipsMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, ChangeEquipsPacket.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

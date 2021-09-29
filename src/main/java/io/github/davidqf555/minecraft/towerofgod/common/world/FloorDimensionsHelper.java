@@ -4,8 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Lifecycle;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientDimensionsMessage;
-import net.minecraft.block.BlockState;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientDimensionsPacket;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
@@ -14,6 +13,7 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.SectionPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Dimension;
@@ -23,8 +23,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeManager;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.border.IBorderListener;
-import net.minecraft.world.chunk.listener.IChunkStatusListener;
-import net.minecraft.world.chunk.listener.IChunkStatusListenerFactory;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.DimensionSettings;
 import net.minecraft.world.gen.GenerationStage;
@@ -33,33 +31,21 @@ import net.minecraft.world.gen.settings.*;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.DerivedWorldInfo;
 import net.minecraft.world.storage.IServerConfiguration;
-import net.minecraft.world.storage.SaveFormat;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.function.Function;
 
 public class FloorDimensionsHelper {
-
-    private static final Function<MinecraftServer, IChunkStatusListenerFactory> CHUNK_STATUS_LISTENER_FACTORY_FIELD = getInstanceField(MinecraftServer.class, "field_213220_d");
-    private static final Function<MinecraftServer, Executor> BACKGROUND_EXECUTOR_FIELD = getInstanceField(MinecraftServer.class, "field_213217_au");
-    private static final Function<MinecraftServer, SaveFormat.LevelSave> ANVIL_CONVERTER_FOR_ANVIL_FILE_FIELD = getInstanceField(MinecraftServer.class, "field_71310_m");
-    private static final Function<Integer, RegistryKey<World>> WORLD_KEY = level -> RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(TowerOfGod.MOD_ID, "floor_" + level));
-    private static final Constructor<DimensionSettings> SETTINGS_CONSTRUCTOR = ObfuscationReflectionHelper.findConstructor(DimensionSettings.class, DimensionStructuresSettings.class, NoiseSettings.class, BlockState.class, BlockState.class, int.class, int.class, int.class, boolean.class);
 
     private static final double TYPE_RATE = 0.1;
 
     public static void forceSendPlayerToFloor(ServerPlayerEntity player, int floor, Vector3d pos) {
         ServerWorld world = getOrCreateWorld(player.server, floor);
-        world.getChunk((int) pos.getX() / 16, (int) pos.getZ() / 16);
+        world.getChunk(SectionPos.toChunk((int) pos.getX()), SectionPos.toChunk((int) pos.getZ()));
         player.teleport(world, pos.getX(), pos.getY(), pos.getZ(), player.rotationYaw, player.rotationPitch);
     }
 
@@ -68,6 +54,10 @@ public class FloorDimensionsHelper {
         if (serverPlayer.canChangeDimension()) {
             serverPlayer.changeDimension(world, new FloorTeleporter(world, teleporter, direction));
         }
+    }
+
+    private static RegistryKey<World> createWorldKey(int level) {
+        return RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(TowerOfGod.MOD_ID, "floor_" + level));
     }
 
     @Nullable
@@ -80,12 +70,13 @@ public class FloorDimensionsHelper {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     public static ServerWorld getOrCreateWorld(MinecraftServer server, int level) {
         if (level <= 1) {
             return server.getWorld(World.OVERWORLD);
         }
         Map<RegistryKey<World>, ServerWorld> map = server.forgeGetWorldMap();
-        RegistryKey<World> worldKey = WORLD_KEY.apply(level);
+        RegistryKey<World> worldKey = createWorldKey(level);
         if (map.containsKey(worldKey)) {
             return map.get(worldKey);
         } else {
@@ -93,23 +84,21 @@ public class FloorDimensionsHelper {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private static ServerWorld createAndRegisterWorldAndDimension(MinecraftServer server, Map<RegistryKey<World>, ServerWorld> map, RegistryKey<World> worldKey, int level) {
         ServerWorld overworld = server.getWorld(World.OVERWORLD);
         RegistryKey<Dimension> dimensionKey = RegistryKey.getOrCreateKey(Registry.DIMENSION_KEY, worldKey.getLocation());
         Dimension dimension = createFloorDimension(server, level);
-        IChunkStatusListener chunkListener = CHUNK_STATUS_LISTENER_FACTORY_FIELD.apply(server).create(11);
-        Executor executor = BACKGROUND_EXECUTOR_FIELD.apply(server);
-        SaveFormat.LevelSave levelSave = ANVIL_CONVERTER_FOR_ANVIL_FILE_FIELD.apply(server);
         IServerConfiguration serverConfig = server.getServerConfiguration();
         DimensionGeneratorSettings dimensionGeneratorSettings = serverConfig.getDimensionGeneratorSettings();
         dimensionGeneratorSettings.func_236224_e_().register(dimensionKey, dimension, Lifecycle.experimental());
         DerivedWorldInfo derivedWorldInfo = new DerivedWorldInfo(serverConfig, serverConfig.getServerWorldInfo());
-        ServerWorld newWorld = new ServerWorld(server, executor, levelSave, derivedWorldInfo, worldKey, dimension.getDimensionType(), chunkListener, dimension.getChunkGenerator(), dimensionGeneratorSettings.hasDebugChunkGenerator(), BiomeManager.getHashedSeed(dimensionGeneratorSettings.getSeed()), ImmutableList.of(), false);
+        ServerWorld newWorld = new ServerWorld(server, server.backgroundExecutor, server.anvilConverterForAnvilFile, derivedWorldInfo, worldKey, dimension.getDimensionType(), server.chunkStatusListenerFactory.create(11), dimension.getChunkGenerator(), dimensionGeneratorSettings.hasDebugChunkGenerator(), BiomeManager.getHashedSeed(dimensionGeneratorSettings.getSeed()), ImmutableList.of(), false);
         overworld.getWorldBorder().addListener(new IBorderListener.Impl(newWorld.getWorldBorder()));
         map.put(worldKey, newWorld);
         server.markWorldsDirty();
         MinecraftForge.EVENT_BUS.post(new WorldEvent.Load(newWorld));
-        TowerOfGod.CHANNEL.send(PacketDistributor.ALL.noArg(), new UpdateClientDimensionsMessage(worldKey));
+        TowerOfGod.CHANNEL.send(PacketDistributor.ALL.noArg(), new UpdateClientDimensionsPacket(worldKey));
         return newWorld;
     }
 
@@ -229,11 +218,7 @@ public class FloorDimensionsHelper {
             }
         }
         DimensionStructuresSettings structures = new DimensionStructuresSettings(Optional.empty(), map);
-        try {
-            return SETTINGS_CONSTRUCTOR.newInstance(structures, noise, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), ceilingOffset, floorOffset, seaLevel, false);
-        } catch (Exception e) {
-            return DimensionSettings.getDefaultDimensionSettings();
-        }
+        return new DimensionSettings(structures, noise, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), ceilingOffset, floorOffset, seaLevel, false);
     }
 
     private static FloorProperty randomProperty(int level, Random rand) {
@@ -264,17 +249,5 @@ public class FloorDimensionsHelper {
         }
         float density = 0.9f + level * 0.1f + rand.nextFloat() * 0.5f - 0.25f;
         return new FloorProperty(level, types, bounds, time, density);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <FH, FT> Function<FH, FT> getInstanceField(Class<FH> fieldHolder, String fieldName) {
-        Field field = ObfuscationReflectionHelper.findField(fieldHolder, fieldName);
-        return instance -> {
-            try {
-                return (FT) (field.get(instance));
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        };
     }
 }

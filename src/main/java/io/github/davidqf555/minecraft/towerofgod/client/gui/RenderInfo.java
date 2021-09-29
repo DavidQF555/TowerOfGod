@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.client.render;
+package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;

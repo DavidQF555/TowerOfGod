@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.Entity;
@@ -23,9 +23,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class UpdateClientCanCastMessage {
+public class UpdateClientCanCastPacket {
 
-    private static final BiConsumer<UpdateClientCanCastMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<UpdateClientCanCastPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.canCast.size());
         for (ShinsuTechnique technique : message.canCast.keySet()) {
             buffer.writeString(technique.name());
@@ -36,7 +36,7 @@ public class UpdateClientCanCastMessage {
             }
         }
     };
-    private static final Function<PacketBuffer, UpdateClientCanCastMessage> DECODER = buffer -> {
+    private static final Function<PacketBuffer, UpdateClientCanCastPacket> DECODER = buffer -> {
         Map<ShinsuTechnique, Set<String>> canCast = new EnumMap<>(ShinsuTechnique.class);
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
@@ -48,24 +48,24 @@ public class UpdateClientCanCastMessage {
             }
             canCast.put(technique, settings);
         }
-        return new UpdateClientCanCastMessage(canCast);
+        return new UpdateClientCanCastPacket(canCast);
     };
-    private static final BiConsumer<UpdateClientCanCastMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final BiConsumer<UpdateClientCanCastPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
     private final Map<ShinsuTechnique, Set<String>> canCast;
 
-    public UpdateClientCanCastMessage() {
+    public UpdateClientCanCastPacket() {
         this(new EnumMap<>(ShinsuTechnique.class));
     }
 
-    public UpdateClientCanCastMessage(Map<ShinsuTechnique, Set<String>> canCast) {
+    public UpdateClientCanCastPacket(Map<ShinsuTechnique, Set<String>> canCast) {
         this.canCast = canCast;
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientCanCastMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientCanCastPacket.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {
@@ -87,7 +87,7 @@ public class UpdateClientCanCastMessage {
                     }
                     canCast.put(technique, can);
                 }
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientCanCastMessage(canCast));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientCanCastPacket(canCast));
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {

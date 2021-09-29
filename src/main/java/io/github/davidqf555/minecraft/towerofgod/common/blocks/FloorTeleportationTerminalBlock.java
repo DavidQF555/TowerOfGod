@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.blocks;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenFloorTeleportationTerminalMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenFloorTeleportationTerminalPacket;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -53,7 +53,7 @@ public class FloorTeleportationTerminalBlock extends Block {
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (player instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new OpenFloorTeleportationTerminalMessage(ShinsuStats.get(player).getLevel(), pos, state.get(FACING)));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new OpenFloorTeleportationTerminalPacket(ShinsuStats.get(player).getLevel(), pos, state.get(FACING)));
         }
         return ActionResultType.SUCCESS;
     }

@@ -1,8 +1,10 @@
-package io.github.davidqf555.minecraft.towerofgod.common.util;
+package io.github.davidqf555.minecraft.towerofgod.common;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.commands.FloorCommand;
+import io.github.davidqf555.minecraft.towerofgod.common.commands.ShinsuCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RankerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
@@ -15,7 +17,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniq
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorBiomeProvider;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorChunkGenerator;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
@@ -59,15 +60,17 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class EventBusSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
     private static final ConfiguredFeature<?, ?> SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
-    private static ShinsuStats clonedStats = null;
-    private static PlayerShinsuEquips clonedEquips = null;
+    private static final Map<UUID, ShinsuStats> CLONED_STATS = new HashMap<>();
+    private static final Map<UUID, PlayerShinsuEquips> CLONED_EQUIPS = new HashMap<>();
     private static int index = 0;
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -92,10 +95,10 @@ public class EventBusSubscriber {
             for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                 known.put(technique, stats.getTechniqueLevel(technique));
             }
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownPacket(known));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersPacket(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             PlayerShinsuEquips equipped = PlayerShinsuEquips.get(entity);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsMessage(equipped.getEquipped()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsPacket(equipped.getEquipped()));
         }
 
         @SubscribeEvent
@@ -125,8 +128,9 @@ public class EventBusSubscriber {
         public static void onClonePlayerEvent(PlayerEvent.Clone event) {
             if (event.isWasDeath()) {
                 ServerPlayerEntity original = (ServerPlayerEntity) event.getOriginal();
-                clonedStats = ShinsuStats.get(original);
-                clonedEquips = PlayerShinsuEquips.get(original);
+                UUID id = original.getUniqueID();
+                CLONED_STATS.put(id, ShinsuStats.get(original));
+                CLONED_EQUIPS.put(id, PlayerShinsuEquips.get(original));
             }
         }
 
@@ -144,11 +148,16 @@ public class EventBusSubscriber {
         @SubscribeEvent
         public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
-            if (player.getUniqueID().equals(Minecraft.getInstance().player.getUniqueID())) {
+            UUID id = player.getUniqueID();
+            if (CLONED_STATS.containsKey(id)) {
                 ShinsuStats stats = ShinsuStats.get(player);
-                stats.deserializeNBT(clonedStats.serializeNBT());
+                stats.deserializeNBT(CLONED_STATS.get(id).serializeNBT());
+                CLONED_STATS.remove(id);
+            }
+            if (CLONED_EQUIPS.containsKey(id)) {
                 PlayerShinsuEquips equips = PlayerShinsuEquips.get(player);
-                equips.deserializeNBT(clonedEquips.serializeNBT());
+                equips.deserializeNBT(CLONED_EQUIPS.get(id).serializeNBT());
+                CLONED_EQUIPS.remove(id);
             }
         }
 
@@ -215,17 +224,17 @@ public class EventBusSubscriber {
             CapabilityManager.INSTANCE.register(ShinsuStats.class, new ShinsuStats.Storage(), ShinsuStats::new);
             CapabilityManager.INSTANCE.register(PlayerShinsuEquips.class, new PlayerShinsuEquips.Storage(), PlayerShinsuEquips::new);
             event.enqueueWork(() -> {
-                ChangeEquipsMessage.register(index++);
-                CastShinsuMessage.register(index++);
-                UpdateStatsMetersMessage.register(index++);
-                UpdateClientCooldownsMessage.register(index++);
-                UpdateClientCanCastMessage.register(index++);
-                UpdateClientKnownMessage.register(index++);
-                ObserverChangeHighlightMessage.register(index++);
-                UpdateClientDimensionsMessage.register(index++);
-                OpenFloorTeleportationTerminalMessage.register(index++);
-                ChangeFloorMessage.register(index++);
-                UpdateInitialCooldownsMessage.register(index++);
+                ChangeEquipsPacket.register(index++);
+                CastShinsuPacket.register(index++);
+                UpdateStatsMetersPacket.register(index++);
+                UpdateClientCooldownsPacket.register(index++);
+                UpdateClientCanCastPacket.register(index++);
+                UpdateClientKnownPacket.register(index++);
+                ObserverChangeHighlightPacket.register(index++);
+                UpdateClientDimensionsPacket.register(index++);
+                OpenFloorTeleportationTerminalPacket.register(index++);
+                ChangeFloorPacket.register(index++);
+                UpdateInitialCooldownsPacket.register(index++);
                 Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);
                 Registry.register(Registry.BIOME_PROVIDER_CODEC, new ResourceLocation(TowerOfGod.MOD_ID, "floor_biome_provider_codec"), FloorBiomeProvider.CODEC);
                 Registry.register(Registry.CHUNK_GENERATOR_CODEC, new ResourceLocation(TowerOfGod.MOD_ID, "floor_chunk_generator_codec"), FloorChunkGenerator.CODEC);

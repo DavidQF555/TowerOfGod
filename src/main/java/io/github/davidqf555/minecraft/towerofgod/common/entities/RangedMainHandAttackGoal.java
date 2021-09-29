@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.entities.goals;
+package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.LivingEntity;

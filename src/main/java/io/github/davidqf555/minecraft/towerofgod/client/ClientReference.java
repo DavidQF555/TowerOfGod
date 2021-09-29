@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.client.util;
+package io.github.davidqf555.minecraft.towerofgod.client;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;

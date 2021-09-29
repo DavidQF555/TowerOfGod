@@ -1,6 +1,5 @@
-package io.github.davidqf555.minecraft.towerofgod.common.entities.goals;
+package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.entities.IGeared;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attributes;

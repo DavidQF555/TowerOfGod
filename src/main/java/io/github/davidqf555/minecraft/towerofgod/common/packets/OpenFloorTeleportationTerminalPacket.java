@@ -13,20 +13,20 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class OpenFloorTeleportationTerminalMessage {
+public class OpenFloorTeleportationTerminalPacket {
 
-    private static final BiConsumer<OpenFloorTeleportationTerminalMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<OpenFloorTeleportationTerminalPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.teleporter.getX());
         buffer.writeInt(message.teleporter.getY());
         buffer.writeInt(message.teleporter.getZ());
         buffer.writeInt(message.level);
         buffer.writeInt(message.direction.getIndex());
     };
-    private static final Function<PacketBuffer, OpenFloorTeleportationTerminalMessage> DECODER = buffer -> {
+    private static final Function<PacketBuffer, OpenFloorTeleportationTerminalPacket> DECODER = buffer -> {
         BlockPos teleporter = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
-        return new OpenFloorTeleportationTerminalMessage(buffer.readInt(), teleporter, Direction.byIndex(buffer.readInt()));
+        return new OpenFloorTeleportationTerminalPacket(buffer.readInt(), teleporter, Direction.byIndex(buffer.readInt()));
     };
-    private static final BiConsumer<OpenFloorTeleportationTerminalMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final BiConsumer<OpenFloorTeleportationTerminalPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
@@ -35,14 +35,14 @@ public class OpenFloorTeleportationTerminalMessage {
     private final BlockPos teleporter;
     private final Direction direction;
 
-    public OpenFloorTeleportationTerminalMessage(int level, BlockPos teleporter, Direction direction) {
+    public OpenFloorTeleportationTerminalPacket(int level, BlockPos teleporter, Direction direction) {
         this.level = level;
         this.teleporter = teleporter;
         this.direction = direction;
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, OpenFloorTeleportationTerminalMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, OpenFloorTeleportationTerminalPacket.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

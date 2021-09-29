@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import io.github.davidqf555.minecraft.towerofgod.common.util.RegistryHandler;
+import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.crafting.Ingredient;
 

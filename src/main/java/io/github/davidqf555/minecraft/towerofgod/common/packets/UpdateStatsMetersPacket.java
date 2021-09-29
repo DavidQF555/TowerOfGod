@@ -13,16 +13,16 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class UpdateStatsMetersMessage {
+public class UpdateStatsMetersPacket {
 
-    private static final BiConsumer<UpdateStatsMetersMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<UpdateStatsMetersPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.shinsu);
         buffer.writeInt(message.maxShinsu);
         buffer.writeInt(message.baangs);
         buffer.writeInt(message.maxBaangs);
     };
-    private static final Function<PacketBuffer, UpdateStatsMetersMessage> DECODER = buffer -> new UpdateStatsMetersMessage(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt());
-    private static final BiConsumer<UpdateStatsMetersMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final Function<PacketBuffer, UpdateStatsMetersPacket> DECODER = buffer -> new UpdateStatsMetersPacket(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt());
+    private static final BiConsumer<UpdateStatsMetersPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
@@ -32,7 +32,7 @@ public class UpdateStatsMetersMessage {
     private final int baangs;
     private final int maxBaangs;
 
-    public UpdateStatsMetersMessage(int shinsu, int maxShinsu, int baangs, int maxBaangs) {
+    public UpdateStatsMetersPacket(int shinsu, int maxShinsu, int baangs, int maxBaangs) {
         this.shinsu = shinsu;
         this.maxShinsu = maxShinsu;
         this.baangs = baangs;
@@ -40,7 +40,7 @@ public class UpdateStatsMetersMessage {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, UpdateStatsMetersMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateStatsMetersPacket.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {
@@ -49,7 +49,7 @@ public class UpdateStatsMetersMessage {
             ServerPlayerEntity player = context.getSender();
             context.enqueueWork(() -> {
                 ShinsuStats stats = ShinsuStats.get(player);
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateStatsMetersPacket(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
