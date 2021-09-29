@@ -1,9 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.RenderInfo;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.ScreenManager.IScreenFactory;

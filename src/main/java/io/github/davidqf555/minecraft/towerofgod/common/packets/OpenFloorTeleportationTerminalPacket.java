@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.FloorTeleportationTerminalScreen;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;

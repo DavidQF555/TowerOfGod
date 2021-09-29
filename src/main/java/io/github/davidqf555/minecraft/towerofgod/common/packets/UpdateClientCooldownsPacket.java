@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import com.google.common.collect.Maps;
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.entity.player.ServerPlayerEntity;
