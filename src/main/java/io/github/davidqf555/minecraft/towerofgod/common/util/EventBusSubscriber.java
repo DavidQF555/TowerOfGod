@@ -15,7 +15,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniq
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorBiomeProvider;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorChunkGenerator;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
@@ -59,15 +58,17 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class EventBusSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
     private static final ConfiguredFeature<?, ?> SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
-    private static ShinsuStats clonedStats = null;
-    private static PlayerShinsuEquips clonedEquips = null;
+    private static final Map<UUID, ShinsuStats> CLONED_STATS = new HashMap<>();
+    private static final Map<UUID, PlayerShinsuEquips> CLONED_EQUIPS = new HashMap<>();
     private static int index = 0;
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -125,8 +126,9 @@ public class EventBusSubscriber {
         public static void onClonePlayerEvent(PlayerEvent.Clone event) {
             if (event.isWasDeath()) {
                 ServerPlayerEntity original = (ServerPlayerEntity) event.getOriginal();
-                clonedStats = ShinsuStats.get(original);
-                clonedEquips = PlayerShinsuEquips.get(original);
+                UUID id = original.getUniqueID();
+                CLONED_STATS.put(id, ShinsuStats.get(original));
+                CLONED_EQUIPS.put(id, PlayerShinsuEquips.get(original));
             }
         }
 
@@ -144,11 +146,16 @@ public class EventBusSubscriber {
         @SubscribeEvent
         public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
-            if (player.getUniqueID().equals(Minecraft.getInstance().player.getUniqueID())) {
+            UUID id = player.getUniqueID();
+            if (CLONED_STATS.containsKey(id)) {
                 ShinsuStats stats = ShinsuStats.get(player);
-                stats.deserializeNBT(clonedStats.serializeNBT());
+                stats.deserializeNBT(CLONED_STATS.get(id).serializeNBT());
+                CLONED_STATS.remove(id);
+            }
+            if (CLONED_EQUIPS.containsKey(id)) {
                 PlayerShinsuEquips equips = PlayerShinsuEquips.get(player);
-                equips.deserializeNBT(clonedEquips.serializeNBT());
+                equips.deserializeNBT(CLONED_EQUIPS.get(id).serializeNBT());
+                CLONED_EQUIPS.remove(id);
             }
         }
 
