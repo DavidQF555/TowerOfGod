@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersPacket;
 import net.minecraft.entity.Entity;

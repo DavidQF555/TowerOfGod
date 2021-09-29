@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import com.mojang.datafixers.util.Pair;
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.ObserverEventBusSubscriber;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;

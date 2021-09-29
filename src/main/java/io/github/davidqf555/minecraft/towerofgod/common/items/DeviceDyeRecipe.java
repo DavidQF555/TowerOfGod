@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;

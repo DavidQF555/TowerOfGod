@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 

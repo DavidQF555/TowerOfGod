@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;

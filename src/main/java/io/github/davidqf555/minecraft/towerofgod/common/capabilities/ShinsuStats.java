@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateInitialCooldownsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersPacket;

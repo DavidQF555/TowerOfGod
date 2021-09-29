@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.util.ResourceLocation;
 
 public class ShinsuIcons {

@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;

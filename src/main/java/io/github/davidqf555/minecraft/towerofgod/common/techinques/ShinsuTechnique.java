@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.RenderInfo;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuIcons;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;

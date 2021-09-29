@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client;
 
 import com.mojang.datafixers.util.Pair;
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;

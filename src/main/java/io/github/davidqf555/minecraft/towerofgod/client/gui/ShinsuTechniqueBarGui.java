@@ -2,8 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCanCastPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCooldownsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;

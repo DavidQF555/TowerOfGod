@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
