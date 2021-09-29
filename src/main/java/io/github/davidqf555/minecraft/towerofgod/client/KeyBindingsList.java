@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.client.util;
+package io.github.davidqf555.minecraft.towerofgod.client;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import net.minecraft.client.settings.KeyBinding;

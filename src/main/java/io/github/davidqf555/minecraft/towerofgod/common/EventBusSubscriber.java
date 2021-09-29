@@ -1,8 +1,10 @@
-package io.github.davidqf555.minecraft.towerofgod.common.util;
+package io.github.davidqf555.minecraft.towerofgod.common;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PlayerShinsuEquips;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.commands.FloorCommand;
+import io.github.davidqf555.minecraft.towerofgod.common.commands.ShinsuCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RankerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
@@ -93,10 +95,10 @@ public class EventBusSubscriber {
             for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                 known.put(technique, stats.getTechniqueLevel(technique));
             }
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownPacket(known));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersPacket(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
             PlayerShinsuEquips equipped = PlayerShinsuEquips.get(entity);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsMessage(equipped.getEquipped()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsPacket(equipped.getEquipped()));
         }
 
         @SubscribeEvent
@@ -222,17 +224,17 @@ public class EventBusSubscriber {
             CapabilityManager.INSTANCE.register(ShinsuStats.class, new ShinsuStats.Storage(), ShinsuStats::new);
             CapabilityManager.INSTANCE.register(PlayerShinsuEquips.class, new PlayerShinsuEquips.Storage(), PlayerShinsuEquips::new);
             event.enqueueWork(() -> {
-                ChangeEquipsMessage.register(index++);
-                CastShinsuMessage.register(index++);
-                UpdateStatsMetersMessage.register(index++);
-                UpdateClientCooldownsMessage.register(index++);
-                UpdateClientCanCastMessage.register(index++);
-                UpdateClientKnownMessage.register(index++);
-                ObserverChangeHighlightMessage.register(index++);
-                UpdateClientDimensionsMessage.register(index++);
-                OpenFloorTeleportationTerminalMessage.register(index++);
-                ChangeFloorMessage.register(index++);
-                UpdateInitialCooldownsMessage.register(index++);
+                ChangeEquipsPacket.register(index++);
+                CastShinsuPacket.register(index++);
+                UpdateStatsMetersPacket.register(index++);
+                UpdateClientCooldownsPacket.register(index++);
+                UpdateClientCanCastPacket.register(index++);
+                UpdateClientKnownPacket.register(index++);
+                ObserverChangeHighlightPacket.register(index++);
+                UpdateClientDimensionsPacket.register(index++);
+                OpenFloorTeleportationTerminalPacket.register(index++);
+                ChangeFloorPacket.register(index++);
+                UpdateInitialCooldownsPacket.register(index++);
                 Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);
                 Registry.register(Registry.BIOME_PROVIDER_CODEC, new ResourceLocation(TowerOfGod.MOD_ID, "floor_biome_provider_codec"), FloorBiomeProvider.CODEC);
                 Registry.register(Registry.CHUNK_GENERATOR_CODEC, new ResourceLocation(TowerOfGod.MOD_ID, "floor_chunk_generator_codec"), FloorChunkGenerator.CODEC);

@@ -3,10 +3,8 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.render.IRenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeEquipsMessage;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeEquipsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.TechniqueSettings;
 import mcp.MethodsReturnNonnullByDefault;
@@ -75,7 +73,7 @@ public class ShinsuEquipScreen extends Screen {
     private void updateEquips() {
         List<Pair<ShinsuTechnique, String>> equipped = new ArrayList<>();
         selected.forEach(slot -> equipped.add(Pair.of(slot.technique, slot.settings)));
-        TowerOfGod.CHANNEL.sendToServer(new ChangeEquipsMessage(equipped));
+        TowerOfGod.CHANNEL.sendToServer(new ChangeEquipsPacket(equipped));
         ClientReference.equipped = equipped;
     }
 

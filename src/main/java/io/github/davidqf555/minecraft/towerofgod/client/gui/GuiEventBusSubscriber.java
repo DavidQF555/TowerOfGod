@@ -2,9 +2,9 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
-import io.github.davidqf555.minecraft.towerofgod.client.util.KeyBindingsList;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuMessage;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -91,7 +91,7 @@ public class GuiEventBusSubscriber {
                     int action = event.getAction();
                     if (bar.isLocked()) {
                         if (action == GLFW.GLFW_RELEASE) {
-                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuMessage(technique, selected.getSecond()));
+                            TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(technique, selected.getSecond()));
                             bar.setLocked(false);
                         }
                     } else if (action == GLFW.GLFW_PRESS) {

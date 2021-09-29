@@ -2,8 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeFloorMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeFloorPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
@@ -172,7 +171,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
         public void onPress() {
             if (screen.display.isValid()) {
                 int level = Integer.parseInt(screen.display.value.toString());
-                TowerOfGod.CHANNEL.sendToServer(new ChangeFloorMessage(level, screen.teleporter, screen.direction));
+                TowerOfGod.CHANNEL.sendToServer(new ChangeFloorPacket(level, screen.teleporter, screen.direction));
             }
         }
     }

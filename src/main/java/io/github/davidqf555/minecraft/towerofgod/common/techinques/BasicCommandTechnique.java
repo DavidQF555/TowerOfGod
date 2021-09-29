@@ -2,9 +2,9 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.IRenderInfo;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.ItemStackRenderInfo;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuIcons;
-import io.github.davidqf555.minecraft.towerofgod.client.render.IRenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.render.ItemStackRenderInfo;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import net.minecraft.entity.Entity;

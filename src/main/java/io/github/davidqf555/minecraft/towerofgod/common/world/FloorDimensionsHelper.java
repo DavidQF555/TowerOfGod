@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Lifecycle;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientDimensionsMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientDimensionsPacket;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
@@ -98,7 +98,7 @@ public class FloorDimensionsHelper {
         map.put(worldKey, newWorld);
         server.markWorldsDirty();
         MinecraftForge.EVENT_BUS.post(new WorldEvent.Load(newWorld));
-        TowerOfGod.CHANNEL.send(PacketDistributor.ALL.noArg(), new UpdateClientDimensionsMessage(worldKey));
+        TowerOfGod.CHANNEL.send(PacketDistributor.ALL.noArg(), new UpdateClientDimensionsPacket(worldKey));
         return newWorld;
     }
 

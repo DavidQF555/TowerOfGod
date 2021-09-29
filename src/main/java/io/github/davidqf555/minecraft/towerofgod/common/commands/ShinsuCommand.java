@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.util;
+package io.github.davidqf555.minecraft.towerofgod.common.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -10,8 +10,8 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -71,14 +71,14 @@ public class ShinsuCommand {
                         case "shinsu":
                             stats.addMaxShinsu((int) amount);
                             if (entity instanceof ServerPlayerEntity) {
-                                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+                                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersPacket(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
                             }
                             source.sendFeedback(new TranslationTextComponent(SHINSU, entity.getDisplayName(), (int) amount), true);
                             break;
                         case "baangs":
                             stats.addMaxBaangs((int) amount);
                             if (entity instanceof ServerPlayerEntity) {
-                                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersMessage(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+                                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersPacket(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
                             }
                             source.sendFeedback(new TranslationTextComponent(BAANGS, entity.getDisplayName(), (int) amount), true);
                             break;
@@ -111,7 +111,7 @@ public class ShinsuCommand {
                                 for (ShinsuTechnique t : ShinsuTechnique.values()) {
                                     known.put(t, stats.getTechniqueLevel(t));
                                 }
-                                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownMessage(known));
+                                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownPacket(known));
                             }
                             source.sendFeedback(new TranslationTextComponent(TECHNIQUE_SUCCESS, entity.getDisplayName(), technique.getText(), (int) amount), true);
                     }

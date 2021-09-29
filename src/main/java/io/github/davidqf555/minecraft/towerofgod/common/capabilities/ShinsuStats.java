@@ -1,9 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateInitialCooldownsMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersMessage;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateInitialCooldownsPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -96,8 +96,8 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             }
         }
         if (owner instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateClientKnownMessage(known));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateStatsMetersMessage(getShinsu(), getMaxShinsu(), getBaangs(), getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateClientKnownPacket(known));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateStatsMetersPacket(getShinsu(), getMaxShinsu(), getBaangs(), getMaxBaangs()));
         }
     }
 
@@ -322,7 +322,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         int cooldown = instance.getCooldown();
         Entity user = instance.getUser(world);
         if (user instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateInitialCooldownsMessage(technique, cooldown));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateInitialCooldownsPacket(technique, cooldown));
         }
         addCooldown(technique, cooldown);
         addTechnique(instance);

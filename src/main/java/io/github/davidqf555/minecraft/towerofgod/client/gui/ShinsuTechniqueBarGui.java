@@ -3,11 +3,9 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.client.render.IRenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.render.RenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.util.ClientReference;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCanCastMessage;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCooldownsMessage;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCanCastPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCooldownsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.TechniqueSettings;
 import net.minecraft.client.Minecraft;
@@ -91,8 +89,8 @@ public class ShinsuTechniqueBarGui extends AbstractGui implements IRenderable {
                 selected = (int) ((slots.size() - 1) / 2f + dYaw / RESISTIVITY);
             }
         }
-        TowerOfGod.CHANNEL.sendToServer(new UpdateClientCooldownsMessage());
-        TowerOfGod.CHANNEL.sendToServer(new UpdateClientCanCastMessage());
+        TowerOfGod.CHANNEL.sendToServer(new UpdateClientCooldownsPacket());
+        TowerOfGod.CHANNEL.sendToServer(new UpdateClientCanCastPacket());
     }
 
     private static class Slot extends AbstractGui implements IRenderable {

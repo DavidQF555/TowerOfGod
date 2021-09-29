@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.util;
+package io.github.davidqf555.minecraft.towerofgod.common.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;

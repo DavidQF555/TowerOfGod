@@ -14,20 +14,20 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class ChangeFloorMessage {
+public class ChangeFloorPacket {
 
-    private static final BiConsumer<ChangeFloorMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<ChangeFloorPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.teleporter.getX());
         buffer.writeInt(message.teleporter.getY());
         buffer.writeInt(message.teleporter.getZ());
         buffer.writeInt(message.level);
         buffer.writeInt(message.direction.getIndex());
     };
-    private static final Function<PacketBuffer, ChangeFloorMessage> DECODER = buffer -> {
+    private static final Function<PacketBuffer, ChangeFloorPacket> DECODER = buffer -> {
         BlockPos pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
-        return new ChangeFloorMessage(buffer.readInt(), pos, Direction.byIndex(buffer.readInt()));
+        return new ChangeFloorPacket(buffer.readInt(), pos, Direction.byIndex(buffer.readInt()));
     };
-    private static final BiConsumer<ChangeFloorMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final BiConsumer<ChangeFloorPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
@@ -36,14 +36,14 @@ public class ChangeFloorMessage {
     private final BlockPos teleporter;
     private final Direction direction;
 
-    public ChangeFloorMessage(int level, BlockPos teleporter, Direction direction) {
+    public ChangeFloorPacket(int level, BlockPos teleporter, Direction direction) {
         this.level = level;
         this.teleporter = teleporter;
         this.direction = direction;
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ChangeFloorMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, ChangeFloorPacket.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {

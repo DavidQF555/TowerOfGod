@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
-import io.github.davidqf555.minecraft.towerofgod.client.render.IRenderInfo;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.IRenderInfo;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 

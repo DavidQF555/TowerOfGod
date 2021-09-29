@@ -14,25 +14,25 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class UpdateClientDimensionsMessage {
+public class UpdateClientDimensionsPacket {
 
-    private static final BiConsumer<UpdateClientDimensionsMessage, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<UpdateClientDimensionsPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeString(message.key.getLocation().toString());
     };
-    private static final Function<PacketBuffer, UpdateClientDimensionsMessage> DECODER = buffer -> new UpdateClientDimensionsMessage(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(buffer.readString())));
-    private static final BiConsumer<UpdateClientDimensionsMessage, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final Function<PacketBuffer, UpdateClientDimensionsPacket> DECODER = buffer -> new UpdateClientDimensionsPacket(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(buffer.readString())));
+    private static final BiConsumer<UpdateClientDimensionsPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
 
     private final RegistryKey<World> key;
 
-    public UpdateClientDimensionsMessage(RegistryKey<World> key) {
+    public UpdateClientDimensionsPacket(RegistryKey<World> key) {
         this.key = key;
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientDimensionsMessage.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientDimensionsPacket.class, ENCODER, DECODER, CONSUMER);
     }
 
     private void handle(NetworkEvent.Context context) {
