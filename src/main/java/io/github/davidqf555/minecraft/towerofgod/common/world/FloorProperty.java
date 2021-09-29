@@ -3,32 +3,34 @@ package io.github.davidqf555.minecraft.towerofgod.common.world;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.TowerOfGod;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-public class FloorProperty {
+public class FloorProperty extends WorldSavedData {
 
-    public static Codec<FloorProperty> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-            Codec.INT.fieldOf("level").forGetter(property -> property.level),
-            Codec.list(Codec.STRING).fieldOf("type").forGetter(property -> property.types.stream().map(BiomeDictionary.Type::getName).collect(Collectors.toList())),
-            Codec.list(Bound.CODEC).fieldOf("bounds").forGetter(property -> new ArrayList<>(property.bounds)),
-            Time.CODEC.fieldOf("time").forGetter(property -> property.time),
-            Codec.FLOAT.fieldOf("shinsuDensity").forGetter(property -> property.shinsuDensity)
-    ).apply(builder, builder.stable((level, types, bounds, time, shinsuDensity) -> new FloorProperty(level, types.stream().map(BiomeDictionary.Type::getType).collect(Collectors.toSet()), bounds.isEmpty() ? EnumSet.noneOf(Bound.class) : EnumSet.copyOf(bounds), time, shinsuDensity))));
-
-    private final int level;
+    private static final String NAME = TowerOfGod.MOD_ID + "_FloorProperty";
     private final Set<BiomeDictionary.Type> types;
     private final Set<Bound> bounds;
-    private final Time time;
-    private final float shinsuDensity;
+    private int level;
+    private Time time;
+    private float shinsuDensity;
 
     public FloorProperty(int level, Set<BiomeDictionary.Type> types, Set<Bound> bounds, Time time, float shinsuDensity) {
+        super(NAME);
         this.level = level;
         this.types = types;
         this.bounds = bounds;
@@ -36,15 +38,24 @@ public class FloorProperty {
         this.shinsuDensity = shinsuDensity;
     }
 
+    public static void set(ServerWorld world, FloorProperty property) {
+        world.getSavedData().set(property);
+    }
+
+    @Nullable
+    public static FloorProperty get(ServerWorld world) {
+        return world.getSavedData().get(() -> new FloorProperty(1, new HashSet<>(), new HashSet<>(), Time.DYNAMIC, 1), NAME);
+    }
+
     public int getLevel() {
         return level;
     }
 
-    public List<Pair<Supplier<Biome>, Biome.Attributes>> getBiomeAttributesList(Registry<Biome> lookup) {
-        List<Pair<Supplier<Biome>, Biome.Attributes>> biomes = new ArrayList<>();
+    public List<Pair<Biome.Attributes, Supplier<Biome>>> getBiomeAttributesList(Registry<Biome> lookup) {
+        List<Pair<Biome.Attributes, Supplier<Biome>>> biomes = new ArrayList<>();
         getBiomes(lookup).forEach(supplier -> {
             Biome biome = supplier.get();
-            biomes.add(Pair.of(supplier, new Biome.Attributes(biome.getTemperature(), biome.getDownfall(), 0, 0, 0)));
+            biomes.add(Pair.of(new Biome.Attributes(biome.getTemperature(), biome.getDownfall(), 0, 0, 0), supplier));
         });
         return biomes;
     }
@@ -81,6 +92,50 @@ public class FloorProperty {
 
     public float getShinsuDensity() {
         return shinsuDensity;
+    }
+
+    @Override
+    public void read(CompoundNBT nbt) {
+        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
+            level = nbt.getInt("Level");
+        }
+        if (nbt.contains("Types", Constants.NBT.TAG_LIST)) {
+            for (INBT data : nbt.getList("Types", Constants.NBT.TAG_STRING)) {
+                String name = data.getString();
+                if (BiomeDictionary.Type.getAll().stream().anyMatch(type -> type.getName().equals(name))) {
+                    types.add(BiomeDictionary.Type.getType(name));
+                }
+            }
+        }
+        if (nbt.contains("Bounds", Constants.NBT.TAG_LIST)) {
+            for (INBT name : nbt.getList("Bounds", Constants.NBT.TAG_STRING)) {
+                bounds.add(Bound.valueOf(name.getString()));
+            }
+        }
+        if (nbt.contains("Time", Constants.NBT.TAG_STRING)) {
+            time = Time.valueOf(nbt.getString("Time"));
+        }
+        if (nbt.contains("Density", Constants.NBT.TAG_FLOAT)) {
+            shinsuDensity = nbt.getFloat("Density");
+        }
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT nbt) {
+        nbt.putInt("Level", getLevel());
+        ListNBT types = new ListNBT();
+        for (BiomeDictionary.Type type : this.types) {
+            types.add(StringNBT.valueOf(type.getName()));
+        }
+        nbt.put("Types", types);
+        ListNBT bounds = new ListNBT();
+        for (Bound bound : this.bounds) {
+            bounds.add(StringNBT.valueOf(bound.name()));
+        }
+        nbt.put("Bounds", bounds);
+        nbt.putString("Time", time.name());
+        nbt.putFloat("Density", getShinsuDensity());
+        return nbt;
     }
 
     public enum Bound {
