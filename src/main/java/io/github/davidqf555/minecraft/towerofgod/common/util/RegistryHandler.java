@@ -9,6 +9,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.Lightho
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.items.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.OreBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityClassification;
@@ -106,7 +107,7 @@ public class RegistryHandler {
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(
-                new Block(Block.Properties.create(Material.ROCK).hardnessAndResistance(5f, 5f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_ore"),
+                new OreBlock(Block.Properties.create(Material.ROCK).hardnessAndResistance(5f, 5f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_ore"),
                 new Block(Block.Properties.create(Material.ROCK).hardnessAndResistance(3f, 3f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_block"),
                 new Block(Block.Properties.create(Material.AIR).setAir().setLightLevel(state -> 15)).setRegistryName(TowerOfGod.MOD_ID, "light_block"),
                 new FloorTeleportationTerminalBlock().setRegistryName(TowerOfGod.MOD_ID, "floor_teleportation_terminal_block")
