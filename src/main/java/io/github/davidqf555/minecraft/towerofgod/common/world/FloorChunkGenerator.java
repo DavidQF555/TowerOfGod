@@ -41,15 +41,22 @@ import java.util.function.Supplier;
 public class FloorChunkGenerator extends NoiseChunkGenerator {
 
     public static final Codec<FloorChunkGenerator> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            FloorProperty.CODEC.fieldOf("floor_property").forGetter(FloorChunkGenerator::getFloorProperty),
             BiomeProvider.CODEC.fieldOf("biome_source").forGetter(gen -> gen.biomeProvider),
             Codec.LONG.fieldOf("seed").stable().forGetter(gen -> gen.field_236084_w_),
             DimensionSettings.DIMENSION_SETTINGS_CODEC.fieldOf("settings").forGetter(gen -> gen.field_236080_h_)
     ).apply(builder, builder.stable(FloorChunkGenerator::new)));
     private static final BlockState AIR = Blocks.AIR.getDefaultState();
     private static final Map<Biome, Pair<BlockState, BlockState>> DEFAULTS = new HashMap<>();
+    private final FloorProperty property;
 
-    public FloorChunkGenerator(BiomeProvider provider, long seed, Supplier<DimensionSettings> settings) {
+    public FloorChunkGenerator(FloorProperty property, BiomeProvider provider, long seed, Supplier<DimensionSettings> settings) {
         super(provider, seed, settings);
+        this.property = property;
+    }
+
+    public FloorProperty getFloorProperty() {
+        return property;
     }
 
     @Override
@@ -59,7 +66,7 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
 
     @Override
     public ChunkGenerator func_230349_a_(long seed) {
-        return new FloorChunkGenerator(biomeProvider.getBiomeProvider(seed), seed, field_236080_h_);
+        return new FloorChunkGenerator(getFloorProperty(), biomeProvider.getBiomeProvider(seed), seed, field_236080_h_);
     }
 
     @Override
