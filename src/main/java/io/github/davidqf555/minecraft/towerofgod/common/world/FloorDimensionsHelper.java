@@ -62,7 +62,14 @@ public class FloorDimensionsHelper {
 
     @Nullable
     public static FloorProperty getFloorProperty(ServerWorld world) {
-        return FloorProperty.get(world);
+        Dimension dim = world.getServer().getServerConfiguration().getDimensionGeneratorSettings().func_236224_e_().getValueForKey(RegistryKey.getOrCreateKey(Registry.DIMENSION_KEY, world.getDimensionKey().getLocation()));
+        if (dim != null) {
+            ChunkGenerator gen = dim.getChunkGenerator();
+            if (gen instanceof FloorChunkGenerator) {
+                return ((FloorChunkGenerator) gen).getFloorProperty();
+            }
+        }
+        return null;
     }
 
     @SuppressWarnings("deprecation")
@@ -83,15 +90,13 @@ public class FloorDimensionsHelper {
     private static ServerWorld createAndRegisterWorldAndDimension(MinecraftServer server, Map<RegistryKey<World>, ServerWorld> map, RegistryKey<World> worldKey, int level) {
         ServerWorld overworld = server.getWorld(World.OVERWORLD);
         RegistryKey<Dimension> dimensionKey = RegistryKey.getOrCreateKey(Registry.DIMENSION_KEY, worldKey.getLocation());
-        FloorProperty property = randomProperty(level, overworld.getRandom());
-        Dimension dimension = createFloorDimension(server, level, property);
+        Dimension dimension = createFloorDimension(server, level);
         IServerConfiguration serverConfig = server.getServerConfiguration();
         DimensionGeneratorSettings dimensionGeneratorSettings = serverConfig.getDimensionGeneratorSettings();
         dimensionGeneratorSettings.func_236224_e_().register(dimensionKey, dimension, Lifecycle.experimental());
         DerivedWorldInfo derivedWorldInfo = new DerivedWorldInfo(serverConfig, serverConfig.getServerWorldInfo());
         ServerWorld newWorld = new ServerWorld(server, server.backgroundExecutor, server.anvilConverterForAnvilFile, derivedWorldInfo, worldKey, dimension.getDimensionType(), server.chunkStatusListenerFactory.create(11), dimension.getChunkGenerator(), dimensionGeneratorSettings.hasDebugChunkGenerator(), BiomeManager.getHashedSeed(dimensionGeneratorSettings.getSeed()), ImmutableList.of(), false);
         overworld.getWorldBorder().addListener(new IBorderListener.Impl(newWorld.getWorldBorder()));
-        FloorProperty.set(newWorld, property);
         map.put(worldKey, newWorld);
         server.markWorldsDirty();
         MinecraftForge.EVENT_BUS.post(new WorldEvent.Load(newWorld));
@@ -99,10 +104,11 @@ public class FloorDimensionsHelper {
         return newWorld;
     }
 
-    private static Dimension createFloorDimension(MinecraftServer server, int level, FloorProperty property) {
+    private static Dimension createFloorDimension(MinecraftServer server, int level) {
         ServerWorld overworld = server.getWorld(World.OVERWORLD);
         long seed = overworld.getSeed() + level - 1;
         SharedSeedRandom random = new SharedSeedRandom(seed);
+        FloorProperty property = randomProperty(level, random);
         float lighting = property.hasCeiling() ? random.nextFloat() * 0.5f + 0.1f : random.nextFloat() * 0.2f;
         ResourceLocation effect;
         int rand = random.nextInt(3);
@@ -114,7 +120,8 @@ public class FloorDimensionsHelper {
             effect = DimensionType.THE_END_ID;
         }
         BiomeProvider provider = new NetherBiomeProvider(seed, property.getBiomeAttributesList(server.getDynamicRegistries().getRegistry(Registry.BIOME_KEY)), Optional.empty());
-        ChunkGenerator generator = new FloorChunkGenerator(provider, seed, () -> createSettings(property));
+        DimensionSettings settings = createSettings(property);
+        ChunkGenerator generator = new FloorChunkGenerator(property, provider, seed, () -> settings);
         return new Dimension(() -> new FloorDimensionType(property, 1, effect, lighting), generator);
     }
 
