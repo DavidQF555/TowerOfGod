@@ -69,12 +69,11 @@
   "settings.towerofgod.colors.all": "All",
   "category.towerofgod": "Tower of God",
   "key.towerofgod.open_shinsu_techniques_gui": "Open Shinsu Techniques GUI",
-  "commands.towerofgod.shinsu.zero": "Cannot change Shinsu stats by zero",
+  "commands.towerofgod.shinsu.zero": "Cannot multiply by a factor of zero",
   "commands.towerofgod.shinsu.level": "Increased the level of %1$s by %2$s",
   "commands.towerofgod.shinsu.shinsu": "Increased the max Shinsu of %1$s by %2$s",
   "commands.towerofgod.shinsu.baangs": "Increased the max Baangs of %1$s by %2$s",
   "commands.towerofgod.shinsu.resistance": "Multiplied the resistance of %1$s by a factor of %2$s",
   "commands.towerofgod.shinsu.tension": "Multiplied the tension of %1$s by a factor of %2$s",
-  "commands.towerofgod.shinsu.technique_success": "Increased the %2$s technique level of %1$s by %3$s",
-  "commands.towerofgod.shinsu.technique_fail": "Could not find the %2$s technique for %1$s"
+  "commands.towerofgod.shinsu.technique": "Increased the %2$s technique level of %1$s by %3$s"
 }
