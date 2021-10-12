@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
+import io.github.davidqf555.minecraft.towerofgod.client.render.DeviceItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import net.minecraft.advancements.CriteriaTriggers;
