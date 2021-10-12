@@ -9,8 +9,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.RankerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.items.DeviceItemColor;
-import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuItemColor;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorChunkGenerator;
@@ -21,7 +19,6 @@ import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -38,7 +35,6 @@ import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraft.world.gen.placement.TopSolidRangeConfig;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.world.MobSpawnInfoBuilder;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -52,7 +48,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -196,18 +191,6 @@ public class EventBusSubscriber {
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ModBus {
-
-        @SubscribeEvent
-        public static void onHandleColors(ColorHandlerEvent.Item event) {
-            ShinsuItemColor shinsu = new ShinsuItemColor();
-            for (RegistryObject<? extends Item> item : RegistryHandler.SHINSU_ITEMS) {
-                event.getItemColors().register(shinsu, item::get);
-            }
-            DeviceItemColor device = new DeviceItemColor();
-            for (RegistryObject<? extends Item> item : RegistryHandler.COLORED_DEVICE_ITEMS) {
-                event.getItemColors().register(device, item::get);
-            }
-        }
 
         @SubscribeEvent
         public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
