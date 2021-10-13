@@ -23,10 +23,6 @@ import org.lwjgl.glfw.GLFW;
 
 public class GuiEventBusSubscriber {
 
-    public static StatsMeterGui.Shinsu shinsu = null;
-    public static StatsMeterGui.Baangs baangs = null;
-    private static ShinsuTechniqueBarGui bar = null;
-
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
     public static class ClientBus {
 
@@ -38,20 +34,20 @@ public class GuiEventBusSubscriber {
                     if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
                         event.getMatrixStack().translate(0, -10, 0);
                     } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
-                        shinsu.render(event.getMatrixStack());
-                        baangs.render(event.getMatrixStack());
+                        ClientReference.shinsu.render(event.getMatrixStack());
+                        ClientReference.baangs.render(event.getMatrixStack());
                     }
                 }
-                if (KeyBindingsList.OPEN_SHINSU_TECHNIQUES_GUI.isKeyDown() || bar != null && bar.isLocked()) {
-                    if (bar == null) {
+                if (KeyBindingsList.OPEN_SHINSU_TECHNIQUES_GUI.isKeyDown() || ClientReference.bar != null && ClientReference.bar.isLocked()) {
+                    if (ClientReference.bar == null) {
                         MainWindow window = client.getMainWindow();
-                        bar = new ShinsuTechniqueBarGui(window.getScaledWidth() / 2, window.getScaledHeight() / 2 + 20, client.player.rotationYawHead, ClientReference.equipped);
+                        ClientReference.bar = new ShinsuTechniqueBarGui(window.getScaledWidth() / 2, window.getScaledHeight() / 2 + 20, client.player.rotationYawHead, ClientReference.equipped);
                     }
                     if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
-                        bar.render(event.getMatrixStack(), (int) client.mouseHelper.getMouseX(), (int) client.mouseHelper.getMouseY(), client.getRenderPartialTicks());
+                        ClientReference.bar.render(event.getMatrixStack(), (int) client.mouseHelper.getMouseX(), (int) client.mouseHelper.getMouseY(), client.getRenderPartialTicks());
                     }
                 } else {
-                    bar = null;
+                    ClientReference.bar = null;
                 }
             }
         }
@@ -78,24 +74,23 @@ public class GuiEventBusSubscriber {
         }
 
         private static boolean validStats() {
-            return shinsu != null && baangs != null && (shinsu.getMax() > 0 || baangs.getMax() > 0);
+            return ClientReference.shinsu != null && ClientReference.baangs != null && (ClientReference.shinsu.getMax() > 0 || ClientReference.baangs.getMax() > 0);
         }
 
         @SubscribeEvent
         public static void onMouseInput(InputEvent.MouseInputEvent event) {
-            Minecraft client = Minecraft.getInstance();
-            if (bar != null) {
-                Pair<ShinsuTechnique, String> selected = bar.getSelected();
+            if (ClientReference.bar != null) {
+                Pair<ShinsuTechnique, String> selected = ClientReference.bar.getSelected();
                 ShinsuTechnique technique = selected.getFirst();
                 if (ClientReference.cooldowns.getOrDefault(technique, 0) <= 0 && event.getButton() == 0) {
                     int action = event.getAction();
-                    if (bar.isLocked()) {
+                    if (ClientReference.bar.isLocked()) {
                         if (action == GLFW.GLFW_RELEASE) {
                             TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(technique, selected.getSecond()));
-                            bar.setLocked(false);
+                            ClientReference.bar.setLocked(false);
                         }
                     } else if (action == GLFW.GLFW_PRESS) {
-                        bar.setLocked(true);
+                        ClientReference.bar.setLocked(true);
                     }
                 }
             }
@@ -103,7 +98,7 @@ public class GuiEventBusSubscriber {
 
         @SubscribeEvent
         public static void onClickInput(InputEvent.ClickInputEvent event) {
-            if (bar != null) {
+            if (ClientReference.bar != null) {
                 event.setSwingHand(false);
                 if (event.isCancelable()) {
                     event.setCanceled(true);
@@ -141,8 +136,8 @@ public class GuiEventBusSubscriber {
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {
             if (event.phase == TickEvent.Phase.START) {
-                if (bar != null) {
-                    bar.tick();
+                if (ClientReference.bar != null) {
+                    ClientReference.bar.tick();
                 }
             }
         }
@@ -154,14 +149,14 @@ public class GuiEventBusSubscriber {
 
         @SubscribeEvent
         public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-            shinsu = null;
-            baangs = null;
-            bar = null;
+            ClientReference.shinsu = null;
+            ClientReference.baangs = null;
+            ClientReference.bar = null;
         }
 
         private static void initializeMeters() {
-            shinsu = new StatsMeterGui.Shinsu(0, 0, 85, 5, 0, 0);
-            baangs = new StatsMeterGui.Baangs(0, 0, 85, 5, 0, 0);
+            ClientReference.shinsu = new StatsMeterGui.Shinsu(0, 0, 85, 5, 0, 0);
+            ClientReference.baangs = new StatsMeterGui.Baangs(0, 0, 85, 5, 0, 0);
             setMeterPositions();
         }
 
@@ -169,13 +164,13 @@ public class GuiEventBusSubscriber {
             MainWindow window = Minecraft.getInstance().getMainWindow();
             int width = window.getScaledWidth();
             int y = window.getScaledHeight() - 36;
-            if (shinsu != null) {
-                shinsu.setX(width / 2 - 91);
-                shinsu.setY(y);
+            if (ClientReference.shinsu != null) {
+                ClientReference.shinsu.setX(width / 2 - 91);
+                ClientReference.shinsu.setY(y);
             }
-            if (baangs != null) {
-                baangs.setX(width / 2 + 6);
-                baangs.setY(y);
+            if (ClientReference.baangs != null) {
+                ClientReference.baangs.setX(width / 2 + 6);
+                ClientReference.baangs.setY(y);
             }
         }
     }

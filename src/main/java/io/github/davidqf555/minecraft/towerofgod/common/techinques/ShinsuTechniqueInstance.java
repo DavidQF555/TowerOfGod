@@ -2,7 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -87,7 +88,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public void onUse(ServerWorld world) {
-        updateMeter(world);
+        updateMeters(world);
     }
 
     public int getCooldown() {
@@ -104,7 +105,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user != null) {
             ShinsuStats stats = ShinsuStats.get(user);
             stats.removeTechnique(this);
-            updateMeter(world);
+            updateMeters(world);
         }
     }
 
@@ -119,26 +120,27 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         return technique.getRepeatEffect() == ShinsuTechnique.Repeat.DENY && technique == instance.getTechnique() && getSettings().equals(instance.getSettings());
     }
 
-    protected void updateMeter(ServerWorld world) {
+    protected void updateMeters(ServerWorld world) {
         Entity user = getUser(world);
         if (user instanceof ServerPlayerEntity) {
             ShinsuStats stats = ShinsuStats.get(user);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateStatsMetersPacket(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
         }
     }
 
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putUniqueId("ID", id);
+        nbt.putUniqueId("ID", getID());
         if (user != null) {
             nbt.putUniqueId("User", user);
         }
         nbt.putString("Technique", getTechnique().name());
         nbt.putString("Settings", getSettings());
-        nbt.putInt("Duration", duration);
+        nbt.putInt("Duration", getDuration());
         nbt.putInt("Ticks", ticks);
-        nbt.putInt("Level", level);
+        nbt.putInt("Level", getLevel());
         return nbt;
     }
 
@@ -187,7 +189,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         @Override
         public CompoundNBT serializeNBT() {
             CompoundNBT nbt = super.serializeNBT();
-            nbt.putUniqueId("Target", target);
+            nbt.putUniqueId("Target", getTargetUUID());
             return nbt;
         }
 
@@ -218,6 +220,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         public CompoundNBT serializeNBT() {
             CompoundNBT nbt = super.serializeNBT();
             ListNBT direction = new ListNBT();
+            Vector3d dir = getDirection();
             direction.add(DoubleNBT.valueOf(dir.getX()));
             direction.add(DoubleNBT.valueOf(dir.getY()));
             direction.add(DoubleNBT.valueOf(dir.getZ()));

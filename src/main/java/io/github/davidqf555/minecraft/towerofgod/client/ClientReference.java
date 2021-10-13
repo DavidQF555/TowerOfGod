@@ -2,9 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.IRenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ItemStackRenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.RenderInfo;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.*;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.item.ItemStack;
@@ -16,9 +14,13 @@ import java.util.function.Supplier;
 
 public class ClientReference {
 
-    public static final Map<ShinsuTechnique, Integer> initialCooldowns = new EnumMap<>(ShinsuTechnique.class);
+
+    public static final Map<ShinsuTechnique, Integer> INITIAL_COOLDOWNS = new EnumMap<>(ShinsuTechnique.class);
     private static final Map<String, IRenderInfo> SHINSU_ICONS = new HashMap<>();
     private static final ResourceLocation ICONS_LOCATION = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/shinsu_icons.png");
+    public static StatsMeterGui.Shinsu shinsu = null;
+    public static StatsMeterGui.Baangs baangs = null;
+    public static ShinsuTechniqueBarGui bar = null;
     public static Map<ShinsuTechnique, Integer> known = new EnumMap<>(ShinsuTechnique.class);
     public static List<Pair<ShinsuTechnique, String>> equipped = new ArrayList<>();
     public static Map<ShinsuTechnique, Integer> cooldowns = new EnumMap<>(ShinsuTechnique.class);

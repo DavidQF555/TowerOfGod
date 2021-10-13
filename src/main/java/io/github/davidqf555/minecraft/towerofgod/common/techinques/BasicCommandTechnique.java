@@ -105,7 +105,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance.Dire
             if (devices.isEmpty()) {
                 remove(world);
             } else if (removed) {
-                updateMeter(world);
+                updateMeters(world);
             }
         }
         super.tick(world);
