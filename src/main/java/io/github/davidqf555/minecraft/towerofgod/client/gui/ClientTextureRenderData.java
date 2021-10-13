@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -17,24 +18,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class RenderInfo implements IRenderInfo {
+public class ClientTextureRenderData extends TextureRenderData implements IClientRenderData {
 
-    private final ResourceLocation texture;
-    private final int textureWidth;
-    private final int textureHeight;
-    private int startX;
-    private int startY;
-    private int blitWidth;
-    private int blitHeight;
+    public ClientTextureRenderData(ResourceLocation texture, int textureWidth, int textureHeight, int startX, int startY, int blitWidth, int blitHeight) {
+        super(texture, textureWidth, textureHeight, startX, startY, blitWidth, blitHeight);
+    }
 
-    public RenderInfo(ResourceLocation texture, int textureWidth, int textureHeight, int startX, int startY, int blitWidth, int blitHeight) {
-        this.texture = texture;
-        this.textureWidth = textureWidth;
-        this.textureHeight = textureHeight;
-        this.startX = startX;
-        this.startY = startY;
-        this.blitWidth = blitWidth;
-        this.blitHeight = blitHeight;
+    public static ClientTextureRenderData copy(TextureRenderData data) {
+        return new ClientTextureRenderData(data.getTexture(), data.getTextureWidth(), data.getTextureHeight(), data.getStartX(), data.getStartY(), data.getBlitWidth(), data.getBlitHeight());
     }
 
     @Override

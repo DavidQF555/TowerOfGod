@@ -20,8 +20,8 @@ public class FloorTeleportationTerminalScreen extends Screen {
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/floor_teleportation_terminal_screen.png");
     private static final int TEXTURE_WIDTH = 195;
     private static final int TEXTURE_HEIGHT = 146;
-    private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 125);
-    private static final RenderInfo BUTTON = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 121, 125, 21, 21);
+    private static final ClientTextureRenderData BACKGROUND = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 125);
+    private static final ClientTextureRenderData BUTTON = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 121, 125, 21, 21);
     private static final int BUTTON_WIDTH = 21;
     private static final int BUTTON_HEIGHT = 21;
     private static final int BUTTON_GAP = 1;
@@ -95,7 +95,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
     private static class Display extends Widget {
 
-        private static final RenderInfo RENDER = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 125, 121, 21);
+        private static final ClientTextureRenderData RENDER = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 125, 121, 21);
         private final FloorTeleportationTerminalScreen screen;
         private final StringBuilder value;
 

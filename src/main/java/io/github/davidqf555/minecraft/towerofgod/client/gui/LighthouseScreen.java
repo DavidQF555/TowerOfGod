@@ -13,8 +13,8 @@ import net.minecraft.util.text.ITextComponent;
 
 public class LighthouseScreen extends ContainerScreen<LighthouseEntity.LighthouseContainer> {
 
-    private static final RenderInfo LIGHTHOUSE = new RenderInfo(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 0, 176, 71);
-    private static final RenderInfo INVENTORY = new RenderInfo(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 71, 176, 94);
+    private static final IClientRenderData LIGHTHOUSE = new ClientTextureRenderData(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 0, 176, 71);
+    private static final IClientRenderData INVENTORY = new ClientTextureRenderData(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 71, 176, 94);
     private static final int INVENTORY_TITLE_COLOR = 0xFF404040;
 
     public LighthouseScreen(LighthouseEntity.LighthouseContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {

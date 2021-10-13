@@ -1,9 +1,15 @@
 package io.github.davidqf555.minecraft.towerofgod.client;
 
+import io.github.davidqf555.minecraft.towerofgod.client.gui.ClientItemStackRenderData;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.ClientTextureRenderData;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.IClientRenderData;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.LighthouseScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.render.*;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
+import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -52,6 +58,8 @@ public class EventBusSubscriber {
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.RANKER_ENTITY.get(), BipedShinsuUserRenderer::new);
             KeyBindingsList.register();
             event.enqueueWork(() -> {
+                IClientRenderData.registerType(IRenderData.Type.ITEM, data -> new ClientItemStackRenderData((ItemStackRenderData) data));
+                IClientRenderData.registerType(IRenderData.Type.TEXTURE, data -> ClientTextureRenderData.copy((TextureRenderData) data));
                 ScreenManager.registerFactory(RegistryHandler.LIGHTHOUSE_CONTAINER.get(), new LighthouseScreen.Factory());
                 ItemModelsProperties.registerProperty(RegistryHandler.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pull")));
                 ItemModelsProperties.registerProperty(RegistryHandler.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pulling")));
