@@ -158,7 +158,9 @@ public class EventBusSubscriber {
         @SubscribeEvent
         public static void onWorldTick(TickEvent.WorldTickEvent event) {
             if (event.world instanceof ServerWorld && event.phase == TickEvent.Phase.START) {
-                RegularTeamsSavedData.getOrCreate((ServerWorld) event.world).tick((ServerWorld) event.world);
+                if (event.world.getGameTime() % 100 == 0) {
+                    RegularTeamsSavedData.getOrCreate((ServerWorld) event.world).update((ServerWorld) event.world);
+                }
                 ((ServerWorld) event.world).getEntities()
                         .filter(entity -> entity instanceof IShinsuUser)
                         .forEach(entity -> ShinsuStats.get(entity).tick((ServerWorld) event.world));
