@@ -1,9 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.IRenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ItemStackRenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
@@ -12,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.DyeItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -24,6 +23,7 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance.Direction {
@@ -31,10 +31,10 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance.Dire
     public static final TechniqueSettings COLOR_TARGETING;
 
     static {
-        HashMap<String, Pair<ITextComponent, IRenderInfo>> colors = new HashMap<>();
-        colors.put("all", Pair.of(new TranslationTextComponent("settings." + TowerOfGod.MOD_ID + ".colors.all"), ShinsuIcons.BAANGS));
+        HashMap<String, Pair<ITextComponent, Either<String, Supplier<ItemStack>>>> colors = new HashMap<>();
+        colors.put("all", Pair.of(new TranslationTextComponent("settings." + TowerOfGod.MOD_ID + ".colors.all"), Either.left("baangs")));
         for (DyeColor color : DyeColor.values()) {
-            colors.put(color.name(), Pair.of(new TranslationTextComponent("color.minecraft." + color.getTranslationKey()), new ItemStackRenderInfo(() -> DyeItem.getItem(color).getDefaultInstance())));
+            colors.put(color.name(), Pair.of(new TranslationTextComponent("color.minecraft." + color.getTranslationKey()), Either.right(() -> DyeItem.getItem(color).getDefaultInstance())));
         }
         COLOR_TARGETING = new TechniqueSettings(new TranslationTextComponent("settings." + TowerOfGod.MOD_ID + ".targets"), colors, "all");
     }

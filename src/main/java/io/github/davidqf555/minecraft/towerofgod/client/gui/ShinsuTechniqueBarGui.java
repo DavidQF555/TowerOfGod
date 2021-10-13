@@ -122,7 +122,7 @@ public class ShinsuTechniqueBarGui extends AbstractGui implements IRenderable {
         public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             boolean canCast = canCast();
             RENDER.render(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ColorHelper.PackedColor.blendColors(selected ? SELECTED_COLOR : UNSELECTED_COLOR, canCast ? CAN_CAST_COLOR : CANNOT_CAST_COLOR));
-            technique.getIcon().render(matrixStack, x + ICON_DIF_WIDTH, y + ICON_DIF_HEIGHT, getBlitOffset(), WIDTH - ICON_DIF_WIDTH * 2, HEIGHT - ICON_DIF_HEIGHT * 2, selected ? SELECTED_COLOR : UNSELECTED_COLOR);
+            ClientReference.getShinsuIcon(technique.getIcon()).render(matrixStack, x + ICON_DIF_WIDTH, y + ICON_DIF_HEIGHT, getBlitOffset(), WIDTH - ICON_DIF_WIDTH * 2, HEIGHT - ICON_DIF_HEIGHT * 2, selected ? SELECTED_COLOR : UNSELECTED_COLOR);
             int cooldown = ClientReference.cooldowns.getOrDefault(technique, 0);
             if (cooldown > 0) {
                 float percent = ClientReference.initialCooldowns.containsKey(technique) ? cooldown * 1f / ClientReference.initialCooldowns.get(technique) : 1;
