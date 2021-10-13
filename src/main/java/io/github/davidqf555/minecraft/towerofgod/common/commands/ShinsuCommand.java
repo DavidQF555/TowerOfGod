@@ -5,7 +5,9 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -81,7 +83,11 @@ public class ShinsuCommand {
 
     private static int changeShinsu(CommandSource source, Collection<? extends Entity> entities, int change) {
         for (Entity entity : entities) {
-            ShinsuStats.get(entity).addMaxShinsu(change);
+            ShinsuStats stats = ShinsuStats.get(entity);
+            stats.addMaxShinsu(change);
+            if (entity instanceof ServerPlayerEntity) {
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
+            }
             source.sendFeedback(new TranslationTextComponent(SHINSU, entity.getDisplayName(), change), true);
         }
         return entities.size();
@@ -89,7 +95,11 @@ public class ShinsuCommand {
 
     private static int changeBaangs(CommandSource source, Collection<? extends Entity> entities, int change) {
         for (Entity entity : entities) {
-            ShinsuStats.get(entity).addMaxBaangs(change);
+            ShinsuStats stats = ShinsuStats.get(entity);
+            stats.addMaxBaangs(change);
+            if (entity instanceof ServerPlayerEntity) {
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
+            }
             source.sendFeedback(new TranslationTextComponent(BAANGS, entity.getDisplayName(), change), true);
         }
         return entities.size();

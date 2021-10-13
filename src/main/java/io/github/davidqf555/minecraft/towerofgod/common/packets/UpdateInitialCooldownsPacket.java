@@ -39,7 +39,7 @@ public class UpdateInitialCooldownsPacket {
         NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_CLIENT) {
             context.enqueueWork(() -> {
-                ClientReference.initialCooldowns.put(technique, cooldown);
+                ClientReference.INITIAL_COOLDOWNS.put(technique, cooldown);
             });
             context.setPacketHandled(true);
         }

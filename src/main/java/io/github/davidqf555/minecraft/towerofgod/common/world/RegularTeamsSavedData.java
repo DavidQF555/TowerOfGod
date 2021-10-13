@@ -46,7 +46,7 @@ public class RegularTeamsSavedData extends WorldSavedData {
         return team;
     }
 
-    public void tick(ServerWorld world) {
+    public void update(ServerWorld world) {
         for (int i = teams.size() - 1; i >= 0; i--) {
             RegularTeam team = teams.get(i);
             List<RegularEntity> entities = new ArrayList<>();

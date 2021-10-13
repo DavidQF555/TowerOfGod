@@ -1,12 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.client.gui.RenderInfo;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuIcons;
+import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -14,23 +14,24 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public enum ShinsuTechnique {
 
-    BODY_REINFORCEMENT(Repeat.DENY, false, true, new BodyReinforcement.Builder(), null, ShinsuIcons.RESISTANCE),
-    BLACK_FISH(Repeat.DENY, false, true, new BlackFish.Builder(), null, ShinsuIcons.SWIRL),
-    FLARE_WAVE_EXPLOSION(Repeat.ALLOW, false, true, new FlareWaveExplosion.Builder(), null, ShinsuIcons.TENSION),
-    REVERSE_FLOW_CONTROL(Repeat.ALLOW, false, true, new ReverseFlowControl.Builder(), null, ShinsuIcons.REVERSE),
-    SHINSU_BLAST(Repeat.ALLOW, false, true, new ShinsuBlast.Builder(), null, ShinsuIcons.BAANGS),
-    MANIFEST(Repeat.DENY, true, true, new Manifest.Builder(), null, ShinsuIcons.PICKAXE),
-    SHOOT_SHINSU_ARROW(Repeat.ALLOW, false, false, new ShootShinsuArrow.Builder(), null, ShinsuIcons.BAANGS),
-    MOVE_DEVICES(Repeat.ALLOW, true, true, new MoveDevices.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.MOVE),
-    LIGHTHOUSE_FLOW_CONTROL(Repeat.DENY, false, true, new LighthouseFlowControl.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL),
-    SCOUT(Repeat.ALLOW, false, true, new Scout.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.EYE),
-    FOLLOW_OWNER(Repeat.TOGGLE, true, true, new FollowOwner.Builder(), BasicCommandTechnique.COLOR_TARGETING, ShinsuIcons.FOLLOW);
+    BODY_REINFORCEMENT(Repeat.DENY, false, true, new BodyReinforcement.Builder(), null, Either.left("resistance")),
+    BLACK_FISH(Repeat.DENY, false, true, new BlackFish.Builder(), null, Either.left("swirl")),
+    FLARE_WAVE_EXPLOSION(Repeat.ALLOW, false, true, new FlareWaveExplosion.Builder(), null, Either.left("tension")),
+    REVERSE_FLOW_CONTROL(Repeat.ALLOW, false, true, new ReverseFlowControl.Builder(), null, Either.left("reverse")),
+    SHINSU_BLAST(Repeat.ALLOW, false, true, new ShinsuBlast.Builder(), null, Either.left("baangs")),
+    MANIFEST(Repeat.DENY, true, true, new Manifest.Builder(), null, Either.left("pickaxe")),
+    SHOOT_SHINSU_ARROW(Repeat.ALLOW, false, false, new ShootShinsuArrow.Builder(), null, Either.left("baangs")),
+    MOVE_DEVICES(Repeat.ALLOW, true, true, new MoveDevices.Builder(), BasicCommandTechnique.COLOR_TARGETING, Either.left("move")),
+    LIGHTHOUSE_FLOW_CONTROL(Repeat.DENY, false, true, new LighthouseFlowControl.Builder(), BasicCommandTechnique.COLOR_TARGETING, Either.left("lighthouse_flow_control")),
+    SCOUT(Repeat.ALLOW, false, true, new Scout.Builder(), BasicCommandTechnique.COLOR_TARGETING, Either.left("eye")),
+    FOLLOW_OWNER(Repeat.TOGGLE, true, true, new FollowOwner.Builder(), BasicCommandTechnique.COLOR_TARGETING, Either.left("follow"));
 
     private final Repeat repeat;
     private final boolean indefinite;
@@ -38,9 +39,9 @@ public enum ShinsuTechnique {
     private final IBuilder<? extends ShinsuTechniqueInstance> builder;
     private final TranslationTextComponent text;
     private final TechniqueSettings settings;
-    private final RenderInfo icon;
+    private final Either<String, Supplier<ItemStack>> icon;
 
-    ShinsuTechnique(Repeat repeat, boolean indefinite, boolean obtainable, IBuilder<? extends ShinsuTechniqueInstance> builder, @Nullable TechniqueSettings settings, RenderInfo icon) {
+    ShinsuTechnique(Repeat repeat, boolean indefinite, boolean obtainable, IBuilder<? extends ShinsuTechniqueInstance> builder, @Nullable TechniqueSettings settings, Either<String, Supplier<ItemStack>> icon) {
         this.repeat = repeat;
         this.indefinite = indefinite;
         this.obtainable = obtainable;
@@ -94,7 +95,7 @@ public enum ShinsuTechnique {
         return settings;
     }
 
-    public RenderInfo getIcon() {
+    public Either<String, Supplier<ItemStack>> getIcon() {
         return icon;
     }
 

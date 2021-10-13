@@ -122,10 +122,10 @@ public class ShinsuTechniqueBarGui extends AbstractGui implements IRenderable {
         public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             boolean canCast = canCast();
             RENDER.render(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ColorHelper.PackedColor.blendColors(selected ? SELECTED_COLOR : UNSELECTED_COLOR, canCast ? CAN_CAST_COLOR : CANNOT_CAST_COLOR));
-            technique.getIcon().render(matrixStack, x + ICON_DIF_WIDTH, y + ICON_DIF_HEIGHT, getBlitOffset(), WIDTH - ICON_DIF_WIDTH * 2, HEIGHT - ICON_DIF_HEIGHT * 2, selected ? SELECTED_COLOR : UNSELECTED_COLOR);
+            ClientReference.getShinsuIcon(technique.getIcon()).render(matrixStack, x + ICON_DIF_WIDTH, y + ICON_DIF_HEIGHT, getBlitOffset(), WIDTH - ICON_DIF_WIDTH * 2, HEIGHT - ICON_DIF_HEIGHT * 2, selected ? SELECTED_COLOR : UNSELECTED_COLOR);
             int cooldown = ClientReference.cooldowns.getOrDefault(technique, 0);
             if (cooldown > 0) {
-                float percent = ClientReference.initialCooldowns.containsKey(technique) ? cooldown * 1f / ClientReference.initialCooldowns.get(technique) : 1;
+                float percent = ClientReference.INITIAL_COOLDOWNS.containsKey(technique) ? cooldown * 1f / ClientReference.INITIAL_COOLDOWNS.get(technique) : 1;
                 int height = (int) (HEIGHT * percent + 0.5f);
                 COOLDOWN.render(matrixStack, x, y + HEIGHT - height, getBlitOffset(), WIDTH, height, ColorHelper.PackedColor.blendColors(COOLDOWN_COLOR, selected ? SELECTED_COLOR : UNSELECTED_COLOR));
             }

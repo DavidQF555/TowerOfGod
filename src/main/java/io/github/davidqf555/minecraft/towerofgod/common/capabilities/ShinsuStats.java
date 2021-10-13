@@ -1,9 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateInitialCooldownsPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateStatsMetersPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -97,7 +98,8 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         }
         if (owner instanceof ServerPlayerEntity) {
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateClientKnownPacket(known));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateStatsMetersPacket(getShinsu(), getMaxShinsu(), getBaangs(), getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateShinsuMeterPacket(getShinsu(), getMaxShinsu()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateBaangsMeterPacket(getBaangs(), getMaxBaangs()));
         }
     }
 

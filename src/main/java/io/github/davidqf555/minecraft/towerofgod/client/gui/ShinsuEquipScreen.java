@@ -227,7 +227,7 @@ public class ShinsuEquipScreen extends Screen {
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             RENDER.render(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
             int dif = MathHelper.ceil(HEIGHT / 6.0);
-            technique.getIcon().render(matrixStack, x + dif, y + dif, getBlitOffset(), width - dif * 2, height - dif * 2, 0xFFFFFFFF);
+            ClientReference.getShinsuIcon(technique.getIcon()).render(matrixStack, x + dif, y + dif, getBlitOffset(), width - dif * 2, height - dif * 2, 0xFFFFFFFF);
         }
 
         private void remove() {
@@ -330,9 +330,9 @@ public class ShinsuEquipScreen extends Screen {
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             if (settings != null) {
-                screen.selectedSlot.technique.getSettings().getIcon(settings).render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+                ClientReference.getShinsuIcon(screen.selectedSlot.technique.getSettings().getIcon(settings)).render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             } else if (technique != null) {
-                technique.getIcon().render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+                ClientReference.getShinsuIcon(technique.getIcon()).render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             }
         }
 
@@ -433,7 +433,7 @@ public class ShinsuEquipScreen extends Screen {
             } else {
                 RENDER.render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             }
-            ShinsuIcons.SHINSU.render(matrixStack, x + 2, y + 2, screen.getBlitOffset(), width - 4, height - 4, 0xFFFFFFFF);
+            ClientReference.getShinsuIcon("shinsu").render(matrixStack, x + 2, y + 2, screen.getBlitOffset(), width - 4, height - 4, 0xFFFFFFFF);
         }
     }
 }

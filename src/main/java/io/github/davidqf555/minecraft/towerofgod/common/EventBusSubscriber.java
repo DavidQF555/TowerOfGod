@@ -89,7 +89,8 @@ public class EventBusSubscriber {
                 known.put(technique, stats.getTechniqueLevel(technique));
             }
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownPacket(known));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateStatsMetersPacket(stats.getShinsu(), stats.getMaxShinsu(), stats.getBaangs(), stats.getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
             PlayerShinsuEquips equipped = PlayerShinsuEquips.get(entity);
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsPacket(equipped.getEquipped()));
         }
@@ -157,7 +158,9 @@ public class EventBusSubscriber {
         @SubscribeEvent
         public static void onWorldTick(TickEvent.WorldTickEvent event) {
             if (event.world instanceof ServerWorld && event.phase == TickEvent.Phase.START) {
-                RegularTeamsSavedData.getOrCreate((ServerWorld) event.world).tick((ServerWorld) event.world);
+                if (event.world.getGameTime() % 100 == 0) {
+                    RegularTeamsSavedData.getOrCreate((ServerWorld) event.world).update((ServerWorld) event.world);
+                }
                 ((ServerWorld) event.world).getEntities()
                         .filter(entity -> entity instanceof IShinsuUser)
                         .forEach(entity -> ShinsuStats.get(entity).tick((ServerWorld) event.world));
@@ -207,7 +210,8 @@ public class EventBusSubscriber {
             event.enqueueWork(() -> {
                 ChangeEquipsPacket.register(index++);
                 CastShinsuPacket.register(index++);
-                UpdateStatsMetersPacket.register(index++);
+                UpdateShinsuMeterPacket.register(index++);
+                UpdateBaangsMeterPacket.register(index++);
                 UpdateClientCooldownsPacket.register(index++);
                 UpdateClientCanCastPacket.register(index++);
                 UpdateClientKnownPacket.register(index++);

@@ -6,8 +6,10 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -15,6 +17,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import java.util.function.BiFunction;
@@ -40,7 +43,7 @@ public class DeviceItem extends Item {
                 Vector3d spawn = result.getHitVec();
                 device.setPosition(spawn.x, spawn.y, spawn.z);
                 device.setOwnerID(playerIn.getUniqueID());
-                device.setColor(DeviceItemColor.getColor(item));
+                device.setColor(getColor(item));
                 worldIn.addEntity(device);
                 if (!playerIn.isCreative()) {
                     item.setCount(item.getCount() - 1);
@@ -55,5 +58,14 @@ public class DeviceItem extends Item {
         }
         return ActionResult.resultPass(item);
     }
+
+    public DyeColor getColor(ItemStack item) {
+        CompoundNBT nbt = item.getOrCreateChildTag(TowerOfGod.MOD_ID);
+        if (nbt.contains("Color", Constants.NBT.TAG_INT)) {
+            return DyeColor.byId(nbt.getInt("Color"));
+        }
+        return DyeColor.WHITE;
+    }
+
 
 }
