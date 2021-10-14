@@ -114,29 +114,27 @@ public interface IGeared<T extends LivingEntity> {
         Predicate<Item> filter = item -> inventory.isItemValid(index, item.getDefaultInstance()) && getAttribute(Attributes.ATTACK_DAMAGE, entity, item.getDefaultInstance(), EquipmentSlotType.MAINHAND) > base;
         List<Item> weapons = new ArrayList<>(getAllCraftableItems(entity.world, filter));
         weapons.add(Items.AIR);
-        if (!weapons.isEmpty()) {
-            List<Item> preferred = weapons.stream().filter(this::isWeaponPreferred).collect(Collectors.toList());
-            Random random = entity.getRNG();
-            List<Item> choices;
-            if (!preferred.isEmpty() && random.nextDouble() < getPreferredWeaponChance()) {
-                choices = preferred;
-            } else {
-                choices = weapons;
+        List<Item> preferred = weapons.stream().filter(this::isWeaponPreferred).collect(Collectors.toList());
+        Random random = entity.getRNG();
+        List<Item> choices;
+        if (!preferred.isEmpty() && random.nextDouble() < getPreferredWeaponChance()) {
+            choices = preferred;
+        } else {
+            choices = weapons;
+        }
+        Map<Item, Double> chances = getInitialItemChances(choices, (item1, item2) -> {
+            double dif = getAttribute(Attributes.ATTACK_DAMAGE, entity, item1.getDefaultInstance(), EquipmentSlotType.MAINHAND) - getAttribute(Attributes.ATTACK_DAMAGE, entity, item2.getDefaultInstance(), EquipmentSlotType.MAINHAND);
+            if (dif == 0) {
+                dif = getAttribute(Attributes.ATTACK_SPEED, entity, item1.getDefaultInstance(), EquipmentSlotType.MAINHAND) - getAttribute(Attributes.ATTACK_SPEED, entity, item2.getDefaultInstance(), EquipmentSlotType.MAINHAND);
             }
-            Map<Item, Double> chances = getInitialItemChances(choices, (item1, item2) -> {
-                double dif = getAttribute(Attributes.ATTACK_DAMAGE, entity, item1.getDefaultInstance(), EquipmentSlotType.MAINHAND) - getAttribute(Attributes.ATTACK_DAMAGE, entity, item2.getDefaultInstance(), EquipmentSlotType.MAINHAND);
-                if (dif == 0) {
-                    dif = getAttribute(Attributes.ATTACK_SPEED, entity, item1.getDefaultInstance(), EquipmentSlotType.MAINHAND) - getAttribute(Attributes.ATTACK_SPEED, entity, item2.getDefaultInstance(), EquipmentSlotType.MAINHAND);
-                }
-                return dif == 0 ? 0 : (dif > 0 ? 1 : -1);
-            });
-            double rand = random.nextDouble();
-            double current = 0;
-            for (Item item : chances.keySet()) {
-                current += chances.get(item);
-                if (rand < current) {
-                    return item.getDefaultInstance();
-                }
+            return dif == 0 ? 0 : (dif > 0 ? 1 : -1);
+        });
+        double rand = random.nextDouble();
+        double current = 0;
+        for (Item item : chances.keySet()) {
+            current += chances.get(item);
+            if (rand < current) {
+                return item.getDefaultInstance();
             }
         }
         return ItemStack.EMPTY;

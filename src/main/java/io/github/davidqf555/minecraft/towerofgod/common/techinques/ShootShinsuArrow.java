@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.BowItem;
@@ -12,7 +13,6 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
@@ -96,6 +96,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
         }
     }
 
+    @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.IBuilder<ShootShinsuArrow> {
 
@@ -104,7 +105,6 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
             return new ShootShinsuArrow(user, level, dir);
         }
 
-        @Nonnull
         @Override
         public ShootShinsuArrow emptyBuild() {
             return new ShootShinsuArrow(null, 0, Vector3d.ZERO);

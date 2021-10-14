@@ -49,6 +49,7 @@ public class FloorTeleportationTerminalBlock extends Block {
         );
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (player instanceof ServerPlayerEntity) {
@@ -62,11 +63,13 @@ public class FloorTeleportationTerminalBlock extends Block {
         return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return COLLISION_SHAPE;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         switch (state.get(FACING)) {
@@ -83,11 +86,13 @@ public class FloorTeleportationTerminalBlock extends Block {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {
         return state.with(FACING, rot.rotate(state.get(FACING)));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
         return state.rotate(mirrorIn.toRotation(state.get(FACING)));
@@ -98,6 +103,7 @@ public class FloorTeleportationTerminalBlock extends Block {
         builder.add(FACING);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isTransparent(BlockState state) {
         return true;

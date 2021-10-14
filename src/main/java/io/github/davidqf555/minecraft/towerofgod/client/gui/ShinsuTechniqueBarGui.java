@@ -17,9 +17,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ParametersAreNonnullByDefault
 public class ShinsuTechniqueBarGui extends AbstractGui implements IRenderable {
 
     private static final float RESISTIVITY = 10;

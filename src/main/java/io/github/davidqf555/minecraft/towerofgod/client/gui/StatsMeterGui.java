@@ -62,10 +62,6 @@ public abstract class StatsMeterGui extends AbstractGui {
         font.drawString(matrixStack, text, textX, textY, textColor);
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public void setValue(int value) {
         this.value = value;
     }

@@ -12,6 +12,7 @@ import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -94,8 +95,9 @@ public class RegularTeamsSavedData extends WorldSavedData {
         }
     }
 
+    @Nonnull
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT write(@Nonnull CompoundNBT compound) {
         ListNBT teams = new ListNBT();
         for (RegularTeam team : this.teams) {
             teams.add(team.serializeNBT());

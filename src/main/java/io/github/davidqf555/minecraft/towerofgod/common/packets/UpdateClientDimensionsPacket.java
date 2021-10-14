@@ -16,9 +16,7 @@ import java.util.function.Supplier;
 
 public class UpdateClientDimensionsPacket {
 
-    private static final BiConsumer<UpdateClientDimensionsPacket, PacketBuffer> ENCODER = (message, buffer) -> {
-        buffer.writeString(message.key.getLocation().toString());
-    };
+    private static final BiConsumer<UpdateClientDimensionsPacket, PacketBuffer> ENCODER = (message, buffer) -> buffer.writeString(message.key.getLocation().toString());
     private static final Function<PacketBuffer, UpdateClientDimensionsPacket> DECODER = buffer -> new UpdateClientDimensionsPacket(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(buffer.readString())));
     private static final BiConsumer<UpdateClientDimensionsPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
@@ -38,9 +36,7 @@ public class UpdateClientDimensionsPacket {
     private void handle(NetworkEvent.Context context) {
         NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> {
-                Minecraft.getInstance().player.connection.getDimensionKeys().add(key);
-            });
+            context.enqueueWork(() -> Minecraft.getInstance().player.connection.getDimensionKeys().add(key));
             context.setPacketHandled(true);
         }
     }

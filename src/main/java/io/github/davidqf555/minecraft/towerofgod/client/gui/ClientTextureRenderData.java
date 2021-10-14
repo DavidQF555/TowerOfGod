@@ -54,19 +54,11 @@ public class ClientTextureRenderData extends TextureRenderData implements IClien
         RenderSystem.disableBlend();
     }
 
-    public void setStartX(int x) {
-        startX = x;
-    }
-
     public void setStartY(int y) {
         startY = y;
     }
 
     public void setBlitWidth(int width) {
         blitWidth = width;
-    }
-
-    public void setBlitHeight(int height) {
-        blitHeight = height;
     }
 }

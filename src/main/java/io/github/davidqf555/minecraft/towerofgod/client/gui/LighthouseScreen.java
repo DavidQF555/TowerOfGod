@@ -11,6 +11,10 @@ import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public class LighthouseScreen extends ContainerScreen<LighthouseEntity.LighthouseContainer> {
 
     private static final IClientRenderData LIGHTHOUSE = new ClientTextureRenderData(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 0, 176, 71);
@@ -49,6 +53,7 @@ public class LighthouseScreen extends ContainerScreen<LighthouseEntity.Lighthous
     }
 
     public static class Factory implements ScreenManager.IScreenFactory<LighthouseEntity.LighthouseContainer, LighthouseScreen> {
+        @Nonnull
         @Override
         public LighthouseScreen create(LighthouseEntity.LighthouseContainer con, PlayerInventory inv, ITextComponent text) {
             return new LighthouseScreen(con, inv, text);

@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
@@ -12,9 +13,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.RegistryObject;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@MethodsReturnNonnullByDefault
 public class DeviceDyeRecipe extends SpecialRecipe {
 
     private static final List<Item> COLORABLE = RegistryHandler.COLORED_DEVICE_ITEMS.stream().map(RegistryObject::get).collect(Collectors.toList());
@@ -24,7 +27,7 @@ public class DeviceDyeRecipe extends SpecialRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingInventory inv, @Nonnull World worldIn) {
         ItemStack device = ItemStack.EMPTY;
         ItemStack dye = ItemStack.EMPTY;
         for (int i = 0; i < inv.getSizeInventory(); i++) {

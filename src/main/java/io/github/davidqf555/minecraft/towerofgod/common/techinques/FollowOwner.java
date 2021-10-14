@@ -3,13 +3,13 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FollowOwnerCommand;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -45,6 +45,7 @@ public class FollowOwner extends BasicCommandTechnique {
         return new FollowOwnerCommand(entity, getID(), 1 + getLevel() / 20f);
     }
 
+    @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.IBuilder<FollowOwner> {
 
@@ -54,7 +55,6 @@ public class FollowOwner extends BasicCommandTechnique {
             return technique.getDevices().size() > 0 ? technique : null;
         }
 
-        @Nonnull
         @Override
         public FollowOwner emptyBuild() {
             return new FollowOwner(null, null, 0);

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import net.minecraft.client.gui.IRenderable;
 
+import javax.annotation.Nonnull;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -23,7 +24,7 @@ public interface IClientRenderData extends IRenderable {
     void render(MatrixStack matrixStack, float x, float y, float blitOffset, int width, int height, int color);
 
     @Override
-    default void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    default void render(@Nonnull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         render(matrixStack, 0, 0, 0, 0, 0, 0xFFFFFFFF);
     }
 }

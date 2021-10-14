@@ -64,9 +64,7 @@ public class UpdateClientCooldownsPacket {
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> {
-                ClientReference.cooldowns = cooldowns;
-            });
+            context.enqueueWork(() -> ClientReference.cooldowns = cooldowns);
             context.setPacketHandled(true);
         }
     }
