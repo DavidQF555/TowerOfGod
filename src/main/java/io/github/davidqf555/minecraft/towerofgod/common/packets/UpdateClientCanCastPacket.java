@@ -91,9 +91,7 @@ public class UpdateClientCanCastPacket {
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> {
-                ClientReference.canCast = canCast;
-            });
+            context.enqueueWork(() -> ClientReference.canCast = canCast);
             context.setPacketHandled(true);
         }
     }

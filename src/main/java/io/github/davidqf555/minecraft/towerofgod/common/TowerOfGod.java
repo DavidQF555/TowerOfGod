@@ -8,11 +8,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
+import javax.annotation.Nonnull;
+
 @Mod("towerofgod")
 public class TowerOfGod {
 
     public static final String MOD_ID = "towerofgod";
     public static final ItemGroup TAB = new ItemGroup(MOD_ID) {
+        @Nonnull
         @Override
         public ItemStack createIcon() {
             return RegistryHandler.SUSPENDIUM.get().getDefaultInstance();

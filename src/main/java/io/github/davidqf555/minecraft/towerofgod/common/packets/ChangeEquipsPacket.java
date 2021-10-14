@@ -58,9 +58,7 @@ public class ChangeEquipsPacket {
             });
             context.setPacketHandled(true);
         } else if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> {
-                ClientReference.equipped = equipped;
-            });
+            context.enqueueWork(() -> ClientReference.equipped = equipped);
             context.setPacketHandled(true);
         }
     }

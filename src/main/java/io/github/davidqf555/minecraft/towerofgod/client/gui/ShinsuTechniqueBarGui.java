@@ -17,9 +17,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ParametersAreNonnullByDefault
 public class ShinsuTechniqueBarGui extends AbstractGui implements IRenderable {
 
     private static final float RESISTIVITY = 10;
@@ -96,8 +98,8 @@ public class ShinsuTechniqueBarGui extends AbstractGui implements IRenderable {
     private static class Slot extends AbstractGui implements IRenderable {
 
         private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/shinsu_bar_gui.png");
-        private static final IRenderInfo RENDER = new RenderInfo(TEXTURE, 15, 16, 0, 0, 15, 15);
-        private static final IRenderInfo COOLDOWN = new RenderInfo(TEXTURE, 15, 16, 15, 0, 1, 1);
+        private static final IClientRenderData RENDER = new ClientTextureRenderData(TEXTURE, 15, 16, 0, 0, 15, 15);
+        private static final IClientRenderData COOLDOWN = new ClientTextureRenderData(TEXTURE, 15, 16, 15, 0, 1, 1);
         private static final String SETTINGS_KEY = "gui." + TowerOfGod.MOD_ID + ".settings";
         private static final int SELECTED_COLOR = 0xFFFFFFFF;
         private static final int UNSELECTED_COLOR = 0x55FFFFFF;
@@ -122,7 +124,7 @@ public class ShinsuTechniqueBarGui extends AbstractGui implements IRenderable {
         public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             boolean canCast = canCast();
             RENDER.render(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ColorHelper.PackedColor.blendColors(selected ? SELECTED_COLOR : UNSELECTED_COLOR, canCast ? CAN_CAST_COLOR : CANNOT_CAST_COLOR));
-            ClientReference.getShinsuIcon(technique.getIcon()).render(matrixStack, x + ICON_DIF_WIDTH, y + ICON_DIF_HEIGHT, getBlitOffset(), WIDTH - ICON_DIF_WIDTH * 2, HEIGHT - ICON_DIF_HEIGHT * 2, selected ? SELECTED_COLOR : UNSELECTED_COLOR);
+            IClientRenderData.convert(technique.getIcon()).render(matrixStack, x + ICON_DIF_WIDTH, y + ICON_DIF_HEIGHT, getBlitOffset(), WIDTH - ICON_DIF_WIDTH * 2, HEIGHT - ICON_DIF_HEIGHT * 2, selected ? SELECTED_COLOR : UNSELECTED_COLOR);
             int cooldown = ClientReference.cooldowns.getOrDefault(technique, 0);
             if (cooldown > 0) {
                 float percent = ClientReference.INITIAL_COOLDOWNS.containsKey(technique) ? cooldown * 1f / ClientReference.INITIAL_COOLDOWNS.get(technique) : 1;

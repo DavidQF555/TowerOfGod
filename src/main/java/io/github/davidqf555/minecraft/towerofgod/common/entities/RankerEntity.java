@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerBossInfo;
 import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -156,6 +157,7 @@ public class RankerEntity extends BasicShinsuUserEntity {
 
     public static class Factory implements EntityType.IFactory<RankerEntity> {
 
+        @Nonnull
         @Override
         public RankerEntity create(EntityType<RankerEntity> type, World world) {
             return new RankerEntity(world);

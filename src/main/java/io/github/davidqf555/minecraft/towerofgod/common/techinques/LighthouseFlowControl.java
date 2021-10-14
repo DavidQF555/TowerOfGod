@@ -4,13 +4,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceC
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseFlowControlCommand;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -56,6 +56,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
         return getInitialDuration() + 200;
     }
 
+    @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.IBuilder<LighthouseFlowControl> {
 
@@ -65,7 +66,6 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
             return technique.getDevices().size() > 0 ? technique : null;
         }
 
-        @Nonnull
         @Override
         public LighthouseFlowControl emptyBuild() {
             return new LighthouseFlowControl(null, null, 0);

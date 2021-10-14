@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ObserverChangeHighlightPacket;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
@@ -21,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@MethodsReturnNonnullByDefault
 public class ObserverEntity extends FlyingDevice {
 
     private static final double RANGE = 24;
@@ -76,7 +78,6 @@ public class ObserverEntity extends FlyingDevice {
     }
 
     public static class Factory implements EntityType.IFactory<ObserverEntity> {
-        @Nonnull
         @Override
         public ObserverEntity create(@Nullable EntityType<ObserverEntity> type, @Nonnull World world) {
             return new ObserverEntity(world);

@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingEntity;
@@ -31,13 +32,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal {
 
@@ -115,7 +116,6 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
         dataManager.set(COLOR, color.getId());
     }
 
-    @Nonnull
     @Override
     public PathNavigator createNavigator(World worldIn) {
         return new FlyingPathNavigator(this, worldIn);

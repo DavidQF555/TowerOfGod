@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
@@ -7,7 +8,6 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -51,6 +51,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
         return 1;
     }
 
+    @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.IBuilder<BlackFish> {
 
@@ -59,7 +60,6 @@ public class BlackFish extends ShinsuTechniqueInstance {
             return new BlackFish(user, level);
         }
 
-        @Nonnull
         @Override
         public BlackFish emptyBuild() {
             return new BlackFish(null, 0);

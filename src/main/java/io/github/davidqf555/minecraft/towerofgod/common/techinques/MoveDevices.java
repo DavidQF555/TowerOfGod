@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.MoveCommand;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
@@ -13,7 +14,6 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -65,6 +65,7 @@ public class MoveDevices extends BasicCommandTechnique {
         return new MoveCommand(entity, getID(), target, 1 + level / 20f);
     }
 
+    @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.IBuilder<MoveDevices> {
 
@@ -74,7 +75,6 @@ public class MoveDevices extends BasicCommandTechnique {
             return technique.getDevices().size() > 0 ? technique : null;
         }
 
-        @Nonnull
         @Override
         public MoveDevices emptyBuild() {
             return new MoveDevices(null, null, 0, Vector3d.ZERO);

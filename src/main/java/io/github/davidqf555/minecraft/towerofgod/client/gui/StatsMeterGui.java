@@ -12,9 +12,9 @@ public abstract class StatsMeterGui extends AbstractGui {
     private static final int TEXTURE_WIDTH = 256;
     private static final int TEXTURE_HEIGHT = 256;
     private static final int BLIT_WIDTH = 182;
-    private final RenderInfo background;
-    private final RenderInfo bar;
-    private final RenderInfo lines;
+    private final ClientTextureRenderData background;
+    private final ClientTextureRenderData bar;
+    private final ClientTextureRenderData lines;
     private final int maxDisplay;
     private final int width;
     private final int height;
@@ -24,7 +24,7 @@ public abstract class StatsMeterGui extends AbstractGui {
     private int x;
     private int y;
 
-    public StatsMeterGui(int x, int y, int width, int height, int value, int max, int maxDisplay, RenderInfo bar, RenderInfo background, int textColor) {
+    public StatsMeterGui(int x, int y, int width, int height, int value, int max, int maxDisplay, ClientTextureRenderData bar, ClientTextureRenderData background, int textColor) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -35,7 +35,7 @@ public abstract class StatsMeterGui extends AbstractGui {
         this.bar = bar;
         this.background = background;
         this.textColor = textColor;
-        lines = new RenderInfo(TEXTURE, 256, 256, 0, 80, 182, 5);
+        lines = new ClientTextureRenderData(TEXTURE, 256, 256, 0, 80, 182, 5);
     }
 
     public void render(MatrixStack matrixStack) {
@@ -62,10 +62,6 @@ public abstract class StatsMeterGui extends AbstractGui {
         font.drawString(matrixStack, text, textX, textY, textColor);
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public void setValue(int value) {
         this.value = value;
     }
@@ -90,10 +86,10 @@ public abstract class StatsMeterGui extends AbstractGui {
 
         private static final int MAX_SHINSU = 200;
         private static final int TEXT_COLOR = 0xFF8CF5FF;
-        private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 10, 182, 5);
+        private static final ClientTextureRenderData BACKGROUND = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 10, 182, 5);
 
         public Shinsu(int x, int y, int width, int height, int value, int max) {
-            super(x, y, width, height, value, max, MAX_SHINSU, new RenderInfo(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
+            super(x, y, width, height, value, max, MAX_SHINSU, new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
         }
     }
 
@@ -101,10 +97,10 @@ public abstract class StatsMeterGui extends AbstractGui {
 
         private static final int MAX_BAANGS = 20;
         private static final int TEXT_COLOR = 0xFF8CF5FF;
-        private static final RenderInfo BACKGROUND = new RenderInfo(TEXTURE, 256, 256, 0, 10, 182, 5);
+        private static final ClientTextureRenderData BACKGROUND = new ClientTextureRenderData(TEXTURE, 256, 256, 0, 10, 182, 5);
 
         public Baangs(int x, int y, int width, int height, int value, int max) {
-            super(x, y, width, height, value, max, MAX_BAANGS, new RenderInfo(TEXTURE, 256, 256, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
+            super(x, y, width, height, value, max, MAX_BAANGS, new ClientTextureRenderData(TEXTURE, 256, 256, 0, 15, 182, 5), BACKGROUND, TEXT_COLOR);
         }
     }
 }

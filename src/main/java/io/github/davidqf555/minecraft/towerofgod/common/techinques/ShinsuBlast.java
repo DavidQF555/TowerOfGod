@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -10,7 +11,6 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
@@ -98,6 +98,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
         }
     }
 
+    @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.IBuilder<ShinsuBlast> {
 
@@ -106,7 +107,6 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
             return new ShinsuBlast(user, settings, level, dir);
         }
 
-        @Nonnull
         @Override
         public ShinsuBlast emptyBuild() {
             return new ShinsuBlast(null, null, 0, Vector3d.ZERO);

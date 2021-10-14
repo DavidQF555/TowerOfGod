@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -13,7 +14,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
@@ -77,6 +77,7 @@ public class Manifest extends ShinsuTechniqueInstance {
         super.tick(world);
     }
 
+    @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.IBuilder<Manifest> {
 
@@ -85,7 +86,6 @@ public class Manifest extends ShinsuTechniqueInstance {
             return ShinsuStats.get(user).getShape() == ShinsuShape.NONE ? null : new Manifest(user, level);
         }
 
-        @Nonnull
         @Override
         public Manifest emptyBuild() {
             return new Manifest(null, 0);

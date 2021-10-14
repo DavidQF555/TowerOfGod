@@ -108,7 +108,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
     private enum Personality {
 
         AGGRESSIVE(),
-        NEUTRAL();
+        NEUTRAL()
 
     }
 

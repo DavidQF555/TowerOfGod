@@ -4,6 +4,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceC
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ScoutCommand;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
@@ -12,7 +13,6 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -75,6 +75,7 @@ public class Scout extends BasicCommandTechnique {
         return new ScoutCommand(entity, getID(), target, 1 + level / 20f, 8 + 4 * level, getDuration());
     }
 
+    @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.IBuilder<Scout> {
 
@@ -84,7 +85,6 @@ public class Scout extends BasicCommandTechnique {
             return technique.getDevices().size() > 0 ? technique : null;
         }
 
-        @Nonnull
         @Override
         public Scout emptyBuild() {
             return new Scout(null, null, 0, Vector3d.ZERO);

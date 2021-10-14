@@ -38,9 +38,7 @@ public class UpdateInitialCooldownsPacket {
     private void handle(NetworkEvent.Context context) {
         NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> {
-                ClientReference.INITIAL_COOLDOWNS.put(technique, cooldown);
-            });
+            context.enqueueWork(() -> ClientReference.INITIAL_COOLDOWNS.put(technique, cooldown));
             context.setPacketHandled(true);
         }
     }

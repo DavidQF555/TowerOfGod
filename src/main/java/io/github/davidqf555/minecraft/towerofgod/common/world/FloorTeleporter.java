@@ -19,10 +19,12 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Function;
 
+@ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 public class FloorTeleporter extends Teleporter {
 
