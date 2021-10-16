@@ -53,17 +53,13 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class EventBusSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
     private static final ConfiguredFeature<?, ?> SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
-    private static final Map<UUID, ShinsuStats> CLONED_STATS = new HashMap<>();
-    private static final Map<UUID, PlayerShinsuEquips> CLONED_EQUIPS = new HashMap<>();
     private static int index = 0;
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -122,9 +118,9 @@ public class EventBusSubscriber {
         public static void onClonePlayerEvent(PlayerEvent.Clone event) {
             if (event.isWasDeath()) {
                 ServerPlayerEntity original = (ServerPlayerEntity) event.getOriginal();
-                UUID id = original.getUniqueID();
-                CLONED_STATS.put(id, ShinsuStats.get(original));
-                CLONED_EQUIPS.put(id, PlayerShinsuEquips.get(original));
+                ServerPlayerEntity resp = (ServerPlayerEntity) event.getPlayer();
+                ShinsuStats.get(resp).deserializeNBT(ShinsuStats.get(original).serializeNBT());
+                PlayerShinsuEquips.get(resp).deserializeNBT(PlayerShinsuEquips.get(original).serializeNBT());
             }
         }
 
@@ -136,22 +132,6 @@ public class EventBusSubscriber {
                 if (source instanceof IShinsuUser || source instanceof PlayerEntity) {
                     ShinsuStats.get(source).onKill(source, ShinsuStats.get(entity));
                 }
-            }
-        }
-
-        @SubscribeEvent
-        public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-            ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
-            UUID id = player.getUniqueID();
-            if (CLONED_STATS.containsKey(id)) {
-                ShinsuStats stats = ShinsuStats.get(player);
-                stats.deserializeNBT(CLONED_STATS.get(id).serializeNBT());
-                CLONED_STATS.remove(id);
-            }
-            if (CLONED_EQUIPS.containsKey(id)) {
-                PlayerShinsuEquips equips = PlayerShinsuEquips.get(player);
-                equips.deserializeNBT(CLONED_EQUIPS.get(id).serializeNBT());
-                CLONED_EQUIPS.remove(id);
             }
         }
 
