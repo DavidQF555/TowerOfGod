@@ -17,8 +17,4 @@ public class ItemStackRenderData implements IRenderData, Supplier<ItemStack> {
         return item.get();
     }
 
-    @Override
-    public Type getType() {
-        return Type.ITEM;
-    }
 }

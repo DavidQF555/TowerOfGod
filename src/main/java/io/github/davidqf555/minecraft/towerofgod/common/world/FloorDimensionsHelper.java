@@ -8,6 +8,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientDime
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Direction;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
@@ -20,6 +21,8 @@ import net.minecraft.world.Dimension;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeManager;
+import net.minecraft.world.biome.ColumnFuzzedBiomeMagnifier;
+import net.minecraft.world.biome.FuzzedBiomeMagnifier;
 import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.biome.provider.NetherBiomeProvider;
 import net.minecraft.world.border.IBorderListener;
@@ -122,7 +125,12 @@ public class FloorDimensionsHelper {
         BiomeProvider provider = new NetherBiomeProvider(seed, property.getBiomeAttributesList(server.getDynamicRegistries().getRegistry(Registry.BIOME_KEY)), Optional.empty());
         DimensionSettings settings = createSettings(property);
         ChunkGenerator generator = new FloorChunkGenerator(property, provider, seed, () -> settings);
-        return new Dimension(() -> new FloorDimensionType(property, 1, effect, lighting), generator);
+        DimensionType type = createDimensionType(property, effect, lighting);
+        return new Dimension(() -> type, generator);
+    }
+
+    private static DimensionType createDimensionType(FloorProperty property, ResourceLocation effect, float light) {
+        return new DimensionType(property.isTimeFixed() ? OptionalLong.of(property.getTime()) : OptionalLong.empty(), !property.hasCeiling(), property.hasCeiling(), false, true, 1, false, false, true, true, true, property.hasCeiling() ? 128 : 256, property.hasCeiling() ? FuzzedBiomeMagnifier.INSTANCE : ColumnFuzzedBiomeMagnifier.INSTANCE, BlockTags.INFINIBURN_OVERWORLD.getName(), effect, light);
     }
 
     private static DimensionSettings createSettings(FloorProperty property) {

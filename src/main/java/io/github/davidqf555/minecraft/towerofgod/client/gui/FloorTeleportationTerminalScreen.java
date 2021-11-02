@@ -1,7 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeFloorPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -23,8 +25,8 @@ public class FloorTeleportationTerminalScreen extends Screen {
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/floor_teleportation_terminal_screen.png");
     private static final int TEXTURE_WIDTH = 195;
     private static final int TEXTURE_HEIGHT = 146;
-    private static final ClientTextureRenderData BACKGROUND = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 125);
-    private static final ClientTextureRenderData BUTTON = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 121, 125, 21, 21);
+    private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 125);
+    private static final TextureRenderData BUTTON = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 121, 125, 21, 21);
     private static final int BUTTON_WIDTH = 21;
     private static final int BUTTON_HEIGHT = 21;
     private static final int BUTTON_GAP = 1;
@@ -77,7 +79,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        BACKGROUND.render(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
+        ClientReference.render(BACKGROUND, matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
         font.drawText(matrixStack, title, x + (xSize - font.getStringPropertyWidth(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
@@ -98,9 +100,10 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
     private static class Display extends Widget {
 
-        private static final ClientTextureRenderData RENDER = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 125, 121, 21);
+        private static final TextureRenderData RENDER = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 125, 121, 21);
         private final FloorTeleportationTerminalScreen screen;
         private final StringBuilder value;
+        private boolean valid;
 
         public Display(FloorTeleportationTerminalScreen screen, int x, int y, int width, int height) {
             super(x, y, width, height, StringTextComponent.EMPTY);
@@ -110,19 +113,20 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            RENDER.render(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+            ClientReference.render(RENDER, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
             String value = this.value.toString();
             int textX = x + (width - screen.font.getStringWidth(value)) / 2;
             int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
-            screen.font.drawString(matrixStack, value, textX, textY, isValid() ? 0xFFFFFFFF : 0xFFFF0000);
+            screen.font.drawString(matrixStack, value, textX, textY, valid ? 0xFFFFFFFF : 0xFFFF0000);
         }
 
-        private boolean isValid() {
-            if (value.length() > 0) {
+        private void updateValidity() {
+            try {
                 int value = Integer.parseInt(this.value.toString());
-                return value <= screen.level && value >= 1;
+                valid = value <= screen.level && value >= 1;
+            } catch (NumberFormatException exception) {
+                valid = false;
             }
-            return false;
         }
     }
 
@@ -137,7 +141,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            BUTTON.render(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+            ClientReference.render(BUTTON, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
             String text = "<";
             int textX = x + (width - screen.font.getStringWidth(text)) / 2;
             int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
@@ -148,6 +152,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
         public void onPress() {
             if (screen.display.value.length() > 0) {
                 screen.display.value.deleteCharAt(screen.display.value.length() - 1);
+                screen.display.updateValidity();
             }
         }
     }
@@ -163,7 +168,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            BUTTON.render(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+            ClientReference.render(BUTTON, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
             String text = ">";
             int textX = x + (width - screen.font.getStringWidth(text)) / 2;
             int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
@@ -172,7 +177,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void onPress() {
-            if (screen.display.isValid()) {
+            if (screen.display.valid) {
                 int level = Integer.parseInt(screen.display.value.toString());
                 TowerOfGod.CHANNEL.sendToServer(new ChangeFloorPacket(level, screen.teleporter, screen.direction));
             }
@@ -190,7 +195,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            BUTTON.render(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+            ClientReference.render(BUTTON, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
             String value = "" + this.value;
             int textX = x + (width - font.getStringWidth(value)) / 2;
             int textY = y + (height - font.FONT_HEIGHT) / 2;
@@ -200,6 +205,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
         @Override
         public void onPress() {
             display.value.append(value);
+            display.updateValidity();
         }
     }
 }

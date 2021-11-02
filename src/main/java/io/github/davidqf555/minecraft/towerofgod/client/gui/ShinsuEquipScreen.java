@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
+import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeEquipsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.TechniqueSettings;
@@ -38,7 +39,7 @@ public class ShinsuEquipScreen extends Screen {
     private static final int TEXTURE_HEIGHT = 190;
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/shinsu_equip_screen.png");
     private static final TranslationTextComponent TITLE = new TranslationTextComponent("gui." + TowerOfGod.MOD_ID + ".shinsu_equip_screen");
-    private static final IClientRenderData BACKGROUND = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 166);
+    private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 166);
     private static final String LEVEL_TRANSLATION_KEY = "gui." + TowerOfGod.MOD_ID + ".level";
     private static final String SETTINGS_TRANSLATION_KEY = "gui." + TowerOfGod.MOD_ID + ".settings";
     private static final int TITLE_COLOR = 0xFF404040;
@@ -111,7 +112,7 @@ public class ShinsuEquipScreen extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrixStack);
-        BACKGROUND.render(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
+        ClientReference.render(BACKGROUND, matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
         font.drawText(matrixStack, title, x + (xSize - font.getStringPropertyWidth(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
         ITextComponent text;
         if (selectedSlot == null) {
@@ -195,10 +196,10 @@ public class ShinsuEquipScreen extends Screen {
 
     private static class SelectedSlot extends AbstractButton {
 
-        private static final IClientRenderData RENDER = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 52, 166, 24, 24);
+        private static final TextureRenderData RENDER = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 52, 166, 24, 24);
         private static final int WIDTH = 24;
         private static final int HEIGHT = 24;
-        private static final IClientRenderData REMOVE_RENDER = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 184, 5, 5);
+        private static final TextureRenderData REMOVE_RENDER = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 184, 5, 5);
         private static final int REMOVE_WIDTH = 8;
         private static final int REMOVE_HEIGHT = 8;
         private final ShinsuEquipScreen screen;
@@ -226,9 +227,9 @@ public class ShinsuEquipScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            RENDER.render(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+            ClientReference.render(RENDER, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
             int dif = MathHelper.ceil(HEIGHT / 6.0);
-            IClientRenderData.convert(technique.getIcon()).render(matrixStack, x + dif, y + dif, getBlitOffset(), width - dif * 2, height - dif * 2, 0xFFFFFFFF);
+            ClientReference.render(technique.getIcon(), matrixStack, x + dif, y + dif, getBlitOffset(), width - dif * 2, height - dif * 2, 0xFFFFFFFF);
         }
 
         private void remove() {
@@ -281,7 +282,7 @@ public class ShinsuEquipScreen extends Screen {
 
             @Override
             public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-                REMOVE_RENDER.render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+                ClientReference.render(REMOVE_RENDER, matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             }
 
             private void updatePosition() {
@@ -331,9 +332,9 @@ public class ShinsuEquipScreen extends Screen {
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             if (settings != null) {
-                IClientRenderData.convert(screen.selectedSlot.technique.getSettings().getIcon(settings)).render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+                ClientReference.render(screen.selectedSlot.technique.getSettings().getIcon(settings), matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             } else if (technique != null) {
-                IClientRenderData.convert(technique.getIcon()).render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+                ClientReference.render(technique.getIcon(), matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             }
         }
 
@@ -368,7 +369,7 @@ public class ShinsuEquipScreen extends Screen {
 
         private static final int COLOR = 0xFFFFFFFF;
         private static final int DRAG_COLOR = 0xFFAAAAAA;
-        private static final IClientRenderData RENDER = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 40, 166, 12, 15);
+        private static final TextureRenderData RENDER = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 40, 166, 12, 15);
         private final int minY;
         private final int maxY;
         private final ShinsuEquipScreen screen;
@@ -403,14 +404,14 @@ public class ShinsuEquipScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
-            RENDER.render(matrixStack, x, y, 0, width, height, color);
+            ClientReference.render(RENDER, matrixStack, x, y, 0, width, height, color);
         }
     }
 
     public static class OpenButton extends Button {
 
-        private static final IClientRenderData RENDER = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 166, 20, 18);
-        private static final IClientRenderData HOVERED = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 20, 166, 20, 18);
+        private static final TextureRenderData RENDER = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 166, 20, 18);
+        private static final TextureRenderData HOVERED = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 20, 166, 20, 18);
         private final Screen screen;
 
         public OpenButton(Screen screen, int x, int y, int width, int height) {
@@ -430,11 +431,11 @@ public class ShinsuEquipScreen extends Screen {
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partial) {
             if (isHovered()) {
-                HOVERED.render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+                ClientReference.render(HOVERED, matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             } else {
-                RENDER.render(matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
+                ClientReference.render(RENDER, matrixStack, x, y, screen.getBlitOffset(), width, height, 0xFFFFFFFF);
             }
-            IClientRenderData.convert(ShinsuIcons.SHINSU).render(matrixStack, x + 2, y + 2, screen.getBlitOffset(), width - 4, height - 4, 0xFFFFFFFF);
+            ClientReference.render(ShinsuIcons.SHINSU, matrixStack, x + 2, y + 2, screen.getBlitOffset(), width - 4, height - 4, 0xFFFFFFFF);
         }
     }
 }
