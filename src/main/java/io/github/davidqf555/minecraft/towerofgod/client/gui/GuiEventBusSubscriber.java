@@ -155,8 +155,8 @@ public class GuiEventBusSubscriber {
         }
 
         private static void initializeMeters() {
-            ClientReference.shinsu = new StatsMeterGui.Shinsu(0, 0, 85, 5, 0, 0);
-            ClientReference.baangs = new StatsMeterGui.Baangs(0, 0, 85, 5, 0, 0);
+            ClientReference.shinsu = new StatsMeterGui(0, 0, 85, 5, 0, 0, 200);
+            ClientReference.baangs = new StatsMeterGui(0, 0, 85, 5, 0, 0, 20);
             setMeterPositions();
         }
 
