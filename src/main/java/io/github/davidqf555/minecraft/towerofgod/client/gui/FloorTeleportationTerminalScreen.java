@@ -101,6 +101,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
         private static final ClientTextureRenderData RENDER = new ClientTextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 125, 121, 21);
         private final FloorTeleportationTerminalScreen screen;
         private final StringBuilder value;
+        private boolean valid;
 
         public Display(FloorTeleportationTerminalScreen screen, int x, int y, int width, int height) {
             super(x, y, width, height, StringTextComponent.EMPTY);
@@ -114,15 +115,16 @@ public class FloorTeleportationTerminalScreen extends Screen {
             String value = this.value.toString();
             int textX = x + (width - screen.font.getStringWidth(value)) / 2;
             int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
-            screen.font.drawString(matrixStack, value, textX, textY, isValid() ? 0xFFFFFFFF : 0xFFFF0000);
+            screen.font.drawString(matrixStack, value, textX, textY, valid ? 0xFFFFFFFF : 0xFFFF0000);
         }
 
-        private boolean isValid() {
-            if (value.length() > 0) {
+        private void updateValidity() {
+            try {
                 int value = Integer.parseInt(this.value.toString());
-                return value <= screen.level && value >= 1;
+                valid = value <= screen.level && value >= 1;
+            } catch (NumberFormatException exception) {
+                valid = false;
             }
-            return false;
         }
     }
 
@@ -148,6 +150,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
         public void onPress() {
             if (screen.display.value.length() > 0) {
                 screen.display.value.deleteCharAt(screen.display.value.length() - 1);
+                screen.display.updateValidity();
             }
         }
     }
@@ -172,7 +175,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void onPress() {
-            if (screen.display.isValid()) {
+            if (screen.display.valid) {
                 int level = Integer.parseInt(screen.display.value.toString());
                 TowerOfGod.CHANNEL.sendToServer(new ChangeFloorPacket(level, screen.teleporter, screen.direction));
             }
@@ -200,6 +203,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
         @Override
         public void onPress() {
             display.value.append(value);
+            display.updateValidity();
         }
     }
 }
