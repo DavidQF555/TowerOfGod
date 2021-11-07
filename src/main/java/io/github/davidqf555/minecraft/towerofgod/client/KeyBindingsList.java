@@ -6,7 +6,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 import java.awt.event.KeyEvent;
 
-public class KeyBindingsList {
+public final class KeyBindingsList {
 
     public static final KeyBinding OPEN_SHINSU_TECHNIQUES_GUI = new KeyBinding("key." + TowerOfGod.MOD_ID + ".open_shinsu_techniques_gui", KeyEvent.VK_G, "category." + TowerOfGod.MOD_ID);
 

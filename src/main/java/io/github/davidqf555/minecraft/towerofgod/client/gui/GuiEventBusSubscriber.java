@@ -21,7 +21,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
-public class GuiEventBusSubscriber {
+public final class GuiEventBusSubscriber {
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
     public static class ClientBus {

@@ -7,7 +7,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.ServerPlayerEntity;
 
-public class FloorCommand {
+public final class FloorCommand {
 
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("floor")

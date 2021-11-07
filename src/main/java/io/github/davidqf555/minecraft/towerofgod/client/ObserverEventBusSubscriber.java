@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.*;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
-public class ObserverEventBusSubscriber {
+public final class ObserverEventBusSubscriber {
 
     public static final Map<UUID, Pair<Set<UUID>, Set<UUID>>> startStopHighlight = new HashMap<>();
 

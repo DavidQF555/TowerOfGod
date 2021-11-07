@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common;
 
+import com.google.common.collect.ImmutableList;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.FloorTeleportationTerminalBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.effects.BodyReinforcementEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.effects.ReverseFlowEffect;
@@ -30,13 +31,11 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class RegistryHandler {
+public final class RegistryHandler {
 
     public static final RegistryObject<Item> SUSPENDIUM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium"), ForgeRegistries.ITEMS);
     public static final RegistryObject<BlockItem> SUSPENDIUM_ORE_ITEM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), ForgeRegistries.ITEMS);
@@ -100,8 +99,10 @@ public class RegistryHandler {
 
     public static final RegistryObject<IRecipeSerializer<DeviceDyeRecipe>> DEVICE_DYE_RECIPE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "device_dye_recipe"), ForgeRegistries.RECIPE_SERIALIZERS);
 
-    public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = new ArrayList<>(Arrays.asList(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW));
-    public static final List<RegistryObject<? extends Item>> COLORED_DEVICE_ITEMS = new ArrayList<>(Arrays.asList(LIGHTHOUSE_ITEM, OBSERVER_ITEM));
+    public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = ImmutableList.of(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW);
+    public static final List<RegistryObject<? extends Item>> COLORED_DEVICE_ITEMS = ImmutableList.of(LIGHTHOUSE_ITEM, OBSERVER_ITEM);
+    public static final List<RegistryObject<HookItem>> HOOK_ITEMS = ImmutableList.of(WOODEN_HOOK, STONE_HOOK, IRON_HOOK, GOLDEN_HOOK, DIAMOND_HOOK, NETHERITE_HOOK, SUSPENDIUM_HOOK);
+    public static final List<RegistryObject<NeedleItem>> NEEDLE_ITEMS = ImmutableList.of(WOODEN_NEEDLE, STONE_NEEDLE, IRON_NEEDLE, GOLDEN_NEEDLE, DIAMOND_NEEDLE, NETHERITE_NEEDLE, SUSPENDIUM_NEEDLE);
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {

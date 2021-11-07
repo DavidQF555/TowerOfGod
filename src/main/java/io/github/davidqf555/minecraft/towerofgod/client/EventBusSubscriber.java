@@ -23,7 +23,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
-public class EventBusSubscriber {
+public final class EventBusSubscriber {
 
     @SubscribeEvent
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
