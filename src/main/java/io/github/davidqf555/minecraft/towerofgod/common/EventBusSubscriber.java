@@ -4,6 +4,8 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PlayerShins
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.commands.FloorCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.commands.ShinsuCommand;
+import io.github.davidqf555.minecraft.towerofgod.common.data.gen.DataGenItemModelProvider;
+import io.github.davidqf555.minecraft.towerofgod.common.data.gen.DataGenRecipeProvider;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RankerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
@@ -13,6 +15,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorChunkGenerator;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
@@ -50,12 +53,13 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.EnumMap;
 import java.util.Map;
 
-public class EventBusSubscriber {
+public final class EventBusSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
@@ -174,6 +178,17 @@ public class EventBusSubscriber {
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class ModBus {
+
+        @SubscribeEvent
+        public static void onGatherDataEvent(GatherDataEvent event) {
+            DataGenerator gen = event.getGenerator();
+            if (event.includeClient()) {
+                gen.addProvider(new DataGenItemModelProvider(gen, event.getExistingFileHelper()));
+            }
+            if (event.includeServer()) {
+                gen.addProvider(new DataGenRecipeProvider(gen));
+            }
+        }
 
         @SubscribeEvent
         public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {

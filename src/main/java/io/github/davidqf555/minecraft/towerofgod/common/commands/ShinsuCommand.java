@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class ShinsuCommand {
+public final class ShinsuCommand {
 
     private static final TranslationTextComponent ZERO = new TranslationTextComponent("commands." + TowerOfGod.MOD_ID + ".shinsu.zero");
     private static final String LEVEL = "commands." + TowerOfGod.MOD_ID + ".shinsu.level";

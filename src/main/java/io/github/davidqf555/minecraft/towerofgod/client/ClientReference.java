@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 
-public class ClientReference {
+public final class ClientReference {
 
     public static final Map<ShinsuTechnique, Integer> INITIAL_COOLDOWNS = new EnumMap<>(ShinsuTechnique.class);
     public static StatsMeterGui shinsu = null;

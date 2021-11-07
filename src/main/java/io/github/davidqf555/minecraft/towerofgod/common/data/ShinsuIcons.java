@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.data;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.util.ResourceLocation;
 
-public class ShinsuIcons {
+public final class ShinsuIcons {
 
     private static final ResourceLocation ICONS = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/shinsu_icons.png");
 
