@@ -20,7 +20,10 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build with Gradle
+    - name: Generate data
+      run: ./gradlew runData
+
+    - name: Build
       run: ./gradlew build
 
     - name: Truncate tag
