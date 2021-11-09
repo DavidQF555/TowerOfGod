@@ -1,0 +1,36 @@
+name: Build and Upload JAR with Gradle
+on:
+  release:
+    types: published
+    branches: [ forge-1.16.5 ]
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 8
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Truncate tag
+      uses: actions/github-script@v5
+      id: tag
+      with:
+        result-encoding: string
+        script: return ${{ github.ref }}.substring(1, ${{ github.ref }}.length)
+
+    - name: Upload to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./build/libs/towerofgod-${{ steps.tag.outputs.result }}.jar
