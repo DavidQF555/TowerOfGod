@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Manifest extends ShinsuTechniqueInstance {
 
     public Manifest(LivingEntity user, int level) {
-        super(null, user, level);
+        super(user, level);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     public static class Builder implements ShinsuTechnique.IBuilder<Manifest> {
 
         @Override
-        public Manifest build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+        public Manifest build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return ShinsuStats.get(user).getShape() == ShinsuShape.NONE ? null : new Manifest(user, level);
         }
 

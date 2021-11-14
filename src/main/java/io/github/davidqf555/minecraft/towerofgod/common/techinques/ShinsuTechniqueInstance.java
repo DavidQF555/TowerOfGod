@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import net.minecraft.entity.Entity;
@@ -22,16 +22,14 @@ import java.util.UUID;
 
 public abstract class ShinsuTechniqueInstance implements INBTSerializable<CompoundNBT> {
 
-    private String settings;
     private UUID id;
     private UUID user;
     private int level;
     private int duration;
     private int ticks;
 
-    public ShinsuTechniqueInstance(String settings, LivingEntity user, int level) {
+    public ShinsuTechniqueInstance(LivingEntity user, int level) {
         id = UUID.randomUUID();
-        this.settings = settings;
         this.user = user == null ? null : user.getUniqueID();
         this.level = level;
         ticks = 0;
@@ -72,14 +70,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     public abstract ShinsuTechnique getTechnique();
 
-    public String getSettings() {
-        TechniqueSettings settings = getTechnique().getSettings();
-        if (!settings.getOptions().contains(this.settings)) {
-            this.settings = settings.getDefault();
-        }
-        return this.settings;
-    }
-
     public int getLevel() {
         return level;
     }
@@ -117,7 +107,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     public boolean isConflicting(ShinsuTechniqueInstance instance) {
         ShinsuTechnique technique = getTechnique();
-        return technique.getRepeatEffect() == ShinsuTechnique.Repeat.DENY && technique == instance.getTechnique() && getSettings().equals(instance.getSettings());
+        return technique.getRepeatEffect() == ShinsuTechnique.Repeat.DENY && technique == instance.getTechnique();
     }
 
     protected void updateMeters(ServerWorld world) {
@@ -137,7 +127,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
             nbt.putUniqueId("User", user);
         }
         nbt.putString("Technique", getTechnique().name());
-        nbt.putString("Settings", getSettings());
         nbt.putInt("Duration", getDuration());
         nbt.putInt("Ticks", ticks);
         nbt.putInt("Level", getLevel());
@@ -151,9 +140,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         }
         if (nbt.contains("User", Constants.NBT.TAG_INT_ARRAY)) {
             user = nbt.getUniqueId("User");
-        }
-        if (nbt.contains("Settings", Constants.NBT.TAG_STRING)) {
-            settings = nbt.getString("Settings");
         }
         if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
             duration = nbt.getInt("Duration");
@@ -170,8 +156,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         private UUID target;
 
-        public Targetable(String settings, LivingEntity user, int level, Entity target) {
-            super(settings, user, level);
+        public Targetable(LivingEntity user, int level, Entity target) {
+            super(user, level);
             this.target = target == null ? null : target.getUniqueID();
         }
 
@@ -207,8 +193,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
         private Vector3d dir;
 
-        public Direction(String settings, LivingEntity user, int level, Vector3d dir) {
-            super(settings, user, level);
+        public Direction(LivingEntity user, int level, Vector3d dir) {
+            super(user, level);
             this.dir = dir;
         }
 

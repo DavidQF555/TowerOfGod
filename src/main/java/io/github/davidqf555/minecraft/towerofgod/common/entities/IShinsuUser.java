@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -55,7 +56,8 @@ public interface IShinsuUser<T extends LivingEntity> {
         stats.multiplyBaseResistance(getInitialResistance() / stats.getRawResistance());
         stats.multiplyBaseTension(getInitialTension() / stats.getRawTension());
         for (ShinsuTechnique technique : getInitialShinsuTechniques()) {
-            stats.addKnownTechnique(technique, 1);
+            ShinsuTechniqueData data = stats.getData(technique.getType());
+            data.setLevel(data.getLevel() + 1);
         }
         stats.setQuality(getInitialQuality());
         stats.setShape(getInitialShape());
@@ -189,7 +191,7 @@ public interface IShinsuUser<T extends LivingEntity> {
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
                 ShinsuTechnique.IBuilder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
                 Vector3d dir = entity.canEntityBeSeen(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookVec();
-                ShinsuTechniqueInstance instance = builder.doBuild(entity, stats.getTechniqueLevel(technique), target, dir, null);
+                ShinsuTechniqueInstance instance = builder.doBuild(entity, stats.getData(technique.getType()).getLevel(), target, dir);
                 if (instance != null) {
                     tech.add(instance);
                 }

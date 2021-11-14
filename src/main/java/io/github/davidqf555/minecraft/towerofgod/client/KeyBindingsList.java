@@ -8,9 +8,9 @@ import java.awt.event.KeyEvent;
 
 public final class KeyBindingsList {
 
-    public static final KeyBinding OPEN_SHINSU_TECHNIQUES_GUI = new KeyBinding("key." + TowerOfGod.MOD_ID + ".open_shinsu_techniques_gui", KeyEvent.VK_G, "category." + TowerOfGod.MOD_ID);
+    public static final KeyBinding SHINSU_TECHNIQUE_GUI = new KeyBinding("key." + TowerOfGod.MOD_ID + ".shinsu_technique_gui", KeyEvent.VK_G, "category." + TowerOfGod.MOD_ID);
 
     public static void register() {
-        ClientRegistry.registerKeyBinding(OPEN_SHINSU_TECHNIQUES_GUI);
+        ClientRegistry.registerKeyBinding(SHINSU_TECHNIQUE_GUI);
     }
 }

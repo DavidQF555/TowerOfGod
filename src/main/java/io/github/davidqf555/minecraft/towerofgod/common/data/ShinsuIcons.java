@@ -5,7 +5,7 @@ import net.minecraft.util.ResourceLocation;
 
 public final class ShinsuIcons {
 
-    private static final ResourceLocation ICONS = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu/shinsu_icons.png");
+    private static final ResourceLocation ICONS = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/shinsu_icons.png");
 
     public static final TextureRenderData SWIRL = new TextureRenderData(ICONS, 64, 64, 0, 0, 16, 16);
     public static final TextureRenderData RESISTANCE = new TextureRenderData(ICONS, 64, 64, 16, 0, 16, 16);
@@ -18,5 +18,5 @@ public final class ShinsuIcons {
     public static final TextureRenderData LIGHTHOUSE_FLOW_CONTROL = new TextureRenderData(ICONS, 64, 64, 0, 32, 16, 16);
     public static final TextureRenderData EYE = new TextureRenderData(ICONS, 64, 64, 16, 32, 16, 16);
     public static final TextureRenderData FOLLOW = new TextureRenderData(ICONS, 64, 64, 32, 32, 16, 16);
-
+    public static final TextureRenderData LOCK = new TextureRenderData(ICONS, 64, 64, 48, 32, 16, 16);
 }

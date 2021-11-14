@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -18,7 +18,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
     private static final double RANGE = 3;
 
     public ReverseFlowControl(LivingEntity user, int level, LivingEntity target) {
-        super(null, user, level, target);
+        super(user, level, target);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
     public static class Builder implements ShinsuTechnique.IBuilder<ReverseFlowControl> {
 
         @Override
-        public ReverseFlowControl build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+        public ReverseFlowControl build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE ? new ReverseFlowControl(user, level, (LivingEntity) target) : null;
         }
 

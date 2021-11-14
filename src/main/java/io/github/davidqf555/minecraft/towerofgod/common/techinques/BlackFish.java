@@ -14,7 +14,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class BlackFish extends ShinsuTechniqueInstance {
 
     public BlackFish(LivingEntity user, int level) {
-        super(null, user, level);
+        super(user, level);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
     public static class Builder implements ShinsuTechnique.IBuilder<BlackFish> {
 
         @Override
-        public BlackFish build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+        public BlackFish build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return new BlackFish(user, level);
         }
 

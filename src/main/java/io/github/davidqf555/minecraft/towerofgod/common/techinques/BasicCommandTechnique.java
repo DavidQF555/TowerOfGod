@@ -1,48 +1,30 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import com.mojang.datafixers.util.Pair;
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance.Direction {
 
-    public static final TechniqueSettings COLOR_TARGETING;
-
-    static {
-        HashMap<String, Pair<ITextComponent, IRenderData>> colors = new HashMap<>();
-        colors.put("all", Pair.of(new TranslationTextComponent("settings." + TowerOfGod.MOD_ID + ".colors.all"), ShinsuIcons.BAANGS));
-        for (DyeColor color : DyeColor.values()) {
-            colors.put(color.name(), Pair.of(new TranslationTextComponent("color.minecraft." + color.getTranslationKey()), new ItemStackRenderData(() -> DyeItem.getItem(color).getDefaultInstance())));
-        }
-        COLOR_TARGETING = new TechniqueSettings(new TranslationTextComponent("settings." + TowerOfGod.MOD_ID + ".targets"), colors, "all");
-    }
-
     private final List<UUID> devices;
 
-    public BasicCommandTechnique(@Nullable String settings, LivingEntity user, int level, Vector3d dir) {
-        super(settings, user, level, dir);
+    public BasicCommandTechnique(LivingEntity user, int level, Vector3d dir) {
+        super(user, level, dir);
         devices = user == null ? new ArrayList<>() : ((ServerWorld) user.world).getEntities()
                 .filter(entity -> entity instanceof FlyingDevice)
                 .map(entity -> (FlyingDevice) entity)

@@ -1,9 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PlayerShinsuEquips;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.commands.FloorCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.commands.ShinsuCommand;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.gen.DataGenItemModelProvider;
 import io.github.davidqf555.minecraft.towerofgod.common.data.gen.DataGenRecipeProvider;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
@@ -12,7 +12,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorChunkGenerator;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
 import net.minecraft.data.DataGenerator;
@@ -75,24 +75,19 @@ public final class EventBusSubscriber {
             if (entity instanceof IShinsuUser || entity instanceof PlayerEntity) {
                 event.addCapability(SHINSU_STATS, new ShinsuStats.Provider());
             }
-            if (entity instanceof PlayerEntity) {
-                event.addCapability(PLAYER_EQUIPS, new PlayerShinsuEquips.Provider());
-            }
         }
 
         @SubscribeEvent
         public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             Entity entity = event.getEntity();
             ShinsuStats stats = ShinsuStats.get(entity);
-            Map<ShinsuTechnique, Integer> known = new EnumMap<>(ShinsuTechnique.class);
-            for (ShinsuTechnique technique : ShinsuTechnique.values()) {
-                known.put(technique, stats.getTechniqueLevel(technique));
+            Map<ShinsuTechniqueType, ShinsuTechniqueData> data = new EnumMap<>(ShinsuTechniqueType.class);
+            for (ShinsuTechniqueType type : ShinsuTechniqueType.values()) {
+                data.put(type, stats.getData(type));
             }
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownPacket(known));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientShinsuDataPacket(data));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
-            PlayerShinsuEquips equipped = PlayerShinsuEquips.get(entity);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new ChangeEquipsPacket(equipped.getEquipped()));
         }
 
         @SubscribeEvent
@@ -124,7 +119,6 @@ public final class EventBusSubscriber {
                 ServerPlayerEntity original = (ServerPlayerEntity) event.getOriginal();
                 ServerPlayerEntity resp = (ServerPlayerEntity) event.getPlayer();
                 ShinsuStats.get(resp).deserializeNBT(ShinsuStats.get(original).serializeNBT());
-                PlayerShinsuEquips.get(resp).deserializeNBT(PlayerShinsuEquips.get(original).serializeNBT());
             }
         }
 
@@ -201,15 +195,12 @@ public final class EventBusSubscriber {
         @SubscribeEvent
         public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
             CapabilityManager.INSTANCE.register(ShinsuStats.class, new ShinsuStats.Storage(), ShinsuStats::new);
-            CapabilityManager.INSTANCE.register(PlayerShinsuEquips.class, new PlayerShinsuEquips.Storage(), PlayerShinsuEquips::new);
             event.enqueueWork(() -> {
-                ChangeEquipsPacket.register(index++);
                 CastShinsuPacket.register(index++);
                 UpdateShinsuMeterPacket.register(index++);
                 UpdateBaangsMeterPacket.register(index++);
-                UpdateClientCooldownsPacket.register(index++);
                 UpdateClientCanCastPacket.register(index++);
-                UpdateClientKnownPacket.register(index++);
+                UpdateClientShinsuDataPacket.register(index++);
                 ObserverChangeHighlightPacket.register(index++);
                 UpdateClientDimensionsPacket.register(index++);
                 OpenFloorTeleportationTerminalPacket.register(index++);

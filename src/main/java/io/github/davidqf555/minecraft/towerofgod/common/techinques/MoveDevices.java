@@ -7,7 +7,6 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.item.DyeColor;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
@@ -19,8 +18,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class MoveDevices extends BasicCommandTechnique {
 
-    public MoveDevices(LivingEntity user, @Nullable String settings, int level, Vector3d dir) {
-        super(settings, user, level, dir);
+    public MoveDevices(LivingEntity user, int level, Vector3d dir) {
+        super(user, level, dir);
     }
 
     @Override
@@ -29,23 +28,8 @@ public class MoveDevices extends BasicCommandTechnique {
     }
 
     @Override
-    public boolean isTarget(FlyingDevice device) {
-        String settings = getSettings();
-        return settings.equals("all") || device.getColor() == DyeColor.valueOf(settings);
-    }
-
-    @Override
     public int getShinsuUse() {
         return getDevices().size() * 2;
-    }
-
-    @Override
-    public boolean isConflicting(ShinsuTechniqueInstance instance) {
-        if (instance.getTechnique() == ShinsuTechnique.MOVE_DEVICES) {
-            String settings = getSettings();
-            return settings.equals("all") || settings.equals(instance.getSettings());
-        }
-        return false;
     }
 
     @Override
@@ -70,14 +54,14 @@ public class MoveDevices extends BasicCommandTechnique {
     public static class Builder implements ShinsuTechnique.IBuilder<MoveDevices> {
 
         @Override
-        public MoveDevices build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
-            MoveDevices technique = new MoveDevices(user, settings, level, dir);
+        public MoveDevices build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            MoveDevices technique = new MoveDevices(user, level, dir);
             return technique.getDevices().size() > 0 ? technique : null;
         }
 
         @Override
         public MoveDevices emptyBuild() {
-            return new MoveDevices(null, null, 0, Vector3d.ZERO);
+            return new MoveDevices(null, 0, Vector3d.ZERO);
         }
 
         @Override

@@ -1,21 +1,21 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 public class BodyReinforcement extends ShinsuTechniqueInstance {
 
     public BodyReinforcement(LivingEntity user, int level) {
-        super(null, user, level);
+        super(user, level);
     }
 
     @Override
@@ -54,15 +54,15 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         return 1;
     }
 
+    @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
     public static class Builder implements ShinsuTechnique.IBuilder<BodyReinforcement> {
 
         @Override
-        public BodyReinforcement build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+        public BodyReinforcement build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return new BodyReinforcement(user, level);
         }
 
-        @Nonnull
         @Override
         public BodyReinforcement emptyBuild() {
             return new BodyReinforcement(null, 0);

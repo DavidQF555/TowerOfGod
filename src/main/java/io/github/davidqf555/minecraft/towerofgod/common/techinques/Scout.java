@@ -2,13 +2,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ScoutCommand;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.item.DyeColor;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
@@ -18,8 +16,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class Scout extends BasicCommandTechnique {
 
-    public Scout(LivingEntity user, String settings, int level, Vector3d dir) {
-        super(settings, user, level, dir);
+    public Scout(LivingEntity user, int level, Vector3d dir) {
+        super(user, level, dir);
     }
 
     @Override
@@ -30,21 +28,6 @@ public class Scout extends BasicCommandTechnique {
     @Override
     public ShinsuTechnique getTechnique() {
         return ShinsuTechnique.SCOUT;
-    }
-
-    @Override
-    public boolean isTarget(FlyingDevice device) {
-        String settings = getSettings();
-        return device instanceof ObserverEntity && (settings.equals("all") || device.getColor() == DyeColor.valueOf(settings));
-    }
-
-    @Override
-    public boolean isConflicting(ShinsuTechniqueInstance instance) {
-        if (instance.getTechnique() == ShinsuTechnique.SCOUT) {
-            String settings = getSettings();
-            return settings.equals("all") || settings.equals(instance.getSettings());
-        }
-        return false;
     }
 
     @Override
@@ -80,14 +63,14 @@ public class Scout extends BasicCommandTechnique {
     public static class Builder implements ShinsuTechnique.IBuilder<Scout> {
 
         @Override
-        public Scout build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
-            Scout technique = new Scout(user, settings, level, dir);
+        public Scout build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            Scout technique = new Scout(user, level, dir);
             return technique.getDevices().size() > 0 ? technique : null;
         }
 
         @Override
         public Scout emptyBuild() {
-            return new Scout(null, null, 0, Vector3d.ZERO);
+            return new Scout(null, 0, Vector3d.ZERO);
         }
 
         @Override

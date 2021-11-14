@@ -4,11 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientShinsuDataPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
@@ -62,10 +63,10 @@ public final class ShinsuCommand {
                                 )
                         )
                         .then(Commands.literal("technique")
-                                .then(Commands.argument("type", EnumArgument.enumArgument(ShinsuTechnique.class))
-                                        .executes(context -> changeTechniqueLevel(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("type", ShinsuTechnique.class)))
+                                .then(Commands.argument("type", EnumArgument.enumArgument(ShinsuTechniqueType.class))
+                                        .executes(context -> changeTechniqueTypeLevel(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("type", ShinsuTechniqueType.class)))
                                         .then(Commands.argument("value", IntegerArgumentType.integer())
-                                                .executes(context -> changeTechniqueLevel(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("type", ShinsuTechnique.class), IntegerArgumentType.getInteger(context, "value")))
+                                                .executes(context -> changeTechniqueTypeLevel(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("type", ShinsuTechniqueType.class), IntegerArgumentType.getInteger(context, "value")))
                                         )
                                 )
                         )
@@ -135,22 +136,23 @@ public final class ShinsuCommand {
         return entities.size();
     }
 
-    private static int changeTechniqueLevel(CommandSource source, Collection<? extends Entity> entities, ShinsuTechnique technique) {
-        return changeTechniqueLevel(source, entities, technique, 1);
+    private static int changeTechniqueTypeLevel(CommandSource source, Collection<? extends Entity> entities, ShinsuTechniqueType type) {
+        return changeTechniqueTypeLevel(source, entities, type, 1);
     }
 
-    private static int changeTechniqueLevel(CommandSource source, Collection<? extends Entity> entities, ShinsuTechnique technique, int change) {
+    private static int changeTechniqueTypeLevel(CommandSource source, Collection<? extends Entity> entities, ShinsuTechniqueType type, int change) {
         for (Entity entity : entities) {
             ShinsuStats stats = ShinsuStats.get(entity);
-            stats.addKnownTechnique(technique, change);
+            ShinsuTechniqueData d = stats.getData(type);
+            d.setLevel(d.getLevel() + change);
             if (entity instanceof ServerPlayerEntity) {
-                Map<ShinsuTechnique, Integer> known = new EnumMap<>(ShinsuTechnique.class);
-                for (ShinsuTechnique t : ShinsuTechnique.values()) {
-                    known.put(t, stats.getTechniqueLevel(t));
+                Map<ShinsuTechniqueType, ShinsuTechniqueData> data = new EnumMap<>(ShinsuTechniqueType.class);
+                for (ShinsuTechniqueType t : ShinsuTechniqueType.values()) {
+                    data.put(t, stats.getData(t));
                 }
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientKnownPacket(known));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientShinsuDataPacket(data));
             }
-            source.sendFeedback(new TranslationTextComponent(TECHNIQUE, entity.getDisplayName(), technique.getText(), change), true);
+            source.sendFeedback(new TranslationTextComponent(TECHNIQUE, entity.getDisplayName(), type.getText(), change), true);
         }
         return entities.size();
     }

@@ -5,12 +5,8 @@ import net.minecraft.util.ResourceLocation;
 public class TextureRenderData implements IRenderData {
 
     private final ResourceLocation texture;
-    private final int textureWidth;
-    private final int textureHeight;
-    private final int startX;
-    private final int blitHeight;
-    private int startY;
-    private int blitWidth;
+    private final int textureWidth, textureHeight, startX;
+    private int blitHeight, startY, blitWidth;
 
     public TextureRenderData(ResourceLocation texture, int textureWidth, int textureHeight, int startX, int startY, int blitWidth, int blitHeight) {
         this.texture = texture;
@@ -56,6 +52,10 @@ public class TextureRenderData implements IRenderData {
 
     public int getBlitHeight() {
         return blitHeight;
+    }
+
+    public void setBlitHeight(int blitHeight) {
+        this.blitHeight = blitHeight;
     }
 
 }

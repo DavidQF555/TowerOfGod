@@ -2,13 +2,14 @@ package io.github.davidqf555.minecraft.towerofgod.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Pair;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuTechniqueBarGui;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuCombinationGui;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.StatsMeterGui;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -18,18 +19,19 @@ import net.minecraft.util.ColorHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 public final class ClientReference {
 
     public static final Map<ShinsuTechnique, Integer> INITIAL_COOLDOWNS = new EnumMap<>(ShinsuTechnique.class);
     public static StatsMeterGui shinsu = null;
     public static StatsMeterGui baangs = null;
-    public static ShinsuTechniqueBarGui bar = null;
-    public static Map<ShinsuTechnique, Integer> known = new EnumMap<>(ShinsuTechnique.class);
-    public static List<Pair<ShinsuTechnique, String>> equipped = new ArrayList<>();
-    public static Map<ShinsuTechnique, Integer> cooldowns = new EnumMap<>(ShinsuTechnique.class);
-    public static Map<ShinsuTechnique, Set<String>> canCast = new EnumMap<>(ShinsuTechnique.class);
+    public static ShinsuCombinationGui combo = null;
+    public static Map<ShinsuTechniqueType, ShinsuTechniqueData> data = new EnumMap<>(ShinsuTechniqueType.class);
+    public static List<ShinsuTechnique> canCast = new ArrayList<>();
 
     public static void render(IRenderData data, MatrixStack matrixStack, float x, float y, float blitOffset, int width, int height, int color) {
         if (data instanceof TextureRenderData) {

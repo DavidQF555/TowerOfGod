@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.blocks;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenFloorTeleportationTerminalPacket;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;

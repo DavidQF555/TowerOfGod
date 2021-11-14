@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -22,7 +22,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
     private UUID arrow;
 
     public ShootShinsuArrow(LivingEntity user, int level, Vector3d dir) {
-        super(null, user, level, dir);
+        super(user, level, dir);
         arrow = null;
     }
 
@@ -101,7 +101,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
     public static class Builder implements ShinsuTechnique.IBuilder<ShootShinsuArrow> {
 
         @Override
-        public ShootShinsuArrow build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+        public ShootShinsuArrow build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             return new ShootShinsuArrow(user, level, dir);
         }
 

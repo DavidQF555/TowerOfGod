@@ -1,14 +1,11 @@
-package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
+package io.github.davidqf555.minecraft.towerofgod.common.data;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientKnownPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientShinsuDataPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateInitialCooldownsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.*;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import net.minecraft.entity.Entity;
@@ -38,9 +35,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
 
     public static final int ENTITY_RANGE = 32;
     private static final String LEVEL_UP = "entity." + TowerOfGod.MOD_ID + ".level_up";
-    private final Map<ShinsuTechnique, Integer> known;
-    private final Map<ShinsuTechnique, Integer> cooldowns;
-    private final Map<ShinsuTechnique, Integer> experience;
+    private final Map<ShinsuTechniqueType, ShinsuTechniqueData> data;
     private final List<ShinsuTechniqueInstance> techniques;
     private int level;
     private int shinsu;
@@ -62,9 +57,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         this.tension = tension;
         this.quality = quality;
         this.shape = shape;
-        known = new EnumMap<>(ShinsuTechnique.class);
-        experience = new EnumMap<>(ShinsuTechnique.class);
-        cooldowns = new EnumMap<>(ShinsuTechnique.class);
+        data = new EnumMap<>(ShinsuTechniqueType.class);
         techniques = new ArrayList<>();
     }
 
@@ -83,105 +76,12 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         return techniques;
     }
 
-    public void onKill(Entity owner, ShinsuStats killed) {
-        addMaxShinsu(getGainedShinsu(killed.getMaxShinsu()));
-        addMaxBaangs(getGainedBaangs(killed.getMaxBaangs()));
-        multiplyBaseResistance(getGainedResistance(killed.getRawResistance()));
-        multiplyBaseTension(getGainedTension(killed.getRawTension()));
-        for (ShinsuTechnique technique : ShinsuTechnique.values()) {
-            int initial = getTechniqueLevel(technique);
-            addExperience(technique, killed.getTechniqueLevel(technique));
-            int after = getTechniqueLevel(technique);
-            if (initial != after) {
-                owner.sendMessage(new TranslationTextComponent(LEVEL_UP, technique.getText(), after), Util.DUMMY_UUID);
-            }
-        }
-        if (owner instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateClientKnownPacket(known));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateShinsuMeterPacket(getShinsu(), getMaxShinsu()));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateBaangsMeterPacket(getBaangs(), getMaxBaangs()));
-        }
-    }
-
-    protected int getTechniqueLevelCap() {
-        return getLevel() * 2;
-    }
-
-    protected int getGainedShinsu(int killed) {
-        int cap = getLevel() * 15 + 15;
-        int current = getMaxShinsu();
-        if (current < cap) {
-            int change = Math.min(cap - current, killed / 7);
-            return current <= 0 ? Math.max(1, change) : change;
-        }
-        return 0;
-    }
-
-    protected int getGainedBaangs(int killed) {
-        int current = getMaxBaangs();
-        int cap = 2 + getLevel() / 2;
-        if (current < cap) {
-            int change = Math.min(cap - current, killed / 3);
-            return current <= 0 ? Math.max(1, change) : change;
-        }
-        return 0;
-    }
-
-    protected double getGainedTension(double killed) {
-        double cap = 1 + getLevel() / 4.0;
-        double current = getRawTension();
-        return current < cap ? Math.min(cap / current, 1 + killed / 20) : 1;
-    }
-
-    protected double getGainedResistance(double killed) {
-        double cap = 1 + getLevel() / 4.0;
-        double current = getRawResistance();
-        return current < cap ? Math.min(cap / current, 1 + killed / 20) : 1;
-    }
-
-    public void addExperience(ShinsuTechnique technique, int amount) {
-        int initial = getExperience(technique);
-        int level = getTechniqueLevel(technique);
-        int net = 0;
-        int cap = getTechniqueLevelCap();
-        while (amount > 0) {
-            if (initial + net >= cap) {
-                initial = Math.max(initial - amount, 0);
-                break;
-            } else if (amount >= initial) {
-                net++;
-                initial = getLevelUpExperience(level + net);
-                amount -= initial;
-            } else {
-                initial -= amount;
-            }
-        }
-        addKnownTechnique(technique, net);
-        experience.put(technique, initial);
-    }
-
-    public int getExperience(ShinsuTechnique technique) {
-        return experience.getOrDefault(technique, getLevelUpExperience(getTechniqueLevel(technique)));
-    }
-
-    private int getLevelUpExperience(int level) {
-        return (int) Math.pow(2, level) * 2;
-    }
-
     public void addTechnique(ShinsuTechniqueInstance technique) {
         techniques.add(technique);
     }
 
     public void removeTechnique(ShinsuTechniqueInstance technique) {
         techniques.remove(technique);
-    }
-
-    public int getTechniqueLevel(ShinsuTechnique technique) {
-        return known.getOrDefault(technique, 0);
-    }
-
-    public void addKnownTechnique(ShinsuTechnique technique, int amt) {
-        known.put(technique, Math.max(0, getTechniqueLevel(technique) + amt));
     }
 
     public int getLevel() {
@@ -272,12 +172,96 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         this.shape = shape;
     }
 
-    public int getCooldown(ShinsuTechnique technique) {
-        return cooldowns.getOrDefault(technique, 0);
+    public void onKill(Entity owner, ShinsuStats killed) {
+        addMaxShinsu(getGainedShinsu(killed.getMaxShinsu()));
+        addMaxBaangs(getGainedBaangs(killed.getMaxBaangs()));
+        multiplyBaseResistance(getGainedResistance(killed.getRawResistance()));
+        multiplyBaseTension(getGainedTension(killed.getRawTension()));
+        for (ShinsuTechnique technique : ShinsuTechnique.values()) {
+            ShinsuTechniqueType type = technique.getType();
+            ShinsuTechniqueData data = getData(type);
+            int initial = data.getLevel();
+            addExperience(type, killed.getData(type).getLevel());
+            int after = data.getLevel();
+            if (initial != after) {
+                owner.sendMessage(new TranslationTextComponent(LEVEL_UP, technique.getText(), after), Util.DUMMY_UUID);
+            }
+        }
+        if (owner instanceof ServerPlayerEntity) {
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateClientShinsuDataPacket(data));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateShinsuMeterPacket(getShinsu(), getMaxShinsu()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateBaangsMeterPacket(getBaangs(), getMaxBaangs()));
+        }
     }
 
-    public void addCooldown(ShinsuTechnique technique, int time) {
-        cooldowns.put(technique, time);
+    protected int getTechniqueLevelCap() {
+        return getLevel() * 2;
+    }
+
+    protected int getGainedShinsu(int killed) {
+        int cap = getLevel() * 15 + 15;
+        int current = getMaxShinsu();
+        if (current < cap) {
+            int change = Math.min(cap - current, killed / 7);
+            return current <= 0 ? Math.max(1, change) : change;
+        }
+        return 0;
+    }
+
+    protected int getGainedBaangs(int killed) {
+        int current = getMaxBaangs();
+        int cap = 2 + getLevel() / 2;
+        if (current < cap) {
+            int change = Math.min(cap - current, killed / 3);
+            return current <= 0 ? Math.max(1, change) : change;
+        }
+        return 0;
+    }
+
+    protected double getGainedTension(double killed) {
+        double cap = 1 + getLevel() / 4.0;
+        double current = getRawTension();
+        return current < cap ? Math.min(cap / current, 1 + killed / 20) : 1;
+    }
+
+    protected double getGainedResistance(double killed) {
+        double cap = 1 + getLevel() / 4.0;
+        double current = getRawResistance();
+        return current < cap ? Math.min(cap / current, 1 + killed / 20) : 1;
+    }
+
+    public void addExperience(ShinsuTechniqueType type, int amount) {
+        ShinsuTechniqueData data = getData(type);
+        int exp = getExperience(type);
+        int level = data.getLevel();
+        int cap = getTechniqueLevelCap();
+        while (amount > 0) {
+            if (level >= cap) {
+                exp = Math.max(exp - amount, 0);
+                break;
+            } else if (amount >= exp) {
+                level++;
+                exp = getLevelUpExperience(level);
+                amount -= exp;
+            } else {
+                exp -= amount;
+                break;
+            }
+        }
+        data.setLevel(level);
+        data.setExperience(exp);
+    }
+
+    private int getLevelUpExperience(int level) {
+        return (int) Math.pow(2, level) * 2;
+    }
+
+    public int getExperience(ShinsuTechniqueType type) {
+        return getData(type).getExperience();
+    }
+
+    public ShinsuTechniqueData getData(ShinsuTechniqueType type) {
+        return data.computeIfAbsent(type, p -> new ShinsuTechniqueData());
     }
 
     public void tick(ServerWorld world) {
@@ -288,25 +272,26 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
                 technique.remove(world);
             }
         }
-        for (ShinsuTechnique technique : known.keySet()) {
-            int time = getCooldown(technique);
-            if (time > 0) {
-                addCooldown(technique, time - 1);
+        for (ShinsuTechniqueType type : ShinsuTechniqueType.values()) {
+            ShinsuTechniqueData data = getData(type);
+            int cooldown = data.getCooldown();
+            if (cooldown > 0) {
+                data.setCooldown(cooldown - 1);
             }
         }
     }
 
-    public void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
-        cast(user, technique, getTechniqueLevel(technique), target, dir, settings);
+    public void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, Vector3d dir) {
+        cast(user, technique, getData(technique.getType()).getLevel(), target, dir);
     }
 
-    public void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
+    public void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, Vector3d dir) {
         if (user.world instanceof ServerWorld) {
-            Optional<ShinsuTechniqueInstance> used = getTechniques().stream().filter(instance -> instance.getTechnique() == technique && instance.getSettings().equals(settings)).findAny();
+            Optional<ShinsuTechniqueInstance> used = getTechniques().stream().filter(instance -> instance.getTechnique() == technique).findAny();
             if (technique.getRepeatEffect() == ShinsuTechnique.Repeat.TOGGLE && used.isPresent()) {
                 used.get().remove((ServerWorld) user.world);
-            } else if (getCooldown(technique) <= 0) {
-                ShinsuTechniqueInstance tech = technique.getBuilder().doBuild(user, level, target, dir, settings);
+            } else if (getData(technique.getType()).getCooldown() <= 0) {
+                ShinsuTechniqueInstance tech = technique.getBuilder().doBuild(user, level, target, dir);
                 if (tech != null) {
                     cast((ServerWorld) user.world, tech);
                 }
@@ -326,7 +311,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         if (user instanceof ServerPlayerEntity) {
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateInitialCooldownsPacket(technique, cooldown));
         }
-        addCooldown(technique, cooldown);
+        getData(technique.getType()).setCooldown(cooldown);
         addTechnique(instance);
         instance.onUse(world);
     }
@@ -339,28 +324,18 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         tag.putInt("Baangs", baangs);
         tag.putDouble("Resistance", resistance);
         tag.putDouble("Tension", tension);
-        CompoundNBT knownTech = new CompoundNBT();
-        for (Map.Entry<ShinsuTechnique, Integer> entry : known.entrySet()) {
-            knownTech.putInt(entry.getKey().name(), entry.getValue());
-        }
-        tag.put("Known", knownTech);
+        tag.putString("Quality", quality.name());
+        tag.putString("Shape", shape.name());
         ListNBT instances = new ListNBT();
         for (ShinsuTechniqueInstance instance : techniques) {
             instances.add(instance.serializeNBT());
         }
-        CompoundNBT experience = new CompoundNBT();
-        for (Map.Entry<ShinsuTechnique, Integer> entry : this.experience.entrySet()) {
-            experience.putInt(entry.getKey().name(), entry.getValue());
-        }
-        tag.put("Experience", experience);
         tag.put("Techniques", instances);
-        tag.putString("Quality", quality.name());
-        tag.putString("Shape", shape.name());
-        CompoundNBT cool = new CompoundNBT();
-        for (ShinsuTechnique tech : cooldowns.keySet()) {
-            cool.putInt(tech.name(), cooldowns.get(tech));
+        CompoundNBT data = new CompoundNBT();
+        for (Map.Entry<ShinsuTechniqueType, ShinsuTechniqueData> entry : this.data.entrySet()) {
+            data.put(entry.getKey().name(), entry.getValue().serializeNBT());
         }
-        tag.put("Cooldowns", cool);
+        tag.put("Data", data);
         return tag;
     }
 
@@ -381,14 +356,11 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         if (nbt.contains("Tension", Constants.NBT.TAG_DOUBLE)) {
             tension = nbt.getDouble("Tension");
         }
-        if (nbt.contains("Known", Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT knownTech = nbt.getCompound("Known");
-            for (ShinsuTechnique tech : ShinsuTechnique.values()) {
-                String name = tech.name();
-                if (knownTech.contains(name, Constants.NBT.TAG_INT)) {
-                    known.put(tech, knownTech.getInt(tech.name()));
-                }
-            }
+        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
+            quality = ShinsuQuality.valueOf(nbt.getString("Quality"));
+        }
+        if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
+            shape = ShinsuShape.valueOf(nbt.getString("Shape"));
         }
         if (nbt.contains("Techniques", Constants.NBT.TAG_LIST)) {
             ListNBT list = nbt.getList("Techniques", Constants.NBT.TAG_COMPOUND);
@@ -399,27 +371,12 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
                 techniques.add(tech);
             }
         }
-        if (nbt.contains("Experience", Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT experience = nbt.getCompound("Experience");
-            for (ShinsuTechnique tech : ShinsuTechnique.values()) {
-                String name = tech.name();
-                if (experience.contains(name, Constants.NBT.TAG_INT)) {
-                    this.experience.put(tech, experience.getInt(tech.name()));
-                }
-            }
-        }
-        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
-            quality = ShinsuQuality.valueOf(nbt.getString("Quality"));
-        }
-        if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
-            shape = ShinsuShape.valueOf(nbt.getString("Shape"));
-        }
-        if (nbt.contains("Cooldowns", Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT cool = nbt.getCompound("Cooldowns");
-            for (String key : cool.keySet()) {
-                if (cool.contains(key, Constants.NBT.TAG_INT)) {
-                    cooldowns.put(ShinsuTechnique.valueOf(key), cool.getInt(key));
-                }
+        if (nbt.contains("Data", Constants.NBT.TAG_COMPOUND)) {
+            CompoundNBT data = nbt.getCompound("Data");
+            for (String key : data.keySet()) {
+                ShinsuTechniqueData d = new ShinsuTechniqueData();
+                d.deserializeNBT(data.getCompound(key));
+                this.data.put(ShinsuTechniqueType.valueOf(key), d);
             }
         }
     }

@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -20,8 +20,8 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
     private static final double BASE_SPEED = 0.5;
     private UUID blast;
 
-    public ShinsuBlast(LivingEntity user, String settings, int level, Vector3d dir) {
-        super(settings, user, level, dir.normalize());
+    public ShinsuBlast(LivingEntity user, int level, Vector3d dir) {
+        super(user, level, dir);
         blast = null;
     }
 
@@ -103,13 +103,13 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
     public static class Builder implements ShinsuTechnique.IBuilder<ShinsuBlast> {
 
         @Override
-        public ShinsuBlast build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
-            return new ShinsuBlast(user, settings, level, dir);
+        public ShinsuBlast build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return new ShinsuBlast(user, level, dir);
         }
 
         @Override
         public ShinsuBlast emptyBuild() {
-            return new ShinsuBlast(null, null, 0, Vector3d.ZERO);
+            return new ShinsuBlast(null, 0, Vector3d.ZERO);
         }
 
         @Override

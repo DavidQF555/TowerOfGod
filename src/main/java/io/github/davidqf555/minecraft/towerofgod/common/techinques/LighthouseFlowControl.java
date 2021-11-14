@@ -2,12 +2,10 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseFlowControlCommand;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.DyeColor;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 
@@ -16,19 +14,13 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class LighthouseFlowControl extends BasicCommandTechnique {
 
-    public LighthouseFlowControl(LivingEntity user, @Nullable String settings, int level) {
-        super(settings, user, level, Vector3d.ZERO);
+    public LighthouseFlowControl(LivingEntity user, int level) {
+        super(user, level, Vector3d.ZERO);
     }
 
     @Override
     public int getInitialDuration() {
         return 40 + getLevel() * 20;
-    }
-
-    @Override
-    public boolean isTarget(FlyingDevice device) {
-        String settings = getSettings();
-        return device instanceof LighthouseEntity && (settings.equals("all") || device.getColor() == DyeColor.valueOf(settings));
     }
 
     @Override
@@ -61,14 +53,14 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
     public static class Builder implements ShinsuTechnique.IBuilder<LighthouseFlowControl> {
 
         @Override
-        public LighthouseFlowControl build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir, @Nullable String settings) {
-            LighthouseFlowControl technique = new LighthouseFlowControl(user, settings, level);
+        public LighthouseFlowControl build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            LighthouseFlowControl technique = new LighthouseFlowControl(user, level);
             return technique.getDevices().size() > 0 ? technique : null;
         }
 
         @Override
         public LighthouseFlowControl emptyBuild() {
-            return new LighthouseFlowControl(null, null, 0);
+            return new LighthouseFlowControl(null, 0);
         }
 
         @Override
