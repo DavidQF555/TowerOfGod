@@ -1,8 +1,8 @@
-name: Build and Upload JAR with Gradle
+name: Build and upload mod
 on:
   release:
     types: published
-    branches: [ forge-1.16.5 ]
+    branches: [forge-1.16.5]
 jobs:
   job:
     runs-on: ubuntu-latest
@@ -26,14 +26,19 @@ jobs:
     - name: Build
       run: ./gradlew build
 
-    - name: Truncate tag
-      uses: actions/github-script@v5
-      id: tag
-      with:
-        result-encoding: string
-        script: return ${{ github.ref }}.substring(1, ${{ github.ref }}.length)
-
     - name: Upload to release
       uses: softprops/action-gh-release@v1
       with:
-        files: ./build/libs/towerofgod-${{ steps.tag.outputs.result }}.jar
+        files: ./build/libs/towerofgod-${github.event.release.tag_name#v}.jar
+
+    - name: Upload to CurseForge
+      uses: itsmeow/curseforge-upload@v3
+      with:
+        token: ${{secrets.curseforge_api}}
+        project_id: 403993
+        game_endpoint: minecraft
+        file_path: ./build/libs/towerofgod-${github.event.release.tag_name#v}.jar
+        changelog: ${{github.event.release.body}}
+        display_name: ${{github.event.release.name}}
+        release_type: release
+        game_versions: minecraft-1-16:1.16.5,java:Java 8,Forge
