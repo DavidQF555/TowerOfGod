@@ -28,19 +28,19 @@ import java.util.stream.Collectors;
 @ParametersAreNonnullByDefault
 public class ShinsuCombinationGui extends AbstractGui implements IRenderable {
 
+    protected static final String LEVEL = "gui." + TowerOfGod.MOD_ID + ".level_requirement";
     private static final float RESISTIVITY = 20;
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/combination.png");
     private static final TextureRenderData MARKER_BACKGROUND = new TextureRenderData(TEXTURE, 32, 32, 0, 0, 16, 16);
     private static final TextureRenderData MARKER = new TextureRenderData(TEXTURE, 32, 32, 16, 0, 16, 16);
     private static final int BACKGROUND_BLIT_HEIGHT = 16, BACKGROUND_START_Y = 16, WIDTH = 20, HEIGHT = 20, ICON_WIDTH = 40, ICON_HEIGHT = 40, BACKGROUND_WIDTH = 60, BACKGROUND_HEIGHT = 60;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 32, 32, 0, BACKGROUND_START_Y, 16, BACKGROUND_BLIT_HEIGHT);
-    private static final String LEVEL = "gui." + TowerOfGod.MOD_ID + ".level_requirement";
     private final List<Marker> markers;
     private final int centerX, centerY;
     private final TextureRenderData cooldown;
-    private int headX, headY, minX, maxX, minY, maxY;
     private float prevYaw, prevPitch;
     private ShinsuTechnique selected;
+    private int headX, headY, minX, maxX, minY, maxY;
 
     public ShinsuCombinationGui(int x, int y, float yaw, float pitch) {
         markers = new ArrayList<>();
@@ -59,9 +59,7 @@ public class ShinsuCombinationGui extends AbstractGui implements IRenderable {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         ShinsuTechnique selected = getSelected();
         if (selected == null) {
-            for (Marker marker : markers) {
-                marker.render(matrixStack, mouseX, mouseY, partialTicks);
-            }
+            renderCombo(matrixStack, mouseX, mouseY, partialTicks);
         } else {
             ShinsuTechniqueType type = selected.getType();
             float x = centerX - BACKGROUND_WIDTH / 2f;
@@ -88,6 +86,12 @@ public class ShinsuCombinationGui extends AbstractGui implements IRenderable {
             }
             ITextComponent text = selected.getText();
             client.fontRenderer.drawText(matrixStack, text, centerX - client.fontRenderer.getStringPropertyWidth(text) / 2f, centerY + ICON_HEIGHT / 2f, canCast ? 0xFF0797FF : 0xFFFF0000);
+        }
+    }
+
+    protected void renderCombo(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        for (Marker marker : markers) {
+            marker.render(matrixStack, mouseX, mouseY, partialTicks);
         }
     }
 
@@ -118,7 +122,16 @@ public class ShinsuCombinationGui extends AbstractGui implements IRenderable {
         TowerOfGod.CHANNEL.sendToServer(new UpdateClientCanCastPacket());
     }
 
-    private void addMarker(Direction direction) {
+    protected void reset() {
+        headX = 0;
+        headY = 0;
+        minX = Integer.MAX_VALUE;
+        maxX = Integer.MIN_VALUE;
+        minY = Integer.MAX_VALUE;
+        maxY = Integer.MIN_VALUE;
+    }
+
+    protected void addMarker(Direction direction) {
         headX += direction.getX();
         headY += direction.getY();
         if (headX > maxX) {

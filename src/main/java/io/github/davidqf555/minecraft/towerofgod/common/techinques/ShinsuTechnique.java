@@ -91,6 +91,10 @@ public enum ShinsuTechnique {
         return false;
     }
 
+    public List<Direction> getCombination() {
+        return combination;
+    }
+
     public int getLevelRequirement() {
         return level;
     }
