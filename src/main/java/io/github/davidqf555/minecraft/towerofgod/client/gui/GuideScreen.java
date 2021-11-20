@@ -44,7 +44,7 @@ public class GuideScreen extends Screen {
         super.init(minecraft, width, height);
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
-        combo = new ShinsuCombinationGui(x + xSize / 2, y + ySize / 2 + minecraft.fontRenderer.FONT_HEIGHT * 2, 0, 0);
+        combo = new ShinsuCombinationGui(0, 0);
         updateCombo();
         addButton(new ChangePageButton(BACK, -1, x, y + ySize - BUTTON_HEIGHT));
         addButton(new ChangePageButton(NEXT, 1, x + xSize - BUTTON_WIDTH, y + ySize - BUTTON_HEIGHT));
@@ -57,14 +57,13 @@ public class GuideScreen extends Screen {
         int z = getBlitOffset();
         ClientReference.render(BOOK, matrixStack, x, y, z, xSize, ySize, 0xFFFFFFFF);
         ITextComponent title = pages[page].getText();
-        combo.renderCombo(matrixStack, mouseX, mouseY, partialTicks);
         float centerX = x + xSize / 2f;
-        float centerY = y + ySize / 2f;
-        int difY = minecraft.fontRenderer.FONT_HEIGHT;
-        ClientReference.render(pages[page].getIcon(), matrixStack, centerX - difY, centerY - difY * 3, z, difY * 2, difY * 2, 0xFFFFFFFF);
-        minecraft.fontRenderer.drawText(matrixStack, title, centerX - minecraft.fontRenderer.getStringPropertyWidth(title) / 2f, centerY - difY * 5, 0xFF000000);
+        int difY = font.FONT_HEIGHT;
+        combo.renderCombo(matrixStack, centerX - combo.getWidth() / 2f, y + difY * 9);
+        ClientReference.render(pages[page].getIcon(), matrixStack, centerX - difY, y + difY * 6, z, difY * 2, difY * 2, 0xFFFFFFFF);
+        font.drawText(matrixStack, title, centerX - font.getStringPropertyWidth(title) / 2f, y + difY * 2, 0xFF000000);
         ITextComponent req = new TranslationTextComponent(ShinsuCombinationGui.LEVEL, pages[page].getLevelRequirement(), pages[page].getType().getText());
-        minecraft.fontRenderer.drawText(matrixStack, req, centerX - minecraft.fontRenderer.getStringPropertyWidth(req) / 2f, centerY - difY * 4, 0xFF000000);
+        font.drawText(matrixStack, req, centerX - font.getStringPropertyWidth(req) / 2f, y + difY * 4, 0xFF000000);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 

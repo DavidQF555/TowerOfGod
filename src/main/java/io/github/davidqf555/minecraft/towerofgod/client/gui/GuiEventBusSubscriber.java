@@ -36,11 +36,11 @@ public final class GuiEventBusSubscriber {
                 }
                 if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isKeyDown()) {
                     if (ClientReference.combo == null) {
-                        MainWindow window = client.getMainWindow();
-                        ClientReference.combo = new ShinsuCombinationGui(window.getScaledWidth() / 2, window.getScaledHeight() / 2, client.player.rotationYawHead, client.player.rotationPitch);
+                        ClientReference.combo = new ShinsuCombinationGui(client.player.rotationYawHead, client.player.rotationPitch);
                     }
                     if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
-                        ClientReference.combo.render(event.getMatrixStack(), (int) client.mouseHelper.getMouseX(), (int) client.mouseHelper.getMouseY(), client.getRenderPartialTicks());
+                        MainWindow window = client.getMainWindow();
+                        ClientReference.combo.render(event.getMatrixStack(), (window.getScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getScaledHeight() - ClientReference.combo.getHeight()) / 2f);
                     }
                 } else {
                     ClientReference.combo = null;

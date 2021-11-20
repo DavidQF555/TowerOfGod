@@ -12,7 +12,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniq
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.IRenderable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
@@ -26,53 +25,46 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
-public class ShinsuCombinationGui extends AbstractGui implements IRenderable {
+public class ShinsuCombinationGui extends AbstractGui {
 
     protected static final String LEVEL = "gui." + TowerOfGod.MOD_ID + ".level_requirement";
     private static final float RESISTIVITY = 20;
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/combination.png");
-    private static final TextureRenderData MARKER_BACKGROUND = new TextureRenderData(TEXTURE, 32, 32, 0, 0, 16, 16);
-    private static final TextureRenderData MARKER = new TextureRenderData(TEXTURE, 32, 32, 16, 0, 16, 16);
-    private static final int BACKGROUND_BLIT_HEIGHT = 16, BACKGROUND_START_Y = 16, WIDTH = 20, HEIGHT = 20, ICON_WIDTH = 40, ICON_HEIGHT = 40, BACKGROUND_WIDTH = 60, BACKGROUND_HEIGHT = 60;
+    private static final int BACKGROUND_BLIT_HEIGHT = 16, BACKGROUND_START_Y = 16, ICON_WIDTH = 40, ICON_HEIGHT = 40, BACKGROUND_WIDTH = 60, BACKGROUND_HEIGHT = 60;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 32, 32, 0, BACKGROUND_START_Y, 16, BACKGROUND_BLIT_HEIGHT);
     private final List<Marker> markers;
-    private final int centerX, centerY;
     private final TextureRenderData cooldown;
     private float prevYaw, prevPitch;
     private ShinsuTechnique selected;
     private int headX, headY, minX, maxX, minY, maxY;
 
-    public ShinsuCombinationGui(int x, int y, float yaw, float pitch) {
+    public ShinsuCombinationGui(float yaw, float pitch) {
         markers = new ArrayList<>();
         prevYaw = yaw;
         prevPitch = pitch;
-        centerX = x;
-        centerY = y;
-        minX = Integer.MAX_VALUE;
-        maxX = Integer.MIN_VALUE;
-        minY = Integer.MAX_VALUE;
-        maxY = Integer.MIN_VALUE;
         cooldown = new TextureRenderData(TEXTURE, 32, 32, 0, BACKGROUND_START_Y, 16, BACKGROUND_BLIT_HEIGHT);
+        reset();
     }
 
-    @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(MatrixStack matrixStack, float x, float y) {
         ShinsuTechnique selected = getSelected();
         if (selected == null) {
-            renderCombo(matrixStack, mouseX, mouseY, partialTicks);
+            renderCombo(matrixStack, x, y);
         } else {
             ShinsuTechniqueType type = selected.getType();
-            float x = centerX - BACKGROUND_WIDTH / 2f;
-            float y = centerY - BACKGROUND_HEIGHT / 2f;
+            float centerX = x + getWidth() / 2f;
+            float centerY = y + getHeight() / 2f;
             int z = getBlitOffset();
+            float backX = centerX - BACKGROUND_WIDTH / 2f;
+            float backY = centerY - BACKGROUND_HEIGHT / 2f;
             boolean canCast = ClientReference.canCast.contains(selected);
-            ClientReference.render(BACKGROUND, matrixStack, x, y, z, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, canCast ? 0xFF6DC0FF : 0xFFFF4444);
+            ClientReference.render(BACKGROUND, matrixStack, backX, backY, z, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, canCast ? 0xFF6DC0FF : 0xFFFF4444);
             float percent = ClientReference.INITIAL_COOLDOWNS.containsKey(selected) && ClientReference.data.containsKey(type) ? ClientReference.data.get(type).getCooldown() * 1f / ClientReference.INITIAL_COOLDOWNS.get(selected) : 1;
             int blitHeight = (int) (BACKGROUND_BLIT_HEIGHT * percent);
             cooldown.setBlitHeight(blitHeight);
             cooldown.setStartY(BACKGROUND_START_Y + BACKGROUND_BLIT_HEIGHT - blitHeight);
             int height = (int) (BACKGROUND_HEIGHT * percent);
-            ClientReference.render(cooldown, matrixStack, x, y + BACKGROUND_HEIGHT - height, z, BACKGROUND_WIDTH, height, 0x55000000);
+            ClientReference.render(cooldown, matrixStack, backX, backY + BACKGROUND_HEIGHT - height, z, BACKGROUND_WIDTH, height, 0x55000000);
             float iconX = centerX - ICON_WIDTH / 2f;
             float iconY = centerY - ICON_HEIGHT / 2f;
             Minecraft client = Minecraft.getInstance();
@@ -89,9 +81,9 @@ public class ShinsuCombinationGui extends AbstractGui implements IRenderable {
         }
     }
 
-    protected void renderCombo(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    protected void renderCombo(MatrixStack matrixStack, float x, float y) {
         for (Marker marker : markers) {
-            marker.render(matrixStack, mouseX, mouseY, partialTicks);
+            marker.render(matrixStack, x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT);
         }
     }
 
@@ -125,15 +117,19 @@ public class ShinsuCombinationGui extends AbstractGui implements IRenderable {
     protected void reset() {
         headX = 0;
         headY = 0;
-        minX = Integer.MAX_VALUE;
-        maxX = Integer.MIN_VALUE;
-        minY = Integer.MAX_VALUE;
-        maxY = Integer.MIN_VALUE;
+        minX = 0;
+        maxX = 0;
+        minY = 0;
+        maxY = 0;
+        markers.clear();
+        addMarker(null);
     }
 
-    protected void addMarker(Direction direction) {
-        headX += direction.getX();
-        headY += direction.getY();
+    protected void addMarker(@Nullable Direction direction) {
+        if (direction != null) {
+            headX += direction.getX();
+            headY += direction.getY();
+        }
         if (headX > maxX) {
             maxX = headX;
         }
@@ -147,11 +143,13 @@ public class ShinsuCombinationGui extends AbstractGui implements IRenderable {
             minY = headY;
         }
         markers.add(new Marker(headX, headY, direction));
-        List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
-        for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-            if (technique.matches(combination)) {
-                selected = technique;
-                break;
+        List<Direction> combination = markers.subList(1, markers.size()).stream().map(marker -> marker.direction).collect(Collectors.toList());
+        if (!combination.isEmpty()) {
+            for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
+                if (technique.matches(combination)) {
+                    selected = technique;
+                    break;
+                }
             }
         }
     }
@@ -161,29 +159,44 @@ public class ShinsuCombinationGui extends AbstractGui implements IRenderable {
         return selected;
     }
 
-    private class Marker extends AbstractGui implements IRenderable {
+    public int getWidth() {
+        return (maxX - minX + 1) * Marker.WIDTH;
+    }
 
+    public int getHeight() {
+        return (maxY - minY + 1) * Marker.HEIGHT;
+    }
+
+    private static class Marker extends AbstractGui {
+
+        private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 32, 32, 0, 0, 16, 16);
+        private static final TextureRenderData POINTER = new TextureRenderData(TEXTURE, 32, 32, 16, 0, 16, 16);
+        private static final TextureRenderData NONE = new TextureRenderData(TEXTURE, 32, 32, 16, 16, 16, 16);
+        private static final int WIDTH = 20, HEIGHT = 20;
         private final Direction direction;
         private final int x, y;
 
-        private Marker(int x, int y, Direction direction) {
+        private Marker(int x, int y, @Nullable Direction direction) {
             this.direction = direction;
             this.x = x;
             this.y = y;
         }
 
-        @Override
-        public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            float x = centerX - (maxX - minX) * WIDTH / 2f + (this.x - minX) * WIDTH;
-            float y = centerY - (maxY - minY) * HEIGHT / 2f + (this.y - minY) * HEIGHT;
+        public void render(MatrixStack matrixStack, float x, float y) {
             int z = getBlitOffset();
-            ClientReference.render(MARKER_BACKGROUND, matrixStack, x - WIDTH / 2f, y - HEIGHT / 2f, z, WIDTH, HEIGHT, 0xFFFFFFFF);
-            matrixStack.push();
-            matrixStack.translate(x, y, z);
-            matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + 180));
-            matrixStack.translate(-x, -y, -z);
-            ClientReference.render(MARKER, matrixStack, x - WIDTH / 2f, y - HEIGHT / 2f, z, WIDTH, HEIGHT, 0xFFFFFFFF);
-            matrixStack.pop();
+            ClientReference.render(BACKGROUND, matrixStack, x, y, z, WIDTH, HEIGHT, 0xFFFFFFFF);
+            if (direction == null) {
+                ClientReference.render(NONE, matrixStack, x, y, z, WIDTH, HEIGHT, 0xFFFFFFFF);
+            } else {
+                float centerX = x + WIDTH / 2f;
+                float centerY = y + HEIGHT / 2f;
+                matrixStack.push();
+                matrixStack.translate(centerX, centerY, z);
+                matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + 180));
+                matrixStack.translate(-centerX, -centerY, -z);
+                ClientReference.render(POINTER, matrixStack, x, y, z, WIDTH, HEIGHT, 0xFFFFFFFF);
+                matrixStack.pop();
+            }
         }
     }
 }
