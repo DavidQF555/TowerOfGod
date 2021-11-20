@@ -23,33 +23,21 @@ import java.util.List;
 
 public class GuideItem extends Item {
 
-    private final ITextComponent title;
     private final ITextComponent author;
     private final ShinsuTechniqueType type;
 
-    public GuideItem(ShinsuTechniqueType type, ITextComponent title, ITextComponent author) {
+    public GuideItem(ShinsuTechniqueType type, ITextComponent author) {
         super(new Properties()
                 .group(TowerOfGod.TAB)
                 .maxStackSize(1)
                 .rarity(Rarity.EPIC)
         );
         this.type = type;
-        this.title = title;
         this.author = author;
     }
 
     public ShinsuTechniqueType getType() {
         return type;
-    }
-
-    @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
-        return title;
-    }
-
-    @Override
-    public ITextComponent getName() {
-        return title;
     }
 
     @Override
