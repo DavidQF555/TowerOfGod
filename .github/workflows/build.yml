@@ -1,44 +1,44 @@
 name: Build and upload mod
 on:
   release:
-    types: published
-    branches: [forge-1.16.5]
+    types: [ published ]
+    branches: [ forge-1.16.5 ]
 jobs:
   job:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Set up JDK 8
-      uses: actions/setup-java@v2
-      with:
-        java-version: '8'
-        distribution: 'adopt'
-        cache: gradle
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+          cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    - name: Generate data
-      run: ./gradlew runData
+      - name: Generate data
+        run: ./gradlew runData
 
-    - name: Build
-      run: ./gradlew build
+      - name: Build
+        run: ./gradlew build
 
-    - name: Upload to release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ./build/libs/towerofgod-${github.event.release.tag_name#v}.jar
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./build/libs/towerofgod-${github.event.release.tag_name#v}.jar
 
-    - name: Upload to CurseForge
-      uses: itsmeow/curseforge-upload@v3
-      with:
-        token: ${{secrets.curseforge_api}}
-        project_id: 403993
-        game_endpoint: minecraft
-        file_path: ./build/libs/towerofgod-${github.event.release.tag_name#v}.jar
-        changelog: ${{github.event.release.body}}
-        display_name: ${{github.event.release.name}}
-        release_type: release
-        game_versions: minecraft-1-16:1.16.5,java:Java 8,Forge
+      - name: Upload to CurseForge
+        uses: itsmeow/curseforge-upload@v3
+        with:
+          token: ${{secrets.curseforge_api}}
+          project_id: 403993
+          game_endpoint: minecraft
+          file_path: ./build/libs/towerofgod-${github.event.release.tag_name#v}.jar
+          changelog: ${{github.event.release.body}}
+          display_name: ${{github.event.release.name}}
+          release_type: release
+          game_versions: minecraft-1-16:1.16.5,java:Java 8,Forge
