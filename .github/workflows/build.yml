@@ -3,9 +3,14 @@ on:
   release:
     types: [ published ]
     branches: [ forge-1.16.5 ]
+
 jobs:
-  job:
+
+  build:
+    name: Build with Gradle
     runs-on: ubuntu-latest
+    outputs:
+      file_path: ${{steps.file.outputs.file_path}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -21,23 +26,37 @@ jobs:
         run: chmod +x gradlew
 
       - name: Generate data
-        run: ./gradlew runData
+        run: ./gradlew :runData
 
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew :build
 
+      - name: Sets file directory
+        id: file
+        run: echo "::set-output name=file_name::./build/libs/towerofgod-${{github.event.release.tag_name:1}}.jar"
+
+  release:
+    name: Upload to release
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
       - name: Upload to release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./build/libs/towerofgod-${github.event.release.tag_name#v}.jar
+          files: ${{needs.build.outputs.file_path}}
 
+  curseforge:
+    name: Upload to CurseForge
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
       - name: Upload to CurseForge
         uses: itsmeow/curseforge-upload@v3
         with:
           token: ${{secrets.curseforge_api}}
           project_id: 403993
           game_endpoint: minecraft
-          file_path: ./build/libs/towerofgod-${github.event.release.tag_name#v}.jar
+          file_path: ${{needs.build.outputs.file_path}}
           changelog: ${{github.event.release.body}}
           display_name: ${{github.event.release.name}}
           release_type: release
