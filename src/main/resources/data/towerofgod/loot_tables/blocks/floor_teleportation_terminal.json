@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "towerofgod:floor_teleportation_terminal_block"
+          "name": "towerofgod:floor_teleportation_terminal"
         }
       ]
     }

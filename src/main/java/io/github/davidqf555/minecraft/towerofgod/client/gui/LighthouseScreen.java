@@ -19,8 +19,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class LighthouseScreen extends ContainerScreen<LighthouseEntity.LighthouseContainer> {
 
-    private static final TextureRenderData LIGHTHOUSE = new TextureRenderData(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 0, 176, 71);
-    private static final TextureRenderData INVENTORY = new TextureRenderData(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 71, 176, 94);
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/lighthouse.png");
+    private static final TextureRenderData LIGHTHOUSE = new TextureRenderData(TEXTURE, 176, 165, 0, 0, 176, 71);
+    private static final TextureRenderData INVENTORY = new TextureRenderData(TEXTURE, 176, 165, 0, 71, 176, 94);
     private static final int INVENTORY_TITLE_COLOR = 0xFF404040;
 
     public LighthouseScreen(LighthouseEntity.LighthouseContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {

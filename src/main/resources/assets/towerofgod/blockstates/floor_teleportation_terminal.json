@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "towerofgod:block/floor_teleportation_terminal",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "towerofgod:block/floor_teleportation_terminal"
+    },
+    "facing=south": {
+      "model": "towerofgod:block/floor_teleportation_terminal",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "towerofgod:block/floor_teleportation_terminal",
+      "y": 270
+    }
+  }
+}

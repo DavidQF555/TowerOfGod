@@ -21,8 +21,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class FloorTeleportationTerminalScreen extends Screen {
 
-    private static final ITextComponent TITLE = new TranslationTextComponent("gui." + TowerOfGod.MOD_ID + ".floor_teleportation_terminal_screen");
-    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/floor_teleportation_terminal_screen.png");
+    private static final ITextComponent TITLE = new TranslationTextComponent("gui." + TowerOfGod.MOD_ID + ".floor_teleportation_terminal");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/floor_teleportation_terminal.png");
     private static final int TEXTURE_WIDTH = 195;
     private static final int TEXTURE_HEIGHT = 146;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 125);

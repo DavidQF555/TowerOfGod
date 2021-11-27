@@ -23,7 +23,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class ShinsuArrowRenderer extends EntityRenderer<ShinsuArrowEntity> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/shinsu_arrow_entity.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/shinsu_arrow.png");
 
     public ShinsuArrowRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);

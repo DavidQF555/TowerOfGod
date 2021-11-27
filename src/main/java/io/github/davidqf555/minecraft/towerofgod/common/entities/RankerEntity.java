@@ -33,7 +33,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class RankerEntity extends BasicShinsuUserEntity {
 
-    private static final String DEFEAT = "entity." + TowerOfGod.MOD_ID + ".ranker_entity.defeat";
+    private static final String DEFEAT = "entity." + TowerOfGod.MOD_ID + ".ranker.defeat";
     private final ServerBossInfo info;
     private int floorLevel;
 

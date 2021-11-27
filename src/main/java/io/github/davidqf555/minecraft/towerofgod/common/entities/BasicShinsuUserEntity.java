@@ -29,7 +29,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public abstract class BasicShinsuUserEntity extends CreatureEntity implements IShinsuUser<BasicShinsuUserEntity>, IGeared<BasicShinsuUserEntity>, IRangedAttackMob {
 
-    public static final DataParameter<String> GROUP = EntityDataManager.createKey(BasicShinsuUserEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> GROUP = EntityDataManager.createKey(BasicShinsuUserEntity.class, DataSerializers.STRING);
 
     public BasicShinsuUserEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
         super(type, worldIn);

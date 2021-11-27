@@ -52,7 +52,7 @@ public enum Group {
     }
 
     Group(String texture, int color, ShinsuQuality[] qualities, ShinsuShape[] shapes, ShinsuTechnique[] techniques, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
-        this(new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/regular/" + texture + "_entity.png"), color, qualities, shapes, techniques, weapons, resistance, tension, shinsu, baangs);
+        this(new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/group/" + texture + ".png"), color, qualities, shapes, techniques, weapons, resistance, tension, shinsu, baangs);
     }
 
     private static BossInfo.Color getBossInfoColor(int color) {

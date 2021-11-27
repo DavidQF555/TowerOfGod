@@ -22,8 +22,8 @@
   "textures": {
     "particle": "block/iron_block",
     "base": "block/iron_block",
-    "sides": "towerofgod:block/floor_teleportation_terminal_block_sides",
-    "top": "towerofgod:block/floor_teleportation_terminal_block_top"
+    "sides": "towerofgod:block/floor_teleportation_terminal_sides",
+    "top": "towerofgod:block/floor_teleportation_terminal_top"
   },
   "elements": [
     {
