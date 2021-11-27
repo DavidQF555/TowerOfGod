@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientCanCastPacket;
@@ -31,7 +32,7 @@ public class ShinsuCombinationGui extends AbstractGui {
     private static final float RESISTIVITY = 20;
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/combination.png");
     private static final int BACKGROUND_BLIT_HEIGHT = 16, BACKGROUND_START_Y = 16, ICON_WIDTH = 40, ICON_HEIGHT = 40, BACKGROUND_WIDTH = 60, BACKGROUND_HEIGHT = 60;
-    private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 32, 32, 0, BACKGROUND_START_Y, 16, BACKGROUND_BLIT_HEIGHT);
+    private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 32, BACKGROUND_START_Y, 16, BACKGROUND_BLIT_HEIGHT);
     private final List<Marker> markers;
     private final TextureRenderData cooldown;
     private float prevYaw, prevPitch;
@@ -42,7 +43,7 @@ public class ShinsuCombinationGui extends AbstractGui {
         markers = new ArrayList<>();
         prevYaw = yaw;
         prevPitch = pitch;
-        cooldown = new TextureRenderData(TEXTURE, 32, 32, 0, BACKGROUND_START_Y, 16, BACKGROUND_BLIT_HEIGHT);
+        cooldown = new TextureRenderData(TEXTURE, 48, 32, 32, BACKGROUND_START_Y, 16, BACKGROUND_BLIT_HEIGHT);
         reset();
     }
 
@@ -117,19 +118,16 @@ public class ShinsuCombinationGui extends AbstractGui {
     protected void reset() {
         headX = 0;
         headY = 0;
-        minX = 0;
-        maxX = 0;
-        minY = 0;
-        maxY = 0;
+        minX = Integer.MAX_VALUE;
+        maxX = Integer.MIN_VALUE;
+        minY = Integer.MAX_VALUE;
+        maxY = Integer.MIN_VALUE;
         markers.clear();
-        addMarker(null);
     }
 
-    protected void addMarker(@Nullable Direction direction) {
-        if (direction != null) {
-            headX += direction.getX();
-            headY += direction.getY();
-        }
+    protected void addMarker(Direction direction) {
+        headX += direction.getX();
+        headY += direction.getY();
         if (headX > maxX) {
             maxX = headX;
         }
@@ -142,8 +140,23 @@ public class ShinsuCombinationGui extends AbstractGui {
         if (headY < minY) {
             minY = headY;
         }
-        markers.add(new Marker(headX, headY, direction));
-        List<Direction> combination = markers.subList(1, markers.size()).stream().map(marker -> marker.direction).collect(Collectors.toList());
+        if (!markers.isEmpty()) {
+            Marker prev = markers.get(markers.size() - 1);
+            if (prev.direction == direction) {
+                prev.type = Marker.Type.LINE;
+            } else {
+                float dif = MathHelper.wrapDegrees(direction.getAngle() - prev.direction.getAngle());
+                if (dif == 90) {
+                    prev.type = Marker.Type.TURN;
+                } else if (dif == -90) {
+                    prev.type = Marker.Type.REVERSE_TURN;
+                } else {
+                    prev.type = Marker.Type.REVERSE;
+                }
+            }
+        }
+        markers.add(new Marker(headX, headY, Marker.Type.ARROW, direction));
+        List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
         if (!combination.isEmpty()) {
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
                 if (technique.matches(combination)) {
@@ -160,42 +173,50 @@ public class ShinsuCombinationGui extends AbstractGui {
     }
 
     public int getWidth() {
-        return (maxX - minX + 1) * Marker.WIDTH;
+        return markers.size() == 0 ? 0 : (maxX - minX + 1) * Marker.WIDTH;
     }
 
     public int getHeight() {
-        return (maxY - minY + 1) * Marker.HEIGHT;
+        return markers.size() == 0 ? 0 : (maxY - minY + 1) * Marker.HEIGHT;
     }
 
     private static class Marker extends AbstractGui {
 
-        private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 32, 32, 0, 0, 16, 16);
-        private static final TextureRenderData POINTER = new TextureRenderData(TEXTURE, 32, 32, 16, 0, 16, 16);
-        private static final TextureRenderData NONE = new TextureRenderData(TEXTURE, 32, 32, 16, 16, 16, 16);
         private static final int WIDTH = 20, HEIGHT = 20;
         private final Direction direction;
         private final int x, y;
+        private Type type;
 
-        private Marker(int x, int y, @Nullable Direction direction) {
+        private Marker(int x, int y, Type type, Direction direction) {
             this.direction = direction;
             this.x = x;
             this.y = y;
+            this.type = type;
         }
 
-        public void render(MatrixStack matrixStack, float x, float y) {
-            int z = getBlitOffset();
-            ClientReference.render(BACKGROUND, matrixStack, x, y, z, WIDTH, HEIGHT, 0xFFFFFFFF);
-            if (direction == null) {
-                ClientReference.render(NONE, matrixStack, x, y, z, WIDTH, HEIGHT, 0xFFFFFFFF);
-            } else {
-                float centerX = x + WIDTH / 2f;
-                float centerY = y + HEIGHT / 2f;
-                matrixStack.push();
-                matrixStack.translate(centerX, centerY, z);
-                matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + 180));
-                matrixStack.translate(-centerX, -centerY, -z);
-                ClientReference.render(POINTER, matrixStack, x, y, z, WIDTH, HEIGHT, 0xFFFFFFFF);
-                matrixStack.pop();
+        private void render(MatrixStack matrixStack, float x, float y) {
+            float centerX = x + WIDTH / 2f;
+            float centerY = y + HEIGHT / 2f;
+            matrixStack.push();
+            matrixStack.translate(centerX, centerY, 0);
+            matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + 180));
+            matrixStack.translate(-centerX, -centerY, 0);
+            ClientReference.render(type.texture, matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, 0xFFFFFFFF);
+            matrixStack.pop();
+        }
+
+        private enum Type {
+
+            TURN(new TextureRenderData(TEXTURE, 48, 32, 16, 0, 16, 16)),
+            REVERSE_TURN(new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16)),
+            LINE(new TextureRenderData(TEXTURE, 48, 32, 0, 0, 16, 16)),
+            REVERSE(new TextureRenderData(TEXTURE, 48, 32, 32, 0, 16, 16)),
+            ARROW(new TextureRenderData(TEXTURE, 48, 32, 0, 16, 16, 16));
+
+            private final IRenderData texture;
+
+            Type(IRenderData texture) {
+                this.texture = texture;
             }
         }
     }
