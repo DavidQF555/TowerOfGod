@@ -161,8 +161,8 @@ public final class RegistryHandler {
                 new ShinsuSword(2, -0.8f).setRegistryName(TowerOfGod.MOD_ID, "shinsu_sword"),
                 new ShinsuHoe(-1, 4).setRegistryName(TowerOfGod.MOD_ID, "shinsu_hoe"),
                 new ShinsuBow().setRegistryName(TowerOfGod.MOD_ID, "shinsu_bow"),
-                new GuideItem(ShinsuTechniqueType.CONTROL, new TranslationTextComponent("item." + TowerOfGod.MOD_ID + ".control_guide.author")).setRegistryName(TowerOfGod.MOD_ID, "control_guide"),
-                new GuideItem(ShinsuTechniqueType.DISRUPTION, new TranslationTextComponent("item." + TowerOfGod.MOD_ID + ".disruption_guide.author")).setRegistryName(TowerOfGod.MOD_ID, "disruption_guide")
+                new GuideItem(ShinsuTechniqueType.CONTROL, new TranslationTextComponent("item." + TowerOfGod.MOD_ID + ".control_guide.author"), 0xFF8580E6).setRegistryName(TowerOfGod.MOD_ID, "control_guide"),
+                new GuideItem(ShinsuTechniqueType.DISRUPTION, new TranslationTextComponent("item." + TowerOfGod.MOD_ID + ".disruption_guide.author"), 0xFF444444).setRegistryName(TowerOfGod.MOD_ID, "disruption_guide")
         );
     }
 

@@ -25,8 +25,9 @@ public class GuideItem extends Item {
 
     private final ITextComponent author;
     private final ShinsuTechniqueType type;
+    private final int color;
 
-    public GuideItem(ShinsuTechniqueType type, ITextComponent author) {
+    public GuideItem(ShinsuTechniqueType type, ITextComponent author, int color) {
         super(new Properties()
                 .group(TowerOfGod.TAB)
                 .maxStackSize(1)
@@ -34,6 +35,7 @@ public class GuideItem extends Item {
         );
         this.type = type;
         this.author = author;
+        this.color = color;
     }
 
     public ShinsuTechniqueType getType() {
@@ -49,7 +51,7 @@ public class GuideItem extends Item {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack item = playerIn.getHeldItem(handIn);
         if (playerIn instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new OpenGuideScreenPacket(getType()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new OpenGuideScreenPacket(getType(), color));
         }
         playerIn.addStat(Stats.ITEM_USED.get(this));
         return ActionResult.func_233538_a_(item, worldIn.isRemote());

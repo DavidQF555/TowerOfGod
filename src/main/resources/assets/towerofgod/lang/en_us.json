@@ -69,6 +69,7 @@
   "effect.towerofgod.body_reinforcement_effect": "Body Reinforcement",
   "container.towerofgod.lighthouse_container": "Lighthouse",
   "gui.towerofgod.floor_teleportation_terminal_screen": "Floor Teleportation Terminal",
+  "gui.towerofgod.guide": "Guide",
   "gui.towerofgod.level_requirement": "Requires Level %1$s in %2$s",
   "category.towerofgod": "Tower of God",
   "key.towerofgod.shinsu_technique_gui": "Use Shinsu Techniques",

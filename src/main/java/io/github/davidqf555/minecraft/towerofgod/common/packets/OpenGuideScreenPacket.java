@@ -16,17 +16,20 @@ public class OpenGuideScreenPacket {
 
     private static final BiConsumer<OpenGuideScreenPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.type.ordinal());
+        buffer.writeInt(message.color);
     };
-    private static final Function<PacketBuffer, OpenGuideScreenPacket> DECODER = buffer -> new OpenGuideScreenPacket(ShinsuTechniqueType.values()[buffer.readInt()]);
+    private static final Function<PacketBuffer, OpenGuideScreenPacket> DECODER = buffer -> new OpenGuideScreenPacket(ShinsuTechniqueType.values()[buffer.readInt()], buffer.readInt());
     private static final BiConsumer<OpenGuideScreenPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
 
     private final ShinsuTechniqueType type;
+    private final int color;
 
-    public OpenGuideScreenPacket(ShinsuTechniqueType type) {
+    public OpenGuideScreenPacket(ShinsuTechniqueType type, int color) {
         this.type = type;
+        this.color = color;
     }
 
     public static void register(int index) {
@@ -36,9 +39,7 @@ public class OpenGuideScreenPacket {
     private void handle(NetworkEvent.Context context) {
         NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> {
-                Minecraft.getInstance().displayGuiScreen(new GuideScreen(type));
-            });
+            context.enqueueWork(() -> Minecraft.getInstance().displayGuiScreen(new GuideScreen(type, 221, 180, color)));
             context.setPacketHandled(true);
         }
     }

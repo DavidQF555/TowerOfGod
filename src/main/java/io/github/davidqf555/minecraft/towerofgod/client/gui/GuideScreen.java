@@ -21,22 +21,24 @@ import java.util.Arrays;
 
 public class GuideScreen extends Screen {
 
+    private static final ITextComponent TITLE = new TranslationTextComponent("gui." + TowerOfGod.MOD_ID + ".guide");
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/guide.png");
-    private static final TextureRenderData BOOK = new TextureRenderData(TEXTURE, 221, 200, 0, 0, 221, 180);
-    private static final TextureRenderData NEXT = new TextureRenderData(TEXTURE, 221, 200, 0, 180, 18, 10);
-    private static final TextureRenderData BACK = new TextureRenderData(TEXTURE, 221, 200, 0, 190, 18, 10);
-    private static final ITextComponent TITLE = new TranslationTextComponent("");
+    private static final TextureRenderData OUTLINE = new TextureRenderData(TEXTURE, 221, 370, 0, 0, 221, 180);
+    private static final TextureRenderData PAGE = new TextureRenderData(TEXTURE, 221, 370, 0, 180, 221, 180);
+    private static final TextureRenderData NEXT = new TextureRenderData(TEXTURE, 221, 370, 0, 360, 18, 10);
+    private static final TextureRenderData BACK = new TextureRenderData(TEXTURE, 221, 370, 18, 360, 18, 10);
     private static final int BUTTON_WIDTH = 18, BUTTON_HEIGHT = 10;
     private final ShinsuTechnique[] pages;
-    private final int xSize, ySize;
+    private final int xSize, ySize, color;
     private ShinsuCombinationGui combo;
     private int page;
 
-    public GuideScreen(ShinsuTechniqueType type) {
+    public GuideScreen(ShinsuTechniqueType type, int xSize, int ySize, int color) {
         super(TITLE);
         pages = Arrays.stream(ShinsuTechnique.values()).filter(tech -> tech.getType() == type).toArray(ShinsuTechnique[]::new);
-        xSize = 221;
-        ySize = 180;
+        this.xSize = xSize;
+        this.ySize = ySize;
+        this.color = color;
     }
 
     @Override
@@ -55,7 +57,8 @@ public class GuideScreen extends Screen {
         float x = (width - xSize) / 2f;
         float y = (height - ySize) / 2f;
         int z = getBlitOffset();
-        ClientReference.render(BOOK, matrixStack, x, y, z, xSize, ySize, 0xFFFFFFFF);
+        ClientReference.render(PAGE, matrixStack, x, y, z, xSize, ySize, 0xFFFFFFFF);
+        ClientReference.render(OUTLINE, matrixStack, x, y, z, xSize, ySize, color);
         ITextComponent title = pages[page].getText();
         float centerX = x + xSize / 2f;
         int difY = font.FONT_HEIGHT;
@@ -65,6 +68,20 @@ public class GuideScreen extends Screen {
         ITextComponent req = new TranslationTextComponent(ShinsuCombinationGui.LEVEL, pages[page].getLevelRequirement(), pages[page].getType().getText());
         font.drawText(matrixStack, req, centerX - font.getStringPropertyWidth(req) / 2f, y + difY * 4, 0xFF000000);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == Minecraft.getInstance().gameSettings.keyBindInventory.getKey().getKeyCode()) {
+            closeScreen();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 
     private void updateCombo() {
@@ -98,4 +115,5 @@ public class GuideScreen extends Screen {
             }
         }
     }
+
 }
