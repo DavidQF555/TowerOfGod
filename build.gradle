@@ -15,7 +15,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.16.5-1.4.0.15'
+version = '1.16.5-1.4.0.16'
 group = 'io.github.davidqf555.minecraft.towerofgod'
 archivesBaseName = 'towerofgod'
 
@@ -50,6 +50,7 @@ minecraft {
         }
 
         data {
+            forceExit = false
             workingDirectory project.file('run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'

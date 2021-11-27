@@ -15,7 +15,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -36,15 +37,14 @@ public class ClickerItem extends Item {
         ClickerEntity entity = RegistryHandler.CLICKER_ENTITY.get().create(worldIn);
         if (entity != null) {
             Vector3d eye = playerIn.getEyePosition(1);
-            Vector3d change = playerIn.getLookVec().scale(4);
-            while (worldIn.getBlockState(new BlockPos(eye.add(change))).isSolid() && change.lengthSquared() > 0.625) {
-                change = change.scale(0.9);
-            }
-            Vector3d spawn = eye.add(change);
-            entity.setPosition(spawn.x, spawn.y, spawn.z);
+            BlockRayTraceResult result = worldIn.rayTraceBlocks(new RayTraceContext(eye, eye.add(playerIn.getLookVec().scale(4)), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity));
+            Vector3d spawn = result.getHitVec();
+            entity.setPosition(spawn.getX(), spawn.getY(), spawn.getZ());
             worldIn.addEntity(entity);
             ItemStack item = playerIn.getHeldItem(handIn);
-            item.setCount(item.getCount() - 1);
+            if (!playerIn.isCreative()) {
+                item.setCount(item.getCount() - 1);
+            }
             if (playerIn instanceof ServerPlayerEntity) {
                 ServerPlayerEntity serverPlayer = (ServerPlayerEntity) playerIn;
                 ShinsuQuality quality = getQuality(serverPlayer);
