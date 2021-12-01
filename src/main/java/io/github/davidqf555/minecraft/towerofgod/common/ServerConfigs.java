@@ -19,7 +19,7 @@ public class ServerConfigs {
     public ServerConfigs(ForgeConfigSpec.Builder builder) {
         builder.push("Server config for Tower of God mod");
         shinsuUpdatePeriod = builder.comment("This is the period in ticks that Shinsu techniques update. The greater this is, the less often Shinsu Techniques update, improving game performance but also decreasing consistency in game logic. The default is 10 ticks per update. ")
-                .defineInRange("Shinsu Tick Period", 10, 1, 200);
+                .defineInRange("Shinsu Update Period", 10, 1, 200);
         builder.pop();
     }
 }
