@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.Direction;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ErrorMessages;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import net.minecraft.client.Minecraft;
@@ -65,7 +66,7 @@ public class GuideScreen extends Screen {
         combo.renderCombo(matrixStack, centerX - combo.getWidth() / 2f, y + difY * 9);
         ClientReference.render(pages[page].getIcon(), matrixStack, centerX - difY, y + difY * 6, z, difY * 2, difY * 2, 0xFFFFFFFF);
         font.drawText(matrixStack, title, centerX - font.getStringPropertyWidth(title) / 2f, y + difY * 2, 0xFF000000);
-        ITextComponent req = new TranslationTextComponent(ShinsuCombinationGui.LEVEL, pages[page].getLevelRequirement(), pages[page].getType().getText());
+        ITextComponent req = ErrorMessages.REQUIRES_LEVEL.apply(pages[page].getType(), pages[page].getLevelRequirement());
         font.drawText(matrixStack, req, centerX - font.getStringPropertyWidth(req) / 2f, y + difY * 4, 0xFF000000);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }

@@ -54,12 +54,11 @@ public class ShinsuBow extends BowItem {
             float speed = getArrowVelocity(charge);
             if (speed >= 0.1 && !worldIn.isRemote()) {
                 ShinsuStats stats = ShinsuStats.get(shooter);
-                ShinsuTechniqueInstance technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(shooter, charge, null, shooter.getLookVec());
-                if (technique != null) {
-                    stats.cast((ServerWorld) worldIn, technique);
+                ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(shooter, charge, null, shooter.getLookVec()).ifLeft(instance -> {
+                    stats.cast((ServerWorld) worldIn, instance);
                     worldIn.playSound(null, shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1, 1 / (random.nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
                     shooter.addStat(Stats.ITEM_USED.get(this));
-                }
+                });
             }
         }
     }

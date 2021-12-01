@@ -1,11 +1,13 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import com.mojang.datafixers.util.Either;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
@@ -56,8 +58,8 @@ public class BlackFish extends ShinsuTechniqueInstance {
     public static class Builder implements ShinsuTechnique.IBuilder<BlackFish> {
 
         @Override
-        public BlackFish build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return new BlackFish(user, level);
+        public Either<BlackFish, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new BlackFish(user, level));
         }
 
         @Override

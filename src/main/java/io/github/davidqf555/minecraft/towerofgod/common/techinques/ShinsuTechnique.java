@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
@@ -9,27 +10,28 @@ import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 public enum ShinsuTechnique {
 
-    BODY_REINFORCEMENT(ShinsuTechniqueType.CONTROL, Repeat.DENY, false, true, 1, new BodyReinforcement.Builder(), ShinsuIcons.RESISTANCE, ImmutableList.of(Direction.UP, Direction.UP, Direction.UP)),
-    BLACK_FISH(ShinsuTechniqueType.CONTROL, Repeat.DENY, false, true, 5, new BlackFish.Builder(), ShinsuIcons.SWIRL, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.DOWN)),
+    BODY_REINFORCEMENT(ShinsuTechniqueType.CONTROL, Repeat.OVERRIDE, false, true, 1, new BodyReinforcement.Builder(), ShinsuIcons.RESISTANCE, ImmutableList.of(Direction.UP, Direction.UP, Direction.UP)),
+    BLACK_FISH(ShinsuTechniqueType.CONTROL, Repeat.OVERRIDE, false, true, 5, new BlackFish.Builder(), ShinsuIcons.SWIRL, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.DOWN)),
     SHINSU_BLAST(ShinsuTechniqueType.CONTROL, Repeat.ALLOW, false, true, 2, new ShinsuBlast.Builder(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.DOWN, Direction.UP)),
     FLARE_WAVE_EXPLOSION(ShinsuTechniqueType.DISRUPTION, Repeat.ALLOW, false, true, 10, new FlareWaveExplosion.Builder(), ShinsuIcons.TENSION, ImmutableList.of(Direction.UP, Direction.LEFT, Direction.LEFT)),
     REVERSE_FLOW_CONTROL(ShinsuTechniqueType.DISRUPTION, Repeat.ALLOW, false, true, 15, new ReverseFlowControl.Builder(), ShinsuIcons.REVERSE, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.RIGHT)),
-    MANIFEST(ShinsuTechniqueType.MANIFEST, Repeat.DENY, true, true, 10, new Manifest.Builder(), ShinsuIcons.PICKAXE, ImmutableList.of(Direction.LEFT, Direction.RIGHT)),
+    MANIFEST(ShinsuTechniqueType.MANIFEST, Repeat.OVERRIDE, true, true, 10, new Manifest.Builder(), ShinsuIcons.PICKAXE, ImmutableList.of(Direction.LEFT, Direction.RIGHT)),
     SHOOT_SHINSU_ARROW(ShinsuTechniqueType.MANIFEST, Repeat.ALLOW, false, false, 0, new ShootShinsuArrow.Builder(), ShinsuIcons.BAANGS, ImmutableList.of()),
     MOVE_DEVICES(ShinsuTechniqueType.DEVICE_CONTROL, Repeat.ALLOW, true, true, 5, new MoveDevices.Builder(), ShinsuIcons.MOVE, ImmutableList.of(Direction.UP, Direction.RIGHT)),
-    LIGHTHOUSE_FLOW_CONTROL(ShinsuTechniqueType.DEVICE_CONTROL, Repeat.DENY, false, true, 10, new LighthouseFlowControl.Builder(), ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT)),
+    LIGHTHOUSE_FLOW_CONTROL(ShinsuTechniqueType.DEVICE_CONTROL, Repeat.OVERRIDE, false, true, 10, new LighthouseFlowControl.Builder(), ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT)),
     SCOUT(ShinsuTechniqueType.DEVICE_CONTROL, Repeat.ALLOW, false, true, 7, new Scout.Builder(), ShinsuIcons.EYE, ImmutableList.of(Direction.UP, Direction.DOWN)),
     FOLLOW_OWNER(ShinsuTechniqueType.DEVICE_CONTROL, Repeat.TOGGLE, true, true, 1, new FollowOwner.Builder(), ShinsuIcons.FOLLOW, ImmutableList.of(Direction.UP, Direction.LEFT));
 
@@ -124,42 +126,48 @@ public enum ShinsuTechnique {
     }
 
     public enum Repeat {
-        DENY(),
+        OVERRIDE(),
         ALLOW(),
         TOGGLE()
     }
 
     public interface IBuilder<T extends ShinsuTechniqueInstance> {
 
-        @Nullable
-        T build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir);
+        Either<T, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir);
 
         T emptyBuild();
 
         ShinsuTechnique getTechnique();
 
-        @Nullable
-        default T doBuild(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+        default Either<T, ITextComponent> doBuild(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             ShinsuTechnique technique = getTechnique();
             ShinsuStats stats = ShinsuStats.get(user);
-            if ((!technique.isObtainable() || level > 0) && stats.getData(technique.getType()).getCooldown() <= 0) {
-                T instance = build(user, level, target, dir);
-                if (instance != null) {
-                    List<ShinsuTechniqueInstance> conflicting = stats.getTechniques().stream().filter(instance::isConflicting).collect(Collectors.toList());
-                    if (technique.getRepeatEffect() != Repeat.DENY || conflicting.isEmpty()) {
-                        int netShinsuUse = instance.getShinsuUse();
-                        int netBaangsUse = instance.getBaangsUse();
-                        for (ShinsuTechniqueInstance inst : conflicting) {
-                            netShinsuUse -= inst.getShinsuUse();
-                            netBaangsUse -= inst.getBaangsUse();
-                        }
-                        if (stats.getShinsu() >= netShinsuUse && stats.getBaangs() >= netBaangsUse) {
-                            return instance;
-                        }
+            int cooldown = stats.getData(technique.getType()).getCooldown();
+            if (cooldown > 0) {
+                return Either.right(ErrorMessages.ON_COOLDOWN.apply(cooldown));
+            } else if (technique.isObtainable() && level <= technique.getLevelRequirement()) {
+                return Either.right(ErrorMessages.REQUIRES_LEVEL.apply(technique.getType(), technique.getLevelRequirement()));
+            }
+            Either<T, ITextComponent> either = build(user, level, target, dir);
+            Optional<T> op = either.left();
+            if (op.isPresent()) {
+                T instance = op.get();
+                int netShinsuUse = instance.getShinsuUse();
+                int netBaangsUse = instance.getBaangsUse();
+                for (ShinsuTechniqueInstance inst : stats.getTechniques()) {
+                    if (inst.getTechnique() == technique) {
+                        netShinsuUse -= inst.getShinsuUse();
+                        netBaangsUse -= inst.getBaangsUse();
                     }
                 }
+                if (stats.getBaangs() < netBaangsUse) {
+                    return Either.right(ErrorMessages.REQUIRES_BAANGS.apply(netBaangsUse));
+                } else if (stats.getShinsu() < netShinsuUse) {
+                    return Either.right(ErrorMessages.REQUIRES_SHINSU.apply(netShinsuUse));
+                }
+                return Either.left(instance);
             }
-            return null;
+            return either;
         }
     }
 }

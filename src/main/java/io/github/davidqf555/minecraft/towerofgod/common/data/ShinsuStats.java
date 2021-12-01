@@ -3,7 +3,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.data;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientShinsuDataPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateInitialCooldownsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.*;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
@@ -291,27 +290,21 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             if (technique.getRepeatEffect() == ShinsuTechnique.Repeat.TOGGLE && used.isPresent()) {
                 used.get().remove((ServerWorld) user.world);
             } else if (getData(technique.getType()).getCooldown() <= 0) {
-                ShinsuTechniqueInstance tech = technique.getBuilder().doBuild(user, level, target, dir);
-                if (tech != null) {
-                    cast((ServerWorld) user.world, tech);
-                }
+                technique.getBuilder().doBuild(user, level, target, dir).ifLeft(instance -> cast((ServerWorld) user.world, instance));
             }
         }
     }
 
     public void cast(ServerWorld world, ShinsuTechniqueInstance instance) {
         ShinsuTechnique technique = instance.getTechnique();
-        for (ShinsuTechniqueInstance inst : new ArrayList<>(getTechniques())) {
-            if (instance.isConflicting(inst)) {
-                inst.remove(world);
+        if (technique.getRepeatEffect() == ShinsuTechnique.Repeat.OVERRIDE) {
+            for (ShinsuTechniqueInstance inst : new ArrayList<>(getTechniques())) {
+                if (inst.getTechnique() == technique) {
+                    inst.remove(world);
+                }
             }
         }
-        int cooldown = instance.getCooldown();
-        Entity user = instance.getUser(world);
-        if (user instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateInitialCooldownsPacket(technique, cooldown));
-        }
-        getData(technique.getType()).setCooldown(cooldown);
+        getData(technique.getType()).setCooldown(instance.getCooldown());
         addTechnique(instance);
         instance.onUse(world);
     }

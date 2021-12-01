@@ -25,6 +25,7 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 public abstract class BasicShinsuUserEntity extends CreatureEntity implements IShinsuUser<BasicShinsuUserEntity>, IGeared<BasicShinsuUserEntity>, IRangedAttackMob {
@@ -103,12 +104,12 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         float inaccuracy = (14 - world.getDifficulty().getId() * 4f) / stats.getLevel();
         if (arrow instanceof ShinsuArrowEntity) {
             Vector3d dir = new Vector3d(dX, dY, dZ);
-            ShinsuTechniqueInstance technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(this, ShootShinsuArrow.getLevelForVelocity(velocity, stats.getQuality()), target, dir);
-            if (technique == null) {
-                arrow = ((ArrowItem) Items.ARROW).createArrow(world, new ItemStack(Items.ARROW), this);
-            } else {
-                stats.cast((ServerWorld) world, technique);
+            Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(this, ShootShinsuArrow.getLevelForVelocity(velocity, stats.getQuality()), target, dir).left();
+            if (technique.isPresent()) {
+                stats.cast((ServerWorld) world, technique.get());
                 return;
+            } else {
+                arrow = ((ArrowItem) Items.ARROW).createArrow(world, new ItemStack(Items.ARROW), this);
             }
         }
         arrow.shoot(dX, dY, dZ, velocity, inaccuracy);

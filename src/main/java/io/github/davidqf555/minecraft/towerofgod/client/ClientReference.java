@@ -17,21 +17,19 @@ import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
 
 public final class ClientReference {
 
-    public static final Map<ShinsuTechnique, Integer> INITIAL_COOLDOWNS = new EnumMap<>(ShinsuTechnique.class);
+    public static final Map<ShinsuTechnique, ITextComponent> ERRORS = new EnumMap<>(ShinsuTechnique.class);
     public static StatsMeterGui shinsu = null;
     public static StatsMeterGui baangs = null;
     public static ShinsuCombinationGui combo = null;
     public static Map<ShinsuTechniqueType, ShinsuTechniqueData> data = new EnumMap<>(ShinsuTechniqueType.class);
-    public static List<ShinsuTechnique> canCast = new ArrayList<>();
 
     public static void render(IRenderData data, MatrixStack matrixStack, float x, float y, float blitOffset, int width, int height, int color) {
         if (data instanceof TextureRenderData) {

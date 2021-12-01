@@ -105,11 +105,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         }
     }
 
-    public boolean isConflicting(ShinsuTechniqueInstance instance) {
-        ShinsuTechnique technique = getTechnique();
-        return technique.getRepeatEffect() == ShinsuTechnique.Repeat.DENY && technique == instance.getTechnique();
-    }
-
     protected void updateMeters(ServerWorld world) {
         Entity user = getUser(world);
         if (user instanceof ServerPlayerEntity) {

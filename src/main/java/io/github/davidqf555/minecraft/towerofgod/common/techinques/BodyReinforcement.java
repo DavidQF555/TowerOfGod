@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
@@ -7,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
@@ -59,8 +61,8 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
     public static class Builder implements ShinsuTechnique.IBuilder<BodyReinforcement> {
 
         @Override
-        public BodyReinforcement build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return new BodyReinforcement(user, level);
+        public Either<BodyReinforcement, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new BodyReinforcement(user, level));
         }
 
         @Override

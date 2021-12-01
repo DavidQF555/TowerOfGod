@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
@@ -10,6 +11,7 @@ import net.minecraft.item.BowItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
@@ -101,8 +103,8 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
     public static class Builder implements ShinsuTechnique.IBuilder<ShootShinsuArrow> {
 
         @Override
-        public ShootShinsuArrow build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return new ShootShinsuArrow(user, level, dir);
+        public Either<ShootShinsuArrow, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new ShootShinsuArrow(user, level, dir));
         }
 
         @Override

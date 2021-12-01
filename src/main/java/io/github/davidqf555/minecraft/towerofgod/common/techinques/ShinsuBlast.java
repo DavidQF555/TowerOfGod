@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
@@ -8,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
@@ -103,8 +105,8 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
     public static class Builder implements ShinsuTechnique.IBuilder<ShinsuBlast> {
 
         @Override
-        public ShinsuBlast build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return new ShinsuBlast(user, level, dir);
+        public Either<ShinsuBlast, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new ShinsuBlast(user, level, dir));
         }
 
         @Override

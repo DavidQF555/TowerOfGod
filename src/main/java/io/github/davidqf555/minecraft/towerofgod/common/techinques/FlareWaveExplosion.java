@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -8,6 +9,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
@@ -58,8 +60,8 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
     public static class Builder implements ShinsuTechnique.IBuilder<FlareWaveExplosion> {
 
         @Override
-        public FlareWaveExplosion build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE ? new FlareWaveExplosion(user, level, (LivingEntity) target) : null;
+        public Either<FlareWaveExplosion, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, level, (LivingEntity) target)) : Either.right(ErrorMessages.REQUIRES_TARGET.apply(RANGE));
         }
 
         @Override

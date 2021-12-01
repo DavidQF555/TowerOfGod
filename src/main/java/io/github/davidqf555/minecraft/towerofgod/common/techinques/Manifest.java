@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
+import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import mcp.MethodsReturnNonnullByDefault;
@@ -8,6 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -82,8 +84,8 @@ public class Manifest extends ShinsuTechniqueInstance {
     public static class Builder implements ShinsuTechnique.IBuilder<Manifest> {
 
         @Override
-        public Manifest build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuStats.get(user).getShape() == ShinsuShape.NONE ? null : new Manifest(user, level);
+        public Either<Manifest, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+            return ShinsuStats.get(user).getShape() == ShinsuShape.NONE ? Either.right(ErrorMessages.REQUIRES_SHAPE) : Either.left(new Manifest(user, level));
         }
 
         @Override
