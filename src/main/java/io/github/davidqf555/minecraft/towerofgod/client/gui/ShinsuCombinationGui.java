@@ -1,7 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientConfigs;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
@@ -26,7 +28,6 @@ import java.util.stream.Collectors;
 @ParametersAreNonnullByDefault
 public class ShinsuCombinationGui extends AbstractGui {
 
-    private static final float RESISTIVITY = 20;
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/combination.png");
     private static final int ICON_WIDTH = 40, ICON_HEIGHT = 40, BACKGROUND_WIDTH = 60, BACKGROUND_HEIGHT = 60;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 32, 16, 16, 16);
@@ -76,30 +77,33 @@ public class ShinsuCombinationGui extends AbstractGui {
     }
 
     public void tick() {
+        Minecraft client = Minecraft.getInstance();
         if (getSelected() == null) {
-            Minecraft client = Minecraft.getInstance();
             float dYaw = MathHelper.wrapDegrees(client.player.rotationYaw - prevYaw);
             float dPitch = MathHelper.wrapDegrees(client.player.rotationPitch - prevPitch);
-            if (dPitch > RESISTIVITY) {
+            int resistivity = ClientConfigs.INSTANCE.shinsuCombinationResistivity.get();
+            if (dPitch > resistivity) {
                 addMarker(Direction.DOWN);
                 prevYaw = client.player.rotationYaw;
                 prevPitch = client.player.rotationPitch;
-            } else if (dPitch < -RESISTIVITY) {
+            } else if (dPitch < -resistivity) {
                 addMarker(Direction.UP);
                 prevYaw = client.player.rotationYaw;
                 prevPitch = client.player.rotationPitch;
-            } else if (dYaw > RESISTIVITY) {
+            } else if (dYaw > resistivity) {
                 addMarker(Direction.RIGHT);
                 prevYaw = client.player.rotationYaw;
                 prevPitch = client.player.rotationPitch;
-            } else if (dYaw < -RESISTIVITY) {
+            } else if (dYaw < -resistivity) {
                 addMarker(Direction.LEFT);
                 prevYaw = client.player.rotationYaw;
                 prevPitch = client.player.rotationPitch;
             }
         }
-        TowerOfGod.CHANNEL.sendToServer(new UpdateClientShinsuDataPacket());
-        TowerOfGod.CHANNEL.sendToServer(new UpdateClientErrorPacket());
+        if (client.player.world.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
+            TowerOfGod.CHANNEL.sendToServer(new UpdateClientShinsuDataPacket());
+            TowerOfGod.CHANNEL.sendToServer(new UpdateClientErrorPacket());
+        }
     }
 
     protected void reset() {

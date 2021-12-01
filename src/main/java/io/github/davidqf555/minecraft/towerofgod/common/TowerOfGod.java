@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common;
 
+import io.github.davidqf555.minecraft.towerofgod.client.ClientConfigs;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -31,7 +32,9 @@ public class TowerOfGod {
             PROTOCOL_VERSION::equals);
 
     public TowerOfGod() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC);
+        ModLoadingContext context = ModLoadingContext.get();
+        context.registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC);
+        context.registerConfig(ModConfig.Type.CLIENT, ClientConfigs.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
     }
 }
