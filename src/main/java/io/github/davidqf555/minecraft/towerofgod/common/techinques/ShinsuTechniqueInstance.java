@@ -56,7 +56,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     }
 
     public int ticksLeft() {
-        return duration - ticks;
+        return getDuration() - ticks;
     }
 
     public int getDuration() {
@@ -99,9 +99,9 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         }
     }
 
-    public void tick(ServerWorld world) {
+    public void periodicTick(ServerWorld world, int period) {
         if (!getTechnique().isIndefinite()) {
-            ticks++;
+            ticks += period;
         }
     }
 

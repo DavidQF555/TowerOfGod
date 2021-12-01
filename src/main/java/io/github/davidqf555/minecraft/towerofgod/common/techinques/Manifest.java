@@ -61,7 +61,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void periodicTick(ServerWorld world, int period) {
         boolean contains = false;
         IItemHandler inventory = getUser(world).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         UUID id = getID();
@@ -76,7 +76,7 @@ public class Manifest extends ShinsuTechniqueInstance {
         if (!contains) {
             remove(world);
         }
-        super.tick(world);
+        super.periodicTick(world, period);
     }
 
     @MethodsReturnNonnullByDefault

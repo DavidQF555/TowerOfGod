@@ -113,8 +113,8 @@ public final class EventBusSubscriber {
 
         @SubscribeEvent
         public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-            if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START) {
-                ShinsuStats.get(event.player).tick((ServerWorld) event.player.world);
+            if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START && event.player.world.getGameTime() % ServerConfig.INSTANCE.shinsuUpdatePeriod.get() == 0) {
+                ShinsuStats.get(event.player).periodicTick((ServerWorld) event.player.world, ServerConfig.INSTANCE.shinsuUpdatePeriod.get());
             }
         }
 
@@ -144,9 +144,12 @@ public final class EventBusSubscriber {
                 if (event.world.getGameTime() % 100 == 0) {
                     RegularTeamsSavedData.getOrCreate((ServerWorld) event.world).update((ServerWorld) event.world);
                 }
-                ((ServerWorld) event.world).getEntities()
-                        .filter(entity -> entity instanceof IShinsuUser)
-                        .forEach(entity -> ShinsuStats.get(entity).tick((ServerWorld) event.world));
+                int period = ServerConfig.INSTANCE.shinsuUpdatePeriod.get();
+                if (event.world.getGameTime() % period == 0) {
+                    ((ServerWorld) event.world).getEntities()
+                            .filter(entity -> entity instanceof IShinsuUser)
+                            .forEach(entity -> ShinsuStats.get(entity).periodicTick((ServerWorld) event.world, period));
+                }
             }
         }
 

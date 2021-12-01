@@ -31,14 +31,14 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void periodicTick(ServerWorld world, int period) {
         Entity e = getUser(world);
         if (e instanceof LivingEntity) {
             LivingEntity user = (LivingEntity) e;
             int level = (int) (getLevel() * ShinsuStats.get(user).getTension(world));
-            user.addPotionEffect(new EffectInstance(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get(), 2, level - 1, false, true, true));
+            user.addPotionEffect(new EffectInstance(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get(), Math.min(period, ticksLeft()) + 1, level - 1, false, true, true));
         }
-        super.tick(world);
+        super.periodicTick(world, period);
     }
 
     @Override

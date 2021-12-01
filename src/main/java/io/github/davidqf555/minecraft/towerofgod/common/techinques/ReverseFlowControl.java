@@ -34,7 +34,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void periodicTick(ServerWorld world, int period) {
         Entity user = getUser(world);
         Entity target = getTarget(world);
         if (user != null && target instanceof LivingEntity) {
@@ -44,9 +44,9 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
             }
             double resistance = ShinsuStats.getNetResistance(world, user, target);
             int level = (int) (resistance * getLevel());
-            ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), 2, level - 1));
+            ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), Math.min(period, ticksLeft()) + 1, level - 1));
         }
-        super.tick(world);
+        super.periodicTick(world, period);
     }
 
     @Override

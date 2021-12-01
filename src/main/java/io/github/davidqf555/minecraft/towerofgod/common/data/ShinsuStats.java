@@ -263,10 +263,10 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         return data.computeIfAbsent(type, p -> new ShinsuTechniqueData());
     }
 
-    public void tick(ServerWorld world) {
+    public void periodicTick(ServerWorld world, int period) {
         List<ShinsuTechniqueInstance> techniques = new ArrayList<>(getTechniques());
         for (ShinsuTechniqueInstance technique : techniques) {
-            technique.tick(world);
+            technique.periodicTick(world, period);
             if (technique.ticksLeft() <= 0) {
                 technique.remove(world);
             }
@@ -275,7 +275,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             ShinsuTechniqueData data = getData(type);
             int cooldown = data.getCooldown();
             if (cooldown > 0) {
-                data.setCooldown(cooldown - 1);
+                data.setCooldown(cooldown - period);
             }
         }
     }

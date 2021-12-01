@@ -71,7 +71,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance.Dire
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void periodicTick(ServerWorld world, int period) {
         Entity user = getUser(world);
         if (user != null) {
             UUID userID = user.getUniqueID();
@@ -90,7 +90,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance.Dire
                 updateMeters(world);
             }
         }
-        super.tick(world);
+        super.periodicTick(world, period);
     }
 
     @Override

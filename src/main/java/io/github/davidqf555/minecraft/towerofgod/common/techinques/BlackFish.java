@@ -25,12 +25,12 @@ public class BlackFish extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void periodicTick(ServerWorld world, int period) {
         Entity e = getUser(world);
         if (e instanceof LivingEntity && world.getLight(e.getPosition()) <= getLevel()) {
-            ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 2, 0, true, true, true));
+            ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, Math.min(period, ticksLeft()) + 1, 0, true, true, true));
         }
-        super.tick(world);
+        super.periodicTick(world, period);
     }
 
     @Override
