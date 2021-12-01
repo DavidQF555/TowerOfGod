@@ -18,6 +18,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -142,8 +143,11 @@ public enum ShinsuTechnique {
         default Either<T, ITextComponent> doBuild(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
             ShinsuTechnique technique = getTechnique();
             ShinsuStats stats = ShinsuStats.get(user);
+            List<ShinsuTechniqueInstance> same = stats.getTechniques().stream().filter(inst -> inst.getTechnique() == technique).collect(Collectors.toList());
             int cooldown = stats.getData(technique.getType()).getCooldown();
-            if (cooldown > 0) {
+            if (technique.getRepeatEffect() == Repeat.TOGGLE && !same.isEmpty()) {
+                return Either.left(emptyBuild());
+            } else if (cooldown > 0) {
                 return Either.right(ErrorMessages.ON_COOLDOWN.apply(cooldown));
             } else if (technique.isObtainable() && level <= technique.getLevelRequirement()) {
                 return Either.right(ErrorMessages.REQUIRES_LEVEL.apply(technique.getType(), technique.getLevelRequirement()));
@@ -154,11 +158,9 @@ public enum ShinsuTechnique {
                 T instance = op.get();
                 int netShinsuUse = instance.getShinsuUse();
                 int netBaangsUse = instance.getBaangsUse();
-                for (ShinsuTechniqueInstance inst : stats.getTechniques()) {
-                    if (inst.getTechnique() == technique) {
-                        netShinsuUse -= inst.getShinsuUse();
-                        netBaangsUse -= inst.getBaangsUse();
-                    }
+                for (ShinsuTechniqueInstance inst : same) {
+                    netShinsuUse -= inst.getShinsuUse();
+                    netBaangsUse -= inst.getBaangsUse();
                 }
                 if (stats.getBaangs() < netBaangsUse) {
                     return Either.right(ErrorMessages.REQUIRES_BAANGS.apply(netBaangsUse));
