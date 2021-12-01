@@ -17,80 +17,83 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
+@Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public final class GuiEventBusSubscriber {
 
-    @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
-    public static class ClientBus {
+    private GuiEventBusSubscriber() {
+    }
 
-        @SubscribeEvent
-        public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-            Minecraft client = Minecraft.getInstance();
-            if (usingValid(client)) {
-                if (renderBars() && !client.gameSettings.hideGUI && !client.player.isCreative()) {
-                    if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
-                        event.getMatrixStack().translate(0, -10, 0);
-                    } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
-                        ClientReference.shinsu.render(event.getMatrixStack());
-                        ClientReference.baangs.render(event.getMatrixStack());
-                    }
-                }
-                if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isKeyDown()) {
-                    if (ClientReference.combo == null) {
-                        ClientReference.combo = new ShinsuCombinationGui(client.player.rotationYawHead, client.player.rotationPitch);
-                    }
-                    if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
-                        MainWindow window = client.getMainWindow();
-                        ClientReference.combo.render(event.getMatrixStack(), (window.getScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getScaledHeight() - ClientReference.combo.getHeight()) / 2f);
-                    }
-                } else {
-                    ClientReference.combo = null;
+    @SubscribeEvent
+    public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+        Minecraft client = Minecraft.getInstance();
+        if (usingValid(client)) {
+            if (renderBars() && !client.gameSettings.hideGUI && !client.player.isCreative()) {
+                if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
+                    event.getMatrixStack().translate(0, -10, 0);
+                } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
+                    ClientReference.shinsu.render(event.getMatrixStack());
+                    ClientReference.baangs.render(event.getMatrixStack());
                 }
             }
-        }
-
-        @SubscribeEvent
-        public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
-            Minecraft client = Minecraft.getInstance();
-            if (usingValid(client) && renderBars() && !client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
-                event.getMatrixStack().translate(0, 10, 0);
-            }
-        }
-
-        private static boolean usingValid(Minecraft client) {
-            return client.player != null && !client.player.isSpectator();
-        }
-
-        private static boolean renderBars() {
-            return ClientReference.shinsu != null && ClientReference.baangs != null && (ClientReference.shinsu.getMax() > 0 || ClientReference.baangs.getMax() > 0);
-        }
-
-        @SubscribeEvent
-        public static void onMouseInput(InputEvent.KeyInputEvent event) {
-            if (ClientReference.combo != null && KeyBindingsList.SHINSU_TECHNIQUE_GUI.matchesKey(event.getKey(), event.getScanCode()) && event.getAction() == GLFW.GLFW_RELEASE) {
-                ShinsuTechnique selected = ClientReference.combo.getSelected();
-                if (selected != null && ClientReference.data.containsKey(selected.getType()) && ClientReference.data.get(selected.getType()).getCooldown() <= 0) {
-                    TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
-                    ClientReference.combo = null;
+            if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isKeyDown()) {
+                if (ClientReference.combo == null) {
+                    ClientReference.combo = new ShinsuCombinationGui(client.player.rotationYawHead, client.player.rotationPitch);
                 }
+                if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
+                    MainWindow window = client.getMainWindow();
+                    ClientReference.combo.render(event.getMatrixStack(), (window.getScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getScaledHeight() - ClientReference.combo.getHeight()) / 2f);
+                }
+            } else {
+                ClientReference.combo = null;
             }
-        }
-
-        @SubscribeEvent
-        public static void onClickInput(InputEvent.ClickInputEvent event) {
-            if (ClientReference.combo != null && event.isCancelable()) {
-                event.setCanceled(true);
-                event.setSwingHand(false);
-            }
-        }
-
-        @SubscribeEvent
-        public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
-            ForgeBus.setMeterPositions();
         }
     }
 
+    @SubscribeEvent
+    public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
+        Minecraft client = Minecraft.getInstance();
+        if (usingValid(client) && renderBars() && !client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
+            event.getMatrixStack().translate(0, 10, 0);
+        }
+    }
+
+    private static boolean usingValid(Minecraft client) {
+        return client.player != null && !client.player.isSpectator();
+    }
+
+    private static boolean renderBars() {
+        return ClientReference.shinsu != null && ClientReference.baangs != null && (ClientReference.shinsu.getMax() > 0 || ClientReference.baangs.getMax() > 0);
+    }
+
+    @SubscribeEvent
+    public static void onMouseInput(InputEvent.KeyInputEvent event) {
+        if (ClientReference.combo != null && KeyBindingsList.SHINSU_TECHNIQUE_GUI.matchesKey(event.getKey(), event.getScanCode()) && event.getAction() == GLFW.GLFW_RELEASE) {
+            ShinsuTechnique selected = ClientReference.combo.getSelected();
+            if (selected != null && ClientReference.data.containsKey(selected.getType()) && ClientReference.data.get(selected.getType()).getCooldown() <= 0) {
+                TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
+                ClientReference.combo = null;
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClickInput(InputEvent.ClickInputEvent event) {
+        if (ClientReference.combo != null && event.isCancelable()) {
+            event.setCanceled(true);
+            event.setSwingHand(false);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
+        ForgeBus.setMeterPositions();
+    }
+
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-    public static class ForgeBus {
+    public static final class ForgeBus {
+
+        private ForgeBus() {
+        }
 
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event) {

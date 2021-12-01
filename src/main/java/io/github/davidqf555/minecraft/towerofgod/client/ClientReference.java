@@ -31,6 +31,9 @@ public final class ClientReference {
     public static ShinsuCombinationGui combo = null;
     public static Map<ShinsuTechniqueType, ShinsuTechniqueData> data = new EnumMap<>(ShinsuTechniqueType.class);
 
+    private ClientReference() {
+    }
+
     public static void render(IRenderData data, MatrixStack matrixStack, float x, float y, float blitOffset, int width, int height, int color) {
         if (data instanceof TextureRenderData) {
             Matrix4f matrix = matrixStack.getLast().getMatrix();

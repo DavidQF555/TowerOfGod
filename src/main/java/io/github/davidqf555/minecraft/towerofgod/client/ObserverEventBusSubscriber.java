@@ -12,44 +12,56 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public final class ObserverEventBusSubscriber {
 
-    public static final Map<UUID, Pair<Set<UUID>, Set<UUID>>> startStopHighlight = new HashMap<>();
+    public static final Map<UUID, Pair<Set<UUID>, Set<UUID>>> START_STOP_HIGHLIGHT = new HashMap<>();
 
-    @SubscribeEvent
-    public static void preRenderLiving(RenderLivingEvent.Pre<LivingEntity, EntityModel<LivingEntity>> event) {
-        LivingEntity entity = event.getEntity();
-        UUID id = entity.getUniqueID();
-        boolean included = false;
-        boolean stillGlowing = false;
-        for (UUID key : new HashSet<>(startStopHighlight.keySet())) {
-            Pair<Set<UUID>, Set<UUID>> pair = startStopHighlight.get(key);
-            Set<UUID> highlight = pair.getFirst();
-            Set<UUID> stop = pair.getSecond();
-            if (stop.contains(id)) {
-                highlight.remove(id);
-                stop.remove(id);
-                included = true;
-                if (highlight.isEmpty()) {
-                    startStopHighlight.remove(key);
-                }
-            } else if (highlight.contains(id)) {
-                stillGlowing = true;
-                included = true;
-            }
+    private ObserverEventBusSubscriber() {
+    }
+
+    @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
+    public static final class ModBus {
+
+        private ModBus() {
         }
-        if (included) {
-            entity.setGlowing(stillGlowing);
+
+        @SubscribeEvent
+        public static void preRenderLiving(RenderLivingEvent.Pre<LivingEntity, EntityModel<LivingEntity>> event) {
+            LivingEntity entity = event.getEntity();
+            UUID id = entity.getUniqueID();
+            boolean included = false;
+            boolean stillGlowing = false;
+            for (UUID key : new HashSet<>(START_STOP_HIGHLIGHT.keySet())) {
+                Pair<Set<UUID>, Set<UUID>> pair = START_STOP_HIGHLIGHT.get(key);
+                Set<UUID> highlight = pair.getFirst();
+                Set<UUID> stop = pair.getSecond();
+                if (stop.contains(id)) {
+                    highlight.remove(id);
+                    stop.remove(id);
+                    included = true;
+                    if (highlight.isEmpty()) {
+                        START_STOP_HIGHLIGHT.remove(key);
+                    }
+                } else if (highlight.contains(id)) {
+                    stillGlowing = true;
+                    included = true;
+                }
+            }
+            if (included) {
+                entity.setGlowing(stillGlowing);
+            }
         }
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-    public static class ForgeBus {
+    public static final class ForgeBus {
+
+        private ForgeBus() {
+        }
 
         @SubscribeEvent
         public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-            startStopHighlight.clear();
+            START_STOP_HIGHLIGHT.clear();
         }
 
     }

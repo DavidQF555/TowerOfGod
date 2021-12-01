@@ -9,6 +9,9 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 
 public final class FloorCommand {
 
+    private FloorCommand() {
+    }
+
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("floor")
                 .requires(source -> source.hasPermissionLevel(2))

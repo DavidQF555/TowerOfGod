@@ -62,12 +62,17 @@ import java.util.Map;
 public final class EventBusSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
-    private static final ResourceLocation PLAYER_EQUIPS = new ResourceLocation(TowerOfGod.MOD_ID, "player_equips");
     private static final ConfiguredFeature<?, ?> SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
     private static int index = 0;
 
+    private EventBusSubscriber() {
+    }
+
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public static class ForgeBus {
+    public static final class ForgeBus {
+
+        private ForgeBus() {
+        }
 
         @SubscribeEvent
         public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
@@ -171,7 +176,10 @@ public final class EventBusSubscriber {
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class ModBus {
+    public static final class ModBus {
+
+        private ModBus() {
+        }
 
         @SubscribeEvent
         public static void onGatherDataEvent(GatherDataEvent event) {

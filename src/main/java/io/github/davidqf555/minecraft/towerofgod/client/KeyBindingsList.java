@@ -10,6 +10,9 @@ public final class KeyBindingsList {
 
     public static final KeyBinding SHINSU_TECHNIQUE_GUI = new KeyBinding("key." + TowerOfGod.MOD_ID + ".shinsu_technique_gui", KeyEvent.VK_G, "category." + TowerOfGod.MOD_ID);
 
+    private KeyBindingsList() {
+    }
+
     public static void register() {
         ClientRegistry.registerKeyBinding(SHINSU_TECHNIQUE_GUI);
     }

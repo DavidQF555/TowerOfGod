@@ -33,6 +33,9 @@ public final class ShinsuCommand {
     private static final String TENSION = "commands." + TowerOfGod.MOD_ID + ".shinsu.tension";
     private static final String TECHNIQUE = "commands." + TowerOfGod.MOD_ID + ".shinsu.technique";
 
+    private ShinsuCommand() {
+    }
+
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("shinsu")
                 .requires(source -> source.hasPermissionLevel(2))

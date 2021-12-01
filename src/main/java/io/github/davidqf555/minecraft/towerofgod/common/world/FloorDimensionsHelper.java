@@ -46,6 +46,9 @@ public final class FloorDimensionsHelper {
 
     private static final double TYPE_RATE = 0.1;
 
+    private FloorDimensionsHelper() {
+    }
+
     public static void forceSendPlayerToFloor(ServerPlayerEntity player, int floor, Vector3d pos) {
         ServerWorld world = getOrCreateWorld(player.server, floor);
         world.getChunk(SectionPos.toChunk((int) pos.getX()), SectionPos.toChunk((int) pos.getZ()));

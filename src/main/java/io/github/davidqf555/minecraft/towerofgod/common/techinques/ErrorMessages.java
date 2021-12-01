@@ -17,4 +17,6 @@ public final class ErrorMessages {
     public static final Function<Double, TranslationTextComponent> REQUIRES_TARGET = range -> new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_target", range);
     public static final TranslationTextComponent REQUIRES_SHAPE = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_shape");
 
+    private ErrorMessages() {
+    }
 }

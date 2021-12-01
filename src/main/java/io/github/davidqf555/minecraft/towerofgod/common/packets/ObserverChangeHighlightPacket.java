@@ -52,15 +52,15 @@ public class ObserverChangeHighlightPacket {
         NetworkDirection dir = context.getDirection();
         if (dir == NetworkDirection.PLAY_TO_CLIENT) {
             context.enqueueWork(() -> {
-                if (ObserverEventBusSubscriber.startStopHighlight.containsKey(id)) {
-                    Pair<Set<UUID>, Set<UUID>> pair = ObserverEventBusSubscriber.startStopHighlight.get(id);
+                if (ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.containsKey(id)) {
+                    Pair<Set<UUID>, Set<UUID>> pair = ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.get(id);
                     Set<UUID> highlight = pair.getFirst();
                     Set<UUID> remove = pair.getSecond();
                     remove.removeAll(entities);
                     highlight.stream().filter(uuid -> !entities.contains(uuid)).forEach(remove::add);
                     highlight.addAll(entities);
                 } else {
-                    ObserverEventBusSubscriber.startStopHighlight.put(id, Pair.of(entities, new HashSet<>()));
+                    ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.put(id, Pair.of(entities, new HashSet<>()));
                 }
             });
             context.setPacketHandled(true);

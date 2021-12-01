@@ -45,7 +45,6 @@ import java.util.List;
 public final class RegistryHandler {
 
     public static final RegistryObject<Item> SUSPENDIUM = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium"), ForgeRegistries.ITEMS);
-
     public static final RegistryObject<NeedleItem> WOODEN_NEEDLE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "wooden_needle"), ForgeRegistries.ITEMS);
     public static final RegistryObject<NeedleItem> STONE_NEEDLE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "stone_needle"), ForgeRegistries.ITEMS);
     public static final RegistryObject<NeedleItem> IRON_NEEDLE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "iron_needle"), ForgeRegistries.ITEMS);
@@ -68,12 +67,10 @@ public final class RegistryHandler {
     public static final RegistryObject<ShinsuSword> SHINSU_SWORD = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_sword"), ForgeRegistries.ITEMS);
     public static final RegistryObject<ShinsuHoe> SHINSU_HOE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_hoe"), ForgeRegistries.ITEMS);
     public static final RegistryObject<ShinsuBow> SHINSU_BOW = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_bow"), ForgeRegistries.ITEMS);
-
     public static final RegistryObject<Block> SUSPENDIUM_ORE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), ForgeRegistries.BLOCKS);
     public static final RegistryObject<SuspendiumBlock> SUSPENDIUM_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_block"), ForgeRegistries.BLOCKS);
     public static final RegistryObject<Block> LIGHT_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "light"), ForgeRegistries.BLOCKS);
     public static final RegistryObject<FloorTeleportationTerminalBlock> FLOOR_TELEPORTATION_TERMINAL_BLOCK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "floor_teleportation_terminal"), ForgeRegistries.BLOCKS);
-
     public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<ObserverEntity>> OBSERVER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "observer"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<RegularEntity>> REGULAR_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "regular"), ForgeRegistries.ENTITIES);
@@ -82,20 +79,18 @@ public final class RegistryHandler {
     public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<RankerEntity>> RANKER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "ranker"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<TileEntityType<SuspendiumTileEntity>> SUSPENDIUM_TILE_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_block"), ForgeRegistries.TILE_ENTITIES);
-
     public static final RegistryObject<ContainerType<LighthouseEntity.LighthouseContainer>> LIGHTHOUSE_CONTAINER = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse"), ForgeRegistries.CONTAINERS);
-
     public static final RegistryObject<ReverseFlowEffect> REVERSE_FLOW_EFFECT = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "reverse_flow"), ForgeRegistries.POTIONS);
     public static final RegistryObject<BodyReinforcementEffect> BODY_REINFORCEMENT_EFFECT = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "body_reinforcement"), ForgeRegistries.POTIONS);
-
     public static final RegistryObject<PointOfInterestType> FLOOR_TELEPORTATION_TERMINAL_POI = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "floor_teleportation_terminal"), ForgeRegistries.POI_TYPES);
-
     public static final RegistryObject<IRecipeSerializer<DeviceDyeRecipe>> DEVICE_DYE_RECIPE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "device_dye"), ForgeRegistries.RECIPE_SERIALIZERS);
-
     public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = ImmutableList.of(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW);
     public static final List<RegistryObject<? extends Item>> COLORED_DEVICE_ITEMS = ImmutableList.of(LIGHTHOUSE_ITEM, OBSERVER_ITEM);
     public static final List<RegistryObject<HookItem>> HOOK_ITEMS = ImmutableList.of(WOODEN_HOOK, STONE_HOOK, IRON_HOOK, GOLDEN_HOOK, DIAMOND_HOOK, NETHERITE_HOOK, SUSPENDIUM_HOOK);
     public static final List<RegistryObject<NeedleItem>> NEEDLE_ITEMS = ImmutableList.of(WOODEN_NEEDLE, STONE_NEEDLE, IRON_NEEDLE, GOLDEN_NEEDLE, DIAMOND_NEEDLE, NETHERITE_NEEDLE, SUSPENDIUM_NEEDLE);
+
+    private RegistryHandler() {
+    }
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {

@@ -25,6 +25,9 @@ import org.lwjgl.glfw.GLFW;
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public final class EventBusSubscriber {
 
+    private EventBusSubscriber() {
+    }
+
     @SubscribeEvent
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
         Minecraft client = Minecraft.getInstance();
@@ -40,6 +43,9 @@ public final class EventBusSubscriber {
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ModBus {
+
+        private ModBus() {
+        }
 
         @SubscribeEvent
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
