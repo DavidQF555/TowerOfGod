@@ -6,19 +6,15 @@ import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.ShapedRecipeBuilder;
+import net.minecraft.data.*;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.tags.ITag;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,26 +30,42 @@ public class DataGenRecipeProvider extends RecipeProvider {
     protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
         for (RegistryObject<NeedleItem> registry : RegistryHandler.NEEDLE_ITEMS) {
             NeedleItem item = registry.get();
-            Ingredient material = item.getTier().getRepairMaterial();
-            ShapedRecipeBuilder.shapedRecipe(item)
-                    .patternLine("x  ")
-                    .patternLine(" x ")
-                    .patternLine("  y")
-                    .key('x', material)
-                    .key('y', Items.IRON_INGOT)
-                    .addCriterion("has_material", hasItem(getPredicates(material)))
-                    .build(consumer);
+            IItemTier tier = item.getTier();
+            Ingredient material = tier.getRepairMaterial();
+            if (tier.equals(ItemTier.NETHERITE)) {
+                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(RegistryHandler.DIAMOND_NEEDLE.get()), material, item)
+                        .addCriterion("has_material", hasItem(getPredicates(material)))
+                        .build(consumer, ForgeRegistries.ITEMS.getKey(item));
+
+            } else {
+                ShapedRecipeBuilder.shapedRecipe(item)
+                        .patternLine("x  ")
+                        .patternLine(" x ")
+                        .patternLine("  y")
+                        .key('x', material)
+                        .key('y', Items.IRON_INGOT)
+                        .addCriterion("has_material", hasItem(getPredicates(material)))
+                        .build(consumer);
+            }
         }
         for (RegistryObject<HookItem> registry : RegistryHandler.HOOK_ITEMS) {
             HookItem item = registry.get();
-            Ingredient material = item.getTier().getRepairMaterial();
-            ShapedRecipeBuilder.shapedRecipe(item)
-                    .patternLine("xxx")
-                    .patternLine("x x")
-                    .patternLine("x  ")
-                    .key('x', material)
-                    .addCriterion("has_material", hasItem(getPredicates(material)))
-                    .build(consumer);
+            IItemTier tier = item.getTier();
+            Ingredient material = tier.getRepairMaterial();
+            if (tier.equals(ItemTier.NETHERITE)) {
+                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(RegistryHandler.DIAMOND_HOOK.get()), material, item)
+                        .addCriterion("has_material", hasItem(getPredicates(material)))
+                        .build(consumer, ForgeRegistries.ITEMS.getKey(item));
+
+            } else {
+                ShapedRecipeBuilder.shapedRecipe(item)
+                        .patternLine("xxx")
+                        .patternLine("x x")
+                        .patternLine("x  ")
+                        .key('x', material)
+                        .addCriterion("has_material", hasItem(getPredicates(material)))
+                        .build(consumer);
+            }
         }
     }
 
