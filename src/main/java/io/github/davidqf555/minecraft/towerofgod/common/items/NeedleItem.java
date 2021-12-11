@@ -1,21 +1,29 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import net.minecraft.block.Block;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolItem;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashSet;
-import java.util.Set;
 
+@ParametersAreNonnullByDefault
 public class NeedleItem extends ToolItem {
 
-    private static final Set<Block> EFFECTIVE = new HashSet<>();
+    public NeedleItem(IItemTier tier, float attackDamage, float attackSpeed) {
+        super(attackDamage, attackSpeed, tier, new HashSet<>(), new Properties().group(TowerOfGod.TAB));
+    }
 
-    public NeedleItem(IItemTier tier, float attackDamage, float attackSpeed, Properties properties) {
-        super(attackDamage, attackSpeed, tier, EFFECTIVE, properties);
+    @Override
+    public boolean canPlayerBreakBlockWhileHolding(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
+        return !player.isCreative();
     }
 
     @Override

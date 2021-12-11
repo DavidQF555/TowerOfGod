@@ -4,6 +4,7 @@ import io.github.davidqf555.minecraft.towerofgod.client.gui.LighthouseScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.render.*;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -42,7 +43,7 @@ public final class EventBusSubscriber {
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ModBus {
+    public static final class ModBus {
 
         private ModBus() {
         }
@@ -56,11 +57,15 @@ public final class EventBusSubscriber {
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.CLICKER_ENTITY.get(), ClickerRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.SHINSU_ARROW_ENTITY.get(), ShinsuArrowRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.RANKER_ENTITY.get(), BipedShinsuUserRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.SPEAR_ENTITY.get(), SpearRenderer::new);
             KeyBindingsList.register();
             event.enqueueWork(() -> {
                 ScreenManager.registerFactory(RegistryHandler.LIGHTHOUSE_CONTAINER.get(), new LighthouseScreen.Factory());
                 ItemModelsProperties.registerProperty(RegistryHandler.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pull")));
                 ItemModelsProperties.registerProperty(RegistryHandler.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pulling")));
+                for (RegistryObject<SpearItem> spear : RegistryHandler.SPEAR_ITEMS) {
+                    ItemModelsProperties.registerProperty(spear.get(), SpearItem.THROWING, ItemModelsProperties.func_239417_a_(Items.TRIDENT, new ResourceLocation("throwing")));
+                }
             });
         }
 

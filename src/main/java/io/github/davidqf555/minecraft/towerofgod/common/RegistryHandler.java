@@ -52,6 +52,13 @@ public final class RegistryHandler {
     public static final RegistryObject<NeedleItem> DIAMOND_NEEDLE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "diamond_needle"), ForgeRegistries.ITEMS);
     public static final RegistryObject<NeedleItem> NETHERITE_NEEDLE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "netherite_needle"), ForgeRegistries.ITEMS);
     public static final RegistryObject<NeedleItem> SUSPENDIUM_NEEDLE = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_needle"), ForgeRegistries.ITEMS);
+    public static final RegistryObject<SpearItem> WOODEN_SPEAR = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "wooden_spear"), ForgeRegistries.ITEMS);
+    public static final RegistryObject<SpearItem> STONE_SPEAR = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "stone_spear"), ForgeRegistries.ITEMS);
+    public static final RegistryObject<SpearItem> IRON_SPEAR = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "iron_spear"), ForgeRegistries.ITEMS);
+    public static final RegistryObject<SpearItem> GOLDEN_SPEAR = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "golden_spear"), ForgeRegistries.ITEMS);
+    public static final RegistryObject<SpearItem> DIAMOND_SPEAR = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "diamond_spear"), ForgeRegistries.ITEMS);
+    public static final RegistryObject<SpearItem> NETHERITE_SPEAR = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "netherite_spear"), ForgeRegistries.ITEMS);
+    public static final RegistryObject<SpearItem> SUSPENDIUM_SPEAR = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_spear"), ForgeRegistries.ITEMS);
     public static final RegistryObject<HookItem> WOODEN_HOOK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "wooden_hook"), ForgeRegistries.ITEMS);
     public static final RegistryObject<HookItem> STONE_HOOK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "stone_hook"), ForgeRegistries.ITEMS);
     public static final RegistryObject<HookItem> IRON_HOOK = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "iron_hook"), ForgeRegistries.ITEMS);
@@ -78,6 +85,7 @@ public final class RegistryHandler {
     public static final RegistryObject<EntityType<ClickerEntity>> CLICKER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "clicker"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<RankerEntity>> RANKER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "ranker"), ForgeRegistries.ENTITIES);
+    public static final RegistryObject<EntityType<SpearEntity>> SPEAR_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "spear"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<TileEntityType<SuspendiumTileEntity>> SUSPENDIUM_TILE_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_block"), ForgeRegistries.TILE_ENTITIES);
     public static final RegistryObject<ContainerType<LighthouseEntity.LighthouseContainer>> LIGHTHOUSE_CONTAINER = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse"), ForgeRegistries.CONTAINERS);
     public static final RegistryObject<ReverseFlowEffect> REVERSE_FLOW_EFFECT = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "reverse_flow"), ForgeRegistries.POTIONS);
@@ -88,6 +96,7 @@ public final class RegistryHandler {
     public static final List<RegistryObject<? extends Item>> COLORED_DEVICE_ITEMS = ImmutableList.of(LIGHTHOUSE_ITEM, OBSERVER_ITEM);
     public static final List<RegistryObject<HookItem>> HOOK_ITEMS = ImmutableList.of(WOODEN_HOOK, STONE_HOOK, IRON_HOOK, GOLDEN_HOOK, DIAMOND_HOOK, NETHERITE_HOOK, SUSPENDIUM_HOOK);
     public static final List<RegistryObject<NeedleItem>> NEEDLE_ITEMS = ImmutableList.of(WOODEN_NEEDLE, STONE_NEEDLE, IRON_NEEDLE, GOLDEN_NEEDLE, DIAMOND_NEEDLE, NETHERITE_NEEDLE, SUSPENDIUM_NEEDLE);
+    public static final List<RegistryObject<SpearItem>> SPEAR_ITEMS = ImmutableList.of(WOODEN_SPEAR);
 
     private RegistryHandler() {
     }
@@ -118,20 +127,27 @@ public final class RegistryHandler {
                 new ArmorItem(ModArmorTier.SUSPENDIUM, EquipmentSlotType.CHEST, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_chestplate"),
                 new ArmorItem(ModArmorTier.SUSPENDIUM, EquipmentSlotType.LEGS, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_leggings"),
                 new ArmorItem(ModArmorTier.SUSPENDIUM, EquipmentSlotType.FEET, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_boots"),
-                new NeedleItem(ItemTier.WOOD, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "wooden_needle"),
-                new NeedleItem(ItemTier.STONE, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "stone_needle"),
-                new NeedleItem(ItemTier.IRON, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "iron_needle"),
-                new NeedleItem(ItemTier.GOLD, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "golden_needle"),
-                new NeedleItem(ItemTier.DIAMOND, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "diamond_needle"),
-                new NeedleItem(ItemTier.NETHERITE, 1, -1.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "netherite_needle"),
-                new NeedleItem(ModToolTier.SUSPENDIUM, 1, 1.6f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_needle"),
-                new HookItem(ItemTier.WOOD, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "wooden_hook"),
-                new HookItem(ItemTier.STONE, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "stone_hook"),
-                new HookItem(ItemTier.IRON, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "iron_hook"),
-                new HookItem(ItemTier.GOLD, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "golden_hook"),
-                new HookItem(ItemTier.DIAMOND, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "diamond_hook"),
-                new HookItem(ItemTier.NETHERITE, 3, -3.2f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "netherite_hook"),
-                new HookItem(ModToolTier.SUSPENDIUM, 3, -2.4f, new Item.Properties().group(TowerOfGod.TAB)).setRegistryName(TowerOfGod.MOD_ID, "suspendium_hook"),
+                new NeedleItem(ItemTier.WOOD, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "wooden_needle"),
+                new NeedleItem(ItemTier.STONE, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "stone_needle"),
+                new NeedleItem(ItemTier.IRON, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "iron_needle"),
+                new NeedleItem(ItemTier.GOLD, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "golden_needle"),
+                new NeedleItem(ItemTier.DIAMOND, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "diamond_needle"),
+                new NeedleItem(ItemTier.NETHERITE, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "netherite_needle"),
+                new NeedleItem(ModToolTier.SUSPENDIUM, 1, 1.6f).setRegistryName(TowerOfGod.MOD_ID, "suspendium_needle"),
+                new HookItem(ItemTier.WOOD, 3, -3.2f).setRegistryName(TowerOfGod.MOD_ID, "wooden_hook"),
+                new HookItem(ItemTier.STONE, 3, -3.2f).setRegistryName(TowerOfGod.MOD_ID, "stone_hook"),
+                new HookItem(ItemTier.IRON, 3, -3.2f).setRegistryName(TowerOfGod.MOD_ID, "iron_hook"),
+                new HookItem(ItemTier.GOLD, 3, -3.2f).setRegistryName(TowerOfGod.MOD_ID, "golden_hook"),
+                new HookItem(ItemTier.DIAMOND, 3, -3.2f).setRegistryName(TowerOfGod.MOD_ID, "diamond_hook"),
+                new HookItem(ItemTier.NETHERITE, 3, -3.2f).setRegistryName(TowerOfGod.MOD_ID, "netherite_hook"),
+                new HookItem(ModToolTier.SUSPENDIUM, 3, -2.4f).setRegistryName(TowerOfGod.MOD_ID, "suspendium_hook"),
+                new SpearItem(ItemTier.WOOD, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "wooden_spear"),
+                new SpearItem(ItemTier.STONE, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "stone_spear"),
+                new SpearItem(ItemTier.IRON, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "iron_spear"),
+                new SpearItem(ItemTier.GOLD, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "golden_spear"),
+                new SpearItem(ItemTier.DIAMOND, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "diamond_spear"),
+                new SpearItem(ItemTier.NETHERITE, 1, -1.2f).setRegistryName(TowerOfGod.MOD_ID, "netherite_spear"),
+                new SpearItem(ModToolTier.SUSPENDIUM, 1, 1.6f).setRegistryName(TowerOfGod.MOD_ID, "suspendium_spear"),
                 new DeviceItem((world, item) -> LIGHTHOUSE_ENTITY.get().create(world)).setRegistryName(TowerOfGod.MOD_ID, "lighthouse"),
                 new DeviceItem((world, item) -> OBSERVER_ENTITY.get().create(world)).setRegistryName(TowerOfGod.MOD_ID, "observer"),
                 new ClickerItem().setRegistryName(TowerOfGod.MOD_ID, "clicker"),
@@ -155,7 +171,8 @@ public final class RegistryHandler {
                 EntityType.Builder.create(new ShinsuEntity.Factory(), EntityClassification.MISC).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu").toString()).setRegistryName(TowerOfGod.MOD_ID, "shinsu"),
                 EntityType.Builder.create(new ClickerEntity.Factory(), EntityClassification.MISC).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "clicker").toString()).setRegistryName(TowerOfGod.MOD_ID, "clicker"),
                 EntityType.Builder.create(new ShinsuArrowEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow").toString()).setRegistryName(TowerOfGod.MOD_ID, "shinsu_arrow"),
-                EntityType.Builder.create(new RankerEntity.Factory(), EntityClassification.CREATURE).size(0.6f, 1.8f).build(new ResourceLocation(TowerOfGod.MOD_ID, "ranker").toString()).setRegistryName(TowerOfGod.MOD_ID, "ranker")
+                EntityType.Builder.create(new RankerEntity.Factory(), EntityClassification.CREATURE).size(0.6f, 1.8f).build(new ResourceLocation(TowerOfGod.MOD_ID, "ranker").toString()).setRegistryName(TowerOfGod.MOD_ID, "ranker"),
+                EntityType.Builder.create(new SpearEntity.Factory(), EntityClassification.MISC).size(0.5f, 0.5f).build(new ResourceLocation(TowerOfGod.MOD_ID, "spear").toString()).setRegistryName(TowerOfGod.MOD_ID, "spear")
         );
     }
 
