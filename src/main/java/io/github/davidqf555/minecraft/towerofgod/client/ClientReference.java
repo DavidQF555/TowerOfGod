@@ -8,6 +8,8 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import net.minecraft.client.Minecraft;
@@ -29,6 +31,8 @@ public final class ClientReference {
     public static StatsMeterGui shinsu = null;
     public static StatsMeterGui baangs = null;
     public static ShinsuCombinationGui combo = null;
+    public static ShinsuQuality quality = ShinsuQuality.NONE;
+    public static ShinsuShape shape = ShinsuShape.NONE;
     public static Map<ShinsuTechniqueType, ShinsuTechniqueData> data = new EnumMap<>(ShinsuTechniqueType.class);
 
     private ClientReference() {

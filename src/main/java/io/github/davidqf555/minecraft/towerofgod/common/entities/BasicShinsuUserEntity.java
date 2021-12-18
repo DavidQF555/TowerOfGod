@@ -104,7 +104,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         float inaccuracy = (14 - world.getDifficulty().getId() * 4f) / stats.getLevel();
         if (arrow instanceof ShinsuArrowEntity) {
             Vector3d dir = new Vector3d(dX, dY, dZ);
-            Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getBuilder().doBuild(this, ShootShinsuArrow.getLevelForVelocity(velocity, stats.getQuality()), target, dir).left();
+            Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getFactory().doBuild(this, ShootShinsuArrow.getLevelForVelocity(velocity, stats.getQuality()), target, dir).left();
             if (technique.isPresent()) {
                 stats.cast((ServerWorld) world, technique.get());
                 return;

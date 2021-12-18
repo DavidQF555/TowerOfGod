@@ -57,7 +57,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance.Targetable {
     }
 
     @MethodsReturnNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<FlareWaveExplosion> {
+    public static class Factory implements ShinsuTechnique.IFactory<FlareWaveExplosion> {
 
         @Override
         public Either<FlareWaveExplosion, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

@@ -52,7 +52,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<LighthouseFlowControl> {
+    public static class Factory implements ShinsuTechnique.IFactory<LighthouseFlowControl> {
 
         @Override
         public Either<LighthouseFlowControl, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

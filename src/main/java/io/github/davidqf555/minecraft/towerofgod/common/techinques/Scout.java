@@ -62,7 +62,7 @@ public class Scout extends BasicCommandTechnique {
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<Scout> {
+    public static class Factory implements ShinsuTechnique.IFactory<Scout> {
 
         @Override
         public Either<Scout, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

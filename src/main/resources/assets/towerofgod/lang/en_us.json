@@ -65,6 +65,8 @@
   "technique.towerofgod.manifest": "Manifest",
   "technique.towerofgod.move_devices": "Move Devices",
   "technique.towerofgod.black_fish": "Black Fish",
+  "technique.towerofgod.channel_lightning": "Channel Lightning",
+  "technique.towerofgod.flash": "Flash",
   "type.towerofgod.disruption": "Disruption",
   "type.towerofgod.control": "Control",
   "type.towerofgod.manifest": "Manifest",
@@ -85,5 +87,5 @@
   "commands.towerofgod.shinsu.baangs": "Increased the max Baangs of %1$s by %2$s",
   "commands.towerofgod.shinsu.resistance": "Multiplied the resistance of %1$s by a factor of %2$s",
   "commands.towerofgod.shinsu.tension": "Multiplied the tension of %1$s by a factor of %2$s",
-  "commands.towerofgod.shinsu.technique": "Increased the %2$s technique level of %1$s by %3$s"
+  "commands.towerofgod.shinsu.technique": "Increased the %2$s level of %1$s by %3$s"
 }

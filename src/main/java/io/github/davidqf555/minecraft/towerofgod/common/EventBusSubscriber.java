@@ -91,6 +91,7 @@ public final class EventBusSubscriber {
                 data.put(type, stats.getData(type));
             }
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientShinsuDataPacket(data));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientShinsuQualityShapePacket(stats.getQuality(), stats.getShape()));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
         }
@@ -212,6 +213,7 @@ public final class EventBusSubscriber {
                 UpdateBaangsMeterPacket.register(index++);
                 UpdateClientErrorPacket.register(index++);
                 UpdateClientShinsuDataPacket.register(index++);
+                UpdateClientShinsuQualityShapePacket.register(index++);
                 ObserverChangeHighlightPacket.register(index++);
                 UpdateClientDimensionsPacket.register(index++);
                 OpenFloorTeleportationTerminalPacket.register(index++);

@@ -81,7 +81,7 @@ public class Manifest extends ShinsuTechniqueInstance {
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<Manifest> {
+    public static class Factory implements ShinsuTechnique.IFactory<Manifest> {
 
         @Override
         public Either<Manifest, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

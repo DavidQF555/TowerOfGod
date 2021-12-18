@@ -263,6 +263,19 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         return data.computeIfAbsent(type, p -> new ShinsuTechniqueData());
     }
 
+    public IShinsuTechniqueProvider[] getTechniqueProviders() {
+        return new IShinsuTechniqueProvider[]{getShape(), getQuality()};
+    }
+
+    public Set<ShinsuTechnique> getObtainableTechniques() {
+        Set<ShinsuTechnique> techniques = EnumSet.noneOf(ShinsuTechnique.class);
+        for (IShinsuTechniqueProvider provider : getTechniqueProviders()) {
+            techniques.addAll(provider.getTechniques());
+        }
+        return techniques;
+    }
+
+
     public void periodicTick(ServerWorld world, int period) {
         List<ShinsuTechniqueInstance> techniques = new ArrayList<>(getTechniques());
         for (ShinsuTechniqueInstance technique : techniques) {
@@ -290,7 +303,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             if (technique.getRepeatEffect() == ShinsuTechnique.Repeat.TOGGLE && used.isPresent()) {
                 used.get().remove((ServerWorld) user.world);
             } else if (getData(technique.getType()).getCooldown() <= 0) {
-                technique.getBuilder().doBuild(user, level, target, dir).ifLeft(instance -> cast((ServerWorld) user.world, instance));
+                technique.getFactory().doBuild(user, level, target, dir).ifLeft(instance -> cast((ServerWorld) user.world, instance));
             }
         }
     }
@@ -359,7 +372,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             ListNBT list = nbt.getList("Techniques", Constants.NBT.TAG_COMPOUND);
             for (INBT data : list) {
                 ShinsuTechnique type = ShinsuTechnique.valueOf(((CompoundNBT) data).getString("Technique"));
-                ShinsuTechniqueInstance tech = type.getBuilder().emptyBuild();
+                ShinsuTechniqueInstance tech = type.getFactory().emptyBuild();
                 tech.deserializeNBT((CompoundNBT) data);
                 techniques.add(tech);
             }

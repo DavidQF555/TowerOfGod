@@ -189,7 +189,7 @@ public interface IShinsuUser<T extends LivingEntity> {
             }
             List<ShinsuTechniqueInstance> tech = new ArrayList<>();
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                ShinsuTechnique.IBuilder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
+                ShinsuTechnique.IFactory<? extends ShinsuTechniqueInstance> builder = technique.getFactory();
                 Vector3d dir = entity.canEntityBeSeen(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookVec();
                 builder.doBuild(entity, stats.getData(technique.getType()).getLevel(), target, dir).ifLeft(tech::add);
             }

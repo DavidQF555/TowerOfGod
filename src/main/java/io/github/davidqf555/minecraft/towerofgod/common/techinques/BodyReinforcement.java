@@ -58,7 +58,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<BodyReinforcement> {
+    public static class Factory implements ShinsuTechnique.IFactory<BodyReinforcement> {
 
         @Override
         public Either<BodyReinforcement, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

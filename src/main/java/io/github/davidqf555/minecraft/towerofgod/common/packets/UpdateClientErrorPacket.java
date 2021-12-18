@@ -69,7 +69,7 @@ public class UpdateClientErrorPacket {
                 ShinsuStats stats = ShinsuStats.get(player);
                 for (ShinsuTechnique technique : ShinsuTechnique.values()) {
                     int level = stats.getData(technique.getType()).getLevel();
-                    technique.getBuilder().doBuild(player, level, target, player.getLookVec()).ifRight(error -> errors.put(technique, error));
+                    technique.getFactory().doBuild(player, level, target, player.getLookVec()).ifRight(error -> errors.put(technique, error));
                 }
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientErrorPacket(errors));
             });

@@ -102,7 +102,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<ShinsuBlast> {
+    public static class Factory implements ShinsuTechnique.IFactory<ShinsuBlast> {
 
         @Override
         public Either<ShinsuBlast, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

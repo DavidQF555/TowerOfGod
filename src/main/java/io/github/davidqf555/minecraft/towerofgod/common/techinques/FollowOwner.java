@@ -42,7 +42,7 @@ public class FollowOwner extends BasicCommandTechnique {
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<FollowOwner> {
+    public static class Factory implements ShinsuTechnique.IFactory<FollowOwner> {
 
         @Override
         public Either<FollowOwner, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

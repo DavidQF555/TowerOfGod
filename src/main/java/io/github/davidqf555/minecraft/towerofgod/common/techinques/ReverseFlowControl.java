@@ -65,7 +65,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance.Targetable {
     }
 
     @MethodsReturnNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<ReverseFlowControl> {
+    public static class Factory implements ShinsuTechnique.IFactory<ReverseFlowControl> {
 
         @Override
         public Either<ReverseFlowControl, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

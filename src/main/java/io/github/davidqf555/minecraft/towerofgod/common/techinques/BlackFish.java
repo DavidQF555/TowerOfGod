@@ -55,7 +55,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<BlackFish> {
+    public static class Factory implements ShinsuTechnique.IFactory<BlackFish> {
 
         @Override
         public Either<BlackFish, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

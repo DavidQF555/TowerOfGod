@@ -53,7 +53,7 @@ public class MoveDevices extends BasicCommandTechnique {
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<MoveDevices> {
+    public static class Factory implements ShinsuTechnique.IFactory<MoveDevices> {
 
         @Override
         public Either<MoveDevices, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {

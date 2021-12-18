@@ -78,6 +78,7 @@ public final class RegistryHandler {
     public static final RegistryObject<EntityType<ClickerEntity>> CLICKER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "clicker"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<RankerEntity>> RANKER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "ranker"), ForgeRegistries.ENTITIES);
+    public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> LIGHTNING_PROJECTILE_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lightning_projectile"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<TileEntityType<SuspendiumTileEntity>> SUSPENDIUM_TILE_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_block"), ForgeRegistries.TILE_ENTITIES);
     public static final RegistryObject<ContainerType<LighthouseEntity.LighthouseContainer>> LIGHTHOUSE_CONTAINER = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse"), ForgeRegistries.CONTAINERS);
     public static final RegistryObject<ReverseFlowEffect> REVERSE_FLOW_EFFECT = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "reverse_flow"), ForgeRegistries.POTIONS);
@@ -155,7 +156,8 @@ public final class RegistryHandler {
                 EntityType.Builder.create(new ShinsuEntity.Factory(), EntityClassification.MISC).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu").toString()).setRegistryName(TowerOfGod.MOD_ID, "shinsu"),
                 EntityType.Builder.create(new ClickerEntity.Factory(), EntityClassification.MISC).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "clicker").toString()).setRegistryName(TowerOfGod.MOD_ID, "clicker"),
                 EntityType.Builder.create(new ShinsuArrowEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow").toString()).setRegistryName(TowerOfGod.MOD_ID, "shinsu_arrow"),
-                EntityType.Builder.create(new RankerEntity.Factory(), EntityClassification.CREATURE).size(0.6f, 1.8f).build(new ResourceLocation(TowerOfGod.MOD_ID, "ranker").toString()).setRegistryName(TowerOfGod.MOD_ID, "ranker")
+                EntityType.Builder.create(new RankerEntity.Factory(), EntityClassification.CREATURE).size(0.6f, 1.8f).build(new ResourceLocation(TowerOfGod.MOD_ID, "ranker").toString()).setRegistryName(TowerOfGod.MOD_ID, "ranker"),
+                EntityType.Builder.create(new DirectionalLightningBoltEntity.Factory(), EntityClassification.MISC).size(1, 1).build(new ResourceLocation(TowerOfGod.MOD_ID, "lightning_projectile").toString()).setRegistryName(TowerOfGod.MOD_ID, "lightning_projectile")
         );
     }
 

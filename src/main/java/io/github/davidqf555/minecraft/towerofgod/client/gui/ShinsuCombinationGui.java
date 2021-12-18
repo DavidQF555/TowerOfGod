@@ -30,7 +30,7 @@ public class ShinsuCombinationGui extends AbstractGui {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/combination.png");
     private static final int ICON_WIDTH = 40, ICON_HEIGHT = 40, BACKGROUND_WIDTH = 60, BACKGROUND_HEIGHT = 60;
-    private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 32, 16, 16, 16);
+    private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16);
     private final List<Marker> markers;
     private float prevYaw, prevPitch;
     private ShinsuTechnique selected;
@@ -54,7 +54,7 @@ public class ShinsuCombinationGui extends AbstractGui {
             float backX = centerX - BACKGROUND_WIDTH / 2f;
             float backY = centerY - BACKGROUND_HEIGHT / 2f;
             boolean hasError = ClientReference.ERRORS.containsKey(selected);
-            ClientReference.render(BACKGROUND, matrixStack, backX, backY, z, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, hasError ? 0xFFFF0000 : 0xFF6DC0FF);
+            ClientReference.render(BACKGROUND, matrixStack, backX, backY, z, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, hasError ? 0xFFFF0000 : ClientReference.quality.getColor());
             float iconX = centerX - ICON_WIDTH / 2f;
             float iconY = centerY - ICON_HEIGHT / 2f;
             Minecraft client = Minecraft.getInstance();
@@ -140,7 +140,8 @@ public class ShinsuCombinationGui extends AbstractGui {
                 if (dif == 90) {
                     prev.type = Marker.Type.TURN;
                 } else if (dif == -90) {
-                    prev.type = Marker.Type.REVERSE_TURN;
+                    prev.type = Marker.Type.TURN;
+                    prev.offset = 90;
                 } else {
                     prev.type = Marker.Type.REVERSE;
                 }
@@ -149,11 +150,9 @@ public class ShinsuCombinationGui extends AbstractGui {
         markers.add(new Marker(headX, headY, Marker.Type.ARROW, direction));
         List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
         if (!combination.isEmpty()) {
-            for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                if (technique.matches(combination)) {
-                    selected = technique;
-                    break;
-                }
+            selected = ClientReference.quality.getTechnique(combination);
+            if (selected == null) {
+                selected = ClientReference.shape.getTechnique(combination);
             }
         }
     }
@@ -176,6 +175,7 @@ public class ShinsuCombinationGui extends AbstractGui {
         private static final int WIDTH = 20, HEIGHT = 20;
         private final Direction direction;
         private final int x, y;
+        private float offset;
         private Type type;
 
         private Marker(int x, int y, Type type, Direction direction) {
@@ -190,16 +190,15 @@ public class ShinsuCombinationGui extends AbstractGui {
             float centerY = y + HEIGHT / 2f;
             matrixStack.push();
             matrixStack.translate(centerX, centerY, 0);
-            matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + 180));
+            matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + offset + 180));
             matrixStack.translate(-centerX, -centerY, 0);
-            ClientReference.render(type.texture, matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, 0xFFFFFFFF);
+            ClientReference.render(type.texture, matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ClientReference.quality.getColor());
             matrixStack.pop();
         }
 
         private enum Type {
 
             TURN(new TextureRenderData(TEXTURE, 48, 32, 16, 0, 16, 16)),
-            REVERSE_TURN(new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16)),
             LINE(new TextureRenderData(TEXTURE, 48, 32, 0, 0, 16, 16)),
             REVERSE(new TextureRenderData(TEXTURE, 48, 32, 32, 0, 16, 16)),
             ARROW(new TextureRenderData(TEXTURE, 48, 32, 0, 16, 16, 16));
