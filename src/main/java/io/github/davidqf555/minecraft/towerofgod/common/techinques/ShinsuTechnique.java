@@ -46,6 +46,7 @@ public enum ShinsuTechnique {
     private final int level;
     private final IFactory<? extends ShinsuTechniqueInstance> factory;
     private final TranslationTextComponent text;
+    private final TranslationTextComponent description;
     private final IRenderData icon;
     private final List<Direction> combination;
 
@@ -56,7 +57,9 @@ public enum ShinsuTechnique {
         this.obtainable = obtainable;
         this.level = level;
         this.factory = factory;
-        text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name().toLowerCase());
+        String name = name().toLowerCase();
+        text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name);
+        description = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name + ".description");
         this.icon = icon;
         this.combination = combination;
     }
@@ -123,6 +126,10 @@ public enum ShinsuTechnique {
 
     public TranslationTextComponent getText() {
         return text;
+    }
+
+    public TranslationTextComponent getDescription() {
+        return description;
     }
 
     public IRenderData getIcon() {

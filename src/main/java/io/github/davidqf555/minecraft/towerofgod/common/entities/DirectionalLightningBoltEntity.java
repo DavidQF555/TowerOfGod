@@ -19,11 +19,9 @@ public class DirectionalLightningBoltEntity extends LightningBoltEntity {
     private static final DataParameter<Float> X = EntityDataManager.createKey(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Float> Y = EntityDataManager.createKey(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
     private static final DataParameter<Float> Z = EntityDataManager.createKey(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
-    private int level;
 
-    public DirectionalLightningBoltEntity(World world, int level) {
+    public DirectionalLightningBoltEntity(World world) {
         super(RegistryHandler.LIGHTNING_PROJECTILE_ENTITY.get(), world);
-        this.level = level;
     }
 
     @Override
@@ -51,9 +49,6 @@ public class DirectionalLightningBoltEntity extends LightningBoltEntity {
         if (compound.contains("X", Constants.NBT.TAG_FLOAT) && compound.contains("Y", Constants.NBT.TAG_FLOAT) && compound.contains("Z", Constants.NBT.TAG_FLOAT)) {
             setStart(new Vector3f(compound.getFloat("X"), compound.getFloat("Y"), compound.getFloat("Z")));
         }
-        if (compound.contains("Level", Constants.NBT.TAG_INT)) {
-            level = compound.getInt("Level");
-        }
     }
 
     @Override
@@ -62,7 +57,6 @@ public class DirectionalLightningBoltEntity extends LightningBoltEntity {
         compound.putFloat("X", start.getX());
         compound.putFloat("Y", start.getY());
         compound.putFloat("Z", start.getZ());
-        compound.putInt("Level", level);
     }
 
     @Override
@@ -79,7 +73,7 @@ public class DirectionalLightningBoltEntity extends LightningBoltEntity {
 
         @Override
         public DirectionalLightningBoltEntity create(EntityType<DirectionalLightningBoltEntity> type, World world) {
-            return new DirectionalLightningBoltEntity(world, 1);
+            return new DirectionalLightningBoltEntity(world);
         }
     }
 

@@ -14,10 +14,12 @@ import io.github.davidqf555.minecraft.towerofgod.common.techinques.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -29,9 +31,10 @@ import java.util.stream.Collectors;
 public class ShinsuCombinationGui extends AbstractGui {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/combination.png");
-    private static final int ICON_WIDTH = 40, ICON_HEIGHT = 40, BACKGROUND_WIDTH = 60, BACKGROUND_HEIGHT = 60;
+    private static final int ICON_WIDTH = 20, ICON_HEIGHT = 20;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16);
     private final List<Marker> markers;
+    private final int color, text;
     private float prevYaw, prevPitch;
     private ShinsuTechnique selected;
     private int headX, headY, minX, maxX, minY, maxY;
@@ -40,23 +43,33 @@ public class ShinsuCombinationGui extends AbstractGui {
         markers = new ArrayList<>();
         prevYaw = yaw;
         prevPitch = pitch;
+        color = ClientReference.quality.getColor();
+        int alpha = ColorHelper.PackedColor.getAlpha(color);
+        int red = ColorHelper.PackedColor.getRed(color);
+        int green = ColorHelper.PackedColor.getGreen(color);
+        int blue = ColorHelper.PackedColor.getBlue(color);
+        if ((red + green + blue) / 3 <= 51) {
+            text = ColorHelper.PackedColor.packColor(alpha, red * 6 / 5, blue * 6 / 5, green * 6 / 5);
+        } else {
+            text = ColorHelper.PackedColor.packColor(alpha, red * 4 / 5, green * 4 / 5, blue * 4 / 5);
+        }
         reset();
     }
 
     public void render(MatrixStack matrixStack, float x, float y) {
         ShinsuTechnique selected = getSelected();
         if (selected == null) {
-            renderCombo(matrixStack, x, y);
+            for (Marker marker : markers) {
+                marker.render(matrixStack, x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT);
+            }
         } else {
             float centerX = x + getWidth() / 2f;
             float centerY = y + getHeight() / 2f;
             int z = getBlitOffset();
-            float backX = centerX - BACKGROUND_WIDTH / 2f;
-            float backY = centerY - BACKGROUND_HEIGHT / 2f;
-            boolean hasError = ClientReference.ERRORS.containsKey(selected);
-            ClientReference.render(BACKGROUND, matrixStack, backX, backY, z, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, hasError ? 0xFFFF0000 : ClientReference.quality.getColor());
             float iconX = centerX - ICON_WIDTH / 2f;
             float iconY = centerY - ICON_HEIGHT / 2f;
+            boolean hasError = ClientReference.ERRORS.containsKey(selected);
+            ClientReference.render(BACKGROUND, matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, hasError ? 0xFFFF0000 : color);
             Minecraft client = Minecraft.getInstance();
             if (hasError) {
                 ClientReference.render(ShinsuIcons.LOCK, matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF);
@@ -65,14 +78,8 @@ public class ShinsuCombinationGui extends AbstractGui {
             } else {
                 ClientReference.render(selected.getIcon(), matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF);
             }
-            ITextComponent text = selected.getText();
-            client.fontRenderer.drawText(matrixStack, text, centerX - client.fontRenderer.getStringPropertyWidth(text) / 2f, centerY + ICON_HEIGHT / 2f, hasError ? 0xFF660000 : 0xFF0797FF);
-        }
-    }
-
-    protected void renderCombo(MatrixStack matrixStack, float x, float y) {
-        for (Marker marker : markers) {
-            marker.render(matrixStack, x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT);
+            ITextComponent text = selected.getText().mergeStyle(TextFormatting.BOLD);
+            client.fontRenderer.drawText(matrixStack, text, centerX - client.fontRenderer.getStringPropertyWidth(text) / 2f, centerY + ICON_HEIGHT / 2f, hasError ? 0xFF660000 : this.text);
         }
     }
 

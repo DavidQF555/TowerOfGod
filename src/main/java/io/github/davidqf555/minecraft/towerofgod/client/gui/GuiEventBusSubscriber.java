@@ -41,7 +41,7 @@ public final class GuiEventBusSubscriber {
                 }
                 if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
                     MainWindow window = client.getMainWindow();
-                    ClientReference.combo.render(event.getMatrixStack(), (window.getScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getScaledHeight() - ClientReference.combo.getHeight()) / 2f);
+                    ClientReference.combo.render(event.getMatrixStack(), (window.getScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getScaledHeight() - ClientReference.combo.getHeight()) / 2f - 50);
                 }
             } else {
                 ClientReference.combo = null;
