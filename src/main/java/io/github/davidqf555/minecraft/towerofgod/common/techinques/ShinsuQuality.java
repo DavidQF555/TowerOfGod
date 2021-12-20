@@ -297,6 +297,6 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
 
     @Override
     public Set<ShinsuTechnique> getTechniques() {
-        return EnumSet.copyOf(Arrays.asList(obtainable));
+        return obtainable.length == 0 ? EnumSet.noneOf(ShinsuTechnique.class) : EnumSet.copyOf(Arrays.asList(obtainable));
     }
 }
