@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
@@ -42,9 +42,9 @@ public class LighthouseScreen extends ContainerScreen<LighthouseEntity.Lighthous
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         int offset = getBlitOffset();
-        ClientReference.render(INVENTORY, matrixStack, x, y + 72, offset, xSize, 94, 0xFFFFFFFF);
+        INVENTORY.render(new RenderContext(matrixStack, x, y + 72, offset, xSize, 94, 0xFFFFFFFF));
         int hex = container.lighthouse.getColor().getColorValue();
-        ClientReference.render(LIGHTHOUSE, matrixStack, x, y, offset, xSize, 71, ColorHelper.PackedColor.packColor(255, ColorHelper.PackedColor.getRed(hex), ColorHelper.PackedColor.getGreen(hex), ColorHelper.PackedColor.getBlue(hex)));
+        LIGHTHOUSE.render(new RenderContext(matrixStack, x, y, offset, xSize, 71, ColorHelper.PackedColor.packColor(255, ColorHelper.PackedColor.getRed(hex), ColorHelper.PackedColor.getGreen(hex), ColorHelper.PackedColor.getBlue(hex))));
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientConfigs;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
@@ -68,14 +69,14 @@ public class ShinsuCombinationGui extends AbstractGui {
             float iconX = centerX - ICON_WIDTH / 2f;
             float iconY = centerY - ICON_HEIGHT / 2f;
             boolean hasError = ClientReference.ERRORS.containsKey(selected);
-            ClientReference.render(BACKGROUND, matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, hasError ? 0xFFFF0000 : color);
+            BACKGROUND.render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, hasError ? 0xFFFF0000 : color));
             Minecraft client = Minecraft.getInstance();
             if (hasError) {
-                ClientReference.render(ShinsuIcons.LOCK, matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF);
+                ShinsuIcons.LOCK.render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
                 ITextComponent error = ClientReference.ERRORS.get(selected);
                 client.fontRenderer.drawText(matrixStack, error, centerX - client.fontRenderer.getStringPropertyWidth(error) / 2f, centerY - client.fontRenderer.FONT_HEIGHT / 2f, 0xFF660000);
             } else {
-                ClientReference.render(selected.getIcon(), matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF);
+                selected.getIcon().render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
             }
             ITextComponent text = selected.getText().mergeStyle(TextFormatting.BOLD);
             client.fontRenderer.drawText(matrixStack, text, centerX - client.fontRenderer.getStringPropertyWidth(text) / 2f, centerY + ICON_HEIGHT / 2f, hasError ? 0xFF660000 : this.text);
@@ -197,7 +198,7 @@ public class ShinsuCombinationGui extends AbstractGui {
             matrixStack.translate(centerX, centerY, 0);
             matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + offset + 180));
             matrixStack.translate(-centerX, -centerY, 0);
-            ClientReference.render(type.texture, matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ClientReference.quality.getColor());
+            type.texture.render(new RenderContext(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ClientReference.quality.getColor()));
             matrixStack.pop();
         }
 

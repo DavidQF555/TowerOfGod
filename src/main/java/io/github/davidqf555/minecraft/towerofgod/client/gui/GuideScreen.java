@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
@@ -59,13 +59,13 @@ public class GuideScreen extends Screen {
         float x = (width - xSize) / 2f;
         float y = (height - ySize) / 2f;
         int z = getBlitOffset();
-        ClientReference.render(PAGE, matrixStack, x, y, z, xSize, ySize, 0xFFFFFFFF);
-        ClientReference.render(OUTLINE, matrixStack, x, y, z, xSize, ySize, color);
+        PAGE.render(new RenderContext(matrixStack, x, y, z, xSize, ySize, 0xFFFFFFFF));
+        OUTLINE.render(new RenderContext(matrixStack, x, y, z, xSize, ySize, color));
         float centerX = x + xSize / 2f;
         int difY = font.FONT_HEIGHT;
         ITextComponent title = pages[page].getText().mergeStyle(TextFormatting.BOLD);
         font.drawText(matrixStack, title, centerX - font.getStringPropertyWidth(title) / 2f, y + difY * 2, 0xFF000000);
-        ClientReference.render(pages[page].getIcon(), matrixStack, centerX - difY, y + difY * 4, z, difY * 2, difY * 2, 0xFFFFFFFF);
+        pages[page].getIcon().render(new RenderContext(matrixStack, centerX - difY, y + difY * 4, z, difY * 2, difY * 2, 0xFFFFFFFF));
         List<Direction> combo = pages[page].getCombination();
         int width = combo.size() * ARROW_WIDTH + (combo.size() - 1) * DIF;
         for (int i = 0; i < combo.size(); i++) {
@@ -76,7 +76,7 @@ public class GuideScreen extends Screen {
             matrixStack.translate(arrowX, arrowY, 0);
             matrixStack.rotate(Vector3f.ZP.rotationDegrees(dir.getAngle() + 180));
             matrixStack.translate(-arrowX, -arrowY, 0);
-            ClientReference.render(ARROW, matrixStack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, z, ARROW_WIDTH, ARROW_HEIGHT, 0xFF0000FF);
+            ARROW.render(new RenderContext(matrixStack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, z, ARROW_WIDTH, ARROW_HEIGHT, 0xFF0000FF));
             matrixStack.pop();
         }
         ITextComponent req = ErrorMessages.REQUIRES_LEVEL.apply(pages[page].getType(), pages[page].getLevelRequirement());
@@ -146,7 +146,7 @@ public class GuideScreen extends Screen {
         @Override
         public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             if (visible) {
-                ClientReference.render(render, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+                render.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             }
         }
     }
