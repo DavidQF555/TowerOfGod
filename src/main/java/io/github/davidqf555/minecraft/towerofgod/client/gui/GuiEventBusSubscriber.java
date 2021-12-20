@@ -69,7 +69,7 @@ public final class GuiEventBusSubscriber {
     public static void onMouseInput(InputEvent.KeyInputEvent event) {
         if (ClientReference.combo != null && KeyBindingsList.SHINSU_TECHNIQUE_GUI.matchesKey(event.getKey(), event.getScanCode()) && event.getAction() == GLFW.GLFW_RELEASE) {
             ShinsuTechnique selected = ClientReference.combo.getSelected();
-            if (selected != null && ClientReference.data.containsKey(selected.getType()) && ClientReference.data.get(selected.getType()).getCooldown() <= 0) {
+            if (selected != null && !ClientReference.ERRORS.containsKey(selected)) {
                 TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
                 ClientReference.combo = null;
             }

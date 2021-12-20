@@ -9,7 +9,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientErrorPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientShinsuDataPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.client.Minecraft;
@@ -108,7 +107,6 @@ public class ShinsuCombinationGui extends AbstractGui {
             }
         }
         if (client.player.world.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
-            TowerOfGod.CHANNEL.sendToServer(new UpdateClientShinsuDataPacket());
             TowerOfGod.CHANNEL.sendToServer(new UpdateClientErrorPacket());
         }
     }

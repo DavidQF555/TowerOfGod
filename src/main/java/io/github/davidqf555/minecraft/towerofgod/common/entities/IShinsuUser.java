@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTechniqueData;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
@@ -56,7 +56,7 @@ public interface IShinsuUser<T extends LivingEntity> {
         stats.multiplyBaseResistance(getInitialResistance() / stats.getRawResistance());
         stats.multiplyBaseTension(getInitialTension() / stats.getRawTension());
         for (ShinsuTechnique technique : getInitialShinsuTechniques()) {
-            ShinsuTechniqueData data = stats.getData(technique.getType());
+            ShinsuTypeData data = stats.getData(technique.getType());
             data.setLevel(data.getLevel() + 1);
         }
         stats.setQuality(getInitialQuality());

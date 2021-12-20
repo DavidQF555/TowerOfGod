@@ -154,7 +154,7 @@ public enum ShinsuTechnique {
             ShinsuTechnique technique = getTechnique();
             ShinsuStats stats = ShinsuStats.get(user);
             List<ShinsuTechniqueInstance> same = stats.getTechniques().stream().filter(inst -> inst.getTechnique() == technique).collect(Collectors.toList());
-            int cooldown = stats.getData(technique.getType()).getCooldown();
+            int cooldown = stats.getCooldown(technique);
             if (technique.isObtainable() && !stats.getObtainableTechniques().contains(technique)) {
                 return Either.right(StringTextComponent.EMPTY);
             } else if (technique.getRepeatEffect() == Repeat.TOGGLE && !same.isEmpty()) {
