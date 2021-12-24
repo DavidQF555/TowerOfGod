@@ -6,9 +6,8 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.Direction;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ErrorMessages;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.AbstractButton;
@@ -20,7 +19,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class GuideScreen extends Screen {
@@ -37,9 +35,9 @@ public class GuideScreen extends Screen {
     private final int xSize, ySize, color;
     private int page;
 
-    public GuideScreen(ShinsuTechniqueType type, int xSize, int ySize, int color) {
+    public GuideScreen(ShinsuTechnique[] pages, int xSize, int ySize, int color) {
         super(TITLE);
-        pages = Arrays.stream(ShinsuTechnique.values()).filter(tech -> tech.getType() == type).toArray(ShinsuTechnique[]::new);
+        this.pages = pages;
         this.xSize = xSize;
         this.ySize = ySize;
         this.color = color;
@@ -79,15 +77,17 @@ public class GuideScreen extends Screen {
             ARROW.render(new RenderContext(matrixStack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, z, ARROW_WIDTH, ARROW_HEIGHT, 0xFF0000FF));
             matrixStack.pop();
         }
-        ITextComponent req = ErrorMessages.REQUIRES_LEVEL.apply(pages[page].getType(), pages[page].getLevelRequirement());
-        font.drawText(matrixStack, req, centerX - font.getStringPropertyWidth(req) / 2f, y + difY * 10, 0xFF000000);
-        ITextComponent desc = pages[page].getDescription();
-        renderWrappedText(matrixStack, desc, centerX, y + difY * 12, xSize * 4 / 5, 0xFF000000);
+        int lines = 0;
+        for (IRequirement req : pages[page].getFactory().getRequirements()) {
+            ITextComponent text = req.getText();
+            lines += renderWrappedText(matrixStack, text, centerX, y + difY * 10 + lines * font.FONT_HEIGHT, xSize * 4 / 5, 0xFF000000);
+        }
+        renderWrappedText(matrixStack, pages[page].getDescription(), centerX, y + difY * 12 + lines * font.FONT_HEIGHT, xSize * 4 / 5, 0xFF000000);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     //needs improvement
-    private void renderWrappedText(MatrixStack stack, ITextComponent text, float centerX, float y, int totalWidth, int color) {
+    private int renderWrappedText(MatrixStack stack, ITextComponent text, float centerX, float y, int totalWidth, int color) {
         String[] words = text.getString().split(" ");
         int line = 0;
         int current = 0;
@@ -111,6 +111,7 @@ public class GuideScreen extends Screen {
         }
         String string = builder.toString();
         font.drawString(stack, string, centerX - font.getStringWidth(string) / 2f, y + line * font.FONT_HEIGHT, color);
+        return line + 1;
     }
 
     @Override

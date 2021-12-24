@@ -7,14 +7,12 @@ import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientErrorPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
@@ -25,6 +23,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
@@ -34,25 +33,18 @@ public class ShinsuCombinationGui extends AbstractGui {
     private static final int ICON_WIDTH = 20, ICON_HEIGHT = 20;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16);
     private final List<Marker> markers;
-    private final int color, text;
+    private final Set<ShinsuTechnique> unlocked;
+    private final int color;
     private float prevYaw, prevPitch;
     private ShinsuTechnique selected;
     private int headX, headY, minX, maxX, minY, maxY;
 
-    public ShinsuCombinationGui(float yaw, float pitch) {
+    public ShinsuCombinationGui(Set<ShinsuTechnique> unlocked, float yaw, float pitch) {
+        this.unlocked = unlocked;
         markers = new ArrayList<>();
         prevYaw = yaw;
         prevPitch = pitch;
         color = ClientReference.quality.getColor();
-        int alpha = ColorHelper.PackedColor.getAlpha(color);
-        int red = ColorHelper.PackedColor.getRed(color);
-        int green = ColorHelper.PackedColor.getGreen(color);
-        int blue = ColorHelper.PackedColor.getBlue(color);
-        if ((red + green + blue) / 3 <= 51) {
-            text = ColorHelper.PackedColor.packColor(alpha, red * 6 / 5, blue * 6 / 5, green * 6 / 5);
-        } else {
-            text = ColorHelper.PackedColor.packColor(alpha, red * 4 / 5, green * 4 / 5, blue * 4 / 5);
-        }
         reset();
     }
 
@@ -72,14 +64,12 @@ public class ShinsuCombinationGui extends AbstractGui {
             BACKGROUND.render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, hasError ? 0xFFFF0000 : color));
             Minecraft client = Minecraft.getInstance();
             if (hasError) {
-                ShinsuIcons.LOCK.render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
                 ITextComponent error = ClientReference.ERRORS.get(selected);
-                client.fontRenderer.drawText(matrixStack, error, centerX - client.fontRenderer.getStringPropertyWidth(error) / 2f, centerY - client.fontRenderer.FONT_HEIGHT / 2f, 0xFF660000);
-            } else {
-                selected.getIcon().render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
+                client.fontRenderer.drawTextWithShadow(matrixStack, error, centerX - client.fontRenderer.getStringPropertyWidth(error) / 2f, centerY + ICON_HEIGHT / 2f + client.fontRenderer.FONT_HEIGHT + 2, 0xFF660000);
             }
+            selected.getIcon().render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
             ITextComponent text = selected.getText().mergeStyle(TextFormatting.BOLD);
-            client.fontRenderer.drawText(matrixStack, text, centerX - client.fontRenderer.getStringPropertyWidth(text) / 2f, centerY + ICON_HEIGHT / 2f, hasError ? 0xFF660000 : this.text);
+            client.fontRenderer.drawTextWithShadow(matrixStack, text, centerX - client.fontRenderer.getStringPropertyWidth(text) / 2f, centerY + ICON_HEIGHT / 2f + 1, hasError ? 0xFF660000 : color);
         }
     }
 
@@ -156,9 +146,11 @@ public class ShinsuCombinationGui extends AbstractGui {
         markers.add(new Marker(headX, headY, Marker.Type.ARROW, direction));
         List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
         if (!combination.isEmpty()) {
-            selected = ClientReference.quality.getTechnique(combination);
-            if (selected == null) {
-                selected = ClientReference.shape.getTechnique(combination);
+            for (ShinsuTechnique technique : unlocked) {
+                if (technique.matches(combination)) {
+                    selected = technique;
+                    break;
+                }
             }
         }
     }

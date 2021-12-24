@@ -6,7 +6,8 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShootShinsuArrow;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -54,7 +55,8 @@ public class ShinsuBow extends BowItem {
             float speed = getArrowVelocity(charge);
             if (speed >= 0.1 && !worldIn.isRemote()) {
                 ShinsuStats stats = ShinsuStats.get(shooter);
-                ShinsuTechnique.SHOOT_SHINSU_ARROW.getFactory().doBuild(shooter, charge, null, shooter.getLookVec()).ifLeft(instance -> {
+                ShinsuTechnique.SHOOT_SHINSU_ARROW.getFactory().doCreate(shooter, null, shooter.getLookVec()).ifLeft(instance -> {
+                    ((ShootShinsuArrow) instance).setVelocity(speed);
                     stats.cast((ServerWorld) worldIn, instance);
                     worldIn.playSound(null, shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1, 1 / (random.nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
                     shooter.addStat(Stats.ITEM_USED.get(this));
@@ -80,7 +82,7 @@ public class ShinsuBow extends BowItem {
         ActionResult<ItemStack> ret = ForgeEventFactory.onArrowNock(itemstack, worldIn, playerIn, handIn, true);
         if (ret != null) {
             return ret;
-        } else if (ShinsuTechnique.SHOOT_SHINSU_ARROW.getFactory().doBuild(playerIn, 1, null, playerIn.getLookVec()) != null) {
+        } else if (ShinsuTechnique.SHOOT_SHINSU_ARROW.getFactory().doCreate(playerIn, null, playerIn.getLookVec()).left().isPresent()) {
             playerIn.setActiveHand(handIn);
             return ActionResult.resultConsume(itemstack);
         } else {

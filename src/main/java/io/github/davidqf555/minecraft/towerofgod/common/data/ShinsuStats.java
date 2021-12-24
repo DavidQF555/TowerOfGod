@@ -3,7 +3,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.data;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.*;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import net.minecraft.entity.Entity;
@@ -177,14 +181,13 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         addMaxBaangs(getGainedBaangs(killed.getMaxBaangs()));
         multiplyBaseResistance(getGainedResistance(killed.getRawResistance()));
         multiplyBaseTension(getGainedTension(killed.getRawTension()));
-        for (ShinsuTechnique technique : ShinsuTechnique.values()) {
-            ShinsuTechniqueType type = technique.getType();
+        for (ShinsuTechniqueType type : ShinsuTechniqueType.values()) {
             ShinsuTypeData data = getData(type);
             int initial = data.getLevel();
             addExperience(type, killed.getData(type).getLevel());
             int after = data.getLevel();
             if (initial != after) {
-                owner.sendMessage(new TranslationTextComponent(LEVEL_UP, technique.getText(), after), Util.DUMMY_UUID);
+                owner.sendMessage(new TranslationTextComponent(LEVEL_UP, type.getText(), after), Util.DUMMY_UUID);
             }
         }
         if (owner instanceof ServerPlayerEntity) {
@@ -271,19 +274,6 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         return cooldowns.getOrDefault(technique, 0);
     }
 
-    public IShinsuTechniqueProvider[] getTechniqueProviders() {
-        return new IShinsuTechniqueProvider[]{getShape(), getQuality()};
-    }
-
-    public Set<ShinsuTechnique> getObtainableTechniques() {
-        Set<ShinsuTechnique> techniques = EnumSet.noneOf(ShinsuTechnique.class);
-        for (IShinsuTechniqueProvider provider : getTechniqueProviders()) {
-            techniques.addAll(provider.getTechniques());
-        }
-        return techniques;
-    }
-
-
     public void periodicTick(ServerWorld world, int period) {
         List<ShinsuTechniqueInstance> techniques = new ArrayList<>(getTechniques());
         for (ShinsuTechniqueInstance technique : techniques) {
@@ -301,16 +291,12 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     }
 
     public void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, Vector3d dir) {
-        cast(user, technique, getData(technique.getType()).getLevel(), target, dir);
-    }
-
-    public void cast(LivingEntity user, ShinsuTechnique technique, int level, @Nullable Entity target, Vector3d dir) {
         if (user.world instanceof ServerWorld) {
             Optional<ShinsuTechniqueInstance> used = getTechniques().stream().filter(instance -> instance.getTechnique() == technique).findAny();
             if (technique.getRepeatEffect() == ShinsuTechnique.Repeat.TOGGLE && used.isPresent()) {
                 used.get().remove((ServerWorld) user.world);
             } else if (getCooldown(technique) <= 0) {
-                technique.getFactory().doBuild(user, level, target, dir).ifLeft(instance -> cast((ServerWorld) user.world, instance));
+                technique.getFactory().doCreate(user, target, dir).ifLeft(instance -> cast((ServerWorld) user.world, instance));
             }
         }
     }
@@ -380,7 +366,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             ListNBT list = nbt.getList("Techniques", Constants.NBT.TAG_COMPOUND);
             for (INBT data : list) {
                 ShinsuTechnique type = ShinsuTechnique.valueOf(((CompoundNBT) data).getString("Technique"));
-                ShinsuTechniqueInstance tech = type.getFactory().emptyBuild();
+                ShinsuTechniqueInstance tech = type.getFactory().blankCreate();
                 tech.deserializeNBT((CompoundNBT) data);
                 techniques.add(tech);
             }

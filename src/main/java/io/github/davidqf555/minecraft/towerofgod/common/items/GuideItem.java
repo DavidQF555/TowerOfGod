@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenGuideScreenPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -24,22 +24,18 @@ import java.util.List;
 public class GuideItem extends Item {
 
     private final ITextComponent author;
-    private final ShinsuTechniqueType type;
+    private final ShinsuTechnique[] pages;
     private final int color;
 
-    public GuideItem(ShinsuTechniqueType type, ITextComponent author, int color) {
+    public GuideItem(ShinsuTechnique[] pages, ITextComponent author, int color) {
         super(new Properties()
                 .group(TowerOfGod.TAB)
                 .maxStackSize(1)
                 .rarity(Rarity.EPIC)
         );
-        this.type = type;
+        this.pages = pages;
         this.author = author;
         this.color = color;
-    }
-
-    public ShinsuTechniqueType getType() {
-        return type;
     }
 
     @Override
@@ -51,7 +47,7 @@ public class GuideItem extends Item {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack item = playerIn.getHeldItem(handIn);
         if (playerIn instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new OpenGuideScreenPacket(getType(), color));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new OpenGuideScreenPacket(pages, color));
         }
         playerIn.addStat(Stats.ITEM_USED.get(this));
         return ActionResult.func_233538_a_(item, worldIn.isRemote());

@@ -10,7 +10,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.*;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.items.*;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.block.Block;
 import net.minecraft.block.OreBlock;
 import net.minecraft.block.SoundType;
@@ -142,8 +142,8 @@ public final class RegistryHandler {
                 new ShinsuSword(2, -0.8f).setRegistryName(TowerOfGod.MOD_ID, "shinsu_sword"),
                 new ShinsuHoe(-1, 4).setRegistryName(TowerOfGod.MOD_ID, "shinsu_hoe"),
                 new ShinsuBow().setRegistryName(TowerOfGod.MOD_ID, "shinsu_bow"),
-                new GuideItem(ShinsuTechniqueType.CONTROL, new TranslationTextComponent("item." + TowerOfGod.MOD_ID + ".control_guide.author"), 0xFF8580E6).setRegistryName(TowerOfGod.MOD_ID, "control_guide"),
-                new GuideItem(ShinsuTechniqueType.DISRUPTION, new TranslationTextComponent("item." + TowerOfGod.MOD_ID + ".disruption_guide.author"), 0xFF444444).setRegistryName(TowerOfGod.MOD_ID, "disruption_guide")
+                new GuideItem(new ShinsuTechnique[]{ShinsuTechnique.BODY_REINFORCEMENT, ShinsuTechnique.SHINSU_BLAST}, new TranslationTextComponent("item." + TowerOfGod.MOD_ID + ".control_guide.author"), 0xFF8580E6).setRegistryName(TowerOfGod.MOD_ID, "control_guide"),
+                new GuideItem(new ShinsuTechnique[]{ShinsuTechnique.FLARE_WAVE_EXPLOSION, ShinsuTechnique.REVERSE_FLOW_CONTROL}, new TranslationTextComponent("item." + TowerOfGod.MOD_ID + ".disruption_guide.author"), 0xFF444444).setRegistryName(TowerOfGod.MOD_ID, "disruption_guide")
         );
     }
 

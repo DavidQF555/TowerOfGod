@@ -1,9 +1,15 @@
-package io.github.davidqf555.minecraft.towerofgod.common.techinques;
+package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.QualityRequirement;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.TypeLevelRequirement;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -17,13 +23,15 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 
-public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
+public class ShinsuBlast extends ShinsuTechniqueInstance {
 
     private static final double BASE_SPEED = 0.5;
     private UUID blast;
+    private Vector3d direction;
 
-    public ShinsuBlast(LivingEntity user, int level, Vector3d dir) {
-        super(user, level, dir);
+    public ShinsuBlast(LivingEntity user, Vector3d direction) {
+        super(user);
+        this.direction = direction;
         blast = null;
     }
 
@@ -49,10 +57,8 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
                 shinsu.setShooter(user);
                 shinsu.setQuality(quality);
                 shinsu.setTechnique(this);
-                shinsu.setLevel(getLevel());
                 shinsu.setPosition(user.getPosX(), user.getPosYEye() - shinsu.getBoundingBox().getYSize() / 2, user.getPosZ());
-                Vector3d dir = getDirection();
-                shinsu.shoot(dir.getX(), dir.getY(), dir.getZ(), (float) (BASE_SPEED * quality.getSpeed()), 0);
+                shinsu.shoot(direction.getX(), direction.getY(), direction.getZ(), (float) (BASE_SPEED * quality.getSpeed()), 0);
                 blast = shinsu.getUniqueID();
                 world.addEntity(shinsu);
             }
@@ -89,6 +95,9 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
         if (blast != null) {
             nbt.putUniqueId("Blast", blast);
         }
+        nbt.putDouble("X", direction.getX());
+        nbt.putDouble("Y", direction.getY());
+        nbt.putDouble("Z", direction.getZ());
         return nbt;
     }
 
@@ -98,6 +107,9 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
         if (nbt.contains("Blast", Constants.NBT.TAG_INT_ARRAY)) {
             blast = nbt.getUniqueId("Blast");
         }
+        if (nbt.contains("X", Constants.NBT.TAG_DOUBLE) && nbt.contains("Y", Constants.NBT.TAG_DOUBLE) && nbt.contains("Z", Constants.NBT.TAG_DOUBLE)) {
+            direction = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
+        }
     }
 
     @MethodsReturnNonnullByDefault
@@ -105,18 +117,23 @@ public class ShinsuBlast extends ShinsuTechniqueInstance.Direction {
     public static class Factory implements ShinsuTechnique.IFactory<ShinsuBlast> {
 
         @Override
-        public Either<ShinsuBlast, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new ShinsuBlast(user, level, dir));
+        public Either<ShinsuBlast, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new ShinsuBlast(user, dir));
         }
 
         @Override
-        public ShinsuBlast emptyBuild() {
-            return new ShinsuBlast(null, 0, Vector3d.ZERO);
+        public ShinsuBlast blankCreate() {
+            return new ShinsuBlast(null, Vector3d.ZERO);
         }
 
         @Override
         public ShinsuTechnique getTechnique() {
             return ShinsuTechnique.SHINSU_BLAST;
+        }
+
+        @Override
+        public IRequirement[] getRequirements() {
+            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 2), new QualityRequirement(ShinsuQuality.NONE)};
         }
     }
 }

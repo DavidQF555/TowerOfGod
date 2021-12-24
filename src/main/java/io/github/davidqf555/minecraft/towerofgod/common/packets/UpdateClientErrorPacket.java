@@ -66,10 +66,8 @@ public class UpdateClientErrorPacket {
                 Vector3d eye = player.getEyePosition(1);
                 EntityRayTraceResult result = ProjectileHelper.rayTraceEntities(player.world, player, eye, eye.add(player.getLookVec().scale(ShinsuStats.ENTITY_RANGE)), AxisAlignedBB.fromVector(eye).grow(ShinsuStats.ENTITY_RANGE), null);
                 Entity target = result == null ? null : result.getEntity();
-                ShinsuStats stats = ShinsuStats.get(player);
                 for (ShinsuTechnique technique : ShinsuTechnique.values()) {
-                    int level = stats.getData(technique.getType()).getLevel();
-                    technique.getFactory().doBuild(player, level, target, player.getLookVec()).ifRight(error -> errors.put(technique, error));
+                    technique.getFactory().doCreate(player, target, player.getLookVec()).ifRight(error -> errors.put(technique, error));
                 }
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new UpdateClientErrorPacket(errors));
             });

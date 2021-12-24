@@ -4,6 +4,7 @@ import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenCombinationGUIPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -37,9 +38,8 @@ public final class GuiEventBusSubscriber {
             }
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isKeyDown()) {
                 if (ClientReference.combo == null) {
-                    ClientReference.combo = new ShinsuCombinationGui(client.player.rotationYawHead, client.player.rotationPitch);
-                }
-                if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
+                    TowerOfGod.CHANNEL.sendToServer(new OpenCombinationGUIPacket());
+                } else if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
                     MainWindow window = client.getMainWindow();
                     ClientReference.combo.render(event.getMatrixStack(), (window.getScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getScaledHeight() - ClientReference.combo.getHeight()) / 2f - 50);
                 }

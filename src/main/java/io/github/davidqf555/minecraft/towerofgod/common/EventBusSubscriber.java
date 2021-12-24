@@ -81,7 +81,7 @@ public final class EventBusSubscriber {
         public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             Entity entity = event.getEntity();
             ShinsuStats stats = ShinsuStats.get(entity);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientShinsuQualityShapePacket(stats.getQuality(), stats.getShape()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientQualityPacket(stats.getQuality()));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
         }
@@ -202,10 +202,11 @@ public final class EventBusSubscriber {
                 UpdateShinsuMeterPacket.register(index++);
                 UpdateBaangsMeterPacket.register(index++);
                 UpdateClientErrorPacket.register(index++);
-                UpdateClientShinsuQualityShapePacket.register(index++);
+                UpdateClientQualityPacket.register(index++);
                 ObserverChangeHighlightPacket.register(index++);
                 UpdateClientDimensionsPacket.register(index++);
                 OpenFloorTeleportationTerminalPacket.register(index++);
+                OpenCombinationGUIPacket.register(index++);
                 ChangeFloorPacket.register(index++);
                 OpenGuideScreenPacket.register(index++);
                 Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);

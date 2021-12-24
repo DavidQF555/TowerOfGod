@@ -12,14 +12,9 @@ import net.minecraft.tags.BlockTags;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.util.NonNullSupplier;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
-public enum ShinsuShape implements IShinsuTechniqueProvider {
+public enum ShinsuShape {
 
     NONE(() -> ItemStack.EMPTY, player -> -1.0),
     SHOVEL(() -> RegistryHandler.SHINSU_SHOVEL.get().getDefaultInstance(), player -> {
@@ -32,7 +27,7 @@ public enum ShinsuShape implements IShinsuTechniqueProvider {
             }
         }
         return amount;
-    }, ShinsuTechnique.MANIFEST),
+    }),
     PICKAXE(() -> RegistryHandler.SHINSU_PICKAXE.get().getDefaultInstance(), player -> {
         StatisticsManager stats = player.getStats();
         double amount = 0;
@@ -43,7 +38,7 @@ public enum ShinsuShape implements IShinsuTechniqueProvider {
             }
         }
         return amount;
-    }, ShinsuTechnique.MANIFEST),
+    }),
     AXE(() -> RegistryHandler.SHINSU_AXE.get().getDefaultInstance(), player -> {
         StatisticsManager stats = player.getStats();
         double amount = 0;
@@ -54,8 +49,8 @@ public enum ShinsuShape implements IShinsuTechniqueProvider {
             }
         }
         return amount;
-    }, ShinsuTechnique.MANIFEST),
-    SWORD(() -> RegistryHandler.SHINSU_SWORD.get().getDefaultInstance(), player -> player.getStats().getValue(Stats.CUSTOM.get(Stats.DAMAGE_DEALT)) * 0.1, ShinsuTechnique.MANIFEST),
+    }),
+    SWORD(() -> RegistryHandler.SHINSU_SWORD.get().getDefaultInstance(), player -> player.getStats().getValue(Stats.CUSTOM.get(Stats.DAMAGE_DEALT)) * 0.1),
     HOE(() -> RegistryHandler.SHINSU_HOE.get().getDefaultInstance(), player -> {
         StatisticsManager stats = player.getStats();
         double amount = 0;
@@ -63,27 +58,15 @@ public enum ShinsuShape implements IShinsuTechniqueProvider {
             amount += stats.getValue(Stats.BLOCK_MINED.get(crop)) * 4;
         }
         return amount;
-    }, ShinsuTechnique.MANIFEST),
-    BOW(() -> RegistryHandler.SHINSU_BOW.get().getDefaultInstance(), player -> player.getStats().getValue(Stats.ITEM_USED.get(Items.BOW)) * 2.0, ShinsuTechnique.MANIFEST);
+    }),
+    BOW(() -> RegistryHandler.SHINSU_BOW.get().getDefaultInstance(), player -> player.getStats().getValue(Stats.ITEM_USED.get(Items.BOW)) * 2.0);
 
     private final NonNullSupplier<ItemStack> item;
     private final Function<ServerPlayerEntity, Double> suitability;
-    private final ShinsuTechnique[] obtainable;
 
-    ShinsuShape(NonNullSupplier<ItemStack> item, Function<ServerPlayerEntity, Double> suitability, ShinsuTechnique... obtainable) {
+    ShinsuShape(NonNullSupplier<ItemStack> item, Function<ServerPlayerEntity, Double> suitability) {
         this.item = item;
         this.suitability = suitability;
-        this.obtainable = obtainable;
-    }
-
-    @Nullable
-    public ShinsuTechnique getTechnique(List<Direction> combination) {
-        for (ShinsuTechnique technique : obtainable) {
-            if (technique.matches(combination)) {
-                return technique;
-            }
-        }
-        return null;
     }
 
     public ItemStack createItem() {
@@ -94,8 +77,4 @@ public enum ShinsuShape implements IShinsuTechniqueProvider {
         return suitability.apply(player);
     }
 
-    @Override
-    public Set<ShinsuTechnique> getTechniques() {
-        return obtainable.length == 0 ? EnumSet.noneOf(ShinsuTechnique.class) : EnumSet.copyOf(Arrays.asList(obtainable));
-    }
 }

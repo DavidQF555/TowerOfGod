@@ -32,24 +32,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public enum ShinsuQuality implements IShinsuTechniqueProvider {
+public enum ShinsuQuality {
 
     NONE(ParticleTypes.DRIPPING_WATER, DamageSource.DROWN, 1, 1, 0xAA24a6d1, (target, direction) -> {
     }, (entity, rayTrace) -> {
-    }, (drops, context) -> drops, player -> -1.0, ShinsuTechnique.SHINSU_BLAST, ShinsuTechnique.BLACK_FISH, ShinsuTechnique.BODY_REINFORCEMENT, ShinsuTechnique.FLARE_WAVE_EXPLOSION, ShinsuTechnique.REVERSE_FLOW_CONTROL, ShinsuTechnique.FOLLOW_OWNER, ShinsuTechnique.MOVE_DEVICES, ShinsuTechnique.LIGHTHOUSE_FLOW_CONTROL, ShinsuTechnique.SCOUT),
+    }, (drops, context) -> drops, player -> -1.0),
     LIGHTNING(ParticleTypes.INSTANT_EFFECT, DamageSource.LIGHTNING_BOLT, 1.5, 1, 0xFFfbff85, (entity, rayTrace) -> {
         Entity target = rayTrace.getEntity();
         target.setFire(3);
@@ -62,7 +65,7 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
             lightning.moveForced(Vector3d.copyCenteredHorizontally(rayTrace.getPos().offset(rayTrace.getFace())));
             entity.world.addEntity(lightning);
         }
-    }, (drops, context) -> drops, player -> player.getStats().getValue(Stats.CUSTOM.get(Stats.DAMAGE_DEALT)) / 10.0, ShinsuTechnique.CHANNEL_LIGHTNING, ShinsuTechnique.BLACK_FISH, ShinsuTechnique.BODY_REINFORCEMENT, ShinsuTechnique.FLARE_WAVE_EXPLOSION, ShinsuTechnique.REVERSE_FLOW_CONTROL, ShinsuTechnique.FOLLOW_OWNER, ShinsuTechnique.MOVE_DEVICES, ShinsuTechnique.LIGHTHOUSE_FLOW_CONTROL, ShinsuTechnique.SCOUT, ShinsuTechnique.FLASH),
+    }, (drops, context) -> drops, player -> player.getStats().getValue(Stats.CUSTOM.get(Stats.DAMAGE_DEALT)) / 10.0),
     FIRE(ParticleTypes.FLAME, DamageSource.ON_FIRE, 1, 1, 0xFFff8119, (entity, rayTrace) -> rayTrace.getEntity().setFire(7), (entity, rayTrace) -> {
         World world = entity.getEntityWorld();
         BlockPos pos = rayTrace.getPos().offset(rayTrace.getFace());
@@ -81,7 +84,7 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
         double total = stats.getValue(Stats.CUSTOM.get(Stats.INTERACT_WITH_BLAST_FURNACE)) + stats.getValue(Stats.CUSTOM.get(Stats.INTERACT_WITH_CAMPFIRE)) + stats.getValue(Stats.CUSTOM.get(Stats.INTERACT_WITH_FURNACE)) + stats.getValue(Stats.CUSTOM.get(Stats.INTERACT_WITH_SMOKER)) + stats.getValue(Stats.ENTITY_KILLED.get(EntityType.BLAZE));
         total += 0.25 * Tags.Blocks.NETHERRACK.getAllElements().stream().mapToInt(block -> stats.getValue(Stats.BLOCK_MINED.get(block)) + stats.getValue(Stats.ITEM_USED.get(block.asItem())) + stats.getValue(Stats.ITEM_CRAFTED.get(block.asItem()))).sum();
         return total;
-    }, ShinsuTechnique.SHINSU_BLAST, ShinsuTechnique.BLACK_FISH, ShinsuTechnique.BODY_REINFORCEMENT, ShinsuTechnique.FLARE_WAVE_EXPLOSION, ShinsuTechnique.REVERSE_FLOW_CONTROL, ShinsuTechnique.FOLLOW_OWNER, ShinsuTechnique.MOVE_DEVICES, ShinsuTechnique.LIGHTHOUSE_FLOW_CONTROL, ShinsuTechnique.SCOUT),
+    }),
     ICE(ParticleTypes.POOF, DamageSource.MAGIC, 1, 1, 0xFFa8fbff, (entity, rayTrace) -> {
         Entity target = rayTrace.getEntity();
         if (target instanceof LivingEntity) {
@@ -115,7 +118,7 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
     }, (drops, context) -> drops, player -> {
         StatisticsManager stats = player.getStats();
         return 1.0 * BlockTags.ICE.getAllElements().stream().mapToInt(block -> stats.getValue(Stats.BLOCK_MINED.get(block)) + stats.getValue(Stats.ITEM_USED.get(block.asItem())) + stats.getValue(Stats.ITEM_CRAFTED.get(block.asItem()))).sum();
-    }, ShinsuTechnique.SHINSU_BLAST, ShinsuTechnique.BLACK_FISH, ShinsuTechnique.BODY_REINFORCEMENT, ShinsuTechnique.FLARE_WAVE_EXPLOSION, ShinsuTechnique.REVERSE_FLOW_CONTROL, ShinsuTechnique.FOLLOW_OWNER, ShinsuTechnique.MOVE_DEVICES, ShinsuTechnique.LIGHTHOUSE_FLOW_CONTROL, ShinsuTechnique.SCOUT),
+    }),
     STONE(new BlockParticleData(ParticleTypes.BLOCK, Blocks.STONE.getDefaultState()), DamageSource.FALLING_BLOCK, 0.8, 1.5, 0xFF999999, (entity, rayTrace) -> {
     }, (entity, rayTrace) -> {
         BlockPos pos = rayTrace.getPos();
@@ -137,7 +140,7 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
         items.addAll(ItemTags.STONE_BRICKS.getAllElements());
         total += items.stream().mapToInt(item -> stats.getValue(Stats.ITEM_USED.get(item)) + stats.getValue(Stats.ITEM_CRAFTED.get(item))).sum();
         return total * 0.1;
-    }, ShinsuTechnique.SHINSU_BLAST, ShinsuTechnique.BLACK_FISH, ShinsuTechnique.BODY_REINFORCEMENT, ShinsuTechnique.FLARE_WAVE_EXPLOSION, ShinsuTechnique.REVERSE_FLOW_CONTROL, ShinsuTechnique.FOLLOW_OWNER, ShinsuTechnique.MOVE_DEVICES, ShinsuTechnique.LIGHTHOUSE_FLOW_CONTROL, ShinsuTechnique.SCOUT),
+    }),
     WIND(ParticleTypes.AMBIENT_ENTITY_EFFECT, DamageSource.CRAMMING, 1.4, 1, 0xAAabffac, (entity, rayTrace) -> {
         Vector3d dir = rayTrace.getHitVec().normalize();
         Entity target = rayTrace.getEntity();
@@ -158,7 +161,7 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
     }, (drops, context) -> drops, player -> {
         StatisticsManager stats = player.getStats();
         return 0.1 * stats.getValue(Stats.CUSTOM.get(Stats.AVIATE_ONE_CM));
-    }, ShinsuTechnique.SHINSU_BLAST, ShinsuTechnique.BLACK_FISH, ShinsuTechnique.BODY_REINFORCEMENT, ShinsuTechnique.FLARE_WAVE_EXPLOSION, ShinsuTechnique.REVERSE_FLOW_CONTROL, ShinsuTechnique.FOLLOW_OWNER, ShinsuTechnique.MOVE_DEVICES, ShinsuTechnique.LIGHTHOUSE_FLOW_CONTROL, ShinsuTechnique.SCOUT),
+    }),
     CRYSTAL(new BlockParticleData(ParticleTypes.BLOCK, Blocks.GLASS.getDefaultState()), DamageSource.MAGIC, 0.9, 2, 0xFFf7f7f7, (entity, rayTrace) -> {
     }, (entity, rayTrace) -> {
     }, (drops, context) -> drops, player -> {
@@ -168,7 +171,7 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
         StatisticsManager stats = player.getStats();
         int total = blocks.stream().mapToInt(block -> stats.getValue(Stats.BLOCK_MINED.get(block)) + stats.getValue(Stats.ITEM_USED.get(block.asItem())) + stats.getValue(Stats.ITEM_CRAFTED.get(block.asItem()))).sum();
         return total * 0.5;
-    }, ShinsuTechnique.SHINSU_BLAST, ShinsuTechnique.BLACK_FISH, ShinsuTechnique.BODY_REINFORCEMENT, ShinsuTechnique.FLARE_WAVE_EXPLOSION, ShinsuTechnique.REVERSE_FLOW_CONTROL, ShinsuTechnique.FOLLOW_OWNER, ShinsuTechnique.MOVE_DEVICES, ShinsuTechnique.LIGHTHOUSE_FLOW_CONTROL, ShinsuTechnique.SCOUT),
+    }),
     PLANT(ParticleTypes.COMPOSTER, DamageSource.CACTUS, 1, 1, 0xFF03ff2d, (entity, rayTrace) -> {
         Entity target = rayTrace.getEntity();
         if (target instanceof LivingEntity) {
@@ -208,20 +211,20 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
         items.addAll(Tags.Items.CROPS.getAllElements());
         amount += items.stream().mapToInt(item -> stats.getValue(Stats.ITEM_USED.get(item)) + stats.getValue(Stats.ITEM_CRAFTED.get(item))).sum();
         return amount * 2.0;
-    }, ShinsuTechnique.SHINSU_BLAST, ShinsuTechnique.BLACK_FISH, ShinsuTechnique.BODY_REINFORCEMENT, ShinsuTechnique.FLARE_WAVE_EXPLOSION, ShinsuTechnique.REVERSE_FLOW_CONTROL, ShinsuTechnique.FOLLOW_OWNER, ShinsuTechnique.MOVE_DEVICES, ShinsuTechnique.LIGHTHOUSE_FLOW_CONTROL, ShinsuTechnique.SCOUT);
+    });
 
     private final IParticleData particleType;
     private final DamageSource source;
     private final double speed;
     private final double damage;
     private final int color;
+    private final TranslationTextComponent name;
     private final BiConsumer<Entity, EntityRayTraceResult> entityEffect;
     private final BiConsumer<Entity, BlockRayTraceResult> blockEffect;
     private final BiFunction<List<ItemStack>, LootContext, List<ItemStack>> dropsFilter;
     private final Function<ServerPlayerEntity, Double> suitability;
-    private final ShinsuTechnique[] obtainable;
 
-    ShinsuQuality(IParticleData particleType, DamageSource source, double speed, double damage, int color, BiConsumer<Entity, EntityRayTraceResult> entityEffect, BiConsumer<Entity, BlockRayTraceResult> rightClickEffect, BiFunction<List<ItemStack>, LootContext, List<ItemStack>> dropsFilter, Function<ServerPlayerEntity, Double> suitability, ShinsuTechnique... obtainable) {
+    ShinsuQuality(IParticleData particleType, DamageSource source, double speed, double damage, int color, BiConsumer<Entity, EntityRayTraceResult> entityEffect, BiConsumer<Entity, BlockRayTraceResult> rightClickEffect, BiFunction<List<ItemStack>, LootContext, List<ItemStack>> dropsFilter, Function<ServerPlayerEntity, Double> suitability) {
         this.particleType = particleType;
         this.source = source;
         this.speed = speed;
@@ -231,7 +234,7 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
         this.blockEffect = rightClickEffect;
         this.dropsFilter = dropsFilter;
         this.suitability = suitability;
-        this.obtainable = obtainable;
+        name = new TranslationTextComponent("quality.towerofgod." + name().toLowerCase());
     }
 
     public static void setQuality(ItemStack item, ShinsuQuality quality) {
@@ -247,16 +250,6 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
             }
         }
         return ShinsuQuality.NONE;
-    }
-
-    @Nullable
-    public ShinsuTechnique getTechnique(List<io.github.davidqf555.minecraft.towerofgod.common.techinques.Direction> combination) {
-        for (ShinsuTechnique technique : obtainable) {
-            if (technique.matches(combination)) {
-                return technique;
-            }
-        }
-        return null;
     }
 
     public IParticleData getParticleType() {
@@ -295,8 +288,7 @@ public enum ShinsuQuality implements IShinsuTechniqueProvider {
         return dropsFilter.apply(drops, context);
     }
 
-    @Override
-    public Set<ShinsuTechnique> getTechniques() {
-        return obtainable.length == 0 ? EnumSet.noneOf(ShinsuTechnique.class) : EnumSet.copyOf(Arrays.asList(obtainable));
+    public TranslationTextComponent getName() {
+        return name;
     }
 }

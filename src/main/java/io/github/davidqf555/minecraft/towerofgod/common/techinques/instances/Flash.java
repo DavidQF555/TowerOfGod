@@ -1,12 +1,19 @@
-package io.github.davidqf555.minecraft.towerofgod.common.techinques;
+package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.QualityRequirement;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.TypeLevelRequirement;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
@@ -14,15 +21,18 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
-public class Flash extends ShinsuTechniqueInstance.Direction {
+public class Flash extends ShinsuTechniqueInstance {
 
     private static final double RANGE = 64;
+    private Vector3d direction;
 
-    public Flash(LivingEntity user, int level, Vector3d dir) {
-        super(user, level, dir);
+    public Flash(LivingEntity user, Vector3d direction) {
+        super(user);
+        this.direction = direction;
     }
 
     @Override
@@ -36,7 +46,7 @@ public class Flash extends ShinsuTechniqueInstance.Direction {
         DirectionalLightningBoltEntity lightning = RegistryHandler.LIGHTNING_PROJECTILE_ENTITY.get().create(world);
         if (lightning != null) {
             Vector3d start = new Vector3d(user.getPosX(), user.getPosYEye(), user.getPosZ());
-            Vector3d end = start.add(getDirection().mul(RANGE, RANGE, RANGE));
+            Vector3d end = start.add(direction.mul(RANGE, RANGE, RANGE));
             EntityRayTraceResult entity = ProjectileHelper.rayTraceEntities(world, lightning, start, end, AxisAlignedBB.withSizeAtOrigin(RANGE * 2, RANGE * 2, RANGE * 2).offset(start), null);
             Vector3d pos;
             if (entity != null) {
@@ -71,21 +81,43 @@ public class Flash extends ShinsuTechniqueInstance.Direction {
         return 1;
     }
 
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+        super.deserializeNBT(nbt);
+        if (nbt.contains("X", Constants.NBT.TAG_DOUBLE) && nbt.contains("Y", Constants.NBT.TAG_DOUBLE) && nbt.contains("Z", Constants.NBT.TAG_DOUBLE)) {
+            direction = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
+        }
+    }
+
+    @Override
+    public CompoundNBT serializeNBT() {
+        CompoundNBT nbt = super.serializeNBT();
+        nbt.putDouble("X", direction.getX());
+        nbt.putDouble("Y", direction.getY());
+        nbt.putDouble("Z", direction.getZ());
+        return nbt;
+    }
+
     public static class Factory implements ShinsuTechnique.IFactory<Flash> {
 
         @Override
-        public Either<Flash, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new Flash(user, level, dir));
+        public Either<Flash, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new Flash(user, dir));
         }
 
         @Override
-        public Flash emptyBuild() {
-            return new Flash(null, 1, Vector3d.ZERO);
+        public Flash blankCreate() {
+            return new Flash(null, Vector3d.ZERO);
         }
 
         @Override
         public ShinsuTechnique getTechnique() {
             return ShinsuTechnique.FLASH;
+        }
+
+        @Override
+        public IRequirement[] getRequirements() {
+            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 10), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 10), new QualityRequirement(ShinsuQuality.LIGHTNING)};
         }
     }
 }

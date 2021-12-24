@@ -3,8 +3,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShootShinsuArrow;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShootShinsuArrow;
 import net.minecraft.entity.*;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
@@ -104,9 +104,11 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         float inaccuracy = (14 - world.getDifficulty().getId() * 4f) / stats.getLevel();
         if (arrow instanceof ShinsuArrowEntity) {
             Vector3d dir = new Vector3d(dX, dY, dZ);
-            Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getFactory().doBuild(this, ShootShinsuArrow.getLevelForVelocity(velocity, stats.getQuality()), target, dir).left();
+            Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getFactory().doCreate(this, target, dir).left();
             if (technique.isPresent()) {
-                stats.cast((ServerWorld) world, technique.get());
+                ShootShinsuArrow inst = (ShootShinsuArrow) technique.get();
+                inst.setVelocity(velocity);
+                stats.cast((ServerWorld) world, inst);
                 return;
             } else {
                 arrow = ((ArrowItem) Items.ARROW).createArrow(world, new ItemStack(Items.ARROW), this);
