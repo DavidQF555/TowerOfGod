@@ -279,7 +279,7 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
                 if (!entry.getKey().getLocation().getNamespace().equals(TowerOfGod.MOD_ID)) {
                     ChunkGenerator gen = entry.getValue().getChunkGenerator();
                     if (gen instanceof NoiseChunkGenerator && gen.getBiomeProvider().getBiomes().contains(biome)) {
-                        DimensionSettings settings = field_236080_h_.get();
+                        DimensionSettings settings = ((NoiseChunkGenerator) gen).field_236080_h_.get();
                         states = Pair.of(settings.getDefaultBlock(), settings.getDefaultFluid());
                         break;
                     }
