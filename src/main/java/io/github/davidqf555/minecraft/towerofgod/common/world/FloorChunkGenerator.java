@@ -13,6 +13,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.SharedSeedRandom;
 import net.minecraft.util.math.*;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Dimension;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
@@ -47,7 +48,7 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
             DimensionSettings.DIMENSION_SETTINGS_CODEC.fieldOf("settings").forGetter(gen -> gen.field_236080_h_)
     ).apply(builder, builder.stable(FloorChunkGenerator::new)));
     private static final BlockState AIR = Blocks.AIR.getDefaultState();
-    private static final Map<Biome, Pair<BlockState, BlockState>> DEFAULTS = new HashMap<>();
+    private static final Map<RegistryKey<Biome>, Pair<BlockState, BlockState>> DEFAULTS = new HashMap<>();
     private final FloorProperty property;
 
     public FloorChunkGenerator(FloorProperty property, BiomeProvider provider, long seed, Supplier<DimensionSettings> settings) {
@@ -271,14 +272,15 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
     }
 
     private Pair<BlockState, BlockState> getDefaults(Biome biome) {
-        if (DEFAULTS.containsKey(biome)) {
-            return DEFAULTS.get(biome);
+        RegistryKey<Biome> key = RegistryKey.getOrCreateKey(Registry.BIOME_KEY, biome.getRegistryName());
+        if (DEFAULTS.containsKey(key)) {
+            return DEFAULTS.get(key);
         } else {
             Pair<BlockState, BlockState> states = null;
             for (Map.Entry<RegistryKey<Dimension>, Dimension> entry : ServerLifecycleHooks.getCurrentServer().getServerConfiguration().getDimensionGeneratorSettings().func_236224_e_().getEntries()) {
                 if (!entry.getKey().getLocation().getNamespace().equals(TowerOfGod.MOD_ID)) {
                     ChunkGenerator gen = entry.getValue().getChunkGenerator();
-                    if (gen instanceof NoiseChunkGenerator && gen.getBiomeProvider().getBiomes().contains(biome)) {
+                    if (gen instanceof NoiseChunkGenerator && gen.getBiomeProvider().getBiomes().stream().anyMatch(b -> key.getLocation().equals(b.getRegistryName()))) {
                         DimensionSettings settings = ((NoiseChunkGenerator) gen).field_236080_h_.get();
                         states = Pair.of(settings.getDefaultBlock(), settings.getDefaultFluid());
                         break;
@@ -288,7 +290,7 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
             if (states == null) {
                 states = Pair.of(Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState());
             }
-            DEFAULTS.put(biome, states);
+            DEFAULTS.put(key, states);
             return states;
         }
     }
