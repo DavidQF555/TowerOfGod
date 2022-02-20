@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#x#",
+    "xyz",
+    "#x#"
+  ],
+  "key": {
+    "x": {
+      "item": "towerofgod:suspendium"
+    },
+    "y": {
+      "item": "minecraft:redstone"
+    },
+    "z": {
+      "item": "minecraft:glass_pane"
+    },
+    "#": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "item": "towerofgod:observer",
+    "count": 1
+  }
+}

@@ -42,9 +42,12 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class FloorDimensionsHelper {
+public final class FloorDimensionsHelper {
 
     private static final double TYPE_RATE = 0.1;
+
+    private FloorDimensionsHelper() {
+    }
 
     public static void forceSendPlayerToFloor(ServerPlayerEntity player, int floor, Vector3d pos) {
         ServerWorld world = getOrCreateWorld(player.server, floor);

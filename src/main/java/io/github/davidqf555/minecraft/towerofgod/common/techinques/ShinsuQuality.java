@@ -32,6 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.Tags;
@@ -217,6 +218,7 @@ public enum ShinsuQuality {
     private final double speed;
     private final double damage;
     private final int color;
+    private final TranslationTextComponent name;
     private final BiConsumer<Entity, EntityRayTraceResult> entityEffect;
     private final BiConsumer<Entity, BlockRayTraceResult> blockEffect;
     private final BiFunction<List<ItemStack>, LootContext, List<ItemStack>> dropsFilter;
@@ -232,6 +234,7 @@ public enum ShinsuQuality {
         this.blockEffect = rightClickEffect;
         this.dropsFilter = dropsFilter;
         this.suitability = suitability;
+        name = new TranslationTextComponent("quality.towerofgod." + name().toLowerCase());
     }
 
     public static void setQuality(ItemStack item, ShinsuQuality quality) {
@@ -285,4 +288,7 @@ public enum ShinsuQuality {
         return dropsFilter.apply(drops, context);
     }
 
+    public TranslationTextComponent getName() {
+        return name;
+    }
 }

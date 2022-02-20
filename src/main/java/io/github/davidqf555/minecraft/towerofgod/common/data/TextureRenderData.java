@@ -1,16 +1,14 @@
 package io.github.davidqf555.minecraft.towerofgod.common.data;
 
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import net.minecraft.util.ResourceLocation;
 
 public class TextureRenderData implements IRenderData {
 
     private final ResourceLocation texture;
-    private final int textureWidth;
-    private final int textureHeight;
-    private final int startX;
-    private final int blitHeight;
-    private int startY;
-    private int blitWidth;
+    private final int textureWidth, textureHeight, startX;
+    private int blitHeight, startY, blitWidth;
 
     public TextureRenderData(ResourceLocation texture, int textureWidth, int textureHeight, int startX, int startY, int blitWidth, int blitHeight) {
         this.texture = texture;
@@ -58,4 +56,12 @@ public class TextureRenderData implements IRenderData {
         return blitHeight;
     }
 
+    public void setBlitHeight(int blitHeight) {
+        this.blitHeight = blitHeight;
+    }
+
+    @Override
+    public void render(RenderContext context) {
+        ClientReference.renderTextureData(this, context);
+    }
 }

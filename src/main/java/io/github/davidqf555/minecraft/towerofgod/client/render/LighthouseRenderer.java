@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 
 public class LighthouseRenderer extends DeviceRenderer<LighthouseEntity, LighthouseModel> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/lighthouse_entity.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/lighthouse.png");
 
     public LighthouseRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn, new LighthouseModel(), 0.5f);

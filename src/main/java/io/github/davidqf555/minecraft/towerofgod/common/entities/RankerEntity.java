@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import net.minecraft.entity.Entity;
@@ -33,7 +33,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class RankerEntity extends BasicShinsuUserEntity {
 
-    private static final String DEFEAT = "entity." + TowerOfGod.MOD_ID + ".ranker_entity.defeat";
+    private static final String DEFEAT = "entity." + TowerOfGod.MOD_ID + ".ranker.defeat";
     private final ServerBossInfo info;
     private int floorLevel;
 

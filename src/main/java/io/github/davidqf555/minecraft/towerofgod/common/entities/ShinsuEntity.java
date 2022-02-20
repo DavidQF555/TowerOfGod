@@ -1,9 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -36,13 +36,11 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     private static final float DAMAGE = 5;
     private static final DataParameter<String> QUALITY = EntityDataManager.createKey(ShinsuEntity.class, DataSerializers.STRING);
     private UUID technique;
-    private int level;
     private BlockRayTraceResult latestHit;
 
     public ShinsuEntity(World world) {
         super(RegistryHandler.SHINSU_ENTITY.get(), world);
         technique = null;
-        level = 1;
         latestHit = null;
     }
 
@@ -91,7 +89,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             Entity shooter = getShooter();
             Entity target = rayTraceResult.getEntity();
             ShinsuQuality quality = getQuality();
-            float damage = (float) ((shooter == null) ? level * quality.getDamage() * DAMAGE : ShinsuStats.getNetResistance((ServerWorld) world, shooter, target) * level * quality.getDamage() * DAMAGE) / 8;
+            float damage = (float) ((shooter == null) ? quality.getDamage() * DAMAGE : ShinsuStats.getNetResistance((ServerWorld) world, shooter, target) * quality.getDamage() * DAMAGE) / 8;
             quality.applyEntityEffect(this, rayTraceResult);
             target.attackEntityFrom(quality.getSource(), damage);
         }
@@ -109,10 +107,6 @@ public class ShinsuEntity extends DamagingProjectileEntity {
 
     public void setTechnique(ShinsuTechniqueInstance technique) {
         this.technique = technique.getID();
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
     }
 
     @Override
@@ -151,9 +145,6 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
             setQuality(ShinsuQuality.valueOf(nbt.getString("Quality")));
         }
-        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
-            level = nbt.getInt("Level");
-        }
     }
 
     @Override
@@ -163,7 +154,6 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             nbt.putUniqueId("Technique", technique);
         }
         nbt.putString("Quality", getQuality().name());
-        nbt.putInt("Level", level);
     }
 
     @Override

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "yxy",
+    "yzy",
+    "yoy"
+  ],
+  "key": {
+    "x": {
+      "item": "minecraft:ender_pearl"
+    },
+    "y": {
+      "item": "minecraft:iron_ingot"
+    },
+    "z": {
+      "item": "minecraft:diamond"
+    },
+    "o": {
+      "item": "minecraft:obsidian"
+    }
+  },
+  "result": {
+    "item": "towerofgod:floor_teleportation_terminal",
+    "count": 1
+  }
+}

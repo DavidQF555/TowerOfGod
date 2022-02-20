@@ -25,6 +25,9 @@ import org.lwjgl.glfw.GLFW;
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
 public final class EventBusSubscriber {
 
+    private EventBusSubscriber() {
+    }
+
     @SubscribeEvent
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
         Minecraft client = Minecraft.getInstance();
@@ -41,6 +44,9 @@ public final class EventBusSubscriber {
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ModBus {
 
+        private ModBus() {
+        }
+
         @SubscribeEvent
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.LIGHTHOUSE_ENTITY.get(), LighthouseRenderer::new);
@@ -50,6 +56,7 @@ public final class EventBusSubscriber {
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.CLICKER_ENTITY.get(), ClickerRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.SHINSU_ARROW_ENTITY.get(), ShinsuArrowRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.RANKER_ENTITY.get(), BipedShinsuUserRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.DIRECTIONAL_LIGHTNING_ENTITY.get(), DirectionalLightningRenderer::new);
             KeyBindingsList.register();
             event.enqueueWork(() -> {
                 ScreenManager.registerFactory(RegistryHandler.LIGHTHOUSE_CONTAINER.get(), new LighthouseScreen.Factory());

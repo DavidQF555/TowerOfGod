@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ChangeFloorPacket;
@@ -21,8 +21,8 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class FloorTeleportationTerminalScreen extends Screen {
 
-    private static final ITextComponent TITLE = new TranslationTextComponent("gui." + TowerOfGod.MOD_ID + ".floor_teleportation_terminal_screen");
-    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/floor_teleportation_terminal_screen.png");
+    private static final ITextComponent TITLE = new TranslationTextComponent("gui." + TowerOfGod.MOD_ID + ".floor_teleportation_terminal");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/floor_teleportation_terminal.png");
     private static final int TEXTURE_WIDTH = 195;
     private static final int TEXTURE_HEIGHT = 146;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, 0, 195, 125);
@@ -79,7 +79,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        ClientReference.render(BACKGROUND, matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF);
+        BACKGROUND.render(new RenderContext(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF));
         font.drawText(matrixStack, title, x + (xSize - font.getStringPropertyWidth(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
@@ -113,7 +113,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            ClientReference.render(RENDER, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+            RENDER.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             String value = this.value.toString();
             int textX = x + (width - screen.font.getStringWidth(value)) / 2;
             int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
@@ -141,7 +141,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            ClientReference.render(BUTTON, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+            BUTTON.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             String text = "<";
             int textX = x + (width - screen.font.getStringWidth(text)) / 2;
             int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
@@ -168,7 +168,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            ClientReference.render(BUTTON, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+            BUTTON.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             String text = ">";
             int textX = x + (width - screen.font.getStringWidth(text)) / 2;
             int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
@@ -195,7 +195,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
         @Override
         public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            ClientReference.render(BUTTON, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+            BUTTON.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             String value = "" + this.value;
             int textX = x + (width - font.getStringWidth(value)) / 2;
             int textY = y + (height - font.FONT_HEIGHT) / 2;

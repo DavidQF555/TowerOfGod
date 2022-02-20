@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 
 public class ObserverRenderer extends DeviceRenderer<ObserverEntity, ObserverModel> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/observer_entity.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/observer.png");
 
     public ObserverRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn, new ObserverModel(), 0.1f);

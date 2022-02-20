@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
@@ -19,8 +19,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class LighthouseScreen extends ContainerScreen<LighthouseEntity.LighthouseContainer> {
 
-    private static final TextureRenderData LIGHTHOUSE = new TextureRenderData(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 0, 176, 71);
-    private static final TextureRenderData INVENTORY = new TextureRenderData(new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/container/lighthouse_container.png"), 176, 165, 0, 71, 176, 94);
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/lighthouse.png");
+    private static final TextureRenderData LIGHTHOUSE = new TextureRenderData(TEXTURE, 176, 165, 0, 0, 176, 71);
+    private static final TextureRenderData INVENTORY = new TextureRenderData(TEXTURE, 176, 165, 0, 71, 176, 94);
     private static final int INVENTORY_TITLE_COLOR = 0xFF404040;
 
     public LighthouseScreen(LighthouseEntity.LighthouseContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
@@ -41,9 +42,9 @@ public class LighthouseScreen extends ContainerScreen<LighthouseEntity.Lighthous
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         int offset = getBlitOffset();
-        ClientReference.render(INVENTORY, matrixStack, x, y + 72, offset, xSize, 94, 0xFFFFFFFF);
+        INVENTORY.render(new RenderContext(matrixStack, x, y + 72, offset, xSize, 94, 0xFFFFFFFF));
         int hex = container.lighthouse.getColor().getColorValue();
-        ClientReference.render(LIGHTHOUSE, matrixStack, x, y, offset, xSize, 71, ColorHelper.PackedColor.packColor(255, ColorHelper.PackedColor.getRed(hex), ColorHelper.PackedColor.getGreen(hex), ColorHelper.PackedColor.getBlue(hex)));
+        LIGHTHOUSE.render(new RenderContext(matrixStack, x, y, offset, xSize, 71, ColorHelper.PackedColor.packColor(255, ColorHelper.PackedColor.getRed(hex), ColorHelper.PackedColor.getGreen(hex), ColorHelper.PackedColor.getBlue(hex))));
     }
 
     @Override

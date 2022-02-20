@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    "xyx",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "item": "towerofgod:suspendium"
+    },
+    "y": {
+      "item": "minecraft:redstone_lamp"
+    }
+  },
+  "result": {
+    "item": "towerofgod:lighthouse",
+    "count": 1
+  }
+}
