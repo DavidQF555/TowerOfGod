@@ -31,7 +31,7 @@ public class GuideItem extends Item {
         super(new Properties()
                 .group(TowerOfGod.TAB)
                 .maxStackSize(1)
-                .rarity(Rarity.EPIC)
+                .rarity(Rarity.UNCOMMON)
         );
         this.pages = pages;
         this.author = author;
