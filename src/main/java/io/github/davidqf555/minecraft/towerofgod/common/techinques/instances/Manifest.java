@@ -1,8 +1,15 @@
-package io.github.davidqf555.minecraft.towerofgod.common.techinques;
+package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.ShapeRequirement;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.TypeLevelRequirement;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -22,8 +29,13 @@ import java.util.UUID;
 
 public class Manifest extends ShinsuTechniqueInstance {
 
-    public Manifest(LivingEntity user, int level) {
-        super(user, level);
+    private ShinsuShape shape;
+    private ShinsuQuality quality;
+
+    public Manifest(LivingEntity user, ShinsuShape shape, ShinsuQuality quality) {
+        super(user);
+        this.shape = shape;
+        this.quality = quality;
     }
 
     @Override
@@ -34,10 +46,9 @@ public class Manifest extends ShinsuTechniqueInstance {
     @Override
     public void onUse(ServerWorld world) {
         Entity user = getUser(world);
-        ShinsuStats stats = ShinsuStats.get(user);
-        ItemStack item = stats.getShape().createItem();
+        ItemStack item = shape.createItem();
         item.getOrCreateChildTag(TowerOfGod.MOD_ID).putUniqueId("Technique", getID());
-        ShinsuQuality.setQuality(item, stats.getQuality());
+        ShinsuQuality.setQuality(item, quality);
         IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         for (int i = 0; i < inventory.getSlots(); i++) {
             if (inventory.isItemValid(i, item)) {
@@ -79,23 +90,48 @@ public class Manifest extends ShinsuTechniqueInstance {
         super.periodicTick(world, period);
     }
 
+    @Override
+    public void deserializeNBT(CompoundNBT nbt) {
+        super.deserializeNBT(nbt);
+        if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
+            shape = ShinsuShape.valueOf(nbt.getString("Shape"));
+        }
+        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
+            quality = ShinsuQuality.valueOf(nbt.getString("Quality"));
+        }
+    }
+
+    @Override
+    public CompoundNBT serializeNBT() {
+        CompoundNBT nbt = super.serializeNBT();
+        nbt.putString("Shape", shape.name());
+        nbt.putString("Quality", quality.name());
+        return nbt;
+    }
+
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<Manifest> {
+    public static class Factory implements ShinsuTechnique.IFactory<Manifest> {
 
         @Override
-        public Either<Manifest, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return ShinsuStats.get(user).getShape() == ShinsuShape.NONE ? Either.right(ErrorMessages.REQUIRES_SHAPE) : Either.left(new Manifest(user, level));
+        public Either<Manifest, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+            ShinsuStats stats = ShinsuStats.get(user);
+            return Either.left(new Manifest(user, stats.getShape(), stats.getQuality()));
         }
 
         @Override
-        public Manifest emptyBuild() {
-            return new Manifest(null, 0);
+        public Manifest blankCreate() {
+            return new Manifest(null, ShinsuShape.NONE, ShinsuQuality.NONE);
         }
 
         @Override
         public ShinsuTechnique getTechnique() {
             return ShinsuTechnique.MANIFEST;
+        }
+
+        @Override
+        public IRequirement[] getRequirements() {
+            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 5), new ShapeRequirement()};
         }
     }
 }

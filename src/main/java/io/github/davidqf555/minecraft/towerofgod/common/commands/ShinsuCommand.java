@@ -5,9 +5,8 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTechniqueData;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientShinsuDataPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import net.minecraft.command.CommandSource;
@@ -20,8 +19,6 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.server.command.EnumArgument;
 
 import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Map;
 
 public final class ShinsuCommand {
 
@@ -146,15 +143,8 @@ public final class ShinsuCommand {
     private static int changeTechniqueTypeLevel(CommandSource source, Collection<? extends Entity> entities, ShinsuTechniqueType type, int change) {
         for (Entity entity : entities) {
             ShinsuStats stats = ShinsuStats.get(entity);
-            ShinsuTechniqueData d = stats.getData(type);
+            ShinsuTypeData d = stats.getData(type);
             d.setLevel(d.getLevel() + change);
-            if (entity instanceof ServerPlayerEntity) {
-                Map<ShinsuTechniqueType, ShinsuTechniqueData> data = new EnumMap<>(ShinsuTechniqueType.class);
-                for (ShinsuTechniqueType t : ShinsuTechniqueType.values()) {
-                    data.put(t, stats.getData(t));
-                }
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientShinsuDataPacket(data));
-            }
             source.sendFeedback(new TranslationTextComponent(TECHNIQUE, entity.getDisplayName(), type.getText(), change), true);
         }
         return entities.size();

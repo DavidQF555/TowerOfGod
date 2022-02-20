@@ -6,6 +6,8 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.*;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -24,36 +26,35 @@ import java.util.stream.Collectors;
 @ParametersAreNonnullByDefault
 public enum ShinsuTechnique {
 
-    BODY_REINFORCEMENT(ShinsuTechniqueType.CONTROL, Repeat.OVERRIDE, false, true, 1, new BodyReinforcement.Builder(), ShinsuIcons.RESISTANCE, ImmutableList.of(Direction.UP, Direction.UP, Direction.UP)),
-    BLACK_FISH(ShinsuTechniqueType.CONTROL, Repeat.OVERRIDE, false, true, 5, new BlackFish.Builder(), ShinsuIcons.SWIRL, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.DOWN)),
-    SHINSU_BLAST(ShinsuTechniqueType.CONTROL, Repeat.ALLOW, false, true, 2, new ShinsuBlast.Builder(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.DOWN, Direction.UP)),
-    FLARE_WAVE_EXPLOSION(ShinsuTechniqueType.DISRUPTION, Repeat.ALLOW, false, true, 10, new FlareWaveExplosion.Builder(), ShinsuIcons.TENSION, ImmutableList.of(Direction.UP, Direction.LEFT, Direction.LEFT)),
-    REVERSE_FLOW_CONTROL(ShinsuTechniqueType.DISRUPTION, Repeat.ALLOW, false, true, 15, new ReverseFlowControl.Builder(), ShinsuIcons.REVERSE, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.RIGHT)),
-    MANIFEST(ShinsuTechniqueType.MANIFEST, Repeat.OVERRIDE, true, true, 10, new Manifest.Builder(), ShinsuIcons.PICKAXE, ImmutableList.of(Direction.LEFT, Direction.RIGHT)),
-    SHOOT_SHINSU_ARROW(ShinsuTechniqueType.MANIFEST, Repeat.ALLOW, false, false, 0, new ShootShinsuArrow.Builder(), ShinsuIcons.BAANGS, ImmutableList.of()),
-    MOVE_DEVICES(ShinsuTechniqueType.DEVICE_CONTROL, Repeat.ALLOW, true, true, 5, new MoveDevices.Builder(), ShinsuIcons.MOVE, ImmutableList.of(Direction.UP, Direction.RIGHT)),
-    LIGHTHOUSE_FLOW_CONTROL(ShinsuTechniqueType.DEVICE_CONTROL, Repeat.OVERRIDE, false, true, 10, new LighthouseFlowControl.Builder(), ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT)),
-    SCOUT(ShinsuTechniqueType.DEVICE_CONTROL, Repeat.ALLOW, false, true, 7, new Scout.Builder(), ShinsuIcons.EYE, ImmutableList.of(Direction.UP, Direction.DOWN)),
-    FOLLOW_OWNER(ShinsuTechniqueType.DEVICE_CONTROL, Repeat.TOGGLE, true, true, 1, new FollowOwner.Builder(), ShinsuIcons.FOLLOW, ImmutableList.of(Direction.UP, Direction.LEFT));
+    BODY_REINFORCEMENT(Repeat.OVERRIDE, false, new BodyReinforcement.Factory(), ShinsuIcons.RESISTANCE, ImmutableList.of(Direction.UP, Direction.UP, Direction.UP)),
+    BLACK_FISH(Repeat.OVERRIDE, false, new BlackFish.Factory(), ShinsuIcons.SWIRL, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.DOWN)),
+    SHINSU_BLAST(Repeat.ALLOW, false, new ShinsuBlast.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.DOWN, Direction.UP)),
+    FLARE_WAVE_EXPLOSION(Repeat.ALLOW, false, new FlareWaveExplosion.Factory(), ShinsuIcons.TENSION, ImmutableList.of(Direction.UP, Direction.LEFT, Direction.LEFT)),
+    REVERSE_FLOW_CONTROL(Repeat.ALLOW, false, new ReverseFlowControl.Factory(), ShinsuIcons.REVERSE, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.RIGHT)),
+    MANIFEST(Repeat.OVERRIDE, true, new Manifest.Factory(), ShinsuIcons.PICKAXE, ImmutableList.of(Direction.LEFT, Direction.RIGHT)),
+    SHOOT_SHINSU_ARROW(Repeat.ALLOW, false, new ShootShinsuArrow.Factory(), ShinsuIcons.BAANGS, ImmutableList.of()),
+    MOVE_DEVICES(Repeat.ALLOW, true, new MoveDevices.Factory(), ShinsuIcons.MOVE, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.LEFT)),
+    LIGHTHOUSE_FLOW_CONTROL(Repeat.OVERRIDE, true, new LighthouseFlowControl.Factory(), ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.UP, Direction.LEFT)),
+    SCOUT(Repeat.ALLOW, false, new Scout.Factory(), ShinsuIcons.EYE, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.RIGHT, Direction.LEFT)),
+    FOLLOW_OWNER(Repeat.TOGGLE, true, new FollowOwner.Factory(), ShinsuIcons.FOLLOW, ImmutableList.of(Direction.UP, Direction.LEFT)),
+    CHANNEL_LIGHTNING(Repeat.ALLOW, true, new ChannelLightning.Factory(), ShinsuIcons.LIGHTNING, ImmutableList.of(Direction.DOWN, Direction.UP)),
+    FLASH(Repeat.ALLOW, false, new Flash.Factory(), ShinsuIcons.FLASH, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT));
 
-    private final ShinsuTechniqueType type;
     private final Repeat repeat;
     private final boolean indefinite;
-    private final boolean obtainable;
-    private final int level;
-    private final IBuilder<? extends ShinsuTechniqueInstance> builder;
+    private final IFactory<? extends ShinsuTechniqueInstance> factory;
     private final TranslationTextComponent text;
+    private final TranslationTextComponent description;
     private final IRenderData icon;
     private final List<Direction> combination;
 
-    ShinsuTechnique(ShinsuTechniqueType type, Repeat repeat, boolean indefinite, boolean obtainable, int level, IBuilder<? extends ShinsuTechniqueInstance> builder, IRenderData icon, List<Direction> combination) {
-        this.type = type;
+    ShinsuTechnique(Repeat repeat, boolean indefinite, IFactory<? extends ShinsuTechniqueInstance> factory, IRenderData icon, List<Direction> combination) {
         this.repeat = repeat;
         this.indefinite = indefinite;
-        this.obtainable = obtainable;
-        this.level = level;
-        this.builder = builder;
-        text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name().toLowerCase());
+        this.factory = factory;
+        String name = name().toLowerCase();
+        text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name);
+        description = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name + ".description");
         this.icon = icon;
         this.combination = combination;
     }
@@ -71,15 +72,11 @@ public enum ShinsuTechnique {
     public static List<ShinsuTechnique> getObtainableTechniques() {
         List<ShinsuTechnique> obtainable = new ArrayList<>();
         for (ShinsuTechnique technique : values()) {
-            if (technique.obtainable) {
+            if (technique.isObtainable()) {
                 obtainable.add(technique);
             }
         }
         return obtainable;
-    }
-
-    public ShinsuTechniqueType getType() {
-        return type;
     }
 
     public boolean matches(List<Direction> combination) {
@@ -98,28 +95,28 @@ public enum ShinsuTechnique {
         return combination;
     }
 
-    public int getLevelRequirement() {
-        return level;
-    }
-
     public Repeat getRepeatEffect() {
         return repeat;
     }
 
     public boolean isObtainable() {
-        return obtainable;
+        return !combination.isEmpty();
     }
 
     public boolean isIndefinite() {
         return indefinite;
     }
 
-    public IBuilder<? extends ShinsuTechniqueInstance> getBuilder() {
-        return builder;
+    public IFactory<? extends ShinsuTechniqueInstance> getFactory() {
+        return factory;
     }
 
     public TranslationTextComponent getText() {
         return text;
+    }
+
+    public TranslationTextComponent getDescription() {
+        return description;
     }
 
     public IRenderData getIcon() {
@@ -132,44 +129,60 @@ public enum ShinsuTechnique {
         TOGGLE()
     }
 
-    public interface IBuilder<T extends ShinsuTechniqueInstance> {
+    public interface IFactory<T extends ShinsuTechniqueInstance> {
 
-        Either<T, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir);
+        Either<T, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir);
 
-        T emptyBuild();
+        T blankCreate();
 
         ShinsuTechnique getTechnique();
 
-        default Either<T, ITextComponent> doBuild(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
+        default Either<T, ITextComponent> doCreate(LivingEntity user, @Nullable Entity target, Vector3d dir) {
             ShinsuTechnique technique = getTechnique();
             ShinsuStats stats = ShinsuStats.get(user);
             List<ShinsuTechniqueInstance> same = stats.getTechniques().stream().filter(inst -> inst.getTechnique() == technique).collect(Collectors.toList());
-            int cooldown = stats.getData(technique.getType()).getCooldown();
-            if (technique.getRepeatEffect() == Repeat.TOGGLE && !same.isEmpty()) {
-                return Either.left(emptyBuild());
+            Repeat repeat = technique.getRepeatEffect();
+            int cooldown = stats.getCooldown(technique);
+            if (!isUnlocked(user)) {
+                return Either.right(Messages.LOCKED);
+            } else if (repeat == Repeat.TOGGLE && !same.isEmpty()) {
+                return Either.left(blankCreate());
             } else if (cooldown > 0) {
-                return Either.right(ErrorMessages.ON_COOLDOWN.apply(cooldown));
-            } else if (technique.isObtainable() && level <= technique.getLevelRequirement()) {
-                return Either.right(ErrorMessages.REQUIRES_LEVEL.apply(technique.getType(), technique.getLevelRequirement()));
+                return Either.right(Messages.ON_COOLDOWN.apply(cooldown / 20.0));
             }
-            Either<T, ITextComponent> either = build(user, level, target, dir);
+            Either<T, ITextComponent> either = create(user, target, dir);
             Optional<T> op = either.left();
             if (op.isPresent()) {
                 T instance = op.get();
                 int netShinsuUse = instance.getShinsuUse();
                 int netBaangsUse = instance.getBaangsUse();
-                for (ShinsuTechniqueInstance inst : same) {
-                    netShinsuUse -= inst.getShinsuUse();
-                    netBaangsUse -= inst.getBaangsUse();
+                if (repeat == Repeat.OVERRIDE) {
+                    for (ShinsuTechniqueInstance inst : same) {
+                        netShinsuUse -= inst.getShinsuUse();
+                        netBaangsUse -= inst.getBaangsUse();
+                    }
                 }
                 if (stats.getBaangs() < netBaangsUse) {
-                    return Either.right(ErrorMessages.REQUIRES_BAANGS.apply(netBaangsUse));
+                    return Either.right(Messages.REQUIRES_BAANGS.apply(netBaangsUse));
                 } else if (stats.getShinsu() < netShinsuUse) {
-                    return Either.right(ErrorMessages.REQUIRES_SHINSU.apply(netShinsuUse));
+                    return Either.right(Messages.REQUIRES_SHINSU.apply(netShinsuUse));
                 }
                 return Either.left(instance);
             }
             return either;
         }
+
+        default boolean isUnlocked(LivingEntity user) {
+            for (IRequirement requirement : getRequirements()) {
+                if (!requirement.isUnlocked(user)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        IRequirement[] getRequirements();
+
     }
+
 }

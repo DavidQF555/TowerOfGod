@@ -3,13 +3,12 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientConfigs;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientErrorPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientShinsuDataPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import net.minecraft.client.Minecraft;
@@ -18,61 +17,59 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
 public class ShinsuCombinationGui extends AbstractGui {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/combination.png");
-    private static final int ICON_WIDTH = 40, ICON_HEIGHT = 40, BACKGROUND_WIDTH = 60, BACKGROUND_HEIGHT = 60;
-    private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 32, 16, 16, 16);
+    private static final int ICON_WIDTH = 20, ICON_HEIGHT = 20;
+    private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16);
     private final List<Marker> markers;
+    private final Set<ShinsuTechnique> unlocked;
+    private final int color;
     private float prevYaw, prevPitch;
     private ShinsuTechnique selected;
     private int headX, headY, minX, maxX, minY, maxY;
 
-    public ShinsuCombinationGui(float yaw, float pitch) {
+    public ShinsuCombinationGui(Set<ShinsuTechnique> unlocked, float yaw, float pitch) {
+        this.unlocked = unlocked;
         markers = new ArrayList<>();
         prevYaw = yaw;
         prevPitch = pitch;
+        color = ClientReference.quality.getColor();
         reset();
     }
 
     public void render(MatrixStack matrixStack, float x, float y) {
         ShinsuTechnique selected = getSelected();
         if (selected == null) {
-            renderCombo(matrixStack, x, y);
+            for (Marker marker : markers) {
+                marker.render(matrixStack, x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT);
+            }
         } else {
             float centerX = x + getWidth() / 2f;
             float centerY = y + getHeight() / 2f;
             int z = getBlitOffset();
-            float backX = centerX - BACKGROUND_WIDTH / 2f;
-            float backY = centerY - BACKGROUND_HEIGHT / 2f;
-            boolean hasError = ClientReference.ERRORS.containsKey(selected);
-            ClientReference.render(BACKGROUND, matrixStack, backX, backY, z, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, hasError ? 0xFFFF0000 : 0xFF6DC0FF);
             float iconX = centerX - ICON_WIDTH / 2f;
             float iconY = centerY - ICON_HEIGHT / 2f;
+            boolean hasError = ClientReference.ERRORS.containsKey(selected);
+            BACKGROUND.render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, hasError ? 0xFFFF0000 : color));
             Minecraft client = Minecraft.getInstance();
             if (hasError) {
-                ClientReference.render(ShinsuIcons.LOCK, matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF);
                 ITextComponent error = ClientReference.ERRORS.get(selected);
-                client.fontRenderer.drawText(matrixStack, error, centerX - client.fontRenderer.getStringPropertyWidth(error) / 2f, centerY - client.fontRenderer.FONT_HEIGHT / 2f, 0xFF660000);
-            } else {
-                ClientReference.render(selected.getIcon(), matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF);
+                client.fontRenderer.drawTextWithShadow(matrixStack, error, centerX - client.fontRenderer.getStringPropertyWidth(error) / 2f, centerY + ICON_HEIGHT / 2f + client.fontRenderer.FONT_HEIGHT + 2, 0xFF660000);
             }
-            ITextComponent text = selected.getText();
-            client.fontRenderer.drawText(matrixStack, text, centerX - client.fontRenderer.getStringPropertyWidth(text) / 2f, centerY + ICON_HEIGHT / 2f, hasError ? 0xFF660000 : 0xFF0797FF);
-        }
-    }
-
-    protected void renderCombo(MatrixStack matrixStack, float x, float y) {
-        for (Marker marker : markers) {
-            marker.render(matrixStack, x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT);
+            selected.getIcon().render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
+            ITextComponent text = selected.getText().mergeStyle(TextFormatting.BOLD);
+            client.fontRenderer.drawTextWithShadow(matrixStack, text, centerX - client.fontRenderer.getStringPropertyWidth(text) / 2f, centerY + ICON_HEIGHT / 2f + 1, hasError ? 0xFF660000 : color);
         }
     }
 
@@ -101,7 +98,6 @@ public class ShinsuCombinationGui extends AbstractGui {
             }
         }
         if (client.player.world.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
-            TowerOfGod.CHANNEL.sendToServer(new UpdateClientShinsuDataPacket());
             TowerOfGod.CHANNEL.sendToServer(new UpdateClientErrorPacket());
         }
     }
@@ -140,7 +136,8 @@ public class ShinsuCombinationGui extends AbstractGui {
                 if (dif == 90) {
                     prev.type = Marker.Type.TURN;
                 } else if (dif == -90) {
-                    prev.type = Marker.Type.REVERSE_TURN;
+                    prev.type = Marker.Type.TURN;
+                    prev.offset = 90;
                 } else {
                     prev.type = Marker.Type.REVERSE;
                 }
@@ -149,7 +146,7 @@ public class ShinsuCombinationGui extends AbstractGui {
         markers.add(new Marker(headX, headY, Marker.Type.ARROW, direction));
         List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
         if (!combination.isEmpty()) {
-            for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
+            for (ShinsuTechnique technique : unlocked) {
                 if (technique.matches(combination)) {
                     selected = technique;
                     break;
@@ -176,6 +173,7 @@ public class ShinsuCombinationGui extends AbstractGui {
         private static final int WIDTH = 20, HEIGHT = 20;
         private final Direction direction;
         private final int x, y;
+        private float offset;
         private Type type;
 
         private Marker(int x, int y, Type type, Direction direction) {
@@ -190,16 +188,15 @@ public class ShinsuCombinationGui extends AbstractGui {
             float centerY = y + HEIGHT / 2f;
             matrixStack.push();
             matrixStack.translate(centerX, centerY, 0);
-            matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + 180));
+            matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + offset + 180));
             matrixStack.translate(-centerX, -centerY, 0);
-            ClientReference.render(type.texture, matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, 0xFFFFFFFF);
+            type.texture.render(new RenderContext(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ClientReference.quality.getColor()));
             matrixStack.pop();
         }
 
         private enum Type {
 
             TURN(new TextureRenderData(TEXTURE, 48, 32, 16, 0, 16, 16)),
-            REVERSE_TURN(new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16)),
             LINE(new TextureRenderData(TEXTURE, 48, 32, 0, 0, 16, 16)),
             REVERSE(new TextureRenderData(TEXTURE, 48, 32, 32, 0, 16, 16)),
             ARROW(new TextureRenderData(TEXTURE, 48, 32, 0, 16, 16, 16));

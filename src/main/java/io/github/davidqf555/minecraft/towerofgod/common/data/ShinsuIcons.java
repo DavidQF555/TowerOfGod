@@ -18,7 +18,8 @@ public final class ShinsuIcons {
     public static final TextureRenderData LIGHTHOUSE_FLOW_CONTROL = new TextureRenderData(ICONS, 64, 64, 0, 32, 16, 16);
     public static final TextureRenderData EYE = new TextureRenderData(ICONS, 64, 64, 16, 32, 16, 16);
     public static final TextureRenderData FOLLOW = new TextureRenderData(ICONS, 64, 64, 32, 32, 16, 16);
-    public static final TextureRenderData LOCK = new TextureRenderData(ICONS, 64, 64, 48, 32, 16, 16);
+    public static final TextureRenderData LIGHTNING = new TextureRenderData(ICONS, 64, 64, 48, 32, 16, 16);
+    public static final TextureRenderData FLASH = new TextureRenderData(ICONS, 64, 64, 0, 48, 16, 16);
 
     private ShinsuIcons() {
     }

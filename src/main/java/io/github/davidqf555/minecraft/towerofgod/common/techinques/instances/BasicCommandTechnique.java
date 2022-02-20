@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.techinques;
+package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
@@ -9,7 +9,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
@@ -19,12 +18,12 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance.Direction {
+public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
 
     private final List<UUID> devices;
 
-    public BasicCommandTechnique(LivingEntity user, int level, Vector3d dir) {
-        super(user, level, dir);
+    public BasicCommandTechnique(LivingEntity user) {
+        super(user);
         devices = user == null ? new ArrayList<>() : ((ServerWorld) user.world).getEntities()
                 .filter(entity -> entity instanceof FlyingDevice)
                 .map(entity -> (FlyingDevice) entity)

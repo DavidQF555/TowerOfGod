@@ -1,15 +1,16 @@
-package io.github.davidqf555.minecraft.towerofgod.common.techinques;
+package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.BowItem;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
@@ -19,17 +20,20 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 
-public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
+public class ShootShinsuArrow extends ShinsuTechniqueInstance {
 
+    private Vector3d direction;
+    private float velocity;
     private UUID arrow;
 
-    public ShootShinsuArrow(LivingEntity user, int level, Vector3d dir) {
-        super(user, level, dir);
+    public ShootShinsuArrow(LivingEntity user, Vector3d direction) {
+        super(user);
+        this.direction = direction;
         arrow = null;
     }
 
-    public static int getLevelForVelocity(float velocity, ShinsuQuality quality) {
-        return (int) (MathHelper.sqrt(400 + 400 * velocity / quality.getSpeed()) - 19.5);
+    public void setVelocity(float velocity) {
+        this.velocity = velocity;
     }
 
     @Override
@@ -51,9 +55,8 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
                 ShinsuQuality quality = ShinsuStats.get(user).getQuality();
                 arrow.setQuality(quality);
                 arrow.setTechnique(getID());
-                float speed = BowItem.getArrowVelocity(getLevel()) * 3 * (float) quality.getSpeed();
-                Vector3d dir = getDirection();
-                arrow.shoot(dir.x, dir.y, dir.z, speed, 1);
+                float speed = velocity * 3 * (float) quality.getSpeed();
+                arrow.shoot(direction.getX(), direction.getY(), direction.getZ(), speed, 1);
                 arrow.setShooter(user);
                 arrow.setPosition(user.getPosX(), user.getPosYEye() - 0.1, user.getPosZ());
                 this.arrow = arrow.getUniqueID();
@@ -87,6 +90,10 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
         if (arrow != null) {
             nbt.putUniqueId("Arrow", arrow);
         }
+        nbt.putFloat("Velocity", velocity);
+        nbt.putDouble("X", direction.getX());
+        nbt.putDouble("Y", direction.getY());
+        nbt.putDouble("Z", direction.getZ());
         return nbt;
     }
 
@@ -96,25 +103,36 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance.Direction {
         if (nbt.contains("Arrow", Constants.NBT.TAG_INT_ARRAY)) {
             arrow = nbt.getUniqueId("Arrow");
         }
+        if (nbt.contains("Velocity", Constants.NBT.TAG_FLOAT)) {
+            setVelocity(nbt.getFloat("Velocity"));
+        }
+        if (nbt.contains("X", Constants.NBT.TAG_DOUBLE) && nbt.contains("Y", Constants.NBT.TAG_DOUBLE) && nbt.contains("Z", Constants.NBT.TAG_DOUBLE)) {
+            direction = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
+        }
     }
 
     @MethodsReturnNonnullByDefault
     @ParametersAreNonnullByDefault
-    public static class Builder implements ShinsuTechnique.IBuilder<ShootShinsuArrow> {
+    public static class Factory implements ShinsuTechnique.IFactory<ShootShinsuArrow> {
 
         @Override
-        public Either<ShootShinsuArrow, ITextComponent> build(LivingEntity user, int level, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new ShootShinsuArrow(user, level, dir));
+        public Either<ShootShinsuArrow, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new ShootShinsuArrow(user, dir));
         }
 
         @Override
-        public ShootShinsuArrow emptyBuild() {
-            return new ShootShinsuArrow(null, 0, Vector3d.ZERO);
+        public ShootShinsuArrow blankCreate() {
+            return new ShootShinsuArrow(null, Vector3d.ZERO);
         }
 
         @Override
         public ShinsuTechnique getTechnique() {
             return ShinsuTechnique.SHOOT_SHINSU_ARROW;
+        }
+
+        @Override
+        public IRequirement[] getRequirements() {
+            return new IRequirement[0];
         }
     }
 }

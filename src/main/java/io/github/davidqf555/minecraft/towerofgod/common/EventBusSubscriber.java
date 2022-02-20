@@ -3,7 +3,6 @@ package io.github.davidqf555.minecraft.towerofgod.common;
 import io.github.davidqf555.minecraft.towerofgod.common.commands.FloorCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.commands.ShinsuCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.gen.DataGenItemModelProvider;
 import io.github.davidqf555.minecraft.towerofgod.common.data.gen.DataGenRecipeProvider;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
@@ -12,7 +11,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorChunkGenerator;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
 import net.minecraft.data.DataGenerator;
@@ -56,9 +54,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-import java.util.EnumMap;
-import java.util.Map;
-
 public final class EventBusSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
@@ -86,11 +81,7 @@ public final class EventBusSubscriber {
         public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             Entity entity = event.getEntity();
             ShinsuStats stats = ShinsuStats.get(entity);
-            Map<ShinsuTechniqueType, ShinsuTechniqueData> data = new EnumMap<>(ShinsuTechniqueType.class);
-            for (ShinsuTechniqueType type : ShinsuTechniqueType.values()) {
-                data.put(type, stats.getData(type));
-            }
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientShinsuDataPacket(data));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientQualityPacket(stats.getQuality()));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
         }
@@ -211,10 +202,11 @@ public final class EventBusSubscriber {
                 UpdateShinsuMeterPacket.register(index++);
                 UpdateBaangsMeterPacket.register(index++);
                 UpdateClientErrorPacket.register(index++);
-                UpdateClientShinsuDataPacket.register(index++);
+                UpdateClientQualityPacket.register(index++);
                 ObserverChangeHighlightPacket.register(index++);
                 UpdateClientDimensionsPacket.register(index++);
                 OpenFloorTeleportationTerminalPacket.register(index++);
+                OpenCombinationGUIPacket.register(index++);
                 ChangeFloorPacket.register(index++);
                 OpenGuideScreenPacket.register(index++);
                 Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);

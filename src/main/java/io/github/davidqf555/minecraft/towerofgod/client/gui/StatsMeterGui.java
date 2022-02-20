@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -39,10 +39,10 @@ public class StatsMeterGui extends AbstractGui {
     }
 
     public void render(MatrixStack matrixStack) {
-        ClientReference.render(BACKGROUND, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+        BACKGROUND.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
         double ratio = value * 1.0 / max;
         bar.setBlitWidth((int) (BLIT_WIDTH * ratio));
-        ClientReference.render(bar, matrixStack, x, y, getBlitOffset(), (int) (width * ratio), height, 0xFFFFFFFF);
+        bar.render(new RenderContext(matrixStack, x, y, getBlitOffset(), (int) (width * ratio), height, 0xFFFFFFFF));
         int startY;
         if (max < maxDisplay) {
             startY = 7 * max / maxDisplay * 5 + 80;
@@ -50,7 +50,7 @@ public class StatsMeterGui extends AbstractGui {
             startY = 115;
         }
         lines.setStartY(startY);
-        ClientReference.render(lines, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+        lines.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
         FontRenderer font = Minecraft.getInstance().fontRenderer;
         String text = value + "";
         float textX = x + (width - font.getStringWidth(text)) / 2f;

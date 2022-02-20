@@ -1,24 +1,25 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.Direction;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ErrorMessages;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class GuideScreen extends Screen {
 
@@ -28,15 +29,15 @@ public class GuideScreen extends Screen {
     private static final TextureRenderData PAGE = new TextureRenderData(TEXTURE, 221, 370, 0, 180, 221, 180);
     private static final TextureRenderData NEXT = new TextureRenderData(TEXTURE, 221, 370, 0, 360, 18, 10);
     private static final TextureRenderData BACK = new TextureRenderData(TEXTURE, 221, 370, 18, 360, 18, 10);
-    private static final int BUTTON_WIDTH = 18, BUTTON_HEIGHT = 10;
+    private static final TextureRenderData ARROW = new TextureRenderData(TEXTURE, 221, 370, 36, 360, 10, 10);
+    private static final int BUTTON_WIDTH = 18, BUTTON_HEIGHT = 10, ARROW_WIDTH = 10, ARROW_HEIGHT = 10, DIF = 10;
     private final ShinsuTechnique[] pages;
     private final int xSize, ySize, color;
-    private ShinsuCombinationGui combo;
     private int page;
 
-    public GuideScreen(ShinsuTechniqueType type, int xSize, int ySize, int color) {
+    public GuideScreen(ShinsuTechnique[] pages, int xSize, int ySize, int color) {
         super(TITLE);
-        pages = Arrays.stream(ShinsuTechnique.values()).filter(tech -> tech.getType() == type).toArray(ShinsuTechnique[]::new);
+        this.pages = pages;
         this.xSize = xSize;
         this.ySize = ySize;
         this.color = color;
@@ -47,8 +48,6 @@ public class GuideScreen extends Screen {
         super.init(minecraft, width, height);
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
-        combo = new ShinsuCombinationGui(0, 0);
-        updateCombo();
         addButton(new ChangePageButton(BACK, -1, x, y + ySize - BUTTON_HEIGHT));
         addButton(new ChangePageButton(NEXT, 1, x + xSize - BUTTON_WIDTH, y + ySize - BUTTON_HEIGHT));
     }
@@ -58,17 +57,61 @@ public class GuideScreen extends Screen {
         float x = (width - xSize) / 2f;
         float y = (height - ySize) / 2f;
         int z = getBlitOffset();
-        ClientReference.render(PAGE, matrixStack, x, y, z, xSize, ySize, 0xFFFFFFFF);
-        ClientReference.render(OUTLINE, matrixStack, x, y, z, xSize, ySize, color);
-        ITextComponent title = pages[page].getText();
+        PAGE.render(new RenderContext(matrixStack, x, y, z, xSize, ySize, 0xFFFFFFFF));
+        OUTLINE.render(new RenderContext(matrixStack, x, y, z, xSize, ySize, color));
         float centerX = x + xSize / 2f;
         int difY = font.FONT_HEIGHT;
-        combo.renderCombo(matrixStack, centerX - combo.getWidth() / 2f, y + difY * 9);
-        ClientReference.render(pages[page].getIcon(), matrixStack, centerX - difY, y + difY * 6, z, difY * 2, difY * 2, 0xFFFFFFFF);
+        ITextComponent title = pages[page].getText().mergeStyle(TextFormatting.BOLD);
         font.drawText(matrixStack, title, centerX - font.getStringPropertyWidth(title) / 2f, y + difY * 2, 0xFF000000);
-        ITextComponent req = ErrorMessages.REQUIRES_LEVEL.apply(pages[page].getType(), pages[page].getLevelRequirement());
-        font.drawText(matrixStack, req, centerX - font.getStringPropertyWidth(req) / 2f, y + difY * 4, 0xFF000000);
+        pages[page].getIcon().render(new RenderContext(matrixStack, centerX - difY, y + difY * 4, z, difY * 2, difY * 2, 0xFFFFFFFF));
+        List<Direction> combo = pages[page].getCombination();
+        int width = combo.size() * ARROW_WIDTH + (combo.size() - 1) * DIF;
+        for (int i = 0; i < combo.size(); i++) {
+            float arrowX = centerX - width / 2f + (ARROW_HEIGHT + DIF) * i + ARROW_WIDTH / 2f;
+            float arrowY = y + difY * 8 + ARROW_HEIGHT / 2f;
+            Direction dir = combo.get(i);
+            matrixStack.push();
+            matrixStack.translate(arrowX, arrowY, 0);
+            matrixStack.rotate(Vector3f.ZP.rotationDegrees(dir.getAngle() + 180));
+            matrixStack.translate(-arrowX, -arrowY, 0);
+            ARROW.render(new RenderContext(matrixStack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, z, ARROW_WIDTH, ARROW_HEIGHT, color));
+            matrixStack.pop();
+        }
+        int lines = 0;
+        for (IRequirement req : pages[page].getFactory().getRequirements()) {
+            ITextComponent text = req.getText();
+            lines += renderWrappedText(matrixStack, text, centerX, y + difY * 10 + lines * font.FONT_HEIGHT, xSize * 4 / 5, 0xFF000000);
+        }
+        renderWrappedText(matrixStack, pages[page].getDescription(), centerX, y + difY * 12 + lines * font.FONT_HEIGHT, xSize * 4 / 5, 0xFF000000);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
+    }
+
+    //needs improvement
+    private int renderWrappedText(MatrixStack stack, ITextComponent text, float centerX, float y, int totalWidth, int color) {
+        String[] words = text.getString().split(" ");
+        int line = 0;
+        int current = 0;
+        StringBuilder builder = new StringBuilder();
+        for (String word : words) {
+            int width = font.getStringWidth(word);
+            if (width <= totalWidth - current || builder.length() == 0 && width > totalWidth) {
+                if (builder.length() != 0) {
+                    builder.append(' ');
+                }
+                builder.append(word);
+                current += width;
+            } else {
+                String string = builder.toString();
+                font.drawString(stack, string, centerX - font.getStringWidth(string) / 2f, y + line * font.FONT_HEIGHT, color);
+                builder = new StringBuilder();
+                builder.append(word);
+                current = width;
+                line++;
+            }
+        }
+        String string = builder.toString();
+        font.drawString(stack, string, centerX - font.getStringWidth(string) / 2f, y + line * font.FONT_HEIGHT, color);
+        return line + 1;
     }
 
     @Override
@@ -85,13 +128,6 @@ public class GuideScreen extends Screen {
         return false;
     }
 
-    private void updateCombo() {
-        combo.reset();
-        for (Direction direction : pages[page].getCombination()) {
-            combo.addMarker(direction);
-        }
-    }
-
     private class ChangePageButton extends AbstractButton {
 
         private final IRenderData render;
@@ -106,13 +142,12 @@ public class GuideScreen extends Screen {
         @Override
         public void onPress() {
             page = MathHelper.clamp(page + change, 0, pages.length - 1);
-            updateCombo();
         }
 
         @Override
         public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             if (visible) {
-                ClientReference.render(render, matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF);
+                render.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             }
         }
     }

@@ -1,11 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTechniqueData;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import net.minecraft.entity.LivingEntity;
@@ -55,34 +56,30 @@ public interface IShinsuUser<T extends LivingEntity> {
         stats.addMaxBaangs(getInitialMaxBaangs() - stats.getMaxBaangs());
         stats.multiplyBaseResistance(getInitialResistance() / stats.getRawResistance());
         stats.multiplyBaseTension(getInitialTension() / stats.getRawTension());
-        for (ShinsuTechnique technique : getInitialShinsuTechniques()) {
-            ShinsuTechniqueData data = stats.getData(technique.getType());
+        for (ShinsuTechniqueType type : getInitialTechniqueTypes()) {
+            ShinsuTypeData data = stats.getData(type);
             data.setLevel(data.getLevel() + 1);
         }
         stats.setQuality(getInitialQuality());
         stats.setShape(getInitialShape());
     }
 
-    default double getPreferredTechniqueChance() {
+    default double getPreferredTechniqueTypeChance() {
         return 0.75;
     }
 
-    default ShinsuTechnique[] getInitialShinsuTechniques() {
-        List<ShinsuTechnique> all = ShinsuTechnique.getObtainableTechniques();
-        ShinsuTechnique[] preferred = getPreferredTechniques();
+    default ShinsuTechniqueType[] getInitialTechniqueTypes() {
+        ShinsuTechniqueType[] all = ShinsuTechniqueType.values();
+        ShinsuTechniqueType[] preferred = getPreferredTechniqueTypes();
         Random rand = getShinsuUserEntity().getRNG();
-        ShinsuTechnique[] techniques = new ShinsuTechnique[getInitialTechniquesTotalLevel()];
-        for (int i = 0; i < techniques.length; i++) {
-            if (preferred.length > 0 && rand.nextDouble() < getPreferredTechniqueChance()) {
-                techniques[i] = preferred[rand.nextInt(preferred.length)];
-            } else {
-                techniques[i] = all.get(rand.nextInt(all.size()));
-            }
+        ShinsuTechniqueType[] types = new ShinsuTechniqueType[getInitialTechniqueTypesTotalLevel()];
+        for (int i = 0; i < types.length; i++) {
+            types[i] = preferred.length > 0 && rand.nextDouble() < getPreferredTechniqueTypeChance() ? preferred[rand.nextInt(preferred.length)] : all[rand.nextInt(all.length)];
         }
-        return techniques;
+        return types;
     }
 
-    default int getInitialTechniquesTotalLevel() {
+    default int getInitialTechniqueTypesTotalLevel() {
         T entity = getShinsuUserEntity();
         return 1 + (int) (ShinsuStats.get(entity).getLevel() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
     }
@@ -117,8 +114,8 @@ public interface IShinsuUser<T extends LivingEntity> {
         }
     }
 
-    default ShinsuTechnique[] getPreferredTechniques() {
-        return getGroup().getPreferredTechniques();
+    default ShinsuTechniqueType[] getPreferredTechniqueTypes() {
+        return getGroup().getPreferredTechniqueTypes();
     }
 
     default ShinsuQuality[] getPreferredQualities() {
@@ -189,9 +186,9 @@ public interface IShinsuUser<T extends LivingEntity> {
             }
             List<ShinsuTechniqueInstance> tech = new ArrayList<>();
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                ShinsuTechnique.IBuilder<? extends ShinsuTechniqueInstance> builder = technique.getBuilder();
+                ShinsuTechnique.IFactory<? extends ShinsuTechniqueInstance> builder = technique.getFactory();
                 Vector3d dir = entity.canEntityBeSeen(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookVec();
-                builder.doBuild(entity, stats.getData(technique.getType()).getLevel(), target, dir).ifLeft(tech::add);
+                builder.doCreate(entity, target, dir).ifLeft(tech::add);
             }
             if (tech.isEmpty()) {
                 return false;

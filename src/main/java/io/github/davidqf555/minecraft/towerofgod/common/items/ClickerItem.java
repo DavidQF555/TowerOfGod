@@ -4,6 +4,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientQualityPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import mcp.MethodsReturnNonnullByDefault;
@@ -19,6 +20,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.EnumMap;
@@ -56,6 +58,7 @@ public class ClickerItem extends Item {
                 entity.setShape(shape);
                 CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
                 serverPlayer.addStat(Stats.ITEM_USED.get(this));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new UpdateClientQualityPacket(quality));
             }
             return ActionResult.func_233538_a_(item, playerIn.world.isRemote());
         }
