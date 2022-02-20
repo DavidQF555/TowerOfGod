@@ -26,33 +26,31 @@ import java.util.stream.Collectors;
 @ParametersAreNonnullByDefault
 public enum ShinsuTechnique {
 
-    BODY_REINFORCEMENT(Repeat.OVERRIDE, false, true, new BodyReinforcement.Factory(), ShinsuIcons.RESISTANCE, ImmutableList.of(Direction.UP, Direction.UP, Direction.UP)),
-    BLACK_FISH(Repeat.OVERRIDE, false, true, new BlackFish.Factory(), ShinsuIcons.SWIRL, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.DOWN)),
-    SHINSU_BLAST(Repeat.ALLOW, false, true, new ShinsuBlast.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.DOWN, Direction.UP)),
-    FLARE_WAVE_EXPLOSION(Repeat.ALLOW, false, true, new FlareWaveExplosion.Factory(), ShinsuIcons.TENSION, ImmutableList.of(Direction.UP, Direction.LEFT, Direction.LEFT)),
-    REVERSE_FLOW_CONTROL(Repeat.ALLOW, false, true, new ReverseFlowControl.Factory(), ShinsuIcons.REVERSE, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.RIGHT)),
-    MANIFEST(Repeat.OVERRIDE, true, true, new Manifest.Factory(), ShinsuIcons.PICKAXE, ImmutableList.of(Direction.LEFT, Direction.RIGHT)),
-    SHOOT_SHINSU_ARROW(Repeat.ALLOW, false, false, new ShootShinsuArrow.Factory(), ShinsuIcons.BAANGS, ImmutableList.of()),
-    MOVE_DEVICES(Repeat.ALLOW, true, true, new MoveDevices.Factory(), ShinsuIcons.MOVE, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.LEFT)),
-    LIGHTHOUSE_FLOW_CONTROL(Repeat.OVERRIDE, false, true, new LighthouseFlowControl.Factory(), ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.UP, Direction.LEFT)),
-    SCOUT(Repeat.ALLOW, false, true, new Scout.Factory(), ShinsuIcons.EYE, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.RIGHT, Direction.LEFT)),
-    FOLLOW_OWNER(Repeat.TOGGLE, true, true, new FollowOwner.Factory(), ShinsuIcons.FOLLOW, ImmutableList.of(Direction.UP, Direction.LEFT)),
-    CHANNEL_LIGHTNING(Repeat.ALLOW, false, true, new ChannelLightning.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.DOWN, Direction.UP)),
-    FLASH(Repeat.ALLOW, false, true, new Flash.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT));
+    BODY_REINFORCEMENT(Repeat.OVERRIDE, false, new BodyReinforcement.Factory(), ShinsuIcons.RESISTANCE, ImmutableList.of(Direction.UP, Direction.UP, Direction.UP)),
+    BLACK_FISH(Repeat.OVERRIDE, false, new BlackFish.Factory(), ShinsuIcons.SWIRL, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.DOWN)),
+    SHINSU_BLAST(Repeat.ALLOW, false, new ShinsuBlast.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.DOWN, Direction.UP)),
+    FLARE_WAVE_EXPLOSION(Repeat.ALLOW, false, new FlareWaveExplosion.Factory(), ShinsuIcons.TENSION, ImmutableList.of(Direction.UP, Direction.LEFT, Direction.LEFT)),
+    REVERSE_FLOW_CONTROL(Repeat.ALLOW, false, new ReverseFlowControl.Factory(), ShinsuIcons.REVERSE, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.RIGHT)),
+    MANIFEST(Repeat.OVERRIDE, true, new Manifest.Factory(), ShinsuIcons.PICKAXE, ImmutableList.of(Direction.LEFT, Direction.RIGHT)),
+    SHOOT_SHINSU_ARROW(Repeat.ALLOW, false, new ShootShinsuArrow.Factory(), ShinsuIcons.BAANGS, ImmutableList.of()),
+    MOVE_DEVICES(Repeat.ALLOW, true, new MoveDevices.Factory(), ShinsuIcons.MOVE, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.LEFT)),
+    LIGHTHOUSE_FLOW_CONTROL(Repeat.OVERRIDE, true, new LighthouseFlowControl.Factory(), ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.UP, Direction.LEFT)),
+    SCOUT(Repeat.ALLOW, false, new Scout.Factory(), ShinsuIcons.EYE, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.RIGHT, Direction.LEFT)),
+    FOLLOW_OWNER(Repeat.TOGGLE, true, new FollowOwner.Factory(), ShinsuIcons.FOLLOW, ImmutableList.of(Direction.UP, Direction.LEFT)),
+    CHANNEL_LIGHTNING(Repeat.ALLOW, true, new ChannelLightning.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.DOWN, Direction.UP)),
+    FLASH(Repeat.ALLOW, false, new Flash.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT));
 
     private final Repeat repeat;
     private final boolean indefinite;
-    private final boolean obtainable;
     private final IFactory<? extends ShinsuTechniqueInstance> factory;
     private final TranslationTextComponent text;
     private final TranslationTextComponent description;
     private final IRenderData icon;
     private final List<Direction> combination;
 
-    ShinsuTechnique(Repeat repeat, boolean indefinite, boolean obtainable, IFactory<? extends ShinsuTechniqueInstance> factory, IRenderData icon, List<Direction> combination) {
+    ShinsuTechnique(Repeat repeat, boolean indefinite, IFactory<? extends ShinsuTechniqueInstance> factory, IRenderData icon, List<Direction> combination) {
         this.repeat = repeat;
         this.indefinite = indefinite;
-        this.obtainable = obtainable;
         this.factory = factory;
         String name = name().toLowerCase();
         text = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + "." + name);
@@ -102,7 +100,7 @@ public enum ShinsuTechnique {
     }
 
     public boolean isObtainable() {
-        return obtainable;
+        return !combination.isEmpty();
     }
 
     public boolean isIndefinite() {
