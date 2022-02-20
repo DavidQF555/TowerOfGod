@@ -74,7 +74,7 @@ public class GuideScreen extends Screen {
             matrixStack.translate(arrowX, arrowY, 0);
             matrixStack.rotate(Vector3f.ZP.rotationDegrees(dir.getAngle() + 180));
             matrixStack.translate(-arrowX, -arrowY, 0);
-            ARROW.render(new RenderContext(matrixStack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, z, ARROW_WIDTH, ARROW_HEIGHT, 0xFF0000FF));
+            ARROW.render(new RenderContext(matrixStack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, z, ARROW_WIDTH, ARROW_HEIGHT, color));
             matrixStack.pop();
         }
         int lines = 0;
