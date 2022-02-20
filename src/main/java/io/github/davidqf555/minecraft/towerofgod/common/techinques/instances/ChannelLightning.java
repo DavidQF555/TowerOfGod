@@ -46,7 +46,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
     @Override
     public void onUse(ServerWorld world) {
         Entity user = getUser(world);
-        DirectionalLightningBoltEntity lightning = RegistryHandler.LIGHTNING_PROJECTILE_ENTITY.get().create(world);
+        DirectionalLightningBoltEntity lightning = RegistryHandler.DIRECTIONAL_LIGHTNING_ENTITY.get().create(world);
         if (lightning != null) {
             Vector3d start = new Vector3d(user.getPosX(), user.getPosYEye(), user.getPosZ());
             Vector3d end = start.add(direction.mul(RANGE, RANGE, RANGE));

@@ -37,8 +37,8 @@ public enum ShinsuTechnique {
     LIGHTHOUSE_FLOW_CONTROL(Repeat.OVERRIDE, true, new LighthouseFlowControl.Factory(), ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.UP, Direction.LEFT)),
     SCOUT(Repeat.ALLOW, false, new Scout.Factory(), ShinsuIcons.EYE, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.RIGHT, Direction.LEFT)),
     FOLLOW_OWNER(Repeat.TOGGLE, true, new FollowOwner.Factory(), ShinsuIcons.FOLLOW, ImmutableList.of(Direction.UP, Direction.LEFT)),
-    CHANNEL_LIGHTNING(Repeat.ALLOW, true, new ChannelLightning.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.DOWN, Direction.UP)),
-    FLASH(Repeat.ALLOW, false, new Flash.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT));
+    CHANNEL_LIGHTNING(Repeat.ALLOW, true, new ChannelLightning.Factory(), ShinsuIcons.LIGHTNING, ImmutableList.of(Direction.DOWN, Direction.UP)),
+    FLASH(Repeat.ALLOW, false, new Flash.Factory(), ShinsuIcons.FLASH, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT));
 
     private final Repeat repeat;
     private final boolean indefinite;

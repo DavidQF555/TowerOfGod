@@ -21,7 +21,7 @@ public class DirectionalLightningBoltEntity extends LightningBoltEntity {
     private static final DataParameter<Float> Z = EntityDataManager.createKey(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
 
     public DirectionalLightningBoltEntity(World world) {
-        super(RegistryHandler.LIGHTNING_PROJECTILE_ENTITY.get(), world);
+        super(RegistryHandler.DIRECTIONAL_LIGHTNING_ENTITY.get(), world);
     }
 
     @Override

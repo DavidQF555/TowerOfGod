@@ -95,7 +95,7 @@ public final class RegistryHandler {
     public static final RegistryObject<EntityType<ClickerEntity>> CLICKER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "clicker"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_arrow"), ForgeRegistries.ENTITIES);
     public static final RegistryObject<EntityType<RankerEntity>> RANKER_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "ranker"), ForgeRegistries.ENTITIES);
-    public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> LIGHTNING_PROJECTILE_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "lightning_projectile"), ForgeRegistries.ENTITIES);
+    public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "directional_lightning"), ForgeRegistries.ENTITIES);
 
     public static final RegistryObject<TileEntityType<SuspendiumTileEntity>> SUSPENDIUM_TILE_ENTITY = RegistryObject.of(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_block"), ForgeRegistries.TILE_ENTITIES);
 
@@ -185,7 +185,7 @@ public final class RegistryHandler {
                 EntityType.Builder.create(new ClickerEntity.Factory(), EntityClassification.MISC).size(1, 1).build(CLICKER_ENTITY.getId().toString()).setRegistryName(CLICKER_ENTITY.getId()),
                 EntityType.Builder.create(new ShinsuArrowEntity.Factory(), EntityClassification.MISC).size(0.4f, 0.4f).build(SHINSU_ARROW_ENTITY.getId().toString()).setRegistryName(SHINSU_ARROW_ENTITY.getId()),
                 EntityType.Builder.create(new RankerEntity.Factory(), EntityClassification.CREATURE).size(0.6f, 1.8f).build(RANKER_ENTITY.getId().toString()).setRegistryName(RANKER_ENTITY.getId()),
-                EntityType.Builder.create(new DirectionalLightningBoltEntity.Factory(), EntityClassification.MISC).size(1, 1).build(LIGHTNING_PROJECTILE_ENTITY.getId().toString()).setRegistryName(LIGHTNING_PROJECTILE_ENTITY.getId())
+                EntityType.Builder.create(new DirectionalLightningBoltEntity.Factory(), EntityClassification.MISC).size(1, 1).build(DIRECTIONAL_LIGHTNING_ENTITY.getId().toString()).setRegistryName(DIRECTIONAL_LIGHTNING_ENTITY.getId())
         );
     }
 
