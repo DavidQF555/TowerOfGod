@@ -87,8 +87,12 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d vec, Hand hand) {
         ActionResultType ret = super.applyPlayerInteraction(player, vec, hand);
         if (player instanceof ServerPlayerEntity && player.equals(getOwner())) {
-            NetworkHooks.openGui((ServerPlayerEntity) player, this, buf -> buf.writeVarInt(getEntityId()));
-            return ActionResultType.SUCCESS;
+            if (!player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
+                return player.startRiding(this) ? ActionResultType.SUCCESS : ActionResultType.PASS;
+            } else {
+                NetworkHooks.openGui((ServerPlayerEntity) player, this, buf -> buf.writeVarInt(getEntityId()));
+                return ActionResultType.SUCCESS;
+            }
         }
         return ret;
     }
