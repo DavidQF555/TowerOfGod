@@ -14,7 +14,7 @@ public class ServerConfigs {
         SPEC = pair.getRight();
     }
 
-    public final ForgeConfigSpec.ConfigValue<Integer> shinsuUpdatePeriod;
+    public final ForgeConfigSpec.IntValue shinsuUpdatePeriod;
 
     public ServerConfigs(ForgeConfigSpec.Builder builder) {
         builder.push("Server config for Tower of God mod");
