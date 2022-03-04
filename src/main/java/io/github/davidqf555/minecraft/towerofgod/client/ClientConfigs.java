@@ -14,7 +14,7 @@ public class ClientConfigs {
         SPEC = pair.getRight();
     }
 
-    public final ForgeConfigSpec.ConfigValue<Integer> shinsuCombinationResistivity;
+    public final ForgeConfigSpec.IntValue shinsuCombinationResistivity;
 
     public ClientConfigs(ForgeConfigSpec.Builder builder) {
         builder.push("Client configs for Tower of God mod");
