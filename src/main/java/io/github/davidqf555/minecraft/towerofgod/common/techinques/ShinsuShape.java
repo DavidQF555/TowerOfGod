@@ -9,6 +9,7 @@ import net.minecraft.stats.Stat;
 import net.minecraft.stats.StatisticsManager;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.util.NonNullSupplier;
 
@@ -63,10 +64,12 @@ public enum ShinsuShape {
 
     private final NonNullSupplier<ItemStack> item;
     private final Function<ServerPlayerEntity, Double> suitability;
+    private final TranslationTextComponent name;
 
     ShinsuShape(NonNullSupplier<ItemStack> item, Function<ServerPlayerEntity, Double> suitability) {
         this.item = item;
         this.suitability = suitability;
+        name = new TranslationTextComponent("shape.towerofgod." + name().toLowerCase());
     }
 
     public ItemStack createItem() {
@@ -75,6 +78,10 @@ public enum ShinsuShape {
 
     public double getSuitability(ServerPlayerEntity player) {
         return suitability.apply(player);
+    }
+
+    public TranslationTextComponent getName() {
+        return name;
     }
 
 }

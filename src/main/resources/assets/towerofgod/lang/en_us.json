@@ -65,6 +65,13 @@
   "quality.towerofgod.wind": "Wind",
   "quality.towerofgod.crystal": "Crystal",
   "quality.towerofgod.plant": "Plant",
+  "shape.towerofgod.none": "None",
+  "shape.towerofgod.shovel": "Shovel",
+  "shape.towerofgod.pickaxe": "Pickaxe",
+  "shape.towerofgod.axe": "Axe",
+  "shape.towerofgod.sword": "Sword",
+  "shape.towerofgod.hoe": "Hoe",
+  "shape.towerofgod.bow": "Bow",
   "technique.towerofgod.error.on_cooldown": "On cooldown for %s seconds",
   "technique.towerofgod.error.requires_shinsu": "Requires %s Shinsu",
   "technique.towerofgod.error.requires_baangs": "Requires %s Baangs",
@@ -115,5 +122,7 @@
   "commands.towerofgod.shinsu.baangs": "Increased the max Baangs of %1$s by %2$s",
   "commands.towerofgod.shinsu.resistance": "Multiplied the resistance of %1$s by a factor of %2$s",
   "commands.towerofgod.shinsu.tension": "Multiplied the tension of %1$s by a factor of %2$s",
-  "commands.towerofgod.shinsu.technique": "Increased the %2$s level of %1$s by %3$s"
+  "commands.towerofgod.shinsu.technique": "Increased the %2$s level of %1$s by %3$s",
+  "commands.towerofgod.shinsu.quality": "Set the Shinsu quality of %1$s to %2$s",
+  "commands.towerofgod.shinsu.shape": "Set the Shinsu shape of %1$s to %2$s"
 }
