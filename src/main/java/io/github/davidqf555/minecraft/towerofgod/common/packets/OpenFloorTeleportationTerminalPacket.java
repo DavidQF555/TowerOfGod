@@ -1,14 +1,14 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
-import io.github.davidqf555.minecraft.towerofgod.client.gui.FloorTeleportationTerminalScreen;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -42,14 +42,11 @@ public class OpenFloorTeleportationTerminalPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, OpenFloorTeleportationTerminalPacket.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, OpenFloorTeleportationTerminalPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     private void handle(NetworkEvent.Context context) {
-        NetworkDirection dir = context.getDirection();
-        if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> Minecraft.getInstance().displayGuiScreen(new FloorTeleportationTerminalScreen(level, teleporter, direction)));
-            context.setPacketHandled(true);
-        }
+        context.enqueueWork(() -> ClientReference.openFloorTeleportationTerminalScreen(level, teleporter, direction));
+        context.setPacketHandled(true);
     }
 }

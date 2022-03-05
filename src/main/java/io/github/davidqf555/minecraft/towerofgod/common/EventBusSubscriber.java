@@ -201,12 +201,14 @@ public final class EventBusSubscriber {
                 CastShinsuPacket.register(index++);
                 UpdateShinsuMeterPacket.register(index++);
                 UpdateBaangsMeterPacket.register(index++);
-                UpdateClientErrorPacket.register(index++);
+                ClientUpdateClientErrorPacket.register(index++);
+                ServerUpdateClientErrorPacket.register(index++);
                 UpdateClientQualityPacket.register(index++);
                 ObserverChangeHighlightPacket.register(index++);
                 UpdateClientDimensionsPacket.register(index++);
                 OpenFloorTeleportationTerminalPacket.register(index++);
-                OpenCombinationGUIPacket.register(index++);
+                ClientOpenCombinationGUIPacket.register(index++);
+                ServerOpenCombinationGUIPacket.register(index++);
                 ChangeFloorPacket.register(index++);
                 OpenGuideScreenPacket.register(index++);
                 Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);

@@ -8,6 +8,7 @@ import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -45,25 +46,22 @@ public class ObserverChangeHighlightPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ObserverChangeHighlightPacket.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, ObserverChangeHighlightPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     private void handle(NetworkEvent.Context context) {
-        NetworkDirection dir = context.getDirection();
-        if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> {
-                if (ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.containsKey(id)) {
-                    Pair<Set<UUID>, Set<UUID>> pair = ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.get(id);
-                    Set<UUID> highlight = pair.getFirst();
-                    Set<UUID> remove = pair.getSecond();
-                    remove.removeAll(entities);
-                    highlight.stream().filter(uuid -> !entities.contains(uuid)).forEach(remove::add);
-                    highlight.addAll(entities);
-                } else {
-                    ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.put(id, Pair.of(entities, new HashSet<>()));
-                }
-            });
-            context.setPacketHandled(true);
-        }
+        context.enqueueWork(() -> {
+            if (ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.containsKey(id)) {
+                Pair<Set<UUID>, Set<UUID>> pair = ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.get(id);
+                Set<UUID> highlight = pair.getFirst();
+                Set<UUID> remove = pair.getSecond();
+                remove.removeAll(entities);
+                highlight.stream().filter(uuid -> !entities.contains(uuid)).forEach(remove::add);
+                highlight.addAll(entities);
+            } else {
+                ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.put(id, Pair.of(entities, new HashSet<>()));
+            }
+        });
+        context.setPacketHandled(true);
     }
 }

@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -43,20 +44,17 @@ public class ChangeFloorPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ChangeFloorPacket.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, ChangeFloorPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_SERVER));
     }
 
     private void handle(NetworkEvent.Context context) {
-        NetworkDirection dir = context.getDirection();
-        if (dir == NetworkDirection.PLAY_TO_SERVER) {
-            ServerPlayerEntity player = context.getSender();
-            context.enqueueWork(() -> {
-                if (ShinsuStats.get(player).getLevel() >= level) {
-                    FloorDimensionsHelper.sendPlayerToFloor(player, teleporter, direction, level);
-                }
-            });
-            context.setPacketHandled(true);
-        }
+        ServerPlayerEntity player = context.getSender();
+        context.enqueueWork(() -> {
+            if (ShinsuStats.get(player).getLevel() >= level) {
+                FloorDimensionsHelper.sendPlayerToFloor(player, teleporter, direction, level);
+            }
+        });
+        context.setPacketHandled(true);
     }
 
 }
