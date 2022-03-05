@@ -36,7 +36,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getInitialDuration() {
+    public int getDuration() {
         return 400;
     }
 

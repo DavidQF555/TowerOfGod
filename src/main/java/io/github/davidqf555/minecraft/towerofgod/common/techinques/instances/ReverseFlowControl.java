@@ -26,19 +26,19 @@ import java.util.UUID;
 public class ReverseFlowControl extends ShinsuTechniqueInstance {
 
     private static final double RANGE = 3;
-    private int initial, level;
+    private int duration, level;
     private UUID target;
 
-    public ReverseFlowControl(LivingEntity user, UUID target, int initial, int level) {
+    public ReverseFlowControl(LivingEntity user, UUID target, int duration, int level) {
         super(user);
         this.target = target;
-        this.initial = initial;
+        this.duration = duration;
         this.level = level;
     }
 
     @Override
-    public int getInitialDuration() {
-        return initial;
+    public int getDuration() {
+        return duration;
     }
 
     @Override
@@ -57,14 +57,14 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
             }
             double resistance = ShinsuStats.getNetResistance(world, user, target);
             int amp = (int) (resistance * level);
-            ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), Math.min(period, ticksLeft()) + 1, amp - 1));
+            ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), Math.min(period, getDuration() - getTicks()) + 1, amp - 1));
         }
         super.periodicTick(world, period);
     }
 
     @Override
     public int getCooldown() {
-        return getInitialDuration() + 500;
+        return getDuration() + 500;
     }
 
     @Override
@@ -83,8 +83,8 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
         if (nbt.contains("Target", Constants.NBT.TAG_INT_ARRAY)) {
             target = nbt.getUniqueId("Target");
         }
-        if (nbt.contains("Initial", Constants.NBT.TAG_INT)) {
-            initial = nbt.getInt("Initial");
+        if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
+            duration = nbt.getInt("Duration");
         }
         if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
             level = nbt.getInt("Level");
@@ -95,7 +95,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
         nbt.putUniqueId("Target", target);
-        nbt.putInt("Initial", initial);
+        nbt.putInt("Duration", getDuration());
         nbt.putInt("Level", level);
         return nbt;
     }

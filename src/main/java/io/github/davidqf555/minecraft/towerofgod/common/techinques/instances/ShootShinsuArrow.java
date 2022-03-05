@@ -37,7 +37,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getInitialDuration() {
+    public int getDuration() {
         return 200;
     }
 
