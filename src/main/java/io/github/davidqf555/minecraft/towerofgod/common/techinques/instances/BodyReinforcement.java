@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EffectRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
@@ -46,7 +46,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         if (e instanceof LivingEntity) {
             LivingEntity user = (LivingEntity) e;
             int amp = (int) (level * ShinsuStats.get(user).getTension(world));
-            user.addPotionEffect(new EffectInstance(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get(), Math.min(period, getDuration() - getTicks()) + 1, amp - 1, false, true, true));
+            user.addPotionEffect(new EffectInstance(EffectRegistry.BODY_REINFORCEMENT.get(), Math.min(period, getDuration() - getTicks()) + 1, amp - 1, false, true, true));
         }
         super.periodicTick(world, period);
     }

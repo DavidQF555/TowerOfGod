@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.data.gen;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;
@@ -28,12 +28,12 @@ public class DataGenRecipeProvider extends RecipeProvider {
 
     @Override
     protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
-        for (RegistryObject<NeedleItem> registry : RegistryHandler.NEEDLE_ITEMS) {
+        for (RegistryObject<NeedleItem> registry : ItemRegistry.NEEDLE_ITEMS) {
             NeedleItem item = registry.get();
             IItemTier tier = item.getTier();
             Ingredient material = tier.getRepairMaterial();
             if (tier.equals(ItemTier.NETHERITE)) {
-                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(RegistryHandler.DIAMOND_NEEDLE.get()), material, item)
+                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(ItemRegistry.DIAMOND_NEEDLE.get()), material, item)
                         .addCriterion("has_material", hasItem(getPredicates(material)))
                         .build(consumer, ForgeRegistries.ITEMS.getKey(item));
 
@@ -48,12 +48,12 @@ public class DataGenRecipeProvider extends RecipeProvider {
                         .build(consumer);
             }
         }
-        for (RegistryObject<HookItem> registry : RegistryHandler.HOOK_ITEMS) {
+        for (RegistryObject<HookItem> registry : ItemRegistry.HOOK_ITEMS) {
             HookItem item = registry.get();
             IItemTier tier = item.getTier();
             Ingredient material = tier.getRepairMaterial();
             if (tier.equals(ItemTier.NETHERITE)) {
-                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(RegistryHandler.DIAMOND_HOOK.get()), material, item)
+                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(ItemRegistry.DIAMOND_HOOK.get()), material, item)
                         .addCriterion("has_material", hasItem(getPredicates(material)))
                         .build(consumer, ForgeRegistries.ITEMS.getKey(item));
 

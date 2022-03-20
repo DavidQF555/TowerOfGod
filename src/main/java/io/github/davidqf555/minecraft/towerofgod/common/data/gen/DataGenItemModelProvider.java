@@ -1,9 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.data.gen;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -20,7 +20,7 @@ public class DataGenItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        for (RegistryObject<NeedleItem> registry : RegistryHandler.NEEDLE_ITEMS) {
+        for (RegistryObject<NeedleItem> registry : ItemRegistry.NEEDLE_ITEMS) {
             ResourceLocation loc = registry.getId();
             generatedModels.put(loc, withExistingParent(loc.toString(), mcLoc("item/handheld"))
                     .texture("layer0", modLoc("item/" + loc.getPath()))
@@ -51,7 +51,7 @@ public class DataGenItemModelProvider extends ItemModelProvider {
                 .end()
                 .end();
         generatedModels.put(hookLoc, hook);
-        for (RegistryObject<HookItem> registry : RegistryHandler.HOOK_ITEMS) {
+        for (RegistryObject<HookItem> registry : ItemRegistry.HOOK_ITEMS) {
             ResourceLocation loc = registry.getId();
             generatedModels.put(loc, withExistingParent(loc.toString(), hookLoc)
                     .texture("layer0", modLoc("item/" + loc.getPath()))

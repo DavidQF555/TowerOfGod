@@ -1,9 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
@@ -49,7 +49,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
     public void onUse(ServerWorld world) {
         Entity u = getUser(world);
         if (u instanceof LivingEntity) {
-            ShinsuEntity shinsu = RegistryHandler.SHINSU_ENTITY.get().create(world);
+            ShinsuEntity shinsu = EntityRegistry.SHINSU.get().create(world);
             if (shinsu != null) {
                 LivingEntity user = (LivingEntity) u;
                 ShinsuStats stats = ShinsuStats.get(u);

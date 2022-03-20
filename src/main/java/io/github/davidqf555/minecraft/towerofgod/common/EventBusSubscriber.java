@@ -11,6 +11,9 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.*;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.BlockRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EffectRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorChunkGenerator;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
 import net.minecraft.data.DataGenerator;
@@ -57,7 +60,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 public final class EventBusSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
-    private static final ConfiguredFeature<?, ?> SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, RegistryHandler.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
+    private static final ConfiguredFeature<?, ?> SUSPENDIUM_ORE = Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, BlockRegistry.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3);
     private static int index = 0;
 
     private EventBusSubscriber() {
@@ -97,8 +100,8 @@ public final class EventBusSubscriber {
             event.getGeneration().getFeatures(GenerationStage.Decoration.UNDERGROUND_ORES).add(() -> SUSPENDIUM_ORE);
             if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
                 MobSpawnInfoBuilder builder = event.getSpawns();
-                builder.withSpawner(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(RegistryHandler.REGULAR_ENTITY.get(), 3, 1, 1));
-                builder.withSpawner(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(RegistryHandler.RANKER_ENTITY.get(), 1, 1, 1));
+                builder.withSpawner(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.REGULAR.get(), 3, 1, 1));
+                builder.withSpawner(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.RANKER.get(), 1, 1, 1));
             }
         }
 
@@ -147,12 +150,12 @@ public final class EventBusSubscriber {
         @SubscribeEvent
         public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
             LivingEntity entity = event.getEntityLiving();
-            EffectInstance reinforcement = entity.getActivePotionEffect(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get());
+            EffectInstance reinforcement = entity.getActivePotionEffect(EffectRegistry.BODY_REINFORCEMENT.get());
             if (reinforcement != null) {
                 Vector3d motion = entity.getMotion().add(0, reinforcement.getAmplifier() * 0.025 + 0.025, 0);
                 entity.setMotion(motion);
             }
-            EffectInstance reverse = entity.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get());
+            EffectInstance reverse = entity.getActivePotionEffect(EffectRegistry.REVERSE_FLOW.get());
             if (reverse != null) {
                 Vector3d motion = entity.getMotion();
                 entity.setMotion(motion.getX(), Math.max(0, motion.getY() - reverse.getAmplifier() * 0.025 - 0.025), motion.getZ());
@@ -162,7 +165,7 @@ public final class EventBusSubscriber {
         @SubscribeEvent
         public static void onLivingFall(LivingFallEvent event) {
             LivingEntity entity = event.getEntityLiving();
-            EffectInstance effect = entity.getActivePotionEffect(RegistryHandler.BODY_REINFORCEMENT_EFFECT.get());
+            EffectInstance effect = entity.getActivePotionEffect(EffectRegistry.BODY_REINFORCEMENT.get());
             if (effect != null) {
                 event.setDistance(event.getDistance() - effect.getAmplifier() * 0.5f - 0.5f);
             }
@@ -188,10 +191,10 @@ public final class EventBusSubscriber {
 
         @SubscribeEvent
         public static void onEntityAttributeCreation(EntityAttributeCreationEvent event) {
-            event.put(RegistryHandler.LIGHTHOUSE_ENTITY.get(), LighthouseEntity.setAttributes().create());
-            event.put(RegistryHandler.OBSERVER_ENTITY.get(), ObserverEntity.setAttributes().create());
-            event.put(RegistryHandler.REGULAR_ENTITY.get(), RegularEntity.setAttributes().create());
-            event.put(RegistryHandler.RANKER_ENTITY.get(), RankerEntity.setAttributes().create());
+            event.put(EntityRegistry.LIGHTHOUSE.get(), LighthouseEntity.setAttributes().create());
+            event.put(EntityRegistry.OBSERVER.get(), ObserverEntity.setAttributes().create());
+            event.put(EntityRegistry.REGULAR.get(), RegularEntity.setAttributes().create());
+            event.put(EntityRegistry.RANKER.get(), RankerEntity.setAttributes().create());
         }
 
         @SubscribeEvent
@@ -213,8 +216,8 @@ public final class EventBusSubscriber {
                 OpenGuideScreenPacket.register(index++);
                 Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), SUSPENDIUM_ORE);
                 Registry.register(Registry.CHUNK_GENERATOR_CODEC, new ResourceLocation(TowerOfGod.MOD_ID, "floor"), FloorChunkGenerator.CODEC);
-                EntitySpawnPlacementRegistry.register(RegistryHandler.REGULAR_ENTITY.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesWithinAABB(RegularEntity.class, new AxisAlignedBB(pos).grow(64)).size() < 10);
-                EntitySpawnPlacementRegistry.register(RegistryHandler.RANKER_ENTITY.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesWithinAABB(RankerEntity.class, new AxisAlignedBB(pos).grow(64)).size() < 1);
+                EntitySpawnPlacementRegistry.register(EntityRegistry.REGULAR.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesWithinAABB(RegularEntity.class, new AxisAlignedBB(pos).grow(64)).size() < 10);
+                EntitySpawnPlacementRegistry.register(EntityRegistry.RANKER.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesWithinAABB(RankerEntity.class, new AxisAlignedBB(pos).grow(64)).size() < 1);
             });
         }
     }

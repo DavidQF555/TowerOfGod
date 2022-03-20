@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EffectRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
@@ -57,7 +57,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
             }
             double resistance = ShinsuStats.getNetResistance(world, user, target);
             int amp = (int) (resistance * level);
-            ((LivingEntity) target).addPotionEffect(new EffectInstance(RegistryHandler.REVERSE_FLOW_EFFECT.get(), Math.min(period, getDuration() - getTicks()) + 1, amp - 1));
+            ((LivingEntity) target).addPotionEffect(new EffectInstance(EffectRegistry.REVERSE_FLOW.get(), Math.min(period, getDuration() - getTicks()) + 1, amp - 1));
         }
         super.periodicTick(world, period);
     }

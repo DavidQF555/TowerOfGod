@@ -2,8 +2,11 @@ package io.github.davidqf555.minecraft.towerofgod.client;
 
 import io.github.davidqf555.minecraft.towerofgod.client.gui.LighthouseScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.render.*;
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ContainerRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EffectRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -32,7 +35,7 @@ public final class EventBusSubscriber {
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
         Minecraft client = Minecraft.getInstance();
         if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.currentScreen == null) {
-            if (client.player.getActivePotionEffect(RegistryHandler.REVERSE_FLOW_EFFECT.get()) != null) {
+            if (client.player.getActivePotionEffect(EffectRegistry.REVERSE_FLOW.get()) != null) {
                 ModifiableAttributeInstance attribute = client.player.getAttribute(Attributes.ATTACK_SPEED);
                 if (attribute == null || attribute.getValue() <= 0) {
                     event.setCanceled(true);
@@ -49,30 +52,30 @@ public final class EventBusSubscriber {
 
         @SubscribeEvent
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
-            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.LIGHTHOUSE_ENTITY.get(), LighthouseRenderer::new);
-            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.OBSERVER_ENTITY.get(), ObserverRenderer::new);
-            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.REGULAR_ENTITY.get(), BipedShinsuUserRenderer::new);
-            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.SHINSU_ENTITY.get(), ShinsuRenderer::new);
-            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.CLICKER_ENTITY.get(), ClickerRenderer::new);
-            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.SHINSU_ARROW_ENTITY.get(), ShinsuArrowRenderer::new);
-            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.RANKER_ENTITY.get(), BipedShinsuUserRenderer::new);
-            RenderingRegistry.registerEntityRenderingHandler(RegistryHandler.DIRECTIONAL_LIGHTNING_ENTITY.get(), DirectionalLightningRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.LIGHTHOUSE.get(), LighthouseRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.OBSERVER.get(), ObserverRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.REGULAR.get(), BipedShinsuUserRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SHINSU.get(), ShinsuRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.CLICKER.get(), ClickerRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SHINSU_ARROW.get(), ShinsuArrowRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.RANKER.get(), BipedShinsuUserRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), DirectionalLightningRenderer::new);
             KeyBindingsList.register();
             event.enqueueWork(() -> {
-                ScreenManager.registerFactory(RegistryHandler.LIGHTHOUSE_CONTAINER.get(), new LighthouseScreen.Factory());
-                ItemModelsProperties.registerProperty(RegistryHandler.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pull")));
-                ItemModelsProperties.registerProperty(RegistryHandler.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pulling")));
+                ScreenManager.registerFactory(ContainerRegistry.LIGHTHOUSE.get(), new LighthouseScreen.Factory());
+                ItemModelsProperties.registerProperty(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pull")));
+                ItemModelsProperties.registerProperty(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pulling")));
             });
         }
 
         @SubscribeEvent
         public static void onHandleColors(ColorHandlerEvent.Item event) {
             ShinsuItemColor shinsu = new ShinsuItemColor();
-            for (RegistryObject<? extends Item> item : RegistryHandler.SHINSU_ITEMS) {
+            for (RegistryObject<? extends Item> item : ItemRegistry.SHINSU_ITEMS) {
                 event.getItemColors().register(shinsu, item::get);
             }
             DeviceItemColor device = new DeviceItemColor();
-            for (RegistryObject<? extends Item> item : RegistryHandler.COLORED_DEVICE_ITEMS) {
+            for (RegistryObject<? extends Item> item : ItemRegistry.COLORED_DEVICE_ITEMS) {
                 event.getItemColors().register(device, item::get);
             }
         }

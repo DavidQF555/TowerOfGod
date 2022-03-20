@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
 import mcp.MethodsReturnNonnullByDefault;
@@ -39,7 +39,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     private BlockRayTraceResult latestHit;
 
     public ShinsuEntity(World world) {
-        super(RegistryHandler.SHINSU_ENTITY.get(), world);
+        super(EntityRegistry.SHINSU.get(), world);
         technique = null;
         latestHit = null;
     }

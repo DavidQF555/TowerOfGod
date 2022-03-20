@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -21,7 +21,7 @@ public class DirectionalLightningBoltEntity extends LightningBoltEntity {
     private static final DataParameter<Float> Z = EntityDataManager.createKey(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
 
     public DirectionalLightningBoltEntity(World world) {
-        super(RegistryHandler.DIRECTIONAL_LIGHTNING_ENTITY.get(), world);
+        super(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), world);
     }
 
     @Override
