@@ -64,17 +64,16 @@ public class FloorTeleportationTerminalScreen extends Screen {
         int keypadY = (ySize + y + display.y + display.getHeight() - keypadLength) / 2;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                int value = i * 3 + j;
+                int value = i * 3 + j + 1;
                 int buttonX = keypadX + j * (BUTTON_WIDTH + BUTTON_GAP);
                 int buttonY = keypadY + i * (BUTTON_HEIGHT + BUTTON_GAP);
                 addButton(new NumberButton(value, buttonX, buttonY));
             }
         }
         int endX = keypadX + keypadLength + BUTTON_GAP;
-        int deleteY = keypadY + BUTTON_GAP * 2 + BUTTON_HEIGHT * 2;
-        addButton(new DeleteButton(this, endX, deleteY));
-        int teleportY = keypadY + BUTTON_GAP + BUTTON_HEIGHT;
-        addButton(new TeleportButton(this, endX, teleportY));
+        addButton(new DeleteButton(this, endX, keypadY));
+        addButton(new TeleportButton(this, endX, keypadY + BUTTON_GAP + BUTTON_HEIGHT));
+        addButton(new NumberButton(0, endX, keypadY + BUTTON_GAP * 2 + BUTTON_HEIGHT * 2));
     }
 
     @Override
