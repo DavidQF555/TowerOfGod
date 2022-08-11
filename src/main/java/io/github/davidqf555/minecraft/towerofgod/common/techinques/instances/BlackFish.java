@@ -22,24 +22,24 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class BlackFish extends ShinsuTechniqueInstance {
 
-    private int initial, light;
+    private int duration, light;
 
-    public BlackFish(LivingEntity user, int initial, int light) {
+    public BlackFish(LivingEntity user, int duration, int light) {
         super(user);
-        this.initial = initial;
+        this.duration = duration;
         this.light = light;
     }
 
     @Override
-    public int getInitialDuration() {
-        return initial;
+    public int getDuration() {
+        return duration;
     }
 
     @Override
     public void periodicTick(ServerWorld world, int period) {
         Entity e = getUser(world);
         if (e instanceof LivingEntity && world.getLight(e.getPosition()) <= light) {
-            ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, Math.min(period, ticksLeft()) + 1, 0, true, true, true));
+            ((LivingEntity) e).addPotionEffect(new EffectInstance(Effects.INVISIBILITY, Math.min(period, getDuration() - getTicks()) + 1, 0, true, true, true));
         }
         super.periodicTick(world, period);
     }
@@ -51,7 +51,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return getInitialDuration() + 40;
+        return getDuration() + 40;
     }
 
     @Override
@@ -67,8 +67,8 @@ public class BlackFish extends ShinsuTechniqueInstance {
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Initial", Constants.NBT.TAG_INT)) {
-            initial = nbt.getInt("Initial");
+        if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
+            duration = nbt.getInt("Duration");
         }
         if (nbt.contains("Light", Constants.NBT.TAG_INT)) {
             light = nbt.getInt("Light");
@@ -78,7 +78,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
-        nbt.putInt("Initial", initial);
+        nbt.putInt("Duration", duration);
         nbt.putInt("Light", light);
         return nbt;
     }

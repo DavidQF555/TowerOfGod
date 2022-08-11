@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import net.minecraft.entity.Entity;
@@ -38,7 +38,7 @@ public class RankerEntity extends BasicShinsuUserEntity {
     private int floorLevel;
 
     public RankerEntity(World worldIn) {
-        super(RegistryHandler.RANKER_ENTITY.get(), worldIn);
+        super(EntityRegistry.RANKER.get(), worldIn);
         floorLevel = 1;
         info = new ServerBossInfo(getDisplayName(), BossInfo.Color.WHITE, BossInfo.Overlay.PROGRESS);
         info.setVisible(false);

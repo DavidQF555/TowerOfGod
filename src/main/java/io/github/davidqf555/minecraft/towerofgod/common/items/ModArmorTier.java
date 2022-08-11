@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 @MethodsReturnNonnullByDefault
 public enum ModArmorTier implements IArmorMaterial {
 
-    SUSPENDIUM(TowerOfGod.MOD_ID + ":suspendium", 15, new int[]{2, 6, 5, 2}, 15, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 0.5f, () -> Ingredient.fromItems(RegistryHandler.SUSPENDIUM.get()), -2);
+    SUSPENDIUM(TowerOfGod.MOD_ID + ":suspendium", 15, new int[]{2, 6, 5, 2}, 15, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 0.5f, () -> Ingredient.fromItems(ItemRegistry.SUSPENDIUM.get()), -2);
 
     private static final int[] MAX_DAMAGE_ARRAY = new int[]{11, 16, 15, 13};
     private final String name;

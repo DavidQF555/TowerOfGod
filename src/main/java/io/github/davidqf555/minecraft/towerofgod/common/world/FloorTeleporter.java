@@ -1,7 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.world;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.FloorTeleportationTerminalBlock;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.BlockRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.PointOfInterestRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PortalInfo;
@@ -67,7 +68,7 @@ public class FloorTeleporter extends Teleporter {
         BlockPos teleporter = pos.offset(direction.getOpposite());
         PointOfInterestManager manager = world.getPointOfInterestManager();
         manager.ensureLoadedAndValid(world, teleporter, DISTANCE);
-        Optional<PointOfInterest> optional = manager.getInSquare(poiType -> poiType == RegistryHandler.FLOOR_TELEPORTATION_TERMINAL_POI.get(), teleporter, DISTANCE, PointOfInterestManager.Status.ANY)
+        Optional<PointOfInterest> optional = manager.getInSquare(poiType -> poiType == PointOfInterestRegistry.FLOOR_TELEPORTATION_TERMINAL.get(), teleporter, DISTANCE, PointOfInterestManager.Status.ANY)
                 .filter(poi -> world.getBlockState(poi.getPos()).hasProperty(FloorTeleportationTerminalBlock.FACING))
                 .filter(poi -> {
                     BlockPos poiPos = poi.getPos();
@@ -101,7 +102,7 @@ public class FloorTeleporter extends Teleporter {
                 }
             }
         }
-        world.setBlockState(pos.offset(direction.getOpposite()), RegistryHandler.FLOOR_TELEPORTATION_TERMINAL_BLOCK.get().getDefaultState().with(FloorTeleportationTerminalBlock.FACING, direction));
+        world.setBlockState(pos.offset(direction.getOpposite()), BlockRegistry.FLOOR_TELEPORTATION_TERMINAL.get().getDefaultState().with(FloorTeleportationTerminalBlock.FACING, direction));
         return Optional.of(new TeleportationRepositioner.Result(teleporter.offset(direction), 1, 1));
     }
 }

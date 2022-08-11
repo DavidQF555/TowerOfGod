@@ -1,9 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
@@ -37,7 +37,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getInitialDuration() {
+    public int getDuration() {
         return 200;
     }
 
@@ -50,7 +50,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     public void onUse(ServerWorld world) {
         Entity user = getUser(world);
         if (user != null) {
-            ShinsuArrowEntity arrow = RegistryHandler.SHINSU_ARROW_ENTITY.get().create(world);
+            ShinsuArrowEntity arrow = EntityRegistry.SHINSU_ARROW.get().create(world);
             if (arrow != null) {
                 ShinsuQuality quality = ShinsuStats.get(user).getQuality();
                 arrow.setQuality(quality);

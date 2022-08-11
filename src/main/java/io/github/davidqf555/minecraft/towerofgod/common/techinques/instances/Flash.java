@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
@@ -43,7 +43,7 @@ public class Flash extends ShinsuTechniqueInstance {
     @Override
     public void onUse(ServerWorld world) {
         Entity user = getUser(world);
-        DirectionalLightningBoltEntity lightning = RegistryHandler.DIRECTIONAL_LIGHTNING_ENTITY.get().create(world);
+        DirectionalLightningBoltEntity lightning = EntityRegistry.DIRECTIONAL_LIGHTNING.get().create(world);
         if (lightning != null) {
             Vector3d start = new Vector3d(user.getPosX(), user.getPosYEye(), user.getPosZ());
             Vector3d end = start.add(direction.mul(RANGE, RANGE, RANGE));

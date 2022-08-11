@@ -7,6 +7,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -29,14 +30,11 @@ public class UpdateClientQualityPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientQualityPacket.class, ENCODER, DECODER, CONSUMER);
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientQualityPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     private void handle(NetworkEvent.Context context) {
-        NetworkDirection dir = context.getDirection();
-        if (dir == NetworkDirection.PLAY_TO_CLIENT) {
-            context.enqueueWork(() -> ClientReference.quality = quality);
-            context.setPacketHandled(true);
-        }
+        context.enqueueWork(() -> ClientReference.quality = quality);
+        context.setPacketHandled(true);
     }
 }

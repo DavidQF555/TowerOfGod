@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.data.gen;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
@@ -21,7 +21,7 @@ public class DataGenItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        for (RegistryObject<NeedleItem> registry : RegistryHandler.NEEDLE_ITEMS) {
+        for (RegistryObject<NeedleItem> registry : ItemRegistry.NEEDLE_ITEMS) {
             ResourceLocation loc = registry.getId();
             withExistingParent(loc.toString(), "item/handheld")
                     .texture("layer0", modLoc("item/" + loc.getPath()));
@@ -65,13 +65,13 @@ public class DataGenItemModelProvider extends ItemModelProvider {
                 .scale(0.25f, 0.25f, 0.25f)
                 .end()
                 .end();
-        for (RegistryObject<HookItem> registry : RegistryHandler.HOOK_ITEMS) {
+        for (RegistryObject<HookItem> registry : ItemRegistry.HOOK_ITEMS) {
             ResourceLocation loc = registry.getId();
             withExistingParent(loc.toString(), hookLoc)
                     .texture("layer0", modLoc("item/" + loc.getPath()));
         }
         ModelFile.ExistingModelFile throwing = getExistingFile(modLoc("item/spear_throwing"));
-        for (RegistryObject<SpearItem> registry : RegistryHandler.SPEAR_ITEMS) {
+        for (RegistryObject<SpearItem> registry : ItemRegistry.SPEARS) {
             ResourceLocation loc = registry.getId();
             withExistingParent(loc.toString(), modLoc("item/spear"))
                     .override()

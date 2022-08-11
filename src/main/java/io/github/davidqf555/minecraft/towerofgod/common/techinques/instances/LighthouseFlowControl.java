@@ -24,18 +24,18 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class LighthouseFlowControl extends BasicCommandTechnique {
 
-    private int initial;
+    private int duration;
     private double range;
 
-    public LighthouseFlowControl(LivingEntity user, int initial, double range) {
+    public LighthouseFlowControl(LivingEntity user, int duration, double range) {
         super(user);
-        this.initial = initial;
+        this.duration = duration;
         this.range = range;
     }
 
     @Override
-    public int getInitialDuration() {
-        return initial;
+    public int getDuration() {
+        return duration;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
 
     @Override
     public int getCooldown() {
-        return getInitialDuration() + 200;
+        return getDuration() + 200;
     }
 
     @Override
@@ -69,8 +69,8 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
         if (nbt.contains("Range", Constants.NBT.TAG_DOUBLE)) {
             range = nbt.getDouble("Range");
         }
-        if (nbt.contains("Initial", Constants.NBT.TAG_INT)) {
-            initial = nbt.getInt("Initial");
+        if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
+            duration = nbt.getInt("Duration");
         }
     }
 
@@ -78,7 +78,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
         nbt.putDouble("Range", range);
-        nbt.putInt("Initial", initial);
+        nbt.putInt("Duration", getDuration());
         return nbt;
     }
 

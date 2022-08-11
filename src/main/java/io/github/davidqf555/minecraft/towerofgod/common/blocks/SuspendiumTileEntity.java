@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.blocks;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.TileEntityRegistry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -17,7 +17,7 @@ public class SuspendiumTileEntity extends TileEntity implements ITickableTileEnt
     private static final int PERIOD = 60;
 
     public SuspendiumTileEntity() {
-        super(RegistryHandler.SUSPENDIUM_TILE_ENTITY.get());
+        super(TileEntityRegistry.SUSPENDIUM.get());
     }
 
     @Override

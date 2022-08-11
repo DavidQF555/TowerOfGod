@@ -1,7 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.BlockRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ContainerRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -45,7 +48,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     private BlockPos light;
 
     public LighthouseEntity(World worldIn) {
-        super(RegistryHandler.LIGHTHOUSE_ENTITY.get(), worldIn);
+        super(EntityRegistry.LIGHTHOUSE.get(), worldIn);
         inventory = createInventory();
         light = null;
     }
@@ -72,7 +75,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
     @Override
     protected ItemStack getDeviceItem() {
-        return RegistryHandler.LIGHTHOUSE_ITEM.get().getDefaultInstance();
+        return ItemRegistry.LIGHTHOUSE.get().getDefaultInstance();
     }
 
     @Override
@@ -133,7 +136,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         }
         if (world.isAirBlock(pos) && light == null && isAlive()) {
             light = pos;
-            world.setBlockState(pos, RegistryHandler.LIGHT_BLOCK.get().getDefaultState());
+            world.setBlockState(pos, BlockRegistry.LIGHT.get().getDefaultState());
         }
     }
 
@@ -144,7 +147,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     }
 
     private void removeLight(BlockPos pos) {
-        if (light != null && world.getBlockState(pos).getBlock().equals(RegistryHandler.LIGHT_BLOCK.get())) {
+        if (light != null && world.getBlockState(pos).getBlock().equals(BlockRegistry.LIGHT.get())) {
             world.setBlockState(pos, Blocks.AIR.getDefaultState());
         }
     }
@@ -175,7 +178,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         public final LighthouseEntity lighthouse;
 
         public LighthouseContainer(int id, PlayerInventory player, LighthouseEntity lighthouse) {
-            super(RegistryHandler.LIGHTHOUSE_CONTAINER.get(), id);
+            super(ContainerRegistry.LIGHTHOUSE.get(), id);
             for (int row = 0; row < 3; row++) {
                 for (int column = 0; column < 9; column++) {
                     addSlot(new SlotItemHandler(lighthouse.inventory, column + row * 9, 8 + column * 18, 11 + row * 18));

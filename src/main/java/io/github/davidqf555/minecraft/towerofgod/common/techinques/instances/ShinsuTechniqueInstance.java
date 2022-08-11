@@ -22,14 +22,12 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     private UUID id;
     private UUID user;
-    private int duration;
     private int ticks;
 
     public ShinsuTechniqueInstance(LivingEntity user) {
         id = MathHelper.getRandomUUID();
         this.user = user == null ? null : user.getUniqueID();
         ticks = 0;
-        duration = getInitialDuration();
     }
 
     @Nullable
@@ -43,20 +41,16 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         return null;
     }
 
-    public int getInitialDuration() {
-        return 1;
-    }
-
     public UUID getID() {
         return id;
     }
 
-    public int ticksLeft() {
-        return getDuration() - ticks;
+    public int getTicks() {
+        return ticks;
     }
 
     public int getDuration() {
-        return duration;
+        return 1;
     }
 
     @Nullable
@@ -114,7 +108,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
             nbt.putUniqueId("User", user);
         }
         nbt.putString("Technique", getTechnique().name());
-        nbt.putInt("Duration", getDuration());
         nbt.putInt("Ticks", ticks);
         return nbt;
     }
@@ -126,9 +119,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         }
         if (nbt.contains("User", Constants.NBT.TAG_INT_ARRAY)) {
             user = nbt.getUniqueId("User");
-        }
-        if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
-            duration = nbt.getInt("Duration");
         }
         if (nbt.contains("Ticks", Constants.NBT.TAG_INT)) {
             ticks = nbt.getInt("Ticks");

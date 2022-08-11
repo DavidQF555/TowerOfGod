@@ -1,7 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.RecipeRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @MethodsReturnNonnullByDefault
 public class DeviceDyeRecipe extends SpecialRecipe {
 
-    private static final List<Item> COLORABLE = RegistryHandler.COLORED_DEVICE_ITEMS.stream().map(RegistryObject::get).collect(Collectors.toList());
+    private static final List<Item> COLORABLE = ItemRegistry.COLORED_DEVICE_ITEMS.stream().map(RegistryObject::get).collect(Collectors.toList());
 
     public DeviceDyeRecipe(ResourceLocation idIn) {
         super(idIn);
@@ -77,6 +78,6 @@ public class DeviceDyeRecipe extends SpecialRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return RegistryHandler.DEVICE_DYE_RECIPE.get();
+        return RecipeRegistry.DEVICE_DYE.get();
     }
 }

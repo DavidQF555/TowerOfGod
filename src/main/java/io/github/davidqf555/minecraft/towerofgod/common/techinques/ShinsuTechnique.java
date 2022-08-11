@@ -29,7 +29,7 @@ public enum ShinsuTechnique {
     BODY_REINFORCEMENT(Repeat.OVERRIDE, false, new BodyReinforcement.Factory(), ShinsuIcons.RESISTANCE, ImmutableList.of(Direction.UP, Direction.UP, Direction.UP)),
     BLACK_FISH(Repeat.OVERRIDE, false, new BlackFish.Factory(), ShinsuIcons.SWIRL, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.DOWN)),
     SHINSU_BLAST(Repeat.ALLOW, false, new ShinsuBlast.Factory(), ShinsuIcons.BAANGS, ImmutableList.of(Direction.DOWN, Direction.UP)),
-    FLARE_WAVE_EXPLOSION(Repeat.ALLOW, false, new FlareWaveExplosion.Factory(), ShinsuIcons.TENSION, ImmutableList.of(Direction.UP, Direction.LEFT, Direction.LEFT)),
+    FLARE_WAVE_EXPLOSION(Repeat.ALLOW, false, new FlareWaveExplosion.Factory(), ShinsuIcons.TENSION, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.UP)),
     REVERSE_FLOW_CONTROL(Repeat.ALLOW, false, new ReverseFlowControl.Factory(), ShinsuIcons.REVERSE, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.RIGHT)),
     MANIFEST(Repeat.OVERRIDE, true, new Manifest.Factory(), ShinsuIcons.PICKAXE, ImmutableList.of(Direction.LEFT, Direction.RIGHT)),
     SHOOT_SHINSU_ARROW(Repeat.ALLOW, false, new ShootShinsuArrow.Factory(), ShinsuIcons.BAANGS, ImmutableList.of()),

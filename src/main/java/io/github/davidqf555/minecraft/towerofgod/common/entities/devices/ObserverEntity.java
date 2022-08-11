@@ -1,8 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ObserverChangeHighlightPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -29,7 +30,7 @@ public class ObserverEntity extends FlyingDevice {
     private final Set<UUID> targets;
 
     public ObserverEntity(World worldIn) {
-        super(RegistryHandler.OBSERVER_ENTITY.get(), worldIn);
+        super(EntityRegistry.OBSERVER.get(), worldIn);
         targets = new HashSet<>();
     }
 
@@ -56,7 +57,7 @@ public class ObserverEntity extends FlyingDevice {
 
     @Override
     protected ItemStack getDeviceItem() {
-        return RegistryHandler.OBSERVER_ITEM.get().getDefaultInstance();
+        return ItemRegistry.OBSERVER.get().getDefaultInstance();
     }
 
     @Override

@@ -40,7 +40,7 @@ public class Scout extends BasicCommandTechnique {
     }
 
     @Override
-    public int getInitialDuration() {
+    public int getDuration() {
         return 600;
     }
 

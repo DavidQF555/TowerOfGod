@@ -278,7 +278,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         List<ShinsuTechniqueInstance> techniques = new ArrayList<>(getTechniques());
         for (ShinsuTechniqueInstance technique : techniques) {
             technique.periodicTick(world, period);
-            if (technique.ticksLeft() <= 0) {
+            if (technique.getTicks() >= technique.getDuration()) {
                 technique.remove(world);
             }
         }

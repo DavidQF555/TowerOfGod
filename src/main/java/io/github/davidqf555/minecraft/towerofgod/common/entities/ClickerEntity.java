@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
 import mcp.MethodsReturnNonnullByDefault;
@@ -31,7 +31,7 @@ public class ClickerEntity extends Entity {
     private int ticksLeft;
 
     public ClickerEntity(World worldIn) {
-        super(RegistryHandler.CLICKER_ENTITY.get(), worldIn);
+        super(EntityRegistry.CLICKER.get(), worldIn);
         ticksLeft = DURATION;
     }
 
