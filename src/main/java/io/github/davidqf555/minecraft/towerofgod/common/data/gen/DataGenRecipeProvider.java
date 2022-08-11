@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.data.gen;
 
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
+import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
 import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
@@ -63,6 +64,26 @@ public class DataGenRecipeProvider extends RecipeProvider {
                         .patternLine("x x")
                         .patternLine("x  ")
                         .key('x', material)
+                        .addCriterion("has_material", hasItem(getPredicates(material)))
+                        .build(consumer);
+            }
+        }
+        for (RegistryObject<SpearItem> registry : ItemRegistry.SPEARS) {
+            SpearItem item = registry.get();
+            IItemTier tier = item.getTier();
+            Ingredient material = tier.getRepairMaterial();
+            if (tier.equals(ItemTier.NETHERITE)) {
+                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(ItemRegistry.DIAMOND_SPEAR.get()), material, item)
+                        .addCriterion("has_material", hasItem(getPredicates(material)))
+                        .build(consumer, ForgeRegistries.ITEMS.getKey(item));
+
+            } else {
+                ShapedRecipeBuilder.shapedRecipe(item)
+                        .patternLine(" xx")
+                        .patternLine(" yx")
+                        .patternLine("y  ")
+                        .key('x', material)
+                        .key('y', Items.STICK)
                         .addCriterion("has_material", hasItem(getPredicates(material)))
                         .build(consumer);
             }
