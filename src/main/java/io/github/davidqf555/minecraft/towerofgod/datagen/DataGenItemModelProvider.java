@@ -1,10 +1,10 @@
-package io.github.davidqf555.minecraft.towerofgod.common.data.gen;
+package io.github.davidqf555.minecraft.towerofgod.datagen;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelProvider;

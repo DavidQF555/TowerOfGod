@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.registration;
+package io.github.davidqf555.minecraft.towerofgod.registration;
 
 import com.google.common.collect.ImmutableList;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;

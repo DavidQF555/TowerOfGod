@@ -2,11 +2,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.EffectRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.TypeLevelRequirement;
+import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

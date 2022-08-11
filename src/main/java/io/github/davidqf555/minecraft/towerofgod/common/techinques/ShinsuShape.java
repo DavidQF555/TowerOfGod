@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.techinques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;

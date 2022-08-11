@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.registration;
+package io.github.davidqf555.minecraft.towerofgod.registration;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.effects.BodyReinforcementEffect;

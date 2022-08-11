@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientConfigs;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.*;
+import io.github.davidqf555.minecraft.towerofgod.registration.*;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;

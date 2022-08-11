@@ -1,9 +1,9 @@
-package io.github.davidqf555.minecraft.towerofgod.common.data.gen;
+package io.github.davidqf555.minecraft.towerofgod.datagen;
 
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.MinMaxBounds;

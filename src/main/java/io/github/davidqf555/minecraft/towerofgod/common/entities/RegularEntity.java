@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
+import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;

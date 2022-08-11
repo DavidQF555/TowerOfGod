@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.world;
 
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.FloorTeleportationTerminalBlock;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.BlockRegistry;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.PointOfInterestRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.BlockRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.PointOfInterestRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PortalInfo;

@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.blocks;
 
-import io.github.davidqf555.minecraft.towerofgod.common.registration.TileEntityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.TileEntityRegistry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;

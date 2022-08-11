@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.RecipeRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.RecipeRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;

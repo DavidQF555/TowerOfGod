@@ -2,13 +2,13 @@ package io.github.davidqf555.minecraft.towerofgod.common.techinques.instances;
 
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.QualityRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.TypeLevelRequirement;
+import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;

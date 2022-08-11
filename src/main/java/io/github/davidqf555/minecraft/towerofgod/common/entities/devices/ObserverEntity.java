@@ -2,8 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ObserverChangeHighlightPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

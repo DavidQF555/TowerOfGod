@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.BlockRegistry;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.ContainerRegistry;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
-import io.github.davidqf555.minecraft.towerofgod.common.registration.ItemRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.BlockRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.ContainerRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
