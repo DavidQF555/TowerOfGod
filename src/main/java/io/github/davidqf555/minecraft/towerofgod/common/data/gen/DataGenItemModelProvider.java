@@ -5,14 +5,11 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelBuilder;
 import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.client.model.generators.loaders.SeparatePerspectiveModelBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.fml.RegistryObject;
 
@@ -74,24 +71,12 @@ public class DataGenItemModelProvider extends ItemModelProvider {
                     .texture("layer0", modLoc("item/" + loc.getPath()));
         }
         ModelFile.ExistingModelFile throwing = getExistingFile(modLoc("item/spear_throwing"));
-        ModelFile.ExistingModelFile generated = getExistingFile(mcLoc("item/generated"));
-        ModelFile.ExistingModelFile hand = getExistingFile(modLoc("item/spear_in_hand"));
         for (RegistryObject<SpearItem> registry : RegistryHandler.SPEAR_ITEMS) {
             ResourceLocation loc = registry.getId();
-            ItemModelBuilder gui = new ItemModelBuilder(modLoc("gui"), existingFileHelper)
-                    .parent(generated)
-                    .texture("layer0", new ResourceLocation(loc.getNamespace(), "item/" + loc.getPath()));
-            withExistingParent(loc.toString(), loc)
-                    .customLoader(SeparatePerspectiveModelBuilder::begin)
-                    .base(new ItemModelBuilder(modLoc("hand"), existingFileHelper)
-                            .parent(hand)
-                            .override()
-                            .predicate(SpearItem.THROWING, 1)
-                            .model(throwing)
-                            .end())
-                    .perspective(ItemCameraTransforms.TransformType.GUI, gui)
-                    .perspective(ItemCameraTransforms.TransformType.FIXED, gui)
-                    .perspective(ItemCameraTransforms.TransformType.GROUND, gui)
+            withExistingParent(loc.toString(), modLoc("item/spear"))
+                    .override()
+                    .predicate(SpearItem.THROWING, 1)
+                    .model(throwing)
                     .end();
 
         }
