@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,7 +15,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
@@ -30,8 +28,8 @@ public class ClickerEntity extends Entity {
     private static final DataParameter<String> SHAPE = EntityDataManager.createKey(ClickerEntity.class, DataSerializers.STRING);
     private int ticksLeft;
 
-    public ClickerEntity(World worldIn) {
-        super(EntityRegistry.CLICKER.get(), worldIn);
+    public ClickerEntity(EntityType<ClickerEntity> type, World world) {
+        super(type, world);
         ticksLeft = DURATION;
     }
 
@@ -98,10 +96,4 @@ public class ClickerEntity extends Entity {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    public static class Factory implements EntityType.IFactory<ClickerEntity> {
-        @Override
-        public ClickerEntity create(@Nullable EntityType<ClickerEntity> type, World world) {
-            return new ClickerEntity(world);
-        }
-    }
 }

@@ -26,8 +26,8 @@ public class DeviceItem extends Item {
 
     private final BiFunction<World, ItemStack, FlyingDevice> entity;
 
-    public DeviceItem(BiFunction<World, ItemStack, FlyingDevice> entity) {
-        super(new Properties().group(TowerOfGod.TAB));
+    public DeviceItem(BiFunction<World, ItemStack, FlyingDevice> entity, Properties properties) {
+        super(properties);
         this.entity = entity;
     }
 

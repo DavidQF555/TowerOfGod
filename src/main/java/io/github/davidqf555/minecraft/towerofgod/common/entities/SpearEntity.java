@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -20,7 +19,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -28,8 +26,12 @@ public class SpearEntity extends AbstractArrowEntity {
 
     private static final DataParameter<ItemStack> STACK = EntityDataManager.createKey(SpearEntity.class, DataSerializers.ITEMSTACK);
 
-    public SpearEntity(World worldIn, ItemStack stack) {
-        super(EntityRegistry.SPEAR.get(), worldIn);
+    public SpearEntity(EntityType<SpearEntity> type, World world) {
+        this(type, world, ItemStack.EMPTY);
+    }
+
+    public SpearEntity(EntityType<SpearEntity> type, World world, ItemStack stack) {
+        super(type, world);
         setStack(stack);
     }
 
@@ -101,15 +103,6 @@ public class SpearEntity extends AbstractArrowEntity {
     @Override
     public IPacket<?> createSpawnPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    public static class Factory implements EntityType.IFactory<SpearEntity> {
-
-        @Nonnull
-        @Override
-        public SpearEntity create(EntityType<SpearEntity> type, World world) {
-            return new SpearEntity(world, ItemStack.EMPTY);
-        }
     }
 
 }

@@ -3,7 +3,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -38,8 +37,8 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     private UUID technique;
     private BlockRayTraceResult latestHit;
 
-    public ShinsuEntity(World world) {
-        super(EntityRegistry.SHINSU.get(), world);
+    public ShinsuEntity(EntityType<ShinsuEntity> type, World world) {
+        super(type, world);
         technique = null;
         latestHit = null;
     }
@@ -161,10 +160,4 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    public static class Factory implements EntityType.IFactory<ShinsuEntity> {
-        @Override
-        public ShinsuEntity create(@Nullable EntityType<ShinsuEntity> type, World world) {
-            return new ShinsuEntity(world);
-        }
-    }
 }

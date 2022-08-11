@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 import io.github.davidqf555.minecraft.towerofgod.client.render.SpearItemStackRenderer;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.SpearEntity;
+import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.IVanishable;
@@ -27,8 +28,8 @@ public class SpearItem extends ToolItem implements IVanishable {
 
     public static final ResourceLocation THROWING = new ResourceLocation(TowerOfGod.MOD_ID, "throwing");
 
-    public SpearItem(IItemTier tier, float attackDamage, float attackSpeed) {
-        super(attackDamage, attackSpeed, tier, new HashSet<>(), new Properties().group(TowerOfGod.TAB).setISTER(() -> SpearItemStackRenderer::new));
+    public SpearItem(IItemTier tier, float attackDamage, float attackSpeed, Properties properties) {
+        super(attackDamage, attackSpeed, tier, new HashSet<>(), properties.setISTER(() -> SpearItemStackRenderer::new));
     }
 
     @Override
@@ -73,7 +74,7 @@ public class SpearItem extends ToolItem implements IVanishable {
     }
 
     protected AbstractArrowEntity createProjectile(World world, ItemStack stack) {
-        return new SpearEntity(world, stack);
+        return new SpearEntity(EntityRegistry.SPEAR.get(), world, stack);
     }
 
     @Override

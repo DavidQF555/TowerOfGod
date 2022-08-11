@@ -32,7 +32,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
 
     private static final DataParameter<String> GROUP = EntityDataManager.createKey(BasicShinsuUserEntity.class, DataSerializers.STRING);
 
-    public BasicShinsuUserEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
+    public BasicShinsuUserEntity(EntityType<? extends BasicShinsuUserEntity> type, World worldIn) {
         super(type, worldIn);
     }
 

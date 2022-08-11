@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentType;
@@ -17,8 +16,8 @@ import java.util.HashSet;
 @ParametersAreNonnullByDefault
 public class NeedleItem extends ToolItem {
 
-    public NeedleItem(IItemTier tier, float attackDamage, float attackSpeed) {
-        super(attackDamage, attackSpeed, tier, new HashSet<>(), new Properties().group(TowerOfGod.TAB));
+    public NeedleItem(IItemTier tier, float attackDamage, float attackSpeed, Properties properties) {
+        super(attackDamage, attackSpeed, tier, new HashSet<>(), properties);
     }
 
     @Override

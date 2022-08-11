@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
-import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -18,7 +17,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.EnumSet;
@@ -30,8 +28,8 @@ public class RegularEntity extends BasicShinsuUserEntity {
 
     private Personality personality;
 
-    public RegularEntity(World worldIn) {
-        super(EntityRegistry.REGULAR.get(), worldIn);
+    public RegularEntity(EntityType<RegularEntity> type, World world) {
+        super(type, world);
         personality = Personality.NEUTRAL;
     }
 
@@ -110,14 +108,6 @@ public class RegularEntity extends BasicShinsuUserEntity {
         AGGRESSIVE(),
         NEUTRAL()
 
-    }
-
-    public static class Factory implements EntityType.IFactory<RegularEntity> {
-        @Nonnull
-        @Override
-        public RegularEntity create(@Nullable EntityType<RegularEntity> type, World world) {
-            return new RegularEntity(world);
-        }
     }
 
     private static class FollowRegularTeamLeaderGoal extends Goal {

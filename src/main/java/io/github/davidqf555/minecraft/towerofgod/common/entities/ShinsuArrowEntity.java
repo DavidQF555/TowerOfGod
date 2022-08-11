@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -36,8 +35,12 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     private UUID technique;
     private BlockRayTraceResult latestHit;
 
-    public ShinsuArrowEntity(World worldIn, @Nullable UUID technique) {
-        super(EntityRegistry.SHINSU_ARROW.get(), worldIn);
+    public ShinsuArrowEntity(EntityType<ShinsuArrowEntity> type, World world) {
+        this(type, world, null);
+    }
+
+    public ShinsuArrowEntity(EntityType<ShinsuArrowEntity> type, World world, @Nullable UUID technique) {
+        super(type, world);
         this.technique = technique;
         this.latestHit = null;
     }
@@ -157,11 +160,4 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
         }
     }
 
-    public static class Factory implements EntityType.IFactory<ShinsuArrowEntity> {
-
-        @Override
-        public ShinsuArrowEntity create(@Nullable EntityType<ShinsuArrowEntity> type, World world) {
-            return new ShinsuArrowEntity(world, null);
-        }
-    }
 }

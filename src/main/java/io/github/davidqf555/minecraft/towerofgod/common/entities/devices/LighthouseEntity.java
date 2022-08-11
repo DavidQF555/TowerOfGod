@@ -3,7 +3,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.registration.BlockRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.ContainerRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Blocks;
@@ -47,8 +46,8 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     private final ItemStackHandler inventory;
     private BlockPos light;
 
-    public LighthouseEntity(World worldIn) {
-        super(EntityRegistry.LIGHTHOUSE.get(), worldIn);
+    public LighthouseEntity(EntityType<LighthouseEntity> type, World world) {
+        super(type, world);
         inventory = createInventory();
         light = null;
     }
@@ -238,10 +237,4 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         }
     }
 
-    public static class Factory implements EntityType.IFactory<LighthouseEntity> {
-        @Override
-        public LighthouseEntity create(@Nullable EntityType<LighthouseEntity> type, World world) {
-            return new LighthouseEntity(world);
-        }
-    }
 }

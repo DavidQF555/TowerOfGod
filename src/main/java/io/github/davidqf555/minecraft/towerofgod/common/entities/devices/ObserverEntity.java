@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ObserverChangeHighlightPacket;
-import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -18,7 +17,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -29,8 +27,8 @@ public class ObserverEntity extends FlyingDevice {
     private static final double RANGE = 24;
     private final Set<UUID> targets;
 
-    public ObserverEntity(World worldIn) {
-        super(EntityRegistry.OBSERVER.get(), worldIn);
+    public ObserverEntity(EntityType<ObserverEntity> type, World world) {
+        super(type, world);
         targets = new HashSet<>();
     }
 
@@ -78,10 +76,4 @@ public class ObserverEntity extends FlyingDevice {
         super.onRemovedFromWorld();
     }
 
-    public static class Factory implements EntityType.IFactory<ObserverEntity> {
-        @Override
-        public ObserverEntity create(@Nullable EntityType<ObserverEntity> type, @Nonnull World world) {
-            return new ObserverEntity(world);
-        }
-    }
 }

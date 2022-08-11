@@ -4,7 +4,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
-import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ILivingEntityData;
@@ -26,7 +25,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerBossInfo;
 import net.minecraftforge.common.util.Constants;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -37,8 +35,8 @@ public class RankerEntity extends BasicShinsuUserEntity {
     private final ServerBossInfo info;
     private int floorLevel;
 
-    public RankerEntity(World worldIn) {
-        super(EntityRegistry.RANKER.get(), worldIn);
+    public RankerEntity(EntityType<RankerEntity> type, World world) {
+        super(type, world);
         floorLevel = 1;
         info = new ServerBossInfo(getDisplayName(), BossInfo.Color.WHITE, BossInfo.Overlay.PROGRESS);
         info.setVisible(false);
@@ -155,12 +153,4 @@ public class RankerEntity extends BasicShinsuUserEntity {
         info.setColor(group.getBossInfoColor());
     }
 
-    public static class Factory implements EntityType.IFactory<RankerEntity> {
-
-        @Nonnull
-        @Override
-        public RankerEntity create(EntityType<RankerEntity> type, World world) {
-            return new RankerEntity(world);
-        }
-    }
 }

@@ -30,8 +30,8 @@ import java.util.Map;
 @MethodsReturnNonnullByDefault
 public class ClickerItem extends Item {
 
-    public ClickerItem() {
-        super(new Properties().group(TowerOfGod.TAB));
+    public ClickerItem(Properties properties) {
+        super(properties);
     }
 
     @Override

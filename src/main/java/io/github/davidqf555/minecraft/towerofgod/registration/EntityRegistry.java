@@ -29,15 +29,15 @@ public final class EntityRegistry {
 
     public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(ForgeRegistries.ENTITIES, TowerOfGod.MOD_ID);
 
-    public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE = register("lighthouse", new LighthouseEntity.Factory(), EntityClassification.MISC, 0.9f, 0.9f);
-    public static final RegistryObject<EntityType<ObserverEntity>> OBSERVER = register("observer", new ObserverEntity.Factory(), EntityClassification.MISC, 0.4f, 0.4f);
-    public static final RegistryObject<EntityType<RegularEntity>> REGULAR = register("regular", new RegularEntity.Factory(), EntityClassification.CREATURE, 0.6f, 1.8f);
-    public static final RegistryObject<EntityType<ShinsuEntity>> SHINSU = register("shinsu", new ShinsuEntity.Factory(), EntityClassification.MISC, 1, 1);
-    public static final RegistryObject<EntityType<ClickerEntity>> CLICKER = register("clicker", new ClickerEntity.Factory(), EntityClassification.MISC, 1, 1);
-    public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW = register("shinsu_arrow", new ShinsuArrowEntity.Factory(), EntityClassification.MISC, 0.4f, 0.4f);
-    public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", new RankerEntity.Factory(), EntityClassification.CREATURE, 0.6f, 1.8f);
-    public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", new SpearEntity.Factory(), EntityClassification.MISC, 0.5f, 0.5f);
-    public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", new DirectionalLightningBoltEntity.Factory(), EntityClassification.MISC, 1, 1);
+    public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE = register("lighthouse", LighthouseEntity::new, EntityClassification.MISC, 0.9f, 0.9f);
+    public static final RegistryObject<EntityType<ObserverEntity>> OBSERVER = register("observer", ObserverEntity::new, EntityClassification.MISC, 0.4f, 0.4f);
+    public static final RegistryObject<EntityType<RegularEntity>> REGULAR = register("regular", RegularEntity::new, EntityClassification.CREATURE, 0.6f, 1.8f);
+    public static final RegistryObject<EntityType<ShinsuEntity>> SHINSU = register("shinsu", ShinsuEntity::new, EntityClassification.MISC, 1, 1);
+    public static final RegistryObject<EntityType<ClickerEntity>> CLICKER = register("clicker", ClickerEntity::new, EntityClassification.MISC, 1, 1);
+    public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW = register("shinsu_arrow", ShinsuArrowEntity::new, EntityClassification.MISC, 0.4f, 0.4f);
+    public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", RankerEntity::new, EntityClassification.CREATURE, 0.6f, 1.8f);
+    public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", SpearEntity::new, EntityClassification.MISC, 0.5f, 0.5f);
+    public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", DirectionalLightningBoltEntity::new, EntityClassification.MISC, 1, 1);
 
     private EntityRegistry() {
     }
