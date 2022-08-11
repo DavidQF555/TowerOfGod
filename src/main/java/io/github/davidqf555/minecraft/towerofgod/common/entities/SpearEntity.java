@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.RegistryHandler;
+import io.github.davidqf555.minecraft.towerofgod.common.registration.EntityRegistry;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -29,7 +29,7 @@ public class SpearEntity extends AbstractArrowEntity {
     private static final DataParameter<ItemStack> STACK = EntityDataManager.createKey(SpearEntity.class, DataSerializers.ITEMSTACK);
 
     public SpearEntity(World worldIn, ItemStack stack) {
-        super(RegistryHandler.SPEAR_ENTITY.get(), worldIn);
+        super(EntityRegistry.SPEAR.get(), worldIn);
         setStack(stack);
     }
 

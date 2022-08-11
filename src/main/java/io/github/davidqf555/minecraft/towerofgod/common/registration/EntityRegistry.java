@@ -24,6 +24,7 @@ public final class EntityRegistry {
     public static final RegistryObject<EntityType<ClickerEntity>> CLICKER = register("clicker", new ClickerEntity.Factory(), EntityClassification.MISC, 1, 1);
     public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW = register("shinsu_arrow", new ShinsuArrowEntity.Factory(), EntityClassification.MISC, 0.4f, 0.4f);
     public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", new RankerEntity.Factory(), EntityClassification.CREATURE, 0.6f, 1.8f);
+    public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", new SpearEntity.Factory(), EntityClassification.MISC, 0.5f, 0.5f);
     public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", new DirectionalLightningBoltEntity.Factory(), EntityClassification.MISC, 1, 1);
 
     private EntityRegistry() {
