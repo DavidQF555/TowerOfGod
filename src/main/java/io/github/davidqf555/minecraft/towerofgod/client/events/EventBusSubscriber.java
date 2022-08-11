@@ -1,5 +1,6 @@
-package io.github.davidqf555.minecraft.towerofgod.client;
+package io.github.davidqf555.minecraft.towerofgod.client.events;
 
+import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.LighthouseScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.render.*;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;

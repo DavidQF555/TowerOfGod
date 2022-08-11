@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.client;
+package io.github.davidqf555.minecraft.towerofgod.client.events;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
