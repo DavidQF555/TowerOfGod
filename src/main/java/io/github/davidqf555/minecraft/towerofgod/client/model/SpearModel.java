@@ -14,12 +14,12 @@ import net.minecraft.util.ResourceLocation;
 public class SpearModel extends Model {
 
     private static final ResourceLocation WOOD = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/wooden_spear.png");
-    private static final ResourceLocation STONE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/wooden_spear.png");
-    private static final ResourceLocation IRON = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/wooden_spear.png");
-    private static final ResourceLocation GOLD = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/wooden_spear.png");
-    private static final ResourceLocation DIAMOND = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/wooden_spear.png");
-    private static final ResourceLocation NETHERITE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/wooden_spear.png");
-    private static final ResourceLocation SUSPENDIUM = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/wooden_spear.png");
+    private static final ResourceLocation STONE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/stone_spear.png");
+    private static final ResourceLocation IRON = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/iron_spear.png");
+    private static final ResourceLocation GOLD = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/golden_spear.png");
+    private static final ResourceLocation DIAMOND = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/diamond_spear.png");
+    private static final ResourceLocation NETHERITE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/netherite_spear.png");
+    private static final ResourceLocation SUSPENDIUM = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/suspendium_spear.png");
     private final ModelRenderer spear;
 
     public SpearModel() {

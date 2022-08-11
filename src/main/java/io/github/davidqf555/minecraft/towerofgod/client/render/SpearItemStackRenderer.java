@@ -10,11 +10,11 @@ import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.item.ItemStack;
 
-public class SpearTileEntityRenderer extends ItemStackTileEntityRenderer {
+public class SpearItemStackRenderer extends ItemStackTileEntityRenderer {
 
     private final SpearModel spear;
 
-    public SpearTileEntityRenderer() {
+    public SpearItemStackRenderer() {
         spear = new SpearModel();
     }
 

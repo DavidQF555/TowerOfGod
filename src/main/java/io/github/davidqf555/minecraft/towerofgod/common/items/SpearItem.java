@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import io.github.davidqf555.minecraft.towerofgod.client.render.SpearTileEntityRenderer;
+import io.github.davidqf555.minecraft.towerofgod.client.render.SpearItemStackRenderer;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.SpearEntity;
 import mcp.MethodsReturnNonnullByDefault;
@@ -28,7 +28,7 @@ public class SpearItem extends ToolItem implements IVanishable {
     public static final ResourceLocation THROWING = new ResourceLocation(TowerOfGod.MOD_ID, "throwing");
 
     public SpearItem(IItemTier tier, float attackDamage, float attackSpeed) {
-        super(attackDamage, attackSpeed, tier, new HashSet<>(), new Properties().group(TowerOfGod.TAB).setISTER(() -> SpearTileEntityRenderer::new));
+        super(attackDamage, attackSpeed, tier, new HashSet<>(), new Properties().group(TowerOfGod.TAB).setISTER(() -> SpearItemStackRenderer::new));
     }
 
     @Override
