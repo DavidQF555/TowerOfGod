@@ -2,9 +2,10 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.ColorHelper;
@@ -17,7 +18,7 @@ import java.util.function.Predicate;
 public enum Group {
 
     NONE(new ResourceLocation("textures/entity/steve.png"), 0xFFFFFFFF, new ShinsuQuality[0], new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1, 1, 1),
-    ARIE("arie", 0xFFFFFFFF, new ShinsuQuality[0], new ShinsuShape[]{ShinsuShape.SWORD}, new ShinsuTechniqueType[0], item -> item instanceof SwordItem, 1, 1, 1, 1),
+    ARIE("arie", 0xFFFFFFFF, new ShinsuQuality[0], new ShinsuShape[]{ShinsuShapeRegistry.SWORD.get()}, new ShinsuTechniqueType[0], item -> item instanceof SwordItem, 1, 1, 1, 1),
     EURASIA("eurasia", 0xFF00FF7F, new ShinsuQuality[]{ShinsuQuality.WIND}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1.5, 2, 2),
     HA("ha", 0xFFDC143C, new ShinsuQuality[0], new ShinsuShape[0], new ShinsuTechniqueType[0], item -> item instanceof HookItem, 2, 1, 1, 1),
     KHUN("khun", 0xFF6495ED, new ShinsuQuality[]{ShinsuQuality.ICE, ShinsuQuality.LIGHTNING}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1, 1, 1),

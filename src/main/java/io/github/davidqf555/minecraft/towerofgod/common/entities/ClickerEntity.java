@@ -1,7 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -11,6 +12,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.IParticleData;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -37,7 +39,7 @@ public class ClickerEntity extends Entity {
     protected void registerData() {
         EntityDataManager manager = getDataManager();
         manager.register(QUALITY, ShinsuQuality.NONE.name());
-        manager.register(SHAPE, ShinsuShape.NONE.name());
+        manager.register(SHAPE, ShinsuShapeRegistry.SWORD.getId().toString());
     }
 
     @Override
@@ -64,11 +66,11 @@ public class ClickerEntity extends Entity {
     }
 
     public ShinsuShape getShape() {
-        return ShinsuShape.valueOf(dataManager.get(SHAPE));
+        return ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(dataManager.get(SHAPE)));
     }
 
     public void setShape(ShinsuShape shape) {
-        dataManager.set(SHAPE, shape.name());
+        dataManager.set(SHAPE, shape.getRegistryName().toString());
     }
 
     @Override
@@ -80,7 +82,7 @@ public class ClickerEntity extends Entity {
             setQuality(ShinsuQuality.valueOf(nbt.getString("Quality")));
         }
         if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
-            setShape(ShinsuShape.valueOf(nbt.getString("Shape")));
+            setShape(ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape"))));
         }
     }
 
@@ -88,7 +90,7 @@ public class ClickerEntity extends Entity {
     public void writeAdditional(CompoundNBT nbt) {
         nbt.putInt("Duration", ticksLeft);
         nbt.putString("Quality", getQuality().name());
-        nbt.putString("Shape", getShape().name());
+        nbt.putString("Shape", getShape().getRegistryName().toString());
     }
 
     @Override

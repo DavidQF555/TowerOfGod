@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client.render;
 
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.ItemStack;
 

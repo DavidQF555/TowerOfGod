@@ -26,7 +26,7 @@ public class ClickerRenderer extends EntityRenderer<ClickerEntity> {
 
     @Override
     public void render(ClickerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        ItemStack item = entityIn.getShape().createItem();
+        ItemStack item = entityIn.getShape().getItem();
         CompoundNBT nbt = item.getOrCreateChildTag(TowerOfGod.MOD_ID);
         nbt.putString("Quality", entityIn.getQuality().name());
         matrixStackIn.push();

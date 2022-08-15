@@ -9,14 +9,18 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientQualityPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.command.arguments.ResourceLocationArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.server.command.EnumArgument;
@@ -73,8 +77,9 @@ public final class ShinsuCommand {
                                 )
                         )
                         .then(Commands.literal("shape")
-                                .then(Commands.argument("value", EnumArgument.enumArgument(ShinsuShape.class))
-                                        .executes(context -> changeShape(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("value", ShinsuShape.class)))
+                                .then(Commands.argument("value", ResourceLocationArgument.resourceLocation())
+                                        .suggests((context, builder) -> ISuggestionProvider.suggestIterable(ShinsuShapeRegistry.getRegistry().getKeys(), builder))
+                                        .executes(context -> changeShape(context.getSource(), EntityArgument.getEntities(context, "targets"), ResourceLocationArgument.getResourceLocation(context, "shape")))
                                 )
                         )
                         .then(Commands.literal("technique")
@@ -176,7 +181,8 @@ public final class ShinsuCommand {
         return entities.size();
     }
 
-    private static int changeShape(CommandSource source, Collection<? extends Entity> entities, ShinsuShape shape) {
+    private static int changeShape(CommandSource source, Collection<? extends Entity> entities, ResourceLocation loc) {
+        ShinsuShape shape = ShinsuShapeRegistry.getRegistry().getValue(loc);
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setShape(shape);
             source.sendFeedback(new TranslationTextComponent(SHAPE, entity.getDisplayName(), shape.getName()), true);
