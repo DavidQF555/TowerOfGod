@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -54,7 +54,9 @@ public class ShinsuPickaxe extends PickaxeItem {
     @Override
     public ActionResultType onItemUse(ItemUseContext context) {
         ShinsuQuality quality = ShinsuQuality.getQuality(context.getItem());
-        quality.applyBlockEffect(context.getPlayer(), new BlockRayTraceResult(context.getHitVec(), context.getFace(), context.getPos(), context.isInside()));
+        if (quality != null) {
+            quality.applyBlockEffect(context.getPlayer(), new BlockRayTraceResult(context.getHitVec(), context.getFace(), context.getPos(), context.isInside()));
+        }
         return super.onItemUse(context);
     }
 

@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.QualityRequirement;
@@ -24,7 +24,7 @@ import java.util.UUID;
 
 public class ShinsuBlast extends ShinsuTechniqueInstance {
 
-    private static final double BASE_SPEED = 0.5;
+    private static final float BASE_SPEED = 0.5f;
     private UUID blast;
     private Vector3d direction;
 
@@ -57,7 +57,11 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
                 shinsu.setQuality(quality);
                 shinsu.setTechnique(this);
                 shinsu.setPosition(user.getPosX(), user.getPosYEye() - shinsu.getBoundingBox().getYSize() / 2, user.getPosZ());
-                shinsu.shoot(direction.getX(), direction.getY(), direction.getZ(), (float) (BASE_SPEED * quality.getSpeed()), 0);
+                float speed = BASE_SPEED;
+                if (quality != null) {
+                    speed *= quality.getSpeed();
+                }
+                shinsu.shoot(direction.getX(), direction.getY(), direction.getZ(), speed, 0);
                 blast = shinsu.getUniqueID();
                 world.addEntity(shinsu);
             }
@@ -132,7 +136,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
 
         @Override
         public IRequirement[] getRequirements() {
-            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 2), new QualityRequirement(ShinsuQuality.NONE)};
+            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 2), new QualityRequirement(null)};
         }
     }
 }

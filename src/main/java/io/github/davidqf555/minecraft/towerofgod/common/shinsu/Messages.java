@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -18,6 +19,7 @@ public final class Messages {
     public static final Function<Double, TranslationTextComponent> REQUIRES_TARGET = range -> new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_target", range);
     public static final TranslationTextComponent REQUIRES_SHAPE = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_shape");
     public static final TranslationTextComponent LOCKED = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.locked");
+    public static final TranslationTextComponent REQUIRES_NO_QUALITY = new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_no_quality");
     public static final Function<ShinsuQuality, TranslationTextComponent> REQUIRES_QUALITY = quality -> new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_quality", quality.getName());
 
     private Messages() {

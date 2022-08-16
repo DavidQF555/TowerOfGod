@@ -2,9 +2,10 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.SwordItem;
@@ -19,10 +20,10 @@ public enum Group {
 
     NONE(new ResourceLocation("textures/entity/steve.png"), 0xFFFFFFFF, new ShinsuQuality[0], new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1, 1, 1),
     ARIE("arie", 0xFFFFFFFF, new ShinsuQuality[0], new ShinsuShape[]{ShinsuShapeRegistry.SWORD.get()}, new ShinsuTechniqueType[0], item -> item instanceof SwordItem, 1, 1, 1, 1),
-    EURASIA("eurasia", 0xFF00FF7F, new ShinsuQuality[]{ShinsuQuality.WIND}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1.5, 2, 2),
+    EURASIA("eurasia", 0xFF00FF7F, new ShinsuQuality[]{ShinsuQualityRegistry.WIND.get()}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1.5, 2, 2),
     HA("ha", 0xFFDC143C, new ShinsuQuality[0], new ShinsuShape[0], new ShinsuTechniqueType[0], item -> item instanceof HookItem, 2, 1, 1, 1),
-    KHUN("khun", 0xFF6495ED, new ShinsuQuality[]{ShinsuQuality.ICE, ShinsuQuality.LIGHTNING}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1, 1, 1),
-    YEON("yeon", 0xFFFF1493, new ShinsuQuality[]{ShinsuQuality.FIRE}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1.2, 1.5, 1);
+    KHUN("khun", 0xFF6495ED, new ShinsuQuality[]{ShinsuQualityRegistry.ICE.get(), ShinsuQualityRegistry.LIGHTNING.get()}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1, 1, 1),
+    YEON("yeon", 0xFFFF1493, new ShinsuQuality[]{ShinsuQualityRegistry.FIRE.get()}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1.2, 1.5, 1);
 
     private final ResourceLocation texture;
     private final int color;

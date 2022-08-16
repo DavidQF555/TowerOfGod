@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.suitability;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.suitability;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.stats.Stat;

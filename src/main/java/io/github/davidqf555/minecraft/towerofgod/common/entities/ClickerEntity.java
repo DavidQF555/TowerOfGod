@@ -1,7 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -17,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
@@ -38,7 +40,7 @@ public class ClickerEntity extends Entity {
     @Override
     protected void registerData() {
         EntityDataManager manager = getDataManager();
-        manager.register(QUALITY, ShinsuQuality.NONE.name());
+        manager.register(QUALITY, "");
         manager.register(SHAPE, ShinsuShapeRegistry.SWORD.getId().toString());
     }
 
@@ -46,7 +48,7 @@ public class ClickerEntity extends Entity {
     public void tick() {
         prevRotationYaw = rotationYaw;
         rotationYaw += SPEED;
-        IParticleData particle = getQuality().getParticleType();
+        IParticleData particle = ShinsuQuality.getParticles(getQuality());
         for (int i = 0; i < PARTICLES; i++) {
             world.addParticle(particle, getPosXRandom(1), getPosYRandom(), getPosZRandom(1), 0, 0, 0);
         }
@@ -57,12 +59,13 @@ public class ClickerEntity extends Entity {
         super.tick();
     }
 
+    @Nullable
     public ShinsuQuality getQuality() {
-        return ShinsuQuality.valueOf(dataManager.get(QUALITY));
+        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(dataManager.get(QUALITY)));
     }
 
-    public void setQuality(ShinsuQuality quality) {
-        dataManager.set(QUALITY, quality.name());
+    public void setQuality(@Nullable ShinsuQuality quality) {
+        dataManager.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
     }
 
     public ShinsuShape getShape() {
@@ -79,7 +82,7 @@ public class ClickerEntity extends Entity {
             ticksLeft = nbt.getInt("Duration");
         }
         if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
-            setQuality(ShinsuQuality.valueOf(nbt.getString("Quality")));
+            setQuality(ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality"))));
         }
         if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
             setShape(ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape"))));
@@ -89,7 +92,10 @@ public class ClickerEntity extends Entity {
     @Override
     public void writeAdditional(CompoundNBT nbt) {
         nbt.putInt("Duration", ticksLeft);
-        nbt.putString("Quality", getQuality().name());
+        ShinsuQuality quality = getQuality();
+        if (quality != null) {
+            nbt.putString("Quality", quality.getRegistryName().toString());
+        }
         nbt.putString("Shape", getShape().getRegistryName().toString());
     }
 

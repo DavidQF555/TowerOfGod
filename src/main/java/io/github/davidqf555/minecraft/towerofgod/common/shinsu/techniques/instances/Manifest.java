@@ -3,12 +3,13 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.ShapeRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -33,7 +34,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     private ShinsuShape shape;
     private ShinsuQuality quality;
 
-    public Manifest(LivingEntity user, ShinsuShape shape, ShinsuQuality quality) {
+    public Manifest(LivingEntity user, ShinsuShape shape, @Nullable ShinsuQuality quality) {
         super(user);
         this.shape = shape;
         this.quality = quality;
@@ -98,7 +99,7 @@ public class Manifest extends ShinsuTechniqueInstance {
             shape = ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape")));
         }
         if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
-            quality = ShinsuQuality.valueOf(nbt.getString("Quality"));
+            quality = ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality")));
         }
     }
 
@@ -106,7 +107,9 @@ public class Manifest extends ShinsuTechniqueInstance {
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
         nbt.putString("Shape", shape.getRegistryName().toString());
-        nbt.putString("Quality", quality.name());
+        if (quality != null) {
+            nbt.putString("Quality", quality.getRegistryName().toString());
+        }
         return nbt;
     }
 
@@ -122,7 +125,7 @@ public class Manifest extends ShinsuTechniqueInstance {
 
         @Override
         public Manifest blankCreate() {
-            return new Manifest(null, null, ShinsuQuality.NONE);
+            return new Manifest(null, null, null);
         }
 
         @Override

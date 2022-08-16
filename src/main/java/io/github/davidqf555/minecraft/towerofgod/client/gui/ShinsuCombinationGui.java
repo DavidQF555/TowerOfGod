@@ -10,6 +10,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateClientErrorPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechnique;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -44,7 +45,7 @@ public class ShinsuCombinationGui extends AbstractGui {
         markers = new ArrayList<>();
         prevYaw = yaw;
         prevPitch = pitch;
-        color = ClientReference.quality.getColor();
+        color = ShinsuQuality.getColor(ClientReference.quality);
         reset();
     }
 
@@ -190,7 +191,7 @@ public class ShinsuCombinationGui extends AbstractGui {
             matrixStack.translate(centerX, centerY, 0);
             matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + offset + 180));
             matrixStack.translate(-centerX, -centerY, 0);
-            type.texture.render(new RenderContext(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ClientReference.quality.getColor()));
+            type.texture.render(new RenderContext(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ShinsuQuality.getColor(ClientReference.quality)));
             matrixStack.pop();
         }
 

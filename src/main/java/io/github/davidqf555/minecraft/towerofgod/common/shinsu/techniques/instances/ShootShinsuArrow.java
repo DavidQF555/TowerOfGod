@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import mcp.MethodsReturnNonnullByDefault;
@@ -54,7 +54,10 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
                 ShinsuQuality quality = ShinsuStats.get(user).getQuality();
                 arrow.setQuality(quality);
                 arrow.setTechnique(getID());
-                float speed = velocity * 3 * (float) quality.getSpeed();
+                float speed = velocity * 3;
+                if (quality != null) {
+                    speed *= quality.getSpeed();
+                }
                 arrow.shoot(direction.getX(), direction.getY(), direction.getZ(), speed, 1);
                 arrow.setShooter(user);
                 arrow.setPosition(user.getPosX(), user.getPosYEye() - 0.1, user.getPosZ());

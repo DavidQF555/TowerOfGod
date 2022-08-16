@@ -87,6 +87,7 @@
   "technique.towerofgod.error.requires_shape": "Requires a Shinsu shape",
   "technique.towerofgod.error.requires_target": "Requires a target within %s blocks",
   "technique.towerofgod.error.requires_quality": "Requires the %s Shinsu quality",
+  "technique.towerofgod.error.requires_no_quality": "Requires having no Shinsu quality",
   "technique.towerofgod.error.locked": "Locked",
   "technique.towerofgod.reverse_flow_control": "Reverse Flow Control",
   "technique.towerofgod.reverse_flow_control.description": "Freezes the flow of Shinsu in a specified entity. ",
@@ -131,5 +132,7 @@
   "commands.towerofgod.shinsu.tension": "Multiplied the tension of %1$s by a factor of %2$s",
   "commands.towerofgod.shinsu.technique": "Increased the %2$s level of %1$s by %3$s",
   "commands.towerofgod.shinsu.quality": "Set the Shinsu quality of %1$s to %2$s",
-  "commands.towerofgod.shinsu.shape": "Set the Shinsu shape of %1$s to %2$s"
+  "commands.towerofgod.shinsu.shape": "Set the Shinsu shape of %1$s to %2$s",
+  "commands.towerofgod.shinsu.remove_shape": "Removed the Shinsu shape of %s",
+  "commands.towerofgod.shinsu.remove_quality": "Removed the Shinsu quality of %s"
 }

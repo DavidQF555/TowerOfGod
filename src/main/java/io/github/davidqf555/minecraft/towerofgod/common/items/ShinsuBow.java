@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
@@ -117,7 +117,9 @@ public class ShinsuBow extends BowItem {
     public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         Vector3d dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
         ShinsuQuality quality = ShinsuQuality.getQuality(stack);
-        quality.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
+        if (quality != null) {
+            quality.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
+        }
         return super.hitEntity(stack, target, attacker);
     }
 

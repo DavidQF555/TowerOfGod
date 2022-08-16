@@ -3,13 +3,14 @@ package io.github.davidqf555.minecraft.towerofgod.common.data;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -51,7 +52,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     private ShinsuShape shape;
 
     public ShinsuStats() {
-        this(1, 0, 0, 1, 1, ShinsuQuality.NONE, null);
+        this(1, 0, 0, 1, 1, null, null);
     }
 
     private ShinsuStats(int level, int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, @Nullable ShinsuShape shape) {
@@ -162,11 +163,12 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         tension *= factor;
     }
 
+    @Nullable
     public ShinsuQuality getQuality() {
         return quality;
     }
 
-    public void setQuality(ShinsuQuality quality) {
+    public void setQuality(@Nullable ShinsuQuality quality) {
         this.quality = quality;
     }
 
@@ -326,7 +328,10 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         tag.putInt("Baangs", baangs);
         tag.putDouble("Resistance", resistance);
         tag.putDouble("Tension", tension);
-        tag.putString("Quality", quality.name());
+        ShinsuQuality quality = getQuality();
+        if (quality != null) {
+            tag.putString("Quality", quality.getRegistryName().toString());
+        }
         ShinsuShape shape = getShape();
         if (shape != null) {
             tag.putString("Shape", shape.getRegistryName().toString());
@@ -363,7 +368,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             tension = nbt.getDouble("Tension");
         }
         if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
-            quality = ShinsuQuality.valueOf(nbt.getString("Quality"));
+            quality = ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality")));
         }
         if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
             shape = ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape")));
