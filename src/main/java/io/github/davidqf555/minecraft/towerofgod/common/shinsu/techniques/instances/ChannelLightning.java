@@ -3,12 +3,14 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.QualityRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -69,7 +71,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
 
     @Override
     public ShinsuTechnique getTechnique() {
-        return ShinsuTechnique.CHANNEL_LIGHTNING;
+        return ShinsuTechniqueRegistry.CHANNEL_LIGHTNING.get();
     }
 
     @Override
@@ -118,7 +120,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
 
         @Override
         public ShinsuTechnique getTechnique() {
-            return ShinsuTechnique.CHANNEL_LIGHTNING;
+            return ShinsuTechniqueRegistry.CHANNEL_LIGHTNING.get();
         }
 
         @Override

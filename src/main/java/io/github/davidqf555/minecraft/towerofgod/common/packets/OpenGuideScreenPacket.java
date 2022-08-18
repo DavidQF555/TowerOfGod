@@ -2,7 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -17,7 +18,7 @@ public class OpenGuideScreenPacket {
     private static final BiConsumer<OpenGuideScreenPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.pages.length);
         for (ShinsuTechnique technique : message.pages) {
-            buffer.writeString(technique.name());
+            buffer.writeResourceLocation(technique.getRegistryName());
         }
         buffer.writeInt(message.color);
     };
@@ -25,7 +26,7 @@ public class OpenGuideScreenPacket {
         int size = buffer.readInt();
         ShinsuTechnique[] pages = new ShinsuTechnique[size];
         for (int i = 0; i < size; i++) {
-            pages[i] = ShinsuTechnique.valueOf(buffer.readString());
+            pages[i] = ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation());
         }
         return new OpenGuideScreenPacket(pages, buffer.readInt());
     };

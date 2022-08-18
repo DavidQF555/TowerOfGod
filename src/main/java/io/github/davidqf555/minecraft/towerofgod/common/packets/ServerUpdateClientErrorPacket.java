@@ -2,13 +2,14 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -20,15 +21,15 @@ public class ServerUpdateClientErrorPacket {
     private static final BiConsumer<ServerUpdateClientErrorPacket, PacketBuffer> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.errors.size());
         for (Map.Entry<ShinsuTechnique, ITextComponent> error : message.errors.entrySet()) {
-            buffer.writeString(error.getKey().name());
+            buffer.writeResourceLocation(error.getKey().getRegistryName());
             buffer.writeTextComponent(error.getValue());
         }
     };
     private static final Function<PacketBuffer, ServerUpdateClientErrorPacket> DECODER = buffer -> {
-        Map<ShinsuTechnique, ITextComponent> errors = new EnumMap<>(ShinsuTechnique.class);
+        Map<ShinsuTechnique, ITextComponent> errors = new HashMap<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            ShinsuTechnique technique = ShinsuTechnique.valueOf(buffer.readString());
+            ShinsuTechnique technique = ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation());
             errors.put(technique, buffer.readTextComponent());
         }
         return new ServerUpdateClientErrorPacket(errors);

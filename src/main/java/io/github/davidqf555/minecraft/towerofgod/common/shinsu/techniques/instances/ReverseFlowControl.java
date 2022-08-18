@@ -3,10 +3,12 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -42,7 +44,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
 
     @Override
     public ShinsuTechnique getTechnique() {
-        return ShinsuTechnique.REVERSE_FLOW_CONTROL;
+        return ShinsuTechniqueRegistry.REVERSE_FLOW_CONTROL.get();
     }
 
     @Override
@@ -115,7 +117,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
 
         @Override
         public ShinsuTechnique getTechnique() {
-            return ShinsuTechnique.REVERSE_FLOW_CONTROL;
+            return ShinsuTechniqueRegistry.REVERSE_FLOW_CONTROL.get();
         }
 
         @Override

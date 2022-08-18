@@ -5,13 +5,14 @@ import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMete
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -64,7 +65,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         this.quality = quality;
         this.shape = shape;
         data = new EnumMap<>(ShinsuTechniqueType.class);
-        cooldowns = new EnumMap<>(ShinsuTechnique.class);
+        cooldowns = new HashMap<>();
         techniques = new ArrayList<>();
     }
 
@@ -345,7 +346,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         this.data.forEach((type, value) -> data.put(type.name(), value.serializeNBT()));
         tag.put("Data", data);
         CompoundNBT cooldowns = new CompoundNBT();
-        this.cooldowns.forEach((technique, cooldown) -> cooldowns.putInt(technique.name(), cooldown));
+        this.cooldowns.forEach((technique, cooldown) -> cooldowns.putInt(technique.getRegistryName().toString(), cooldown));
         tag.put("Cooldowns", cooldowns);
         return tag;
     }
@@ -376,7 +377,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         if (nbt.contains("Techniques", Constants.NBT.TAG_LIST)) {
             ListNBT list = nbt.getList("Techniques", Constants.NBT.TAG_COMPOUND);
             for (INBT data : list) {
-                ShinsuTechnique type = ShinsuTechnique.valueOf(((CompoundNBT) data).getString("Technique"));
+                ShinsuTechnique type = ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(((CompoundNBT) data).getString("Technique")));
                 ShinsuTechniqueInstance tech = type.getFactory().blankCreate();
                 tech.deserializeNBT((CompoundNBT) data);
                 techniques.add(tech);
@@ -393,7 +394,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         if (nbt.contains("Cooldowns", Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT data = nbt.getCompound("Cooldowns");
             for (String key : data.keySet()) {
-                setCooldown(ShinsuTechnique.valueOf(key), data.getInt(key));
+                setCooldown(ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(key)), data.getInt(key));
             }
         }
     }

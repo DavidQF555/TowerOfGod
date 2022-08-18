@@ -4,11 +4,13 @@ import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.QualityRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -41,7 +43,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
 
     @Override
     public ShinsuTechnique getTechnique() {
-        return ShinsuTechnique.SHINSU_BLAST;
+        return ShinsuTechniqueRegistry.SHINSU_BLAST.get();
     }
 
     @Override
@@ -131,7 +133,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
 
         @Override
         public ShinsuTechnique getTechnique() {
-            return ShinsuTechnique.SHINSU_BLAST;
+            return ShinsuTechniqueRegistry.SHINSU_BLAST.get();
         }
 
         @Override

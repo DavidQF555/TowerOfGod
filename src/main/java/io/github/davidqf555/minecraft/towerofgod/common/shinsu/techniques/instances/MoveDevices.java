@@ -6,9 +6,11 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceC
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.MoveCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -40,7 +42,7 @@ public class MoveDevices extends BasicCommandTechnique {
 
     @Override
     public ShinsuTechnique getTechnique() {
-        return ShinsuTechnique.MOVE_DEVICES;
+        return ShinsuTechniqueRegistry.MOVE_DEVICES.get();
     }
 
     @Override
@@ -106,7 +108,7 @@ public class MoveDevices extends BasicCommandTechnique {
 
         @Override
         public ShinsuTechnique getTechnique() {
-            return ShinsuTechnique.MOVE_DEVICES;
+            return ShinsuTechniqueRegistry.MOVE_DEVICES.get();
         }
 
         @Override
