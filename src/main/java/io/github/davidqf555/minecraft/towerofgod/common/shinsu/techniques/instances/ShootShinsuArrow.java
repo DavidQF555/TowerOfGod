@@ -5,7 +5,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
@@ -129,14 +128,5 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
             return new ShootShinsuArrow(null, Vector3d.ZERO);
         }
 
-        @Override
-        public ShinsuTechnique getTechnique() {
-            return ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get();
-        }
-
-        @Override
-        public IRequirement[] getRequirements() {
-            return new IRequirement[0];
-        }
     }
 }

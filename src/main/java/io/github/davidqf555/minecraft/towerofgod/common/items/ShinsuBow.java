@@ -55,7 +55,7 @@ public class ShinsuBow extends BowItem {
             float speed = getArrowVelocity(charge);
             if (speed >= 0.1 && !worldIn.isRemote()) {
                 ShinsuStats stats = ShinsuStats.get(shooter);
-                ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().getFactory().doCreate(shooter, null, shooter.getLookVec()).ifLeft(instance -> {
+                ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(shooter, null, shooter.getLookVec()).ifLeft(instance -> {
                     ((ShootShinsuArrow) instance).setVelocity(speed);
                     stats.cast((ServerWorld) worldIn, instance);
                     worldIn.playSound(null, shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1, 1 / (random.nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
@@ -82,7 +82,7 @@ public class ShinsuBow extends BowItem {
         ActionResult<ItemStack> ret = ForgeEventFactory.onArrowNock(itemstack, worldIn, playerIn, handIn, true);
         if (ret != null) {
             return ret;
-        } else if (ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().getFactory().doCreate(playerIn, null, playerIn.getLookVec()).left().isPresent()) {
+        } else if (ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(playerIn, null, playerIn.getLookVec()).left().isPresent()) {
             playerIn.setActiveHand(handIn);
             return ActionResult.resultConsume(itemstack);
         } else {

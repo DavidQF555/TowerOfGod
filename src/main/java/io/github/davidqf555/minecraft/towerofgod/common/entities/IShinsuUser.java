@@ -192,7 +192,7 @@ public interface IShinsuUser<T extends LivingEntity> {
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
                 ShinsuTechnique.IFactory<?> builder = technique.getFactory();
                 Vector3d dir = entity.canEntityBeSeen(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookVec();
-                builder.doCreate(entity, target, dir).ifLeft(tech::add);
+                builder.create(entity, target, dir).ifLeft(tech::add);
             }
             if (tech.isEmpty()) {
                 return false;

@@ -3,12 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.QualityRequirement;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -111,14 +106,5 @@ public class Flash extends ShinsuTechniqueInstance {
             return new Flash(null, Vector3d.ZERO);
         }
 
-        @Override
-        public ShinsuTechnique getTechnique() {
-            return ShinsuTechniqueRegistry.FLASH.get();
-        }
-
-        @Override
-        public IRequirement[] getRequirements() {
-            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 10), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 10), new QualityRequirement(ShinsuQualityRegistry.LIGHTNING.get())};
-        }
     }
 }

@@ -5,10 +5,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.QualityRequirement;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
@@ -131,14 +127,5 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
             return new ShinsuBlast(null, Vector3d.ZERO);
         }
 
-        @Override
-        public ShinsuTechnique getTechnique() {
-            return ShinsuTechniqueRegistry.SHINSU_BLAST.get();
-        }
-
-        @Override
-        public IRequirement[] getRequirements() {
-            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 2), new QualityRequirement(null)};
-        }
     }
 }

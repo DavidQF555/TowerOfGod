@@ -28,13 +28,15 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
     private final boolean indefinite;
     private final IFactory<?> factory;
     private final IRenderData icon;
+    private final IRequirement[] requirements;
     private final List<Direction> combination;
 
-    public ShinsuTechnique(Repeat repeat, boolean indefinite, ShinsuTechnique.IFactory<?> factory, IRenderData icon, List<Direction> combination) {
+    public ShinsuTechnique(Repeat repeat, boolean indefinite, ShinsuTechnique.IFactory<?> factory, IRenderData icon, IRequirement[] requirements, List<Direction> combination) {
         this.repeat = repeat;
         this.indefinite = indefinite;
         this.factory = factory;
         this.icon = icon;
+        this.requirements = requirements;
         this.combination = combination;
     }
 
@@ -90,6 +92,19 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return factory;
     }
 
+    public boolean isUnlocked(LivingEntity user) {
+        for (IRequirement requirement : getRequirements()) {
+            if (!requirement.isUnlocked(user)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public IRequirement[] getRequirements() {
+        return requirements;
+    }
+
     public TranslationTextComponent getText() {
         return new TranslationTextComponent(Util.makeTranslationKey("technique", getRegistryName()));
     }
@@ -102,6 +117,42 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return icon;
     }
 
+
+    public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        ShinsuStats stats = ShinsuStats.get(user);
+        List<ShinsuTechniqueInstance> same = stats.getTechniques().stream().filter(inst -> equals(inst.getTechnique())).collect(Collectors.toList());
+        ShinsuTechnique.Repeat repeat = getRepeatEffect();
+        int cooldown = stats.getCooldown(this);
+        if (!isUnlocked(user)) {
+            return Either.right(Messages.LOCKED);
+        } else if (repeat == Repeat.TOGGLE && !same.isEmpty()) {
+            return Either.left(getFactory().blankCreate());
+        } else if (cooldown > 0) {
+            return Either.right(Messages.ON_COOLDOWN.apply(cooldown / 20.0));
+        }
+        Either<? extends ShinsuTechniqueInstance, ITextComponent> either = getFactory().create(user, target, dir);
+        Optional<? extends ShinsuTechniqueInstance> op = either.left();
+        if (op.isPresent()) {
+            ShinsuTechniqueInstance instance = op.get();
+            int netShinsuUse = instance.getShinsuUse();
+            int netBaangsUse = instance.getBaangsUse();
+            if (repeat == Repeat.OVERRIDE) {
+                for (ShinsuTechniqueInstance inst : same) {
+                    netShinsuUse -= inst.getShinsuUse();
+                    netBaangsUse -= inst.getBaangsUse();
+                }
+            }
+            if (stats.getBaangs() < netBaangsUse) {
+                return Either.right(Messages.REQUIRES_BAANGS.apply(netBaangsUse));
+            } else if (stats.getShinsu() < netShinsuUse) {
+                return Either.right(Messages.REQUIRES_SHINSU.apply(netShinsuUse));
+            }
+            return Either.left(instance);
+        }
+        return either;
+    }
+
+
     public enum Repeat {
         OVERRIDE(),
         ALLOW(),
@@ -113,54 +164,6 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         Either<T, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir);
 
         T blankCreate();
-
-        ShinsuTechnique getTechnique();
-
-        default Either<T, ITextComponent> doCreate(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            ShinsuTechnique technique = getTechnique();
-            ShinsuStats stats = ShinsuStats.get(user);
-            List<ShinsuTechniqueInstance> same = stats.getTechniques().stream().filter(inst -> inst.getTechnique() == technique).collect(Collectors.toList());
-            ShinsuTechnique.Repeat repeat = technique.getRepeatEffect();
-            int cooldown = stats.getCooldown(technique);
-            if (!isUnlocked(user)) {
-                return Either.right(Messages.LOCKED);
-            } else if (repeat == Repeat.TOGGLE && !same.isEmpty()) {
-                return Either.left(blankCreate());
-            } else if (cooldown > 0) {
-                return Either.right(Messages.ON_COOLDOWN.apply(cooldown / 20.0));
-            }
-            Either<T, ITextComponent> either = create(user, target, dir);
-            Optional<T> op = either.left();
-            if (op.isPresent()) {
-                T instance = op.get();
-                int netShinsuUse = instance.getShinsuUse();
-                int netBaangsUse = instance.getBaangsUse();
-                if (repeat == Repeat.OVERRIDE) {
-                    for (ShinsuTechniqueInstance inst : same) {
-                        netShinsuUse -= inst.getShinsuUse();
-                        netBaangsUse -= inst.getBaangsUse();
-                    }
-                }
-                if (stats.getBaangs() < netBaangsUse) {
-                    return Either.right(Messages.REQUIRES_BAANGS.apply(netBaangsUse));
-                } else if (stats.getShinsu() < netShinsuUse) {
-                    return Either.right(Messages.REQUIRES_SHINSU.apply(netShinsuUse));
-                }
-                return Either.left(instance);
-            }
-            return either;
-        }
-
-        default boolean isUnlocked(LivingEntity user) {
-            for (IRequirement requirement : getRequirements()) {
-                if (!requirement.isUnlocked(user)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        IRequirement[] getRequirements();
 
     }
 

@@ -34,7 +34,7 @@ public class ClientOpenCombinationGUIPacket {
         context.enqueueWork(() -> {
             Set<ShinsuTechnique> unlocked = new HashSet<>();
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                if (technique.getFactory().isUnlocked(player)) {
+                if (technique.isUnlocked(player)) {
                     unlocked.add(technique);
                 }
             }

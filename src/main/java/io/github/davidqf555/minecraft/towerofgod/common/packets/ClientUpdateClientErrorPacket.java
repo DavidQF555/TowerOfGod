@@ -45,7 +45,7 @@ public class ClientUpdateClientErrorPacket {
             Entity target = result == null ? null : result.getEntity();
             Map<ShinsuTechnique, ITextComponent> errors = new HashMap<>();
             for (ShinsuTechnique technique : ShinsuTechniqueRegistry.getRegistry()) {
-                technique.getFactory().doCreate(player, target, player.getLookVec()).ifRight(error -> errors.put(technique, error));
+                technique.getFactory().create(player, target, player.getLookVec()).ifRight(error -> errors.put(technique, error));
             }
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ServerUpdateClientErrorPacket(errors));
         });

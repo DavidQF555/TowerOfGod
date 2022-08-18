@@ -302,7 +302,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             if (technique.getRepeatEffect() == ShinsuTechnique.Repeat.TOGGLE && used.isPresent()) {
                 used.get().remove((ServerWorld) user.world);
             } else if (getCooldown(technique) <= 0) {
-                technique.getFactory().doCreate(user, target, dir).ifLeft(instance -> cast((ServerWorld) user.world, instance));
+                technique.create(user, target, dir).ifLeft(instance -> cast((ServerWorld) user.world, instance));
             }
         }
     }

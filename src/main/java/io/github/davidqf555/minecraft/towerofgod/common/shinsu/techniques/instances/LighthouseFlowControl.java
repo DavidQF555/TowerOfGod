@@ -8,8 +8,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.Lightho
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -99,14 +97,5 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
             return new LighthouseFlowControl(null, 0, 0);
         }
 
-        @Override
-        public ShinsuTechnique getTechnique() {
-            return ShinsuTechniqueRegistry.LIGHTHOUSE_FLOW_CONTROL.get();
-        }
-
-        @Override
-        public IRequirement[] getRequirements() {
-            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.DEVICE_CONTROL, 5), new TypeLevelRequirement(ShinsuTechniqueType.DISRUPTION, 10)};
-        }
     }
 }

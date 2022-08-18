@@ -5,8 +5,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
@@ -115,14 +113,5 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
             return new ReverseFlowControl(null, null, 0, 0);
         }
 
-        @Override
-        public ShinsuTechnique getTechnique() {
-            return ShinsuTechniqueRegistry.REVERSE_FLOW_CONTROL.get();
-        }
-
-        @Override
-        public IRequirement[] getRequirements() {
-            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.DISRUPTION, 15)};
-        }
     }
 }

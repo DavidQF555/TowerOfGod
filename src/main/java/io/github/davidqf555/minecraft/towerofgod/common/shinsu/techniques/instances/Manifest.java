@@ -6,10 +6,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.ShapeRequirement;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
@@ -130,14 +126,5 @@ public class Manifest extends ShinsuTechniqueInstance {
             return new Manifest(null, null, null);
         }
 
-        @Override
-        public ShinsuTechnique getTechnique() {
-            return ShinsuTechniqueRegistry.MANIFEST.get();
-        }
-
-        @Override
-        public IRequirement[] getRequirements() {
-            return new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 5), new ShapeRequirement()};
-        }
     }
 }
