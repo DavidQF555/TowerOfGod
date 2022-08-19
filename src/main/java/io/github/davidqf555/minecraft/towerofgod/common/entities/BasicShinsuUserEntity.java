@@ -31,7 +31,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 
 @ParametersAreNonnullByDefault
-public abstract class BasicShinsuUserEntity extends CreatureEntity implements IShinsuUser<BasicShinsuUserEntity>, IGeared<BasicShinsuUserEntity>, IRangedAttackMob {
+public abstract class BasicShinsuUserEntity extends CreatureEntity implements IShinsuUser, IGeared<BasicShinsuUserEntity>, IRangedAttackMob {
 
     private static final DataParameter<String> GROUP = EntityDataManager.createKey(BasicShinsuUserEntity.class, DataSerializers.STRING);
 
@@ -85,8 +85,8 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     }
 
     @Override
-    public BasicShinsuUserEntity getShinsuUserEntity() {
-        return this;
+    public ShinsuStats getShinsuStats() {
+        return ShinsuStats.get(this);
     }
 
     @Nullable

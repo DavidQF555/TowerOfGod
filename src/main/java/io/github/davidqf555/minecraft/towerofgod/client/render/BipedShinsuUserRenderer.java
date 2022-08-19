@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class BipedShinsuUserRenderer<T extends MobEntity & IShinsuUser<T>> extends BipedRenderer<T, BipedShinsuUserModel<T>> {
+public class BipedShinsuUserRenderer<T extends MobEntity & IShinsuUser> extends BipedRenderer<T, BipedShinsuUserModel<T>> {
 
     private static final ResourceLocation DEFAULT = new ResourceLocation("textures/entity/steve.png");
 

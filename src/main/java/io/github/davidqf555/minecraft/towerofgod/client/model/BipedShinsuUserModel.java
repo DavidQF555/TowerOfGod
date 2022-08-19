@@ -6,7 +6,7 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.util.HandSide;
 
-public class BipedShinsuUserModel<T extends MobEntity & IShinsuUser<T>> extends BipedModel<T> {
+public class BipedShinsuUserModel<T extends MobEntity & IShinsuUser> extends BipedModel<T> {
 
     public BipedShinsuUserModel(float modelSize, int width, int height) {
         super(modelSize, 0, width, height);

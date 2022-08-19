@@ -24,85 +24,82 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public interface IShinsuUser<T extends LivingEntity> {
+public interface IShinsuUser {
 
-    default int getInitialMaxShinsu() {
-        T entity = getShinsuUserEntity();
-        Group group = getGroup();
-        return 10 + (int) (ShinsuStats.get(entity).getLevel() * (group == null ? 1 : group.getShinsu()) * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
+    ShinsuStats getShinsuStats();
+
+    default int getLevel() {
+        return getShinsuStats().getLevel();
     }
 
-    default int getInitialMaxBaangs() {
-        T entity = getShinsuUserEntity();
+    default int getInitialMaxShinsu(Random random) {
         Group group = getGroup();
-        return 1 + (int) (0.05 * ShinsuStats.get(entity).getLevel() * (group == null ? 1 : group.getBaangs()) * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
+        return 10 + (int) (getLevel() * (group == null ? 1 : group.getShinsu()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
-    default double getInitialResistance() {
-        T entity = getShinsuUserEntity();
+    default int getInitialMaxBaangs(Random random) {
         Group group = getGroup();
-        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * (group == null ? 1 : group.getResistance()) * (entity.getRNG().nextGaussian() * 0.25 + 1);
+        return 1 + (int) (0.05 * getLevel() * (group == null ? 1 : group.getBaangs()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
-    default double getInitialTension() {
-        T entity = getShinsuUserEntity();
+    default double getInitialResistance(Random random) {
         Group group = getGroup();
-        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (entity.getRNG().nextGaussian() * 0.25 + 1);
+        return 1 + getLevel() * 0.025 * (group == null ? 1 : group.getResistance()) * (random.nextGaussian() * 0.25 + 1);
     }
 
-    T getShinsuUserEntity();
+    default double getInitialTension(Random random) {
+        Group group = getGroup();
+        return 1 + getLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (random.nextGaussian() * 0.25 + 1);
+    }
 
     default void initializeShinsuStats(IServerWorld world) {
-        T entity = getShinsuUserEntity();
+        Random random = world.getRandom();
+        ShinsuStats stats = getShinsuStats();
         FloorProperty property = FloorDimensionsHelper.getFloorProperty(world.getWorld());
         int floor = property == null ? 1 : property.getLevel();
-        ShinsuStats stats = ShinsuStats.get(entity);
-        stats.addLevel(getInitialShinsuLevel(floor) - stats.getLevel());
-        setGroup(getInitialGroup());
-        stats.addMaxShinsu(getInitialMaxShinsu() - stats.getMaxShinsu());
-        stats.addMaxBaangs(getInitialMaxBaangs() - stats.getMaxBaangs());
-        stats.multiplyBaseResistance(getInitialResistance() / stats.getRawResistance());
-        stats.multiplyBaseTension(getInitialTension() / stats.getRawTension());
-        for (ShinsuTechniqueType type : getInitialTechniqueTypes()) {
+        stats.addLevel(getInitialShinsuLevel(random, floor) - stats.getLevel());
+        setGroup(getInitialGroup(random));
+        stats.addMaxShinsu(getInitialMaxShinsu(random) - stats.getMaxShinsu());
+        stats.addMaxBaangs(getInitialMaxBaangs(random) - stats.getMaxBaangs());
+        stats.multiplyBaseResistance(getInitialResistance(random) / stats.getRawResistance());
+        stats.multiplyBaseTension(getInitialTension(random) / stats.getRawTension());
+        for (ShinsuTechniqueType type : getInitialTechniqueTypes(random)) {
             ShinsuTypeData data = stats.getData(type);
             data.setLevel(data.getLevel() + 1);
         }
-        stats.setQuality(getInitialQuality());
-        stats.setShape(getInitialShape());
+        stats.setQuality(getInitialQuality(random));
+        stats.setShape(getInitialShape(random));
     }
 
     default double getPreferredTechniqueTypeChance() {
         return 0.75;
     }
 
-    default ShinsuTechniqueType[] getInitialTechniqueTypes() {
+    default ShinsuTechniqueType[] getInitialTechniqueTypes(Random random) {
         ShinsuTechniqueType[] all = ShinsuTechniqueType.values();
         ShinsuTechniqueType[] preferred = getPreferredTechniqueTypes();
-        Random rand = getShinsuUserEntity().getRNG();
-        ShinsuTechniqueType[] types = new ShinsuTechniqueType[getInitialTechniqueTypesTotalLevel()];
+        ShinsuTechniqueType[] types = new ShinsuTechniqueType[getInitialTechniqueTypesTotalLevel(random)];
         for (int i = 0; i < types.length; i++) {
-            types[i] = preferred.length > 0 && rand.nextDouble() < getPreferredTechniqueTypeChance() ? preferred[rand.nextInt(preferred.length)] : all[rand.nextInt(all.length)];
+            types[i] = preferred.length > 0 && random.nextDouble() < getPreferredTechniqueTypeChance() ? preferred[random.nextInt(preferred.length)] : all[random.nextInt(all.length)];
         }
         return types;
     }
 
-    default int getInitialTechniqueTypesTotalLevel() {
-        T entity = getShinsuUserEntity();
-        return 1 + (int) (ShinsuStats.get(entity).getLevel() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
+    default int getInitialTechniqueTypesTotalLevel(Random random) {
+        return 1 + (int) (getLevel() * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default double getPreferredQualityChance() {
         return 0.75;
     }
 
-    default ShinsuQuality getInitialQuality() {
+    default ShinsuQuality getInitialQuality(Random random) {
         ShinsuQuality[] pref = getPreferredQualities();
-        Random rand = getShinsuUserEntity().getRNG();
-        if (pref.length > 0 && rand.nextDouble() < getPreferredQualityChance()) {
-            return pref[rand.nextInt(pref.length)];
+        if (pref.length > 0 && random.nextDouble() < getPreferredQualityChance()) {
+            return pref[random.nextInt(pref.length)];
         } else {
             List<ShinsuQuality> qualities = new ArrayList<>(ShinsuQualityRegistry.getRegistry().getValues());
-            return qualities.get(rand.nextInt(qualities.size()));
+            return qualities.get(random.nextInt(qualities.size()));
         }
     }
 
@@ -111,14 +108,13 @@ public interface IShinsuUser<T extends LivingEntity> {
     }
 
     @Nullable
-    default ShinsuShape getInitialShape() {
+    default ShinsuShape getInitialShape(Random random) {
         ShinsuShape[] pref = getPreferredShapes();
-        Random rand = getShinsuUserEntity().getRNG();
-        if (pref.length > 0 && rand.nextDouble() < getPreferredShapeChance()) {
-            return pref[rand.nextInt(pref.length)];
+        if (pref.length > 0 && random.nextDouble() < getPreferredShapeChance()) {
+            return pref[random.nextInt(pref.length)];
         } else {
             ShinsuShape[] shapes = ShinsuShapeRegistry.getRegistry().getValues().toArray(new ShinsuShape[0]);
-            return shapes[rand.nextInt(shapes.length)];
+            return shapes[random.nextInt(shapes.length)];
         }
     }
 
@@ -138,16 +134,16 @@ public interface IShinsuUser<T extends LivingEntity> {
     }
 
     @Nullable
-    default Group getInitialGroup() {
+    default Group getInitialGroup(Random random) {
         List<Group> groups = new ArrayList<>(GroupRegistry.getRegistry().getValues());
-        return groups.get(getShinsuUserEntity().getRNG().nextInt(groups.size()));
+        return groups.get(random.nextInt(groups.size()));
     }
 
-    default int getInitialShinsuLevel(int floor) {
+    default int getInitialShinsuLevel(Random rand, int floor) {
         int min = getMinInitialLevel(floor);
         int total = getMaxInitialLevel(floor) - min;
         double current = 0;
-        double random = getShinsuUserEntity().getRNG().nextDouble();
+        double random = rand.nextDouble();
         double rate = 0.8;
         double choose = 1;
         double success = 1;
@@ -176,7 +172,7 @@ public interface IShinsuUser<T extends LivingEntity> {
 
     void setGroup(Group group);
 
-    class CastShinsuGoal<T extends MobEntity & IShinsuUser<T>> extends Goal {
+    class CastShinsuGoal<T extends MobEntity & IShinsuUser> extends Goal {
 
         private final T entity;
         private final ShinsuStats stats;
@@ -185,7 +181,7 @@ public interface IShinsuUser<T extends LivingEntity> {
 
         public CastShinsuGoal(T entity) {
             this.entity = entity;
-            stats = ShinsuStats.get(entity);
+            stats = entity.getShinsuStats();
             technique = null;
             target = null;
         }
