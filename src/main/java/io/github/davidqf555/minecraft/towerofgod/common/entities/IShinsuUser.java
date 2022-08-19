@@ -9,6 +9,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
+import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +21,6 @@ import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -28,22 +28,26 @@ public interface IShinsuUser<T extends LivingEntity> {
 
     default int getInitialMaxShinsu() {
         T entity = getShinsuUserEntity();
-        return 10 + (int) (ShinsuStats.get(entity).getLevel() * getGroup().getShinsu() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
+        Group group = getGroup();
+        return 10 + (int) (ShinsuStats.get(entity).getLevel() * (group == null ? 1 : group.getShinsu()) * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default int getInitialMaxBaangs() {
         T entity = getShinsuUserEntity();
-        return 1 + (int) (0.05 * ShinsuStats.get(entity).getLevel() * getGroup().getBaangs() * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
+        Group group = getGroup();
+        return 1 + (int) (0.05 * ShinsuStats.get(entity).getLevel() * (group == null ? 1 : group.getBaangs()) * (entity.getRNG().nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default double getInitialResistance() {
         T entity = getShinsuUserEntity();
-        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * getGroup().getResistance() * (entity.getRNG().nextGaussian() * 0.25 + 1);
+        Group group = getGroup();
+        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * (group == null ? 1 : group.getResistance()) * (entity.getRNG().nextGaussian() * 0.25 + 1);
     }
 
     default double getInitialTension() {
         T entity = getShinsuUserEntity();
-        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * getGroup().getTension() * (entity.getRNG().nextGaussian() * 0.25 + 1);
+        Group group = getGroup();
+        return 1 + ShinsuStats.get(entity).getLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (entity.getRNG().nextGaussian() * 0.25 + 1);
     }
 
     T getShinsuUserEntity();
@@ -119,20 +123,23 @@ public interface IShinsuUser<T extends LivingEntity> {
     }
 
     default ShinsuTechniqueType[] getPreferredTechniqueTypes() {
-        return getGroup().getPreferredTechniqueTypes();
+        Group group = getGroup();
+        return group == null ? new ShinsuTechniqueType[0] : group.getPreferredTechniqueTypes();
     }
 
     default ShinsuQuality[] getPreferredQualities() {
-        return getGroup().getQualities();
+        Group group = getGroup();
+        return group == null ? new ShinsuQuality[0] : group.getQualities();
     }
 
     default ShinsuShape[] getPreferredShapes() {
-        return getGroup().getShapes();
+        Group group = getGroup();
+        return group == null ? new ShinsuShape[0] : group.getShapes();
     }
 
+    @Nullable
     default Group getInitialGroup() {
-        List<Group> groups = new ArrayList<>(Arrays.asList(Group.values()));
-        groups.remove(Group.NONE);
+        List<Group> groups = new ArrayList<>(GroupRegistry.getRegistry().getValues());
         return groups.get(getShinsuUserEntity().getRNG().nextInt(groups.size()));
     }
 
@@ -164,6 +171,7 @@ public interface IShinsuUser<T extends LivingEntity> {
 
     int getMaxInitialLevel(int floor);
 
+    @Nullable
     Group getGroup();
 
     void setGroup(Group group);

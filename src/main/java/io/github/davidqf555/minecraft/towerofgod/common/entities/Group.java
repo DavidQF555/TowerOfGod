@@ -1,45 +1,33 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.item.Item;
-import net.minecraft.item.SwordItem;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.BossInfo;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-public enum Group {
+public class Group extends ForgeRegistryEntry<Group> {
 
-    NONE(new ResourceLocation("textures/entity/steve.png"), 0xFFFFFFFF, new ShinsuQuality[0], new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1, 1, 1),
-    ARIE("arie", 0xFFFFFFFF, new ShinsuQuality[0], new ShinsuShape[]{ShinsuShapeRegistry.SWORD.get()}, new ShinsuTechniqueType[0], item -> item instanceof SwordItem, 1, 1, 1, 1),
-    EURASIA("eurasia", 0xFF00FF7F, new ShinsuQuality[]{ShinsuQualityRegistry.WIND.get()}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1.5, 2, 2),
-    HA("ha", 0xFFDC143C, new ShinsuQuality[0], new ShinsuShape[0], new ShinsuTechniqueType[0], item -> item instanceof HookItem, 2, 1, 1, 1),
-    KHUN("khun", 0xFF6495ED, new ShinsuQuality[]{ShinsuQualityRegistry.ICE.get(), ShinsuQualityRegistry.LIGHTNING.get()}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1, 1, 1),
-    YEON("yeon", 0xFFFF1493, new ShinsuQuality[]{ShinsuQualityRegistry.FIRE.get()}, new ShinsuShape[0], new ShinsuTechniqueType[0], item -> false, 1, 1.2, 1.5, 1);
-
-    private final ResourceLocation texture;
     private final int color;
     private final TextFormatting format;
     private final BossInfo.Color bossColor;
-    private final ShinsuQuality[] qualities;
-    private final ShinsuShape[] shapes;
-    private final ShinsuTechniqueType[] types;
+    private final Supplier<ShinsuQuality[]> qualities;
+    private final Supplier<ShinsuShape[]> shapes;
+    private final Supplier<ShinsuTechniqueType[]> types;
     private final Predicate<Item> weapons;
     private final double resistance;
     private final double tension;
     private final double shinsu;
     private final double baangs;
 
-    Group(ResourceLocation texture, int color, ShinsuQuality[] qualities, ShinsuShape[] shapes, ShinsuTechniqueType[] types, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
-        this.texture = texture;
+    public Group(int color, Supplier<ShinsuQuality[]> qualities, Supplier<ShinsuShape[]> shapes, Supplier<ShinsuTechniqueType[]> types, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
         this.color = color;
         bossColor = getBossInfoColor(color);
         format = getTextFormattingColor(color);
@@ -51,10 +39,6 @@ public enum Group {
         this.tension = tension;
         this.shinsu = shinsu;
         this.baangs = baangs;
-    }
-
-    Group(String texture, int color, ShinsuQuality[] qualities, ShinsuShape[] shapes, ShinsuTechniqueType[] types, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
-        this(new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/group/" + texture + ".png"), color, qualities, shapes, types, weapons, resistance, tension, shinsu, baangs);
     }
 
     private static BossInfo.Color getBossInfoColor(int color) {
@@ -97,7 +81,8 @@ public enum Group {
     }
 
     public ResourceLocation getTexture() {
-        return texture;
+        ResourceLocation name = getRegistryName();
+        return new ResourceLocation(name.getNamespace(), "textures/entity/group/" + name.getPath() + ".png");
     }
 
     public int getColor() {
@@ -113,15 +98,15 @@ public enum Group {
     }
 
     public ShinsuQuality[] getQualities() {
-        return qualities;
+        return qualities.get();
     }
 
     public ShinsuShape[] getShapes() {
-        return shapes;
+        return shapes.get();
     }
 
     public ShinsuTechniqueType[] getPreferredTechniqueTypes() {
-        return types;
+        return types.get();
     }
 
     public boolean isPreferredWeapon(Item item) {
@@ -143,4 +128,5 @@ public enum Group {
     public double getBaangs() {
         return baangs;
     }
+
 }
