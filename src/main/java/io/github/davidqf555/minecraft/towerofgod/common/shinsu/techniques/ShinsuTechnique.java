@@ -14,6 +14,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -152,6 +153,33 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return either;
     }
 
+    public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        if (user.world instanceof ServerWorld) {
+            ShinsuStats stats = ShinsuStats.get(user);
+            Optional<ShinsuTechniqueInstance> used = stats.getTechniques().stream().filter(instance -> equals(instance.getTechnique())).findAny();
+            if (getRepeatEffect() == ShinsuTechnique.Repeat.TOGGLE && used.isPresent()) {
+                used.get().remove((ServerWorld) user.world);
+            } else if (stats.getCooldown(this) <= 0) {
+                create(user, target, dir).ifLeft(instance -> cast(user, instance));
+            }
+        }
+    }
+
+    public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
+        if (user.world instanceof ServerWorld) {
+            ShinsuStats stats = ShinsuStats.get(user);
+            if (getRepeatEffect() == ShinsuTechnique.Repeat.OVERRIDE) {
+                for (ShinsuTechniqueInstance inst : new ArrayList<>(stats.getTechniques())) {
+                    if (equals(inst.getTechnique())) {
+                        inst.remove((ServerWorld) user.world);
+                    }
+                }
+            }
+            stats.setCooldown(this, instance.getCooldown());
+            stats.addTechnique(instance);
+            instance.onUse((ServerWorld) user.world);
+        }
+    }
 
     public enum Repeat {
         OVERRIDE(),
