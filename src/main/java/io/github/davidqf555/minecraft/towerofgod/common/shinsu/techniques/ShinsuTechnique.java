@@ -21,19 +21,16 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
 
-    private final Repeat repeat;
     private final boolean indefinite;
     private final IFactory<?> factory;
     private final IRenderData icon;
     private final IRequirement[] requirements;
     private final List<Direction> combination;
 
-    public ShinsuTechnique(Repeat repeat, boolean indefinite, ShinsuTechnique.IFactory<?> factory, IRenderData icon, IRequirement[] requirements, List<Direction> combination) {
-        this.repeat = repeat;
+    public ShinsuTechnique(boolean indefinite, ShinsuTechnique.IFactory<?> factory, IRenderData icon, IRequirement[] requirements, List<Direction> combination) {
         this.indefinite = indefinite;
         this.factory = factory;
         this.icon = icon;
@@ -77,10 +74,6 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return combination;
     }
 
-    public Repeat getRepeatEffect() {
-        return repeat;
-    }
-
     public boolean isObtainable() {
         return !combination.isEmpty();
     }
@@ -118,16 +111,11 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return icon;
     }
 
-
     public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
         ShinsuStats stats = ShinsuStats.get(user);
-        List<ShinsuTechniqueInstance> same = stats.getTechniques().stream().filter(inst -> equals(inst.getTechnique())).collect(Collectors.toList());
-        ShinsuTechnique.Repeat repeat = getRepeatEffect();
         int cooldown = stats.getCooldown(this);
         if (!isUnlocked(user)) {
             return Either.right(Messages.LOCKED);
-        } else if (repeat == Repeat.TOGGLE && !same.isEmpty()) {
-            return Either.left(getFactory().blankCreate());
         } else if (cooldown > 0) {
             return Either.right(Messages.ON_COOLDOWN.apply(cooldown / 20.0));
         }
@@ -135,14 +123,8 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         Optional<? extends ShinsuTechniqueInstance> op = either.left();
         if (op.isPresent()) {
             ShinsuTechniqueInstance instance = op.get();
-            int netShinsuUse = instance.getShinsuUse();
-            int netBaangsUse = instance.getBaangsUse();
-            if (repeat == Repeat.OVERRIDE) {
-                for (ShinsuTechniqueInstance inst : same) {
-                    netShinsuUse -= inst.getShinsuUse();
-                    netBaangsUse -= inst.getBaangsUse();
-                }
-            }
+            int netShinsuUse = getNetShinsuUse(user, instance);
+            int netBaangsUse = getNetBaangsUse(user, instance);
             if (stats.getBaangs() < netBaangsUse) {
                 return Either.right(Messages.REQUIRES_BAANGS.apply(netBaangsUse));
             } else if (stats.getShinsu() < netShinsuUse) {
@@ -153,13 +135,18 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return either;
     }
 
+    protected int getNetShinsuUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+        return instance.getShinsuUse();
+    }
+
+    protected int getNetBaangsUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+        return instance.getBaangsUse();
+    }
+
     public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
         if (user.world instanceof ServerWorld) {
             ShinsuStats stats = ShinsuStats.get(user);
-            Optional<ShinsuTechniqueInstance> used = stats.getTechniques().stream().filter(instance -> equals(instance.getTechnique())).findAny();
-            if (getRepeatEffect() == ShinsuTechnique.Repeat.TOGGLE && used.isPresent()) {
-                used.get().remove((ServerWorld) user.world);
-            } else if (stats.getCooldown(this) <= 0) {
+            if (stats.getCooldown(this) <= 0) {
                 create(user, target, dir).ifLeft(instance -> cast(user, instance));
             }
         }
@@ -168,23 +155,10 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
     public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
         if (user.world instanceof ServerWorld) {
             ShinsuStats stats = ShinsuStats.get(user);
-            if (getRepeatEffect() == ShinsuTechnique.Repeat.OVERRIDE) {
-                for (ShinsuTechniqueInstance inst : new ArrayList<>(stats.getTechniques())) {
-                    if (equals(inst.getTechnique())) {
-                        inst.remove((ServerWorld) user.world);
-                    }
-                }
-            }
             stats.setCooldown(this, instance.getCooldown());
             stats.addTechnique(instance);
             instance.onUse((ServerWorld) user.world);
         }
-    }
-
-    public enum Repeat {
-        OVERRIDE(),
-        ALLOW(),
-        TOGGLE()
     }
 
     public interface IFactory<T extends ShinsuTechniqueInstance> {
