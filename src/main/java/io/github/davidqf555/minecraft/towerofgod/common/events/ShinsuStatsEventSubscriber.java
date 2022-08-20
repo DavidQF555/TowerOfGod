@@ -41,16 +41,8 @@ public final class ShinsuStatsEventSubscriber {
 
     @SubscribeEvent
     public static void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (event.world instanceof ServerWorld && event.phase == TickEvent.Phase.START) {
-            if (event.world.getGameTime() % 100 == 0) {
-                RegularTeamsSavedData.getOrCreate((ServerWorld) event.world).update((ServerWorld) event.world);
-            }
-            int period = ServerConfigs.INSTANCE.shinsuUpdatePeriod.get();
-            if (event.world.getGameTime() % period == 0) {
-                ((ServerWorld) event.world).getEntities()
-                        .filter(entity -> entity instanceof IShinsuUser)
-                        .forEach(entity -> ShinsuStats.get(entity).periodicTick((ServerWorld) event.world, period));
-            }
+        if (event.world instanceof ServerWorld && event.phase == TickEvent.Phase.START && event.world.getGameTime() % 100 == 0) {
+            RegularTeamsSavedData.getOrCreate((ServerWorld) event.world).update((ServerWorld) event.world);
         }
     }
 

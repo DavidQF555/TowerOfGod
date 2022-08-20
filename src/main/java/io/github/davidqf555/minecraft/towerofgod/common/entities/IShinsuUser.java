@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
@@ -87,6 +88,10 @@ public interface IShinsuUser {
 
     default int getInitialTechniqueTypesTotalLevel(Random random) {
         return 1 + (int) (getLevel() * (random.nextGaussian() * 0.25 + 1) + 0.5);
+    }
+
+    default void shinsuTick(ServerWorld world) {
+        getShinsuStats().periodicTick(world, ServerConfigs.INSTANCE.shinsuUpdatePeriod.get());
     }
 
     default double getPreferredQualityChance() {

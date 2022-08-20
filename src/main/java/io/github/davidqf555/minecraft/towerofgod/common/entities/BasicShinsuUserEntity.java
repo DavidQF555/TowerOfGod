@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
@@ -64,6 +65,9 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     public void livingTick() {
         super.livingTick();
         heal(0.025f);
+        if (world instanceof ServerWorld && world.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
+            shinsuTick((ServerWorld) world);
+        }
     }
 
     @Override
