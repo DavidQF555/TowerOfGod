@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
@@ -44,6 +43,14 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         initializeShinsuStats(worldIn);
         initializeWeapons();
+        Group group = getGroup();
+        IFormattableTextComponent text;
+        if (group != null) {
+            text = new TranslationTextComponent(getType().getTranslationKey() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).mergeStyle(group.getTextFormattingColor());
+        } else {
+            text = new TranslationTextComponent(getType().getTranslationKey() + ".name", ShinsuStats.get(this).getLevel());
+        }
+        setCustomName(text);
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
@@ -57,14 +64,6 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     public void livingTick() {
         super.livingTick();
         heal(0.025f);
-        if (isServerWorld()) {
-            IFormattableTextComponent text = new TranslationTextComponent("entity." + TowerOfGod.MOD_ID + "." + getType().getRegistryName().getPath() + ".name", ShinsuStats.get(this).getLevel());
-            Group group = getGroup();
-            if (group != null) {
-                text = text.mergeStyle(group.getTextFormattingColor());
-            }
-            setCustomName(text);
-        }
     }
 
     @Override

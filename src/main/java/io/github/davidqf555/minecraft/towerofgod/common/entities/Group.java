@@ -6,7 +6,9 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import net.minecraft.item.Item;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.BossInfo;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -127,6 +129,10 @@ public class Group extends ForgeRegistryEntry<Group> {
 
     public double getBaangs() {
         return baangs;
+    }
+
+    public TranslationTextComponent getName() {
+        return new TranslationTextComponent(Util.makeTranslationKey("group", getRegistryName()));
     }
 
 }
