@@ -5,9 +5,9 @@ import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.Direction;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.requirements.IRequirement;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.AbstractButton;
@@ -78,7 +78,7 @@ public class GuideScreen extends Screen {
             matrixStack.pop();
         }
         int lines = 0;
-        for (IRequirement req : pages[page].getFactory().getRequirements()) {
+        for (IRequirement req : pages[page].getRequirements()) {
             ITextComponent text = req.getText();
             lines += renderWrappedText(matrixStack, text, centerX, y + difY * 10 + lines * font.FONT_HEIGHT, xSize * 4 / 5, 0xFF000000);
         }

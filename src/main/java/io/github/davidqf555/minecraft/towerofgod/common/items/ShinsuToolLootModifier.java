@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import com.google.gson.JsonObject;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
@@ -24,7 +24,10 @@ public class ShinsuToolLootModifier extends LootModifier {
     protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
         ItemStack tool = context.get(LootParameters.TOOL);
         ShinsuQuality quality = ShinsuQuality.getQuality(tool);
-        return quality.filterDrops(generatedLoot, context);
+        if (quality != null) {
+            return quality.filterDrops(generatedLoot, context);
+        }
+        return generatedLoot;
     }
 
     public static class Serializer extends GlobalLootModifierSerializer<ShinsuToolLootModifier> {

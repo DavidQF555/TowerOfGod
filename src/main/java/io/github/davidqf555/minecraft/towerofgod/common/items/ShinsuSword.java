@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -54,7 +54,9 @@ public class ShinsuSword extends SwordItem {
     public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         Vector3d dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
         ShinsuQuality quality = ShinsuQuality.getQuality(stack);
-        quality.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
+        if (quality != null) {
+            quality.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
+        }
         return super.hitEntity(stack, target, attacker);
     }
 

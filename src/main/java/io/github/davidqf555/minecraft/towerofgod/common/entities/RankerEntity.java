@@ -16,6 +16,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.BossInfo;
@@ -80,7 +81,12 @@ public class RankerEntity extends BasicShinsuUserEntity {
             ShinsuStats stats = ShinsuStats.get(best);
             if (stats.getLevel() == floorLevel) {
                 stats.addLevel(1);
-                best.sendMessage(new TranslationTextComponent(DEFEAT, floorLevel, floorLevel + 1).mergeStyle(getGroup().getTextFormattingColor()), getUniqueID());
+                IFormattableTextComponent text = new TranslationTextComponent(DEFEAT, floorLevel, floorLevel + 1);
+                Group group = getGroup();
+                if (group != null) {
+                    text = text.mergeStyle(group.getTextFormattingColor());
+                }
+                best.sendMessage(text, getUniqueID());
             }
         }
     }

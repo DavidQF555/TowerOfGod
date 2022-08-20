@@ -9,14 +9,20 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientQualityPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.command.arguments.ResourceLocationArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.server.command.EnumArgument;
@@ -26,6 +32,8 @@ import java.util.Collection;
 public final class ShinsuCommand {
 
     private static final TranslationTextComponent ZERO = new TranslationTextComponent("commands." + TowerOfGod.MOD_ID + ".shinsu.zero");
+    private static final String REMOVE_SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_shape";
+    private static final String REMOVE_QUALITY = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_quality";
     private static final String LEVEL = "commands." + TowerOfGod.MOD_ID + ".shinsu.level";
     private static final String SHINSU = "commands." + TowerOfGod.MOD_ID + ".shinsu.shinsu";
     private static final String BAANGS = "commands." + TowerOfGod.MOD_ID + ".shinsu.baangs";
@@ -34,6 +42,8 @@ public final class ShinsuCommand {
     private static final String TECHNIQUE_TYPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.technique";
     private static final String QUALITY = "commands." + TowerOfGod.MOD_ID + ".shinsu.quality";
     private static final String SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.shape";
+    private static final String INSTANCES = "commands." + TowerOfGod.MOD_ID + ".shinsu.instances";
+    private static final String INSTANCES_TITLE = "commands." + TowerOfGod.MOD_ID + ".shinsu.instances.entity";
 
     private ShinsuCommand() {
     }
@@ -68,13 +78,25 @@ public final class ShinsuCommand {
                                 )
                         )
                         .then(Commands.literal("quality")
-                                .then(Commands.argument("value", EnumArgument.enumArgument(ShinsuQuality.class))
-                                        .executes(context -> changeQuality(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("value", ShinsuQuality.class)))
+                                .then(Commands.literal("set")
+                                        .then(Commands.argument("value", ResourceLocationArgument.resourceLocation())
+                                                .suggests((context, builder) -> ISuggestionProvider.suggestIterable(ShinsuQualityRegistry.getRegistry().getKeys(), builder))
+                                                .executes(context -> changeQuality(context.getSource(), EntityArgument.getEntities(context, "targets"), ResourceLocationArgument.getResourceLocation(context, "value")))
+                                        )
+                                )
+                                .then(Commands.literal("remove")
+                                        .executes(context -> removeQuality(context.getSource(), EntityArgument.getEntities(context, "targets")))
                                 )
                         )
                         .then(Commands.literal("shape")
-                                .then(Commands.argument("value", EnumArgument.enumArgument(ShinsuShape.class))
-                                        .executes(context -> changeShape(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("value", ShinsuShape.class)))
+                                .then(Commands.literal("set")
+                                        .then(Commands.argument("value", ResourceLocationArgument.resourceLocation())
+                                                .suggests((context, builder) -> ISuggestionProvider.suggestIterable(ShinsuShapeRegistry.getRegistry().getKeys(), builder))
+                                                .executes(context -> changeShape(context.getSource(), EntityArgument.getEntities(context, "targets"), ResourceLocationArgument.getResourceLocation(context, "value")))
+                                        )
+                                )
+                                .then(Commands.literal("remove")
+                                        .executes(context -> removeShape(context.getSource(), EntityArgument.getEntities(context, "targets")))
                                 )
                         )
                         .then(Commands.literal("technique")
@@ -84,6 +106,9 @@ public final class ShinsuCommand {
                                                 .executes(context -> changeTechniqueTypeLevel(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("type", ShinsuTechniqueType.class), IntegerArgumentType.getInteger(context, "value")))
                                         )
                                 )
+                        )
+                        .then(Commands.literal("instances")
+                                .executes(context -> printInstances(context.getSource(), EntityArgument.getEntities(context, "targets")))
                         )
                 )
         );
@@ -165,7 +190,8 @@ public final class ShinsuCommand {
         return entities.size();
     }
 
-    private static int changeQuality(CommandSource source, Collection<? extends Entity> entities, ShinsuQuality quality) {
+    private static int changeQuality(CommandSource source, Collection<? extends Entity> entities, ResourceLocation loc) {
+        ShinsuQuality quality = ShinsuQualityRegistry.getRegistry().getValue(loc);
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setQuality(quality);
             if (entity instanceof ServerPlayerEntity) {
@@ -176,11 +202,42 @@ public final class ShinsuCommand {
         return entities.size();
     }
 
-    private static int changeShape(CommandSource source, Collection<? extends Entity> entities, ShinsuShape shape) {
+    private static int changeShape(CommandSource source, Collection<? extends Entity> entities, ResourceLocation loc) {
+        ShinsuShape shape = ShinsuShapeRegistry.getRegistry().getValue(loc);
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setShape(shape);
             source.sendFeedback(new TranslationTextComponent(SHAPE, entity.getDisplayName(), shape.getName()), true);
         }
         return entities.size();
     }
+
+    private static int removeQuality(CommandSource source, Collection<? extends Entity> entities) {
+        for (Entity entity : entities) {
+            ShinsuStats.get(entity).setQuality(null);
+            if (entity instanceof ServerPlayerEntity) {
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientQualityPacket(null));
+            }
+            source.sendFeedback(new TranslationTextComponent(REMOVE_QUALITY, entity.getDisplayName()), true);
+        }
+        return entities.size();
+    }
+
+    private static int removeShape(CommandSource source, Collection<? extends Entity> entities) {
+        for (Entity entity : entities) {
+            ShinsuStats.get(entity).setShape(null);
+            source.sendFeedback(new TranslationTextComponent(REMOVE_SHAPE, entity.getDisplayName()), true);
+        }
+        return entities.size();
+    }
+
+    private static int printInstances(CommandSource source, Collection<? extends Entity> entities) {
+        for (Entity entity : entities) {
+            source.sendFeedback(new TranslationTextComponent(INSTANCES_TITLE, entity.getDisplayName()), true);
+            for (ShinsuTechniqueInstance inst : ShinsuStats.get(entity).getTechniques()) {
+                source.sendFeedback(new TranslationTextComponent(INSTANCES, inst.getTechnique().getText(), (inst.getDuration() - inst.getTicks()) / 20.0), true);
+            }
+        }
+        return entities.size();
+    }
+
 }

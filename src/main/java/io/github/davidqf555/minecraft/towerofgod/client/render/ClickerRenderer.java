@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 
@@ -26,9 +25,8 @@ public class ClickerRenderer extends EntityRenderer<ClickerEntity> {
 
     @Override
     public void render(ClickerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        ItemStack item = entityIn.getShape().createItem();
-        CompoundNBT nbt = item.getOrCreateChildTag(TowerOfGod.MOD_ID);
-        nbt.putString("Quality", entityIn.getQuality().name());
+        ItemStack item = entityIn.getShape().getItem();
+        ShinsuQuality.setQuality(item, entityIn.getQuality());
         matrixStackIn.push();
         matrixStackIn.rotate(Vector3f.YP.rotationDegrees(entityIn.rotationYaw));
         matrixStackIn.translate(0, 0.25, 0);

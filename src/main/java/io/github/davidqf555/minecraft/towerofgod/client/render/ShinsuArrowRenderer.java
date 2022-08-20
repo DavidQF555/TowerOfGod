@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -31,7 +32,7 @@ public class ShinsuArrowRenderer extends EntityRenderer<ShinsuArrowEntity> {
 
     @Override
     public void render(ShinsuArrowEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        int hex = entityIn.getQuality().getColor();
+        int hex = ShinsuQuality.getColor(entityIn.getQuality());
         int red = ColorHelper.PackedColor.getRed(hex);
         int green = ColorHelper.PackedColor.getGreen(hex);
         int blue = ColorHelper.PackedColor.getBlue(hex);

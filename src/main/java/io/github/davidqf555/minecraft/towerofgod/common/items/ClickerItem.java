@@ -4,9 +4,11 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientQualityPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +25,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.EnumMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ParametersAreNonnullByDefault
@@ -42,7 +46,6 @@ public class ClickerItem extends Item {
             BlockRayTraceResult result = worldIn.rayTraceBlocks(new RayTraceContext(eye, eye.add(playerIn.getLookVec().scale(4)), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity));
             Vector3d spawn = result.getHitVec();
             entity.setPosition(spawn.getX(), spawn.getY(), spawn.getZ());
-            worldIn.addEntity(entity);
             ItemStack item = playerIn.getHeldItem(handIn);
             if (!playerIn.isCreative()) {
                 item.setCount(item.getCount() - 1);
@@ -60,6 +63,7 @@ public class ClickerItem extends Item {
                 serverPlayer.addStat(Stats.ITEM_USED.get(this));
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new UpdateClientQualityPacket(quality));
             }
+            worldIn.addEntity(entity);
             return ActionResult.func_233538_a_(item, playerIn.world.isRemote());
         }
         return ActionResult.resultPass(playerIn.getHeldItem(handIn));
@@ -67,8 +71,8 @@ public class ClickerItem extends Item {
 
     private ShinsuQuality getQuality(ServerPlayerEntity player) {
         double total = 0;
-        Map<ShinsuQuality, Double> suitabilities = new EnumMap<>(ShinsuQuality.class);
-        for (ShinsuQuality quality : ShinsuQuality.values()) {
+        Map<ShinsuQuality, Double> suitabilities = new HashMap<>();
+        for (ShinsuQuality quality : ShinsuQualityRegistry.getRegistry()) {
             double suitability = quality.getSuitability(player);
             if (suitability > 0) {
                 total += suitability;
@@ -83,14 +87,14 @@ public class ClickerItem extends Item {
                 return quality;
             }
         }
-        ShinsuQuality[] all = ShinsuQuality.values();
-        return all[player.getRNG().nextInt(all.length)];
+        List<ShinsuQuality> all = new ArrayList<>(ShinsuQualityRegistry.getRegistry().getValues());
+        return all.get(player.getRNG().nextInt(all.size()));
     }
 
     private ShinsuShape getShape(ServerPlayerEntity player) {
         double total = 0;
-        Map<ShinsuShape, Double> suitabilities = new EnumMap<>(ShinsuShape.class);
-        for (ShinsuShape shape : ShinsuShape.values()) {
+        Map<ShinsuShape, Double> suitabilities = new HashMap<>();
+        for (ShinsuShape shape : ShinsuShapeRegistry.getRegistry()) {
             double suitability = shape.getSuitability(player);
             if (suitability > 0) {
                 total += suitability;
@@ -105,7 +109,7 @@ public class ClickerItem extends Item {
                 return shape;
             }
         }
-        ShinsuShape[] all = ShinsuShape.values();
+        ShinsuShape[] all = ShinsuShapeRegistry.getRegistry().getValues().toArray(new ShinsuShape[0]);
         return all[player.getRNG().nextInt(all.length)];
     }
 }

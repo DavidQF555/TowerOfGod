@@ -1,7 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -14,6 +15,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
@@ -48,7 +50,7 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     @Override
     public void registerData() {
         super.registerData();
-        dataManager.register(QUALITY, ShinsuQuality.NONE.name());
+        dataManager.register(QUALITY, "");
     }
 
     @Override
@@ -56,7 +58,7 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
         if (technique != null && getTechnique() == null) {
             remove();
         }
-        IParticleData particle = getQuality().getParticleType();
+        IParticleData particle = ShinsuQuality.getParticles(getQuality());
         int particles = PARTICLES;
         if (inGround) {
             particles = (int) Math.ceil(particles / 2.0);
@@ -71,7 +73,9 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     protected void onEntityHit(EntityRayTraceResult rayTraceResult) {
         super.onEntityHit(rayTraceResult);
         ShinsuQuality quality = getQuality();
-        quality.applyEntityEffect(this, rayTraceResult);
+        if (quality != null) {
+            quality.applyEntityEffect(this, rayTraceResult);
+        }
     }
 
     @Override
@@ -91,19 +95,23 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     public void onRemovedFromWorld() {
         if (world instanceof ServerWorld) {
             Vector3d motion = getMotion();
-            getQuality().applyBlockEffect(this, latestHit == null || isAirBorne ? new BlockRayTraceResult(motion, Direction.getFacingFromVector(motion.x, motion.y, motion.z), getPosition(), true) : latestHit);
+            ShinsuQuality quality = getQuality();
+            if (quality != null) {
+                quality.applyBlockEffect(this, latestHit == null || isAirBorne ? new BlockRayTraceResult(motion, Direction.getFacingFromVector(motion.x, motion.y, motion.z), getPosition(), true) : latestHit);
+            }
         }
         super.onRemovedFromWorld();
     }
 
+    @Nullable
     public ShinsuQuality getQuality() {
-        return ShinsuQuality.valueOf(dataManager.get(QUALITY));
+        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(dataManager.get(QUALITY)));
     }
 
-    public void setQuality(ShinsuQuality quality) {
+    public void setQuality(@Nullable ShinsuQuality quality) {
         ShinsuQuality original = getQuality();
-        setDamage(getDamage() * quality.getDamage() / original.getDamage());
-        dataManager.set(QUALITY, quality.name());
+        setDamage(getDamage() * (quality == null ? 1 : quality.getDamage()) / (original == null ? 1 : original.getDamage()));
+        dataManager.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
     }
 
     @Override
@@ -144,7 +152,7 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     public void readAdditional(CompoundNBT nbt) {
         super.readAdditional(nbt);
         if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
-            setQuality(ShinsuQuality.valueOf(nbt.getString("Quality")));
+            setQuality(ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality"))));
         }
         if (nbt.contains("Technique", Constants.NBT.TAG_INT_ARRAY)) {
             setTechnique(nbt.getUniqueId("Technique"));
@@ -154,7 +162,10 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     @Override
     public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
-        nbt.putString("Quality", getQuality().name());
+        ShinsuQuality quality = getQuality();
+        if (quality != null) {
+            nbt.putString("Quality", quality.getRegistryName().toString());
+        }
         if (technique != null) {
             nbt.putUniqueId("Technique", technique);
         }

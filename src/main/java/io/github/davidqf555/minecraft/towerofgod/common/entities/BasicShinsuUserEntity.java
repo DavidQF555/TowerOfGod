@@ -1,10 +1,11 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.common.techinques.instances.ShootShinsuArrow;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
+import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.*;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
@@ -14,8 +15,10 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
@@ -28,7 +31,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 
 @ParametersAreNonnullByDefault
-public abstract class BasicShinsuUserEntity extends CreatureEntity implements IShinsuUser<BasicShinsuUserEntity>, IGeared<BasicShinsuUserEntity>, IRangedAttackMob {
+public abstract class BasicShinsuUserEntity extends CreatureEntity implements IShinsuUser, IGeared<BasicShinsuUserEntity>, IRangedAttackMob {
 
     private static final DataParameter<String> GROUP = EntityDataManager.createKey(BasicShinsuUserEntity.class, DataSerializers.STRING);
 
@@ -41,21 +44,29 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         initializeShinsuStats(worldIn);
         initializeWeapons();
+        Group group = getGroup();
+        IFormattableTextComponent text;
+        if (group != null) {
+            text = new TranslationTextComponent(getType().getTranslationKey() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).mergeStyle(group.getTextFormattingColor());
+        } else {
+            text = new TranslationTextComponent(getType().getTranslationKey() + ".name", ShinsuStats.get(this).getLevel());
+        }
+        setCustomName(text);
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
     @Override
     protected void registerData() {
         super.registerData();
-        dataManager.register(GROUP, Group.NONE.name());
+        dataManager.register(GROUP, "");
     }
 
     @Override
     public void livingTick() {
         super.livingTick();
         heal(0.025f);
-        if (isServerWorld()) {
-            setCustomName(new TranslationTextComponent("entity." + TowerOfGod.MOD_ID + "." + getType().getRegistryName().getPath() + ".name", ShinsuStats.get(this).getLevel()).mergeStyle(getGroup().getTextFormattingColor()));
+        if (world instanceof ServerWorld && world.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
+            shinsuTick((ServerWorld) world);
         }
     }
 
@@ -63,29 +74,33 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     public void readAdditional(CompoundNBT nbt) {
         super.readAdditional(nbt);
         if (nbt.contains("Group", Constants.NBT.TAG_STRING)) {
-            setGroup(Group.valueOf(nbt.getString("Group")));
+            setGroup(GroupRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Group"))));
         }
     }
 
     @Override
     public void writeAdditional(CompoundNBT nbt) {
         super.writeAdditional(nbt);
-        nbt.putString("Group", getGroup().name());
+        Group group = getGroup();
+        if (group != null) {
+            nbt.putString("Group", group.getRegistryName().toString());
+        }
     }
 
     @Override
-    public BasicShinsuUserEntity getShinsuUserEntity() {
-        return this;
+    public ShinsuStats getShinsuStats() {
+        return ShinsuStats.get(this);
     }
 
+    @Nullable
     @Override
     public Group getGroup() {
-        return Group.valueOf(dataManager.get(GROUP));
+        return GroupRegistry.getRegistry().getValue(new ResourceLocation(dataManager.get(GROUP)));
     }
 
     @Override
-    public void setGroup(Group group) {
-        dataManager.set(GROUP, group.name());
+    public void setGroup(@Nullable Group group) {
+        dataManager.set(GROUP, group == null ? "" : group.getRegistryName().toString());
     }
 
     @Override
@@ -104,7 +119,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         float inaccuracy = (14 - world.getDifficulty().getId() * 4f) / stats.getLevel();
         if (arrow instanceof ShinsuArrowEntity) {
             Vector3d dir = new Vector3d(dX, dY, dZ);
-            Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechnique.SHOOT_SHINSU_ARROW.getFactory().doCreate(this, target, dir).left();
+            Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(this, target, dir).left();
             if (technique.isPresent()) {
                 ShootShinsuArrow inst = (ShootShinsuArrow) technique.get();
                 inst.setVelocity(velocity);
@@ -135,7 +150,8 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
 
     @Override
     public boolean isWeaponPreferred(Item weapon) {
-        return getGroup().isPreferredWeapon(weapon);
+        Group group = getGroup();
+        return group != null && group.isPreferredWeapon(weapon);
     }
 
 
