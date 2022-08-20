@@ -7,11 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
 import net.minecraft.item.PickaxeItem;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -20,7 +17,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -48,16 +44,6 @@ public class ShinsuPickaxe extends PickaxeItem {
                 }
             }
         }
-    }
-
-    @Nonnull
-    @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        ShinsuQuality quality = ShinsuQuality.getQuality(context.getItem());
-        if (quality != null) {
-            quality.applyBlockEffect(context.getPlayer(), new BlockRayTraceResult(context.getHitVec(), context.getFace(), context.getPos(), context.isInside()));
-        }
-        return super.onItemUse(context);
     }
 
     @Override
