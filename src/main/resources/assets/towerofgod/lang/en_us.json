@@ -134,5 +134,7 @@
   "commands.towerofgod.shinsu.quality": "Set the Shinsu quality of %1$s to %2$s",
   "commands.towerofgod.shinsu.shape": "Set the Shinsu shape of %1$s to %2$s",
   "commands.towerofgod.shinsu.remove_shape": "Removed the Shinsu shape of %s",
-  "commands.towerofgod.shinsu.remove_quality": "Removed the Shinsu quality of %s"
+  "commands.towerofgod.shinsu.remove_quality": "Removed the Shinsu quality of %s",
+  "commands.towerofgod.shinsu.instances.entity": "%1$s: ",
+  "commands.towerofgod.shinsu.instances": " %1$s (%2$ss)"
 }

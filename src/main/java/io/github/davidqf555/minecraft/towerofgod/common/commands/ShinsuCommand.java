@@ -12,6 +12,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMete
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.command.CommandSource;
@@ -41,6 +42,8 @@ public final class ShinsuCommand {
     private static final String TECHNIQUE_TYPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.technique";
     private static final String QUALITY = "commands." + TowerOfGod.MOD_ID + ".shinsu.quality";
     private static final String SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.shape";
+    private static final String INSTANCES = "commands." + TowerOfGod.MOD_ID + ".shinsu.instances";
+    private static final String INSTANCES_TITLE = "commands." + TowerOfGod.MOD_ID + ".shinsu.instances.entity";
 
     private ShinsuCommand() {
     }
@@ -103,6 +106,9 @@ public final class ShinsuCommand {
                                                 .executes(context -> changeTechniqueTypeLevel(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("type", ShinsuTechniqueType.class), IntegerArgumentType.getInteger(context, "value")))
                                         )
                                 )
+                        )
+                        .then(Commands.literal("instances")
+                                .executes(context -> printInstances(context.getSource(), EntityArgument.getEntities(context, "targets")))
                         )
                 )
         );
@@ -220,6 +226,16 @@ public final class ShinsuCommand {
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setShape(null);
             source.sendFeedback(new TranslationTextComponent(REMOVE_SHAPE, entity.getDisplayName()), true);
+        }
+        return entities.size();
+    }
+
+    private static int printInstances(CommandSource source, Collection<? extends Entity> entities) {
+        for (Entity entity : entities) {
+            source.sendFeedback(new TranslationTextComponent(INSTANCES_TITLE, entity.getDisplayName()), true);
+            for (ShinsuTechniqueInstance inst : ShinsuStats.get(entity).getTechniques()) {
+                source.sendFeedback(new TranslationTextComponent(INSTANCES, inst.getTechnique().getText(), (inst.getDuration() - inst.getTicks()) / 20.0), true);
+            }
         }
         return entities.size();
     }
