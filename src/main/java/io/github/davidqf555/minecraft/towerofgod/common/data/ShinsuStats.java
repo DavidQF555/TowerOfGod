@@ -14,7 +14,6 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQuali
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -22,7 +21,6 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
@@ -294,31 +292,6 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
                 setCooldown(technique, cooldown - period);
             }
         }
-    }
-
-    public void cast(LivingEntity user, ShinsuTechnique technique, @Nullable Entity target, Vector3d dir) {
-        if (user.world instanceof ServerWorld) {
-            Optional<ShinsuTechniqueInstance> used = getTechniques().stream().filter(instance -> instance.getTechnique() == technique).findAny();
-            if (technique.getRepeatEffect() == ShinsuTechnique.Repeat.TOGGLE && used.isPresent()) {
-                used.get().remove((ServerWorld) user.world);
-            } else if (getCooldown(technique) <= 0) {
-                technique.create(user, target, dir).ifLeft(instance -> cast((ServerWorld) user.world, instance));
-            }
-        }
-    }
-
-    public void cast(ServerWorld world, ShinsuTechniqueInstance instance) {
-        ShinsuTechnique technique = instance.getTechnique();
-        if (technique.getRepeatEffect() == ShinsuTechnique.Repeat.OVERRIDE) {
-            for (ShinsuTechniqueInstance inst : new ArrayList<>(getTechniques())) {
-                if (inst.getTechnique() == technique) {
-                    inst.remove(world);
-                }
-            }
-        }
-        setCooldown(technique, instance.getCooldown());
-        addTechnique(instance);
-        instance.onUse(world);
     }
 
     @Override

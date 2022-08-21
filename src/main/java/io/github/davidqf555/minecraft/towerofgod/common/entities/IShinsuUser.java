@@ -180,13 +180,11 @@ public interface IShinsuUser {
     class CastShinsuGoal<T extends MobEntity & IShinsuUser> extends Goal {
 
         private final T entity;
-        private final ShinsuStats stats;
         private ShinsuTechniqueInstance technique;
         private LivingEntity target;
 
         public CastShinsuGoal(T entity) {
             this.entity = entity;
-            stats = entity.getShinsuStats();
             technique = null;
             target = null;
         }
@@ -212,7 +210,7 @@ public interface IShinsuUser {
 
         @Override
         public void startExecuting() {
-            stats.cast((ServerWorld) entity.world, technique);
+            technique.getTechnique().cast(entity, technique);
         }
 
         @Override

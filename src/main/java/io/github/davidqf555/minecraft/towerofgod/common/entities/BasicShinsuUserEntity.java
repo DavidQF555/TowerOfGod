@@ -123,7 +123,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
             if (technique.isPresent()) {
                 ShootShinsuArrow inst = (ShootShinsuArrow) technique.get();
                 inst.setVelocity(velocity);
-                stats.cast((ServerWorld) world, inst);
+                inst.getTechnique().cast(target, inst);
                 return;
             } else {
                 arrow = ((ArrowItem) Items.ARROW).createArrow(world, new ItemStack(Items.ARROW), this);
