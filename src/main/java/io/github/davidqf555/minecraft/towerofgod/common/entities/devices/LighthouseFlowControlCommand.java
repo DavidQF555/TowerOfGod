@@ -45,7 +45,7 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
         targets.addAll(device.level.getLoadedEntitiesOfClass(LivingEntity.class, AxisAlignedBB.unitCubeFromLowerCorner(device.position()).inflate(range), EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity.distanceToSqr(device) <= range * range && !device.isAlliedTo(entity))));
         Effect effect = EffectRegistry.REVERSE_FLOW.get();
         for (LivingEntity entity : targets) {
-            double resistance = ShinsuStats.getNetResistance((ServerWorld) device.level, owner, entity);
+            double resistance = ShinsuStats.getNetResistance(owner, entity);
             int amplifier = (int) (getAffectingLighthouses(entity) / resistance);
             entity.addEffect(new EffectInstance(effect, 2, amplifier - 1, false, true));
         }

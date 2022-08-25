@@ -48,7 +48,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
         Entity t = world.getEntity(target);
         if (user != null && t instanceof LivingEntity && user.distanceToSqr(t) <= RANGE * RANGE) {
             LivingEntity target = (LivingEntity) t;
-            double resistance = ShinsuStats.getNetResistance(world, user, target);
+            double resistance = ShinsuStats.getNetResistance(user, target);
             target.hurt(DamageSource.MAGIC, damage / (float) resistance);
             target.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, (int) (60 / resistance), amp - 1, false, false, false));
         }

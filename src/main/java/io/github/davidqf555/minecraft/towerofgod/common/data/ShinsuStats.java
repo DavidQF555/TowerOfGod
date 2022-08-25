@@ -8,8 +8,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
-import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
@@ -72,10 +70,10 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         return user.getCapability(Provider.capability).orElseGet(ShinsuStats::new);
     }
 
-    public static double getNetResistance(ServerWorld world, Entity user, Entity target) {
+    public static double getNetResistance(Entity user, Entity target) {
         ShinsuStats targetStats = get(target);
         ShinsuStats userStats = get(user);
-        return targetStats.getResistance(world) / userStats.getTension(world);
+        return targetStats.getRawResistance() / userStats.getRawTension();
     }
 
     public List<ShinsuTechniqueInstance> getTechniques() {
@@ -138,24 +136,8 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         return tension;
     }
 
-    public double getResistance(ServerWorld world) {
-        FloorProperty property = FloorDimensionsHelper.getFloorProperty(world);
-        if (property != null) {
-            return resistance * property.getShinsuDensity();
-        }
-        return resistance;
-    }
-
     public void multiplyBaseResistance(double factor) {
         resistance *= factor;
-    }
-
-    public double getTension(ServerWorld world) {
-        FloorProperty property = FloorDimensionsHelper.getFloorProperty(world);
-        if (property != null) {
-            return tension * property.getShinsuDensity();
-        }
-        return tension;
     }
 
     public void multiplyBaseTension(double factor) {

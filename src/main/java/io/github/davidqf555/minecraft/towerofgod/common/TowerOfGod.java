@@ -51,7 +51,6 @@ public class TowerOfGod {
         EntityRegistry.TYPES.register(bus);
         ItemRegistry.ITEMS.register(bus);
         LootModifierRegistry.SERIALIZERS.register(bus);
-        PointOfInterestRegistry.TYPES.register(bus);
         RecipeRegistry.SERIALIZERS.register(bus);
         TileEntityRegistry.TYPES.register(bus);
         ShinsuShapeRegistry.SHAPES.register(bus);

@@ -22,7 +22,6 @@ public final class ItemRegistry {
     public static final RegistryObject<Item> SUSPENDIUM = register("suspendium", () -> new Item(new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<BlockItem> SUSPENDIUM_ORE = register("suspendium_ore", () -> new BlockItem(BlockRegistry.SUSPENDIUM_ORE.get(), new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<BlockItem> SUSPENDIUM_BLOCK = register("suspendium_block", () -> new BlockItem(BlockRegistry.SUSPENDIUM_BLOCK.get(), new Item.Properties().tab(TowerOfGod.TAB)));
-    public static final RegistryObject<BlockItem> FLOOR_TELEPORTATION_TERMINAL = register("floor_teleportation_terminal", () -> new BlockItem(BlockRegistry.FLOOR_TELEPORTATION_TERMINAL.get(), new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<ShovelItem> SUSPENDIUM_SHOVEL = register("suspendium_shovel", () -> new ShovelItem(ModToolTier.SUSPENDIUM, 0.5f, -2, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<PickaxeItem> SUSPENDIUM_PICKAXE = register("suspendium_pickaxe", () -> new PickaxeItem(ModToolTier.SUSPENDIUM, 0, -1.6f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<AxeItem> SUSPENDIUM_AXE = register("suspendium_axe", () -> new AxeItem(ModToolTier.SUSPENDIUM, 4, -2, new Item.Properties().tab(TowerOfGod.TAB)));

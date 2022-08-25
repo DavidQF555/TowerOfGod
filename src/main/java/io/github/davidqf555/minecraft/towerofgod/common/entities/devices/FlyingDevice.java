@@ -153,7 +153,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
         float speed = (float) getAttributeValue(Attributes.FLYING_SPEED);
         Entity owner = getOwner();
         if (owner != null) {
-            speed *= ShinsuStats.get(owner).getTension((ServerWorld) level);
+            speed *= ShinsuStats.get(owner).getRawTension();
         }
         moveRelative(speed, vec);
         move(MoverType.SELF, getDeltaMovement());

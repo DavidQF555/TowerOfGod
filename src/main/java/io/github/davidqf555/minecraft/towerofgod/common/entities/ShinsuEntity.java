@@ -92,7 +92,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             Entity target = rayTraceResult.getEntity();
             float damage = DAMAGE;
             if (shooter != null) {
-                damage *= ShinsuStats.getNetResistance((ServerWorld) level, shooter, target);
+                damage *= ShinsuStats.getNetResistance(shooter, target);
             }
             ShinsuQuality quality = getQuality();
             if (quality != null) {

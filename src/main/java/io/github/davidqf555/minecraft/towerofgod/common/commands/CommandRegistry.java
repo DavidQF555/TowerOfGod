@@ -14,6 +14,5 @@ public final class CommandRegistry {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         ShinsuCommand.register(event.getDispatcher());
-        FloorCommand.register(event.getDispatcher());
     }
 }
