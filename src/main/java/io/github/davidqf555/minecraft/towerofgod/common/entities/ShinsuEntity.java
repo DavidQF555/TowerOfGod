@@ -48,7 +48,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     @Override
     public void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(QUALITY, "");
+        getEntityData().define(QUALITY, "");
     }
 
     @Override
@@ -68,11 +68,11 @@ public class ShinsuEntity extends DamagingProjectileEntity {
 
     @Nullable
     public ShinsuQuality getQuality() {
-        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(QUALITY)));
+        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(getEntityData().get(QUALITY)));
     }
 
     public void setQuality(@Nullable ShinsuQuality quality) {
-        entityData.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
+        getEntityData().set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
     }
 
     @Override

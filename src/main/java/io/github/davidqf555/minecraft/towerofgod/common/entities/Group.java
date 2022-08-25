@@ -48,7 +48,7 @@ public class Group extends ForgeRegistryEntry<Group> {
         int green = ColorHelper.PackedColor.green(color);
         int blue = ColorHelper.PackedColor.blue(color);
         BossInfo.Color closest = BossInfo.Color.WHITE;
-        int min = 766;
+        int min = Integer.MAX_VALUE;
         for (BossInfo.Color info : BossInfo.Color.values()) {
             TextFormatting format = info.getFormatting();
             if (format.isColor()) {
@@ -68,7 +68,7 @@ public class Group extends ForgeRegistryEntry<Group> {
         int green = ColorHelper.PackedColor.green(color);
         int blue = ColorHelper.PackedColor.blue(color);
         TextFormatting closest = TextFormatting.WHITE;
-        int min = 766;
+        int min = Integer.MAX_VALUE;
         for (TextFormatting format : TextFormatting.values()) {
             if (format.isColor()) {
                 int hex = format.getColor();

@@ -20,7 +20,7 @@ public class PlaceBlockQualityEffect implements ShinsuQualityEffect<BlockRayTrac
     public void apply(Entity user, BlockRayTraceResult clip) {
         BlockPos pos = clip.getBlockPos().relative(clip.getDirection());
         BlockState block = state.apply(user.level, pos);
-        user.level.setBlock(pos, block, 11);
+        user.level.setBlockAndUpdate(pos, block);
     }
 
 }

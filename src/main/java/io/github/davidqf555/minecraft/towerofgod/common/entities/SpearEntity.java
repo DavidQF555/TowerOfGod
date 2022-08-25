@@ -42,7 +42,7 @@ public class SpearEntity extends AbstractArrowEntity {
     }
 
     @Override
-    protected ItemStack getPickupItem() {
+    public ItemStack getPickupItem() {
         return getEntityData().get(STACK).copy();
     }
 

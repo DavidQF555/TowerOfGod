@@ -68,15 +68,15 @@ public class RegularEntity extends BasicShinsuUserEntity {
     @Override
     public void readAdditionalSaveData(CompoundNBT nbt) {
         super.readAdditionalSaveData(nbt);
-        if (nbt.contains("Personality", Constants.NBT.TAG_STRING)) {
-            personality = Personality.valueOf(nbt.getString("Personality"));
+        if (nbt.contains("Personality", Constants.NBT.TAG_INT)) {
+            personality = Personality.values()[nbt.getInt("Personality")];
         }
     }
 
     @Override
     public void addAdditionalSaveData(CompoundNBT nbt) {
         super.addAdditionalSaveData(nbt);
-        nbt.putString("Personality", personality.name());
+        nbt.putInt("Personality", personality.ordinal());
     }
 
     @Override
@@ -194,7 +194,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
             RegularTeamsSavedData.RegularTeam team = entity.getRegularTeam();
             if (team != null) {
                 List<UUID> members = team.getMembers();
-                AxisAlignedBB bounds = AxisAlignedBB.unitCubeFromLowerCorner(entity.position()).inflate(range);
+                AxisAlignedBB bounds = AxisAlignedBB.ofSize(range, range, range).move(entity.position());
                 List<RegularEntity> nearby = entity.level.getEntitiesOfClass(RegularEntity.class, bounds, EntityPredicates.NO_SPECTATORS.and(reg -> reg.distanceToSqr(entity) <= range * range));
                 UUID id = entity.getUUID();
                 for (RegularEntity near : nearby) {
@@ -236,7 +236,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
             LivingEntity revenge = mob.getLastHurtByMob();
             if (revenge != null) {
                 double range = this.getFollowDistance();
-                AxisAlignedBB bounds = AxisAlignedBB.unitCubeFromLowerCorner(mob.position()).inflate(range, 10, range);
+                AxisAlignedBB bounds = AxisAlignedBB.ofSize(range, 10, range).move(mob.position());
                 List<RegularEntity> nearby = mob.level.getLoadedEntitiesOfClass(RegularEntity.class, bounds);
                 for (RegularEntity near : nearby) {
                     if (!mob.equals(near) && near.getTarget() == null && near.isAlliedTo(mob) && !near.isAlliedTo(revenge)) {

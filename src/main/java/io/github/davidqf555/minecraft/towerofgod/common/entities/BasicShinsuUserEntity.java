@@ -57,16 +57,18 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(GROUP, "");
+        getEntityData().define(GROUP, "");
     }
 
     @Override
     public void aiStep() {
         super.aiStep();
         heal(0.025f);
-        if (level instanceof ServerWorld) {
-            shinsuTick((ServerWorld) level);
-        }
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        shinsuTick((ServerWorld) level);
     }
 
     @Override

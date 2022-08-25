@@ -65,11 +65,11 @@ public class ClickerEntity extends Entity {
     }
 
     public void setQuality(@Nullable ShinsuQuality quality) {
-        entityData.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
+        getEntityData().set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
     }
 
     public ShinsuShape getShape() {
-        return ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(SHAPE)));
+        return ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(getEntityData().get(SHAPE)));
     }
 
     public void setShape(ShinsuShape shape) {
