@@ -32,11 +32,11 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
 
     @Override
     public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-        if (user.world instanceof ServerWorld) {
+        if (user.level instanceof ServerWorld) {
             ShinsuStats stats = ShinsuStats.get(user);
             Optional<ShinsuTechniqueInstance> used = stats.getTechniques().stream().filter(instance -> equals(instance.getTechnique())).findAny();
             if (used.isPresent()) {
-                used.get().remove((ServerWorld) user.world);
+                used.get().remove((ServerWorld) user.level);
                 return;
             }
         }

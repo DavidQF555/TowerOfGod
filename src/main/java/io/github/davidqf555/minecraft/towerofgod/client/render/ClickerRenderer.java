@@ -27,17 +27,17 @@ public class ClickerRenderer extends EntityRenderer<ClickerEntity> {
     public void render(ClickerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
         ItemStack item = entityIn.getShape().getItem();
         ShinsuQuality.setQuality(item, entityIn.getQuality());
-        matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(entityIn.rotationYaw));
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(entityIn.yRot));
         matrixStackIn.translate(0, 0.25, 0);
-        Minecraft.getInstance().getItemRenderer().renderItem(item, ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, packedLightIn, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
-        matrixStackIn.pop();
+        Minecraft.getInstance().getItemRenderer().renderStatic(item, ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, packedLightIn, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn);
+        matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     @Nullable
     @Override
-    public ResourceLocation getEntityTexture(ClickerEntity entity) {
+    public ResourceLocation getTextureLocation(ClickerEntity entity) {
         return null;
     }
 }

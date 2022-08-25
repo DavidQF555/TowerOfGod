@@ -29,12 +29,12 @@ public class RegularTeamsSavedData extends WorldSavedData {
     }
 
     public static RegularTeamsSavedData getOrCreate(ServerWorld world) {
-        return world.getSavedData().getOrCreate(RegularTeamsSavedData::new, NAME);
+        return world.getDataStorage().computeIfAbsent(RegularTeamsSavedData::new, NAME);
     }
 
     public static RegularTeam getOrCreateTeam(ServerWorld world, RegularEntity entity) {
         RegularTeamsSavedData data = getOrCreate(world);
-        UUID id = entity.getUniqueID();
+        UUID id = entity.getUUID();
         for (RegularTeam team : data.teams) {
             if (team.members.contains(id)) {
                 return team;
@@ -55,7 +55,7 @@ public class RegularTeamsSavedData extends WorldSavedData {
             int maxLevel = 0;
             for (int j = team.members.size() - 1; j >= 0; j--) {
                 UUID id = team.members.get(j);
-                Entity entity = world.getEntityByUuid(id);
+                Entity entity = world.getEntity(id);
                 if (entity instanceof RegularEntity) {
                     entities.add((RegularEntity) entity);
                     int level = ShinsuStats.get(entity).getLevel();
@@ -73,10 +73,10 @@ public class RegularTeamsSavedData extends WorldSavedData {
             if (max == null) {
                 teams.remove(i);
             } else {
-                team.leader = max.getUniqueID();
+                team.leader = max.getUUID();
                 for (RegularEntity entity : entities) {
-                    if (!entity.equals(max) && entity.getDistanceSq(max) > RANGE * RANGE) {
-                        team.members.remove(entity.getUniqueID());
+                    if (!entity.equals(max) && entity.distanceToSqr(max) > RANGE * RANGE) {
+                        team.members.remove(entity.getUUID());
                     }
                 }
             }
@@ -84,7 +84,7 @@ public class RegularTeamsSavedData extends WorldSavedData {
     }
 
     @Override
-    public void read(CompoundNBT compound) {
+    public void load(CompoundNBT compound) {
         if (compound.contains("Teams", Constants.NBT.TAG_LIST)) {
             ListNBT teams = compound.getList("Teams", Constants.NBT.TAG_COMPOUND);
             teams.forEach(nbt -> {
@@ -97,7 +97,7 @@ public class RegularTeamsSavedData extends WorldSavedData {
 
     @Nonnull
     @Override
-    public CompoundNBT write(@Nonnull CompoundNBT compound) {
+    public CompoundNBT save(@Nonnull CompoundNBT compound) {
         ListNBT teams = new ListNBT();
         for (RegularTeam team : this.teams) {
             teams.add(team.serializeNBT());
@@ -128,11 +128,11 @@ public class RegularTeamsSavedData extends WorldSavedData {
             CompoundNBT nbt = new CompoundNBT();
             ListNBT ids = new ListNBT();
             for (UUID id : members) {
-                ids.add(NBTUtil.func_240626_a_(id));
+                ids.add(NBTUtil.createUUID(id));
             }
             nbt.put("Members", ids);
             if (leader != null) {
-                nbt.put("Leader", NBTUtil.func_240626_a_(leader));
+                nbt.put("Leader", NBTUtil.createUUID(leader));
             }
             return nbt;
         }
@@ -141,10 +141,10 @@ public class RegularTeamsSavedData extends WorldSavedData {
         public void deserializeNBT(CompoundNBT nbt) {
             if (nbt.contains("Members", Constants.NBT.TAG_LIST)) {
                 ListNBT ids = nbt.getList("Members", Constants.NBT.TAG_INT_ARRAY);
-                ids.forEach(id -> members.add(NBTUtil.readUniqueId(id)));
+                ids.forEach(id -> members.add(NBTUtil.loadUUID(id)));
             }
             if (nbt.contains("Leader", Constants.NBT.TAG_INT_ARRAY)) {
-                leader = nbt.getUniqueId("Leader");
+                leader = nbt.getUUID("Leader");
             }
         }
     }

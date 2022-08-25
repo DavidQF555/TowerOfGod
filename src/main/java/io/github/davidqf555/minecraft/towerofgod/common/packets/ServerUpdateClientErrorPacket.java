@@ -22,7 +22,7 @@ public class ServerUpdateClientErrorPacket {
         buffer.writeInt(message.errors.size());
         for (Map.Entry<ShinsuTechnique, ITextComponent> error : message.errors.entrySet()) {
             buffer.writeResourceLocation(error.getKey().getRegistryName());
-            buffer.writeTextComponent(error.getValue());
+            buffer.writeComponent(error.getValue());
         }
     };
     private static final Function<PacketBuffer, ServerUpdateClientErrorPacket> DECODER = buffer -> {
@@ -30,7 +30,7 @@ public class ServerUpdateClientErrorPacket {
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
             ShinsuTechnique technique = ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation());
-            errors.put(technique, buffer.readTextComponent());
+            errors.put(technique, buffer.readComponent());
         }
         return new ServerUpdateClientErrorPacket(errors);
     };

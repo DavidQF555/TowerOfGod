@@ -25,8 +25,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     private int ticks;
 
     public ShinsuTechniqueInstance(LivingEntity user) {
-        id = MathHelper.getRandomUUID();
-        this.user = user == null ? null : user.getUniqueID();
+        id = MathHelper.createInsecureUUID();
+        this.user = user == null ? null : user.getUUID();
         ticks = 0;
     }
 
@@ -55,7 +55,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     @Nullable
     public Entity getUser(ServerWorld world) {
-        return world.getEntityByUuid(user);
+        return world.getEntity(user);
     }
 
     public abstract ShinsuTechnique getTechnique();
@@ -103,9 +103,9 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putUniqueId("ID", getID());
+        nbt.putUUID("ID", getID());
         if (user != null) {
-            nbt.putUniqueId("User", user);
+            nbt.putUUID("User", user);
         }
         nbt.putString("Technique", getTechnique().getRegistryName().toString());
         nbt.putInt("Ticks", ticks);
@@ -115,10 +115,10 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         if (nbt.contains("ID", Constants.NBT.TAG_INT_ARRAY)) {
-            id = nbt.getUniqueId("ID");
+            id = nbt.getUUID("ID");
         }
         if (nbt.contains("User", Constants.NBT.TAG_INT_ARRAY)) {
-            user = nbt.getUniqueId("User");
+            user = nbt.getUUID("User");
         }
         if (nbt.contains("Ticks", Constants.NBT.TAG_INT)) {
             ticks = nbt.getInt("Ticks");

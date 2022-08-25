@@ -45,12 +45,12 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
     @Override
     public void onUse(ServerWorld world) {
         Entity user = getUser(world);
-        Entity t = world.getEntityByUuid(target);
-        if (user != null && t instanceof LivingEntity && user.getDistanceSq(t) <= RANGE * RANGE) {
+        Entity t = world.getEntity(target);
+        if (user != null && t instanceof LivingEntity && user.distanceToSqr(t) <= RANGE * RANGE) {
             LivingEntity target = (LivingEntity) t;
             double resistance = ShinsuStats.getNetResistance(world, user, target);
-            target.attackEntityFrom(DamageSource.MAGIC, damage / (float) resistance);
-            target.addPotionEffect(new EffectInstance(Effects.SLOWNESS, (int) (60 / resistance), amp - 1, false, false, false));
+            target.hurt(DamageSource.MAGIC, damage / (float) resistance);
+            target.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, (int) (60 / resistance), amp - 1, false, false, false));
         }
     }
 
@@ -73,7 +73,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
         if (nbt.contains("Target", Constants.NBT.TAG_INT_ARRAY)) {
-            target = nbt.getUniqueId("Target");
+            target = nbt.getUUID("Target");
         }
         if (nbt.contains("Damage", Constants.NBT.TAG_FLOAT)) {
             damage = nbt.getFloat("Damage");
@@ -86,7 +86,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
-        nbt.putUniqueId("Target", target);
+        nbt.putUUID("Target", target);
         nbt.putFloat("Damage", damage);
         nbt.putInt("Amplification", amp);
         return nbt;
@@ -98,7 +98,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
         @Override
         public Either<FlareWaveExplosion, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
             int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DISRUPTION).getLevel();
-            return target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, target.getUniqueID(), level * 2.5f, level)) : Either.right(Messages.REQUIRES_TARGET.apply(RANGE));
+            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, target.getUUID(), level * 2.5f, level)) : Either.right(Messages.REQUIRES_TARGET.apply(RANGE));
         }
 
         @Override

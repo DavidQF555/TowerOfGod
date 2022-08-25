@@ -20,11 +20,11 @@ public class OpenFloorTeleportationTerminalPacket {
         buffer.writeInt(message.teleporter.getY());
         buffer.writeInt(message.teleporter.getZ());
         buffer.writeInt(message.level);
-        buffer.writeInt(message.direction.getIndex());
+        buffer.writeInt(message.direction.get3DDataValue());
     };
     private static final Function<PacketBuffer, OpenFloorTeleportationTerminalPacket> DECODER = buffer -> {
         BlockPos teleporter = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
-        return new OpenFloorTeleportationTerminalPacket(buffer.readInt(), teleporter, Direction.byIndex(buffer.readInt()));
+        return new OpenFloorTeleportationTerminalPacket(buffer.readInt(), teleporter, Direction.from3DDataValue(buffer.readInt()));
     };
     private static final BiConsumer<OpenFloorTeleportationTerminalPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();

@@ -26,7 +26,7 @@ public class TowerOfGod {
     public static final ItemGroup TAB = new ItemGroup(MOD_ID) {
         @Nonnull
         @Override
-        public ItemStack createIcon() {
+        public ItemStack makeIcon() {
             return ItemRegistry.SUSPENDIUM.get().getDefaultInstance();
         }
     };

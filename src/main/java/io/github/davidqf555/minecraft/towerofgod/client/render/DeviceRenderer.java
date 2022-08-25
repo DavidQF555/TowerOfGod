@@ -31,53 +31,53 @@ public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityMod
         if (MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<>(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn))) {
             return;
         }
-        matrixStackIn.push();
-        entityModel.swingProgress = getSwingProgress(entityIn, partialTicks);
-        entityModel.isSitting = entityIn.isPassenger() && (entityIn.getRidingEntity() != null && entityIn.getRidingEntity().shouldRiderSit());
-        entityModel.isChild = entityIn.isChild();
-        float yaw = MathHelper.interpolateAngle(partialTicks, entityIn.prevRenderYawOffset, entityIn.renderYawOffset);
-        float yawHead = MathHelper.interpolateAngle(partialTicks, entityIn.prevRotationYawHead, entityIn.rotationYawHead);
+        matrixStackIn.pushPose();
+        model.attackTime = getAttackAnim(entityIn, partialTicks);
+        model.riding = entityIn.isPassenger() && (entityIn.getVehicle() != null && entityIn.getVehicle().shouldRiderSit());
+        model.young = entityIn.isBaby();
+        float yaw = MathHelper.rotLerp(partialTicks, entityIn.yBodyRotO, entityIn.yBodyRot);
+        float yawHead = MathHelper.rotLerp(partialTicks, entityIn.yHeadRotO, entityIn.yHeadRot);
         float netYaw = yawHead - yaw;
-        float pitch = MathHelper.lerp(partialTicks, entityIn.prevRotationPitch, entityIn.rotationPitch);
-        float age = handleRotationFloat(entityIn, partialTicks);
-        applyRotations(entityIn, matrixStackIn, age, yaw, partialTicks);
+        float pitch = MathHelper.lerp(partialTicks, entityIn.xRotO, entityIn.xRot);
+        float age = getBob(entityIn, partialTicks);
+        setupRotations(entityIn, matrixStackIn, age, yaw, partialTicks);
         matrixStackIn.scale(-1, -1, 1);
-        preRenderCallback(entityIn, matrixStackIn, partialTicks);
+        scale(entityIn, matrixStackIn, partialTicks);
         matrixStackIn.translate(0, -1.501, 0);
         float limbSwingAmount = 0;
         float limbSwing = 0;
-        if (!entityModel.isSitting && entityIn.isAlive()) {
-            limbSwingAmount = MathHelper.lerp(partialTicks, entityIn.prevLimbSwingAmount, entityIn.limbSwingAmount);
-            limbSwing = entityIn.limbSwing - entityIn.limbSwingAmount * (1 - partialTicks);
+        if (!model.riding && entityIn.isAlive()) {
+            limbSwingAmount = MathHelper.lerp(partialTicks, entityIn.animationSpeedOld, entityIn.animationSpeed);
+            limbSwing = entityIn.animationPosition - entityIn.animationSpeed * (1 - partialTicks);
             if (limbSwingAmount > 1) {
                 limbSwingAmount = 1;
             }
         }
-        entityModel.setLivingAnimations(entityIn, limbSwing, limbSwingAmount, partialTicks);
-        entityModel.setRotationAngles(entityIn, limbSwing, limbSwingAmount, age, netYaw, pitch);
+        model.prepareMobModel(entityIn, limbSwing, limbSwingAmount, partialTicks);
+        model.setupAnim(entityIn, limbSwing, limbSwingAmount, age, netYaw, pitch);
         Minecraft minecraft = Minecraft.getInstance();
-        boolean visible = isVisible(entityIn);
-        boolean invisible = !visible && !entityIn.isInvisibleToPlayer(minecraft.player);
-        boolean glowing = minecraft.isEntityGlowing(entityIn);
+        boolean visible = isBodyVisible(entityIn);
+        boolean invisible = !visible && !entityIn.isInvisibleTo(minecraft.player);
+        boolean glowing = minecraft.shouldEntityAppearGlowing(entityIn);
         float alpha = getAlpha(invisible);
-        RenderType type = func_230496_a_(entityIn, visible, alpha < 1, glowing);
+        RenderType type = getRenderType(entityIn, visible, alpha < 1, glowing);
         if (type != null) {
             IVertexBuilder ivertexbuilder = bufferIn.getBuffer(type);
-            int overlay = getPackedOverlay(entityIn, getOverlayProgress(entityIn, partialTicks));
+            int overlay = getOverlayCoords(entityIn, getWhiteOverlayProgress(entityIn, partialTicks));
             int hex = entityIn.getColor().getColorValue();
-            float red = ColorHelper.PackedColor.getRed(hex) / 255f;
-            float green = ColorHelper.PackedColor.getGreen(hex) / 255f;
-            float blue = ColorHelper.PackedColor.getBlue(hex) / 255f;
-            entityModel.render(matrixStackIn, ivertexbuilder, packedLightIn, overlay, red, green, blue, alpha);
+            float red = ColorHelper.PackedColor.red(hex) / 255f;
+            float green = ColorHelper.PackedColor.green(hex) / 255f;
+            float blue = ColorHelper.PackedColor.blue(hex) / 255f;
+            model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, overlay, red, green, blue, alpha);
         }
-        for (LayerRenderer<T, M> renderer : layerRenderers) {
+        for (LayerRenderer<T, M> renderer : layers) {
             renderer.render(matrixStackIn, bufferIn, packedLightIn, entityIn, limbSwing, limbSwingAmount, partialTicks, age, netYaw, pitch);
         }
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
         RenderNameplateEvent nameplate = new RenderNameplateEvent(entityIn, entityIn.getDisplayName(), this, matrixStackIn, bufferIn, packedLightIn, partialTicks);
         MinecraftForge.EVENT_BUS.post(nameplate);
-        if (nameplate.getResult() != Event.Result.DENY && (nameplate.getResult() == Event.Result.ALLOW || canRenderName(entityIn))) {
-            renderName(entityIn, nameplate.getContent(), matrixStackIn, bufferIn, packedLightIn);
+        if (nameplate.getResult() != Event.Result.DENY && (nameplate.getResult() == Event.Result.ALLOW || shouldShowName(entityIn))) {
+            renderNameTag(entityIn, nameplate.getContent(), matrixStackIn, bufferIn, packedLightIn);
         }
         MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Post<>(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn));
     }
@@ -87,7 +87,7 @@ public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityMod
     }
 
     @Override
-    protected boolean canRenderName(T entity) {
-        return entity.getAlwaysRenderNameTagForRender() && entity.hasCustomName();
+    protected boolean shouldShowName(T entity) {
+        return entity.shouldShowName() && entity.hasCustomName();
     }
 }

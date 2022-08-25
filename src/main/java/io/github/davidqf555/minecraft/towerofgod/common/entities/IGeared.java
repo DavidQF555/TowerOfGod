@@ -24,7 +24,7 @@ public interface IGeared<T extends LivingEntity> {
 
     static Set<Item> getAllCraftableItems(World world, Predicate<Item> filter) {
         return world.getRecipeManager().getRecipes().stream()
-                .map(IRecipe::getRecipeOutput)
+                .map(IRecipe::getResultItem)
                 .map(ItemStack::getItem)
                 .filter(filter)
                 .collect(Collectors.toSet());
@@ -51,11 +51,11 @@ public interface IGeared<T extends LivingEntity> {
 
     default void initializeWeapons() {
         T entity = getGearedEntity();
-        entity.setItemStackToSlot(EquipmentSlotType.MAINHAND, getInitialWeapon());
-        entity.setItemStackToSlot(EquipmentSlotType.HEAD, getInitialArmor(EquipmentSlotType.HEAD));
-        entity.setItemStackToSlot(EquipmentSlotType.CHEST, getInitialArmor(EquipmentSlotType.CHEST));
-        entity.setItemStackToSlot(EquipmentSlotType.LEGS, getInitialArmor(EquipmentSlotType.LEGS));
-        entity.setItemStackToSlot(EquipmentSlotType.FEET, getInitialArmor(EquipmentSlotType.FEET));
+        entity.setItemSlot(EquipmentSlotType.MAINHAND, getInitialWeapon());
+        entity.setItemSlot(EquipmentSlotType.HEAD, getInitialArmor(EquipmentSlotType.HEAD));
+        entity.setItemSlot(EquipmentSlotType.CHEST, getInitialArmor(EquipmentSlotType.CHEST));
+        entity.setItemSlot(EquipmentSlotType.LEGS, getInitialArmor(EquipmentSlotType.LEGS));
+        entity.setItemSlot(EquipmentSlotType.FEET, getInitialArmor(EquipmentSlotType.FEET));
     }
 
     default double getPreferredWeaponChance() {
@@ -83,10 +83,10 @@ public interface IGeared<T extends LivingEntity> {
     default ItemStack getInitialArmor(EquipmentSlotType slot) {
         T entity = getGearedEntity();
         IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
-        int index = slot.getSlotIndex();
-        double base = entity.getBaseAttributeValue(Attributes.ARMOR);
+        int index = slot.getIndex();
+        double base = entity.getAttributeBaseValue(Attributes.ARMOR);
         Predicate<Item> condition = item -> inventory.isItemValid(index, item.getDefaultInstance()) && getAttribute(Attributes.ARMOR, entity, item.getDefaultInstance(), slot) > base;
-        List<Item> armors = new ArrayList<>(getAllCraftableItems(entity.world, condition));
+        List<Item> armors = new ArrayList<>(getAllCraftableItems(entity.level, condition));
         armors.add(Items.AIR);
         Map<Item, Double> chances = getInitialItemChances(armors, (item1, item2) -> {
             double dif = getAttribute(Attributes.ARMOR, entity, item1.getDefaultInstance(), slot) - getAttribute(Attributes.ARMOR, entity, item2.getDefaultInstance(), slot);
@@ -95,7 +95,7 @@ public interface IGeared<T extends LivingEntity> {
             }
             return dif == 0 ? 0 : (dif > 0 ? 1 : -1);
         });
-        double rand = entity.getRNG().nextDouble();
+        double rand = entity.getRandom().nextDouble();
         double current = 0;
         for (Item item : chances.keySet()) {
             current += chances.get(item);
@@ -109,13 +109,13 @@ public interface IGeared<T extends LivingEntity> {
     default ItemStack getInitialWeapon() {
         T entity = getGearedEntity();
         IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
-        int index = EquipmentSlotType.MAINHAND.getSlotIndex();
-        double base = entity.getBaseAttributeValue(Attributes.ATTACK_DAMAGE);
+        int index = EquipmentSlotType.MAINHAND.getIndex();
+        double base = entity.getAttributeBaseValue(Attributes.ATTACK_DAMAGE);
         Predicate<Item> filter = item -> inventory.isItemValid(index, item.getDefaultInstance()) && getAttribute(Attributes.ATTACK_DAMAGE, entity, item.getDefaultInstance(), EquipmentSlotType.MAINHAND) > base;
-        List<Item> weapons = new ArrayList<>(getAllCraftableItems(entity.world, filter));
+        List<Item> weapons = new ArrayList<>(getAllCraftableItems(entity.level, filter));
         weapons.add(Items.AIR);
         List<Item> preferred = weapons.stream().filter(this::isWeaponPreferred).collect(Collectors.toList());
-        Random random = entity.getRNG();
+        Random random = entity.getRandom();
         List<Item> choices;
         if (!preferred.isEmpty() && random.nextDouble() < getPreferredWeaponChance()) {
             choices = preferred;

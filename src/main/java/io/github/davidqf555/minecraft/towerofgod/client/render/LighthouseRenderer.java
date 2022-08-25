@@ -19,7 +19,7 @@ public class LighthouseRenderer extends DeviceRenderer<LighthouseEntity, Lightho
     }
 
     @Override
-    public int getBlockLight(@Nullable LighthouseEntity entityIn, @Nullable BlockPos partialTicks) {
+    public int getBlockLightLevel(@Nullable LighthouseEntity entityIn, @Nullable BlockPos partialTicks) {
         return 15;
     }
 
@@ -30,7 +30,7 @@ public class LighthouseRenderer extends DeviceRenderer<LighthouseEntity, Lightho
 
     @Nonnull
     @Override
-    public ResourceLocation getEntityTexture(@Nonnull LighthouseEntity entity) {
+    public ResourceLocation getTextureLocation(@Nonnull LighthouseEntity entity) {
         return TEXTURE;
     }
 

@@ -36,9 +36,9 @@ public class ShinsuHoe extends HoeItem {
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
         if (worldIn instanceof ServerWorld) {
-            CompoundNBT nbt = stack.getChildTag(TowerOfGod.MOD_ID);
+            CompoundNBT nbt = stack.getTagElement(TowerOfGod.MOD_ID);
             if (!stack.isEmpty() && nbt != null) {
-                UUID id = nbt.getUniqueId("Technique");
+                UUID id = nbt.getUUID("Technique");
                 ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
                 if (technique == null) {
                     IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
@@ -52,12 +52,12 @@ public class ShinsuHoe extends HoeItem {
 
     @Nonnull
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        ShinsuQuality quality = ShinsuQuality.getQuality(context.getItem());
+    public ActionResultType useOn(ItemUseContext context) {
+        ShinsuQuality quality = ShinsuQuality.getQuality(context.getItemInHand());
         if (quality != null) {
-            quality.applyBlockEffect(context.getPlayer(), new BlockRayTraceResult(context.getHitVec(), context.getFace(), context.getPos(), context.isInside()));
+            quality.applyBlockEffect(context.getPlayer(), new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside()));
         }
-        return super.onItemUse(context);
+        return super.useOn(context);
     }
 
     @Override
@@ -66,13 +66,13 @@ public class ShinsuHoe extends HoeItem {
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         Vector3d dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
         ShinsuQuality quality = ShinsuQuality.getQuality(stack);
         if (quality != null) {
             quality.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
         }
-        return super.hitEntity(stack, target, attacker);
+        return super.hurtEnemy(stack, target, attacker);
     }
 
     @Override

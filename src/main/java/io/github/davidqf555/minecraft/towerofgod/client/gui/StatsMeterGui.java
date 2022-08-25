@@ -51,15 +51,15 @@ public class StatsMeterGui extends AbstractGui {
         }
         lines.setStartY(startY);
         lines.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
-        FontRenderer font = Minecraft.getInstance().fontRenderer;
+        FontRenderer font = Minecraft.getInstance().font;
         String text = value + "";
-        float textX = x + (width - font.getStringWidth(text)) / 2f;
+        float textX = x + (width - font.width(text)) / 2f;
         float textY = y - 6;
-        font.drawString(matrixStack, text, textX + 1, textY, 0xFF000000);
-        font.drawString(matrixStack, text, textX - 1, textY, 0xFF000000);
-        font.drawString(matrixStack, text, textX, textY + 1, 0xFF000000);
-        font.drawString(matrixStack, text, textX, textY - 1, 0xFF000000);
-        font.drawString(matrixStack, text, textX, textY, TEXT_COLOR);
+        font.draw(matrixStack, text, textX + 1, textY, 0xFF000000);
+        font.draw(matrixStack, text, textX - 1, textY, 0xFF000000);
+        font.draw(matrixStack, text, textX, textY + 1, 0xFF000000);
+        font.draw(matrixStack, text, textX, textY - 1, 0xFF000000);
+        font.draw(matrixStack, text, textX, textY, TEXT_COLOR);
     }
 
     public void setValue(int value) {

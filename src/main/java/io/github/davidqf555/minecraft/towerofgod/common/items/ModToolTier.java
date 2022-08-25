@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public enum ModToolTier implements IItemTier {
 
     SHINSU(1000, 12, 2, 3, 0, () -> Ingredient.EMPTY),
-    SUSPENDIUM(1250, 14, 1, 2, 15, () -> Ingredient.fromItems(ItemRegistry.SUSPENDIUM.get()));
+    SUSPENDIUM(1250, 14, 1, 2, 15, () -> Ingredient.of(ItemRegistry.SUSPENDIUM.get()));
 
     private final int uses;
     private final float efficiency;
@@ -29,33 +29,33 @@ public enum ModToolTier implements IItemTier {
     }
 
     @Override
-    public int getMaxUses() {
+    public int getUses() {
         return uses;
     }
 
     @Override
-    public float getEfficiency() {
+    public float getSpeed() {
         return efficiency;
     }
 
     @Override
-    public float getAttackDamage() {
+    public float getAttackDamageBonus() {
         return damage;
     }
 
     @Override
-    public int getHarvestLevel() {
+    public int getLevel() {
         return harvest;
     }
 
     @Override
-    public int getEnchantability() {
+    public int getEnchantmentValue() {
         return enchantability;
     }
 
     @Nonnull
     @Override
-    public Ingredient getRepairMaterial() {
+    public Ingredient getRepairIngredient() {
         return repair.get();
     }
 

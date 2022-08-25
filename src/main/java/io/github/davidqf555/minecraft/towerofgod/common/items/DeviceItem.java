@@ -33,34 +33,34 @@ public class DeviceItem extends Item {
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> onItemRightClick(@Nonnull World worldIn, PlayerEntity playerIn, @Nonnull Hand handIn) {
-        ItemStack item = playerIn.getHeldItem(handIn);
+    public ActionResult<ItemStack> use(@Nonnull World worldIn, PlayerEntity playerIn, @Nonnull Hand handIn) {
+        ItemStack item = playerIn.getItemInHand(handIn);
         if (!item.isEmpty()) {
             FlyingDevice device = entity.apply(worldIn, item);
-            if (device != null && device.canSpawn(worldIn, SpawnReason.MOB_SUMMONED)) {
+            if (device != null && device.checkSpawnRules(worldIn, SpawnReason.MOB_SUMMONED)) {
                 Vector3d eye = playerIn.getEyePosition(1);
-                BlockRayTraceResult result = worldIn.rayTraceBlocks(new RayTraceContext(eye, eye.add(playerIn.getLookVec().scale(4)), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, device));
-                Vector3d spawn = result.getHitVec();
-                device.setPosition(spawn.x, spawn.y, spawn.z);
-                device.setOwnerID(playerIn.getUniqueID());
+                BlockRayTraceResult result = worldIn.clip(new RayTraceContext(eye, eye.add(playerIn.getLookAngle().scale(4)), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, device));
+                Vector3d spawn = result.getLocation();
+                device.setPos(spawn.x, spawn.y, spawn.z);
+                device.setOwnerID(playerIn.getUUID());
                 device.setColor(getColor(item));
-                worldIn.addEntity(device);
+                worldIn.addFreshEntity(device);
                 if (!playerIn.isCreative()) {
                     item.setCount(item.getCount() - 1);
                 }
                 if (playerIn instanceof ServerPlayerEntity) {
                     ServerPlayerEntity serverPlayer = (ServerPlayerEntity) playerIn;
                     CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
-                    serverPlayer.addStat(Stats.ITEM_USED.get(this));
+                    serverPlayer.awardStat(Stats.ITEM_USED.get(this));
                 }
-                return ActionResult.func_233538_a_(item, playerIn.world.isRemote());
+                return ActionResult.sidedSuccess(item, playerIn.level.isClientSide());
             }
         }
-        return ActionResult.resultPass(item);
+        return ActionResult.pass(item);
     }
 
     public DyeColor getColor(ItemStack item) {
-        CompoundNBT nbt = item.getOrCreateChildTag(TowerOfGod.MOD_ID);
+        CompoundNBT nbt = item.getOrCreateTagElement(TowerOfGod.MOD_ID);
         if (nbt.contains("Color", Constants.NBT.TAG_INT)) {
             return DyeColor.byId(nbt.getInt("Color"));
         }

@@ -18,18 +18,18 @@ import java.util.function.Supplier;
 public class ObserverChangeHighlightPacket {
 
     private static final BiConsumer<ObserverChangeHighlightPacket, PacketBuffer> ENCODER = (message, buffer) -> {
-        buffer.writeUniqueId(message.id);
+        buffer.writeUUID(message.id);
         buffer.writeInt(message.entities.size());
         for (UUID id : message.entities) {
-            buffer.writeUniqueId(id);
+            buffer.writeUUID(id);
         }
     };
     private static final Function<PacketBuffer, ObserverChangeHighlightPacket> DECODER = buffer -> {
-        UUID id = buffer.readUniqueId();
+        UUID id = buffer.readUUID();
         Set<UUID> entities = new HashSet<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            entities.add(buffer.readUniqueId());
+            entities.add(buffer.readUUID());
         }
         return new ObserverChangeHighlightPacket(id, entities);
     };

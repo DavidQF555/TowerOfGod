@@ -39,14 +39,14 @@ public class ClickerItem extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ClickerEntity entity = EntityRegistry.CLICKER.get().create(worldIn);
         if (entity != null) {
             Vector3d eye = playerIn.getEyePosition(1);
-            BlockRayTraceResult result = worldIn.rayTraceBlocks(new RayTraceContext(eye, eye.add(playerIn.getLookVec().scale(4)), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity));
-            Vector3d spawn = result.getHitVec();
-            entity.setPosition(spawn.getX(), spawn.getY(), spawn.getZ());
-            ItemStack item = playerIn.getHeldItem(handIn);
+            BlockRayTraceResult result = worldIn.clip(new RayTraceContext(eye, eye.add(playerIn.getLookAngle().scale(4)), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity));
+            Vector3d spawn = result.getLocation();
+            entity.setPos(spawn.x(), spawn.y(), spawn.z());
+            ItemStack item = playerIn.getItemInHand(handIn);
             if (!playerIn.isCreative()) {
                 item.setCount(item.getCount() - 1);
             }
@@ -60,13 +60,13 @@ public class ClickerItem extends Item {
                 entity.setQuality(quality);
                 entity.setShape(shape);
                 CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
-                serverPlayer.addStat(Stats.ITEM_USED.get(this));
+                serverPlayer.awardStat(Stats.ITEM_USED.get(this));
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new UpdateClientQualityPacket(quality));
             }
-            worldIn.addEntity(entity);
-            return ActionResult.func_233538_a_(item, playerIn.world.isRemote());
+            worldIn.addFreshEntity(entity);
+            return ActionResult.sidedSuccess(item, playerIn.level.isClientSide());
         }
-        return ActionResult.resultPass(playerIn.getHeldItem(handIn));
+        return ActionResult.pass(playerIn.getItemInHand(handIn));
     }
 
     private ShinsuQuality getQuality(ServerPlayerEntity player) {
@@ -80,7 +80,7 @@ public class ClickerItem extends Item {
             }
         }
         double current = 0;
-        double random = player.getRNG().nextDouble() * total;
+        double random = player.getRandom().nextDouble() * total;
         for (ShinsuQuality quality : suitabilities.keySet()) {
             current += suitabilities.get(quality);
             if (random < current) {
@@ -88,7 +88,7 @@ public class ClickerItem extends Item {
             }
         }
         List<ShinsuQuality> all = new ArrayList<>(ShinsuQualityRegistry.getRegistry().getValues());
-        return all.get(player.getRNG().nextInt(all.size()));
+        return all.get(player.getRandom().nextInt(all.size()));
     }
 
     private ShinsuShape getShape(ServerPlayerEntity player) {
@@ -102,7 +102,7 @@ public class ClickerItem extends Item {
             }
         }
         double current = 0;
-        double random = player.getRNG().nextDouble() * total;
+        double random = player.getRandom().nextDouble() * total;
         for (ShinsuShape shape : suitabilities.keySet()) {
             current += suitabilities.get(shape);
             if (random < current) {
@@ -110,6 +110,6 @@ public class ClickerItem extends Item {
             }
         }
         ShinsuShape[] all = ShinsuShapeRegistry.getRegistry().getValues().toArray(new ShinsuShape[0]);
-        return all[player.getRNG().nextInt(all.length)];
+        return all[player.getRandom().nextInt(all.length)];
     }
 }

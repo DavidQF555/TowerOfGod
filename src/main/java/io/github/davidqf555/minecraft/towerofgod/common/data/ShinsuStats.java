@@ -191,7 +191,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             addExperience(type, killed.getData(type).getLevel());
             int after = data.getLevel();
             if (initial != after) {
-                owner.sendMessage(new TranslationTextComponent(LEVEL_UP, type.getText(), after), Util.DUMMY_UUID);
+                owner.sendMessage(new TranslationTextComponent(LEVEL_UP, type.getText(), after), Util.NIL_UUID);
             }
         }
         if (owner instanceof ServerPlayerEntity) {
@@ -358,7 +358,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         }
         if (nbt.contains("Data", Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT data = nbt.getCompound("Data");
-            for (String key : data.keySet()) {
+            for (String key : data.getAllKeys()) {
                 ShinsuTypeData d = new ShinsuTypeData();
                 d.deserializeNBT(data.getCompound(key));
                 this.data.put(ShinsuTechniqueType.valueOf(key), d);
@@ -366,7 +366,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         }
         if (nbt.contains("Cooldowns", Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT data = nbt.getCompound("Cooldowns");
-            for (String key : data.keySet()) {
+            for (String key : data.getAllKeys()) {
                 setCooldown(ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(key)), data.getInt(key));
             }
         }

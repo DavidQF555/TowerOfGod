@@ -60,9 +60,9 @@ public class GuideScreen extends Screen {
         PAGE.render(new RenderContext(matrixStack, x, y, z, xSize, ySize, 0xFFFFFFFF));
         OUTLINE.render(new RenderContext(matrixStack, x, y, z, xSize, ySize, color));
         float centerX = x + xSize / 2f;
-        int difY = font.FONT_HEIGHT;
-        ITextComponent title = pages[page].getText().mergeStyle(TextFormatting.BOLD);
-        font.drawText(matrixStack, title, centerX - font.getStringPropertyWidth(title) / 2f, y + difY * 2, 0xFF000000);
+        int difY = font.lineHeight;
+        ITextComponent title = pages[page].getText().withStyle(TextFormatting.BOLD);
+        font.draw(matrixStack, title, centerX - font.width(title) / 2f, y + difY * 2, 0xFF000000);
         pages[page].getIcon().render(new RenderContext(matrixStack, centerX - difY, y + difY * 4, z, difY * 2, difY * 2, 0xFFFFFFFF));
         List<Direction> combo = pages[page].getCombination();
         int width = combo.size() * ARROW_WIDTH + (combo.size() - 1) * DIF;
@@ -70,19 +70,19 @@ public class GuideScreen extends Screen {
             float arrowX = centerX - width / 2f + (ARROW_HEIGHT + DIF) * i + ARROW_WIDTH / 2f;
             float arrowY = y + difY * 8 + ARROW_HEIGHT / 2f;
             Direction dir = combo.get(i);
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(arrowX, arrowY, 0);
-            matrixStack.rotate(Vector3f.ZP.rotationDegrees(dir.getAngle() + 180));
+            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(dir.getAngle() + 180));
             matrixStack.translate(-arrowX, -arrowY, 0);
             ARROW.render(new RenderContext(matrixStack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, z, ARROW_WIDTH, ARROW_HEIGHT, color));
-            matrixStack.pop();
+            matrixStack.popPose();
         }
         int lines = 0;
         for (IRequirement req : pages[page].getRequirements()) {
             ITextComponent text = req.getText();
-            lines += renderWrappedText(matrixStack, text, centerX, y + difY * 10 + lines * font.FONT_HEIGHT, xSize * 4 / 5, 0xFF000000);
+            lines += renderWrappedText(matrixStack, text, centerX, y + difY * 10 + lines * font.lineHeight, xSize * 4 / 5, 0xFF000000);
         }
-        renderWrappedText(matrixStack, pages[page].getDescription(), centerX, y + difY * 12 + lines * font.FONT_HEIGHT, xSize * 4 / 5, 0xFF000000);
+        renderWrappedText(matrixStack, pages[page].getDescription(), centerX, y + difY * 12 + lines * font.lineHeight, xSize * 4 / 5, 0xFF000000);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
@@ -93,7 +93,7 @@ public class GuideScreen extends Screen {
         int current = 0;
         StringBuilder builder = new StringBuilder();
         for (String word : words) {
-            int width = font.getStringWidth(word);
+            int width = font.width(word);
             if (width <= totalWidth - current || builder.length() == 0 && width > totalWidth) {
                 if (builder.length() != 0) {
                     builder.append(' ');
@@ -102,7 +102,7 @@ public class GuideScreen extends Screen {
                 current += width;
             } else {
                 String string = builder.toString();
-                font.drawString(stack, string, centerX - font.getStringWidth(string) / 2f, y + line * font.FONT_HEIGHT, color);
+                font.draw(stack, string, centerX - font.width(string) / 2f, y + line * font.lineHeight, color);
                 builder = new StringBuilder();
                 builder.append(word);
                 current = width;
@@ -110,14 +110,14 @@ public class GuideScreen extends Screen {
             }
         }
         String string = builder.toString();
-        font.drawString(stack, string, centerX - font.getStringWidth(string) / 2f, y + line * font.FONT_HEIGHT, color);
+        font.draw(stack, string, centerX - font.width(string) / 2f, y + line * font.lineHeight, color);
         return line + 1;
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == Minecraft.getInstance().gameSettings.keyBindInventory.getKey().getKeyCode()) {
-            closeScreen();
+        if (keyCode == Minecraft.getInstance().options.keyInventory.getKey().getValue()) {
+            onClose();
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

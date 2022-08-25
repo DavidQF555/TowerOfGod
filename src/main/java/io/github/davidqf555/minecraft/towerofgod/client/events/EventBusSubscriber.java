@@ -36,8 +36,8 @@ public final class EventBusSubscriber {
     @SubscribeEvent
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
         Minecraft client = Minecraft.getInstance();
-        if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.currentScreen == null) {
-            if (client.player.getActivePotionEffect(EffectRegistry.REVERSE_FLOW.get()) != null) {
+        if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.screen == null) {
+            if (client.player.getEffect(EffectRegistry.REVERSE_FLOW.get()) != null) {
                 ModifiableAttributeInstance attribute = client.player.getAttribute(Attributes.ATTACK_SPEED);
                 if (attribute == null || attribute.getValue() <= 0) {
                     event.setCanceled(true);
@@ -65,11 +65,11 @@ public final class EventBusSubscriber {
             RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), DirectionalLightningRenderer::new);
             KeyBindingsList.register();
             event.enqueueWork(() -> {
-                ScreenManager.registerFactory(ContainerRegistry.LIGHTHOUSE.get(), new LighthouseScreen.Factory());
-                ItemModelsProperties.registerProperty(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pull")));
-                ItemModelsProperties.registerProperty(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.func_239417_a_(Items.BOW, new ResourceLocation("pulling")));
+                ScreenManager.register(ContainerRegistry.LIGHTHOUSE.get(), new LighthouseScreen.Factory());
+                ItemModelsProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.getProperty(Items.BOW, new ResourceLocation("pull")));
+                ItemModelsProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.getProperty(Items.BOW, new ResourceLocation("pulling")));
                 for (RegistryObject<SpearItem> spear : ItemRegistry.SPEARS) {
-                    ItemModelsProperties.registerProperty(spear.get(), SpearItem.THROWING, ItemModelsProperties.func_239417_a_(Items.TRIDENT, new ResourceLocation("throwing")));
+                    ItemModelsProperties.register(spear.get(), SpearItem.THROWING, ItemModelsProperties.getProperty(Items.TRIDENT, new ResourceLocation("throwing")));
                 }
             });
         }

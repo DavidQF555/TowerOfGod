@@ -24,20 +24,20 @@ public class HookItem extends ToolItem {
     }
 
     @Override
-    public boolean canPlayerBreakBlockWhileHolding(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
+    public boolean canAttackBlock(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
         return !player.isCreative();
     }
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-        return enchantment.type == EnchantmentType.WEAPON || enchantment.type == EnchantmentType.BREAKABLE || enchantment.type == EnchantmentType.VANISHABLE;
+        return enchantment.category == EnchantmentType.WEAPON || enchantment.category == EnchantmentType.BREAKABLE || enchantment.category == EnchantmentType.VANISHABLE;
     }
 
     @Override
-    public boolean hitEntity(@Nonnull ItemStack stack, @Nonnull LivingEntity target, @Nonnull LivingEntity attacker) {
-        float scale = attacker.getDistance(target) / 4;
-        Vector3d vel = attacker.getPositionVec().subtract(target.getPositionVec()).normalize().scale(scale);
-        target.addVelocity(vel.getX(), vel.getY(), vel.getZ());
-        return super.hitEntity(stack, target, attacker);
+    public boolean hurtEnemy(@Nonnull ItemStack stack, @Nonnull LivingEntity target, @Nonnull LivingEntity attacker) {
+        float scale = attacker.distanceTo(target) / 4;
+        Vector3d vel = attacker.position().subtract(target.position()).normalize().scale(scale);
+        target.push(vel.x(), vel.y(), vel.z());
+        return super.hurtEnemy(stack, target, attacker);
     }
 }

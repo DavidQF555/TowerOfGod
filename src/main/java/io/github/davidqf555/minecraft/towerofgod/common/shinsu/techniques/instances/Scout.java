@@ -64,12 +64,12 @@ public class Scout extends BasicCommandTechnique {
         Vector3d eye = user.getEyePosition(1);
         Vector3d end = eye.add(direction.scale(range));
         BlockPos target;
-        EntityRayTraceResult trace = ProjectileHelper.rayTraceEntities(world, user, eye, end, AxisAlignedBB.fromVector(eye).grow(range), null);
+        EntityRayTraceResult trace = ProjectileHelper.getEntityHitResult(world, user, eye, end, AxisAlignedBB.unitCubeFromLowerCorner(eye).inflate(range), null);
         if (trace == null) {
-            BlockRayTraceResult result = world.rayTraceBlocks(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity));
-            target = result.getPos().offset(result.getFace());
+            BlockRayTraceResult result = world.clip(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity));
+            target = result.getBlockPos().relative(result.getDirection());
         } else {
-            target = trace.getEntity().getPosition();
+            target = trace.getEntity().blockPosition();
         }
         return new ScoutCommand(entity, getID(), target, speed, radius, getDuration());
     }
@@ -95,9 +95,9 @@ public class Scout extends BasicCommandTechnique {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
-        nbt.putDouble("X", direction.getX());
-        nbt.putDouble("Y", direction.getY());
-        nbt.putDouble("Z", direction.getZ());
+        nbt.putDouble("X", direction.x());
+        nbt.putDouble("Y", direction.y());
+        nbt.putDouble("Z", direction.z());
         nbt.putFloat("Speed", speed);
         nbt.putDouble("Range", range);
         nbt.putInt("Radius", radius);

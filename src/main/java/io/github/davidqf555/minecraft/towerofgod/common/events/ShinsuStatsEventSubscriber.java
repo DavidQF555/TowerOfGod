@@ -23,8 +23,8 @@ public final class ShinsuStatsEventSubscriber {
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START && event.player.world.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
-            ShinsuStats.get(event.player).periodicTick((ServerWorld) event.player.world, ServerConfigs.INSTANCE.shinsuUpdatePeriod.get());
+        if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START && event.player.level.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
+            ShinsuStats.get(event.player).periodicTick((ServerWorld) event.player.level, ServerConfigs.INSTANCE.shinsuUpdatePeriod.get());
         }
     }
 
@@ -32,7 +32,7 @@ public final class ShinsuStatsEventSubscriber {
     public static void onLivingDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntityLiving();
         if (entity instanceof IShinsuUser) {
-            Entity source = event.getSource().getTrueSource();
+            Entity source = event.getSource().getEntity();
             if (source instanceof IShinsuUser || source instanceof PlayerEntity) {
                 ShinsuStats.get(source).onKill(source, ShinsuStats.get(entity));
             }

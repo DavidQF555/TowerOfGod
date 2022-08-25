@@ -100,11 +100,11 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
     }
 
     public TranslationTextComponent getText() {
-        return new TranslationTextComponent(Util.makeTranslationKey("technique", getRegistryName()));
+        return new TranslationTextComponent(Util.makeDescriptionId("technique", getRegistryName()));
     }
 
     public TranslationTextComponent getDescription() {
-        return new TranslationTextComponent(Util.makeTranslationKey("technique", getRegistryName()) + ".description");
+        return new TranslationTextComponent(Util.makeDescriptionId("technique", getRegistryName()) + ".description");
     }
 
     public IRenderData getIcon() {
@@ -144,7 +144,7 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
     }
 
     public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-        if (user.world instanceof ServerWorld) {
+        if (user.level instanceof ServerWorld) {
             ShinsuStats stats = ShinsuStats.get(user);
             if (stats.getCooldown(this) <= 0) {
                 create(user, target, dir).ifLeft(instance -> cast(user, instance));
@@ -153,11 +153,11 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
     }
 
     public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
-        if (user.world instanceof ServerWorld) {
+        if (user.level instanceof ServerWorld) {
             ShinsuStats stats = ShinsuStats.get(user);
             stats.setCooldown(this, instance.getCooldown());
             stats.addTechnique(instance);
-            instance.onUse((ServerWorld) user.world);
+            instance.onUse((ServerWorld) user.level);
         }
     }
 

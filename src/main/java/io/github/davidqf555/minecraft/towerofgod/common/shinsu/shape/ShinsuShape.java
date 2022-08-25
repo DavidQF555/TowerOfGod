@@ -28,7 +28,7 @@ public class ShinsuShape extends ForgeRegistryEntry<ShinsuShape> {
     }
 
     public ITextComponent getName() {
-        return new TranslationTextComponent(Util.makeTranslationKey("shape", getRegistryName()));
+        return new TranslationTextComponent(Util.makeDescriptionId("shape", getRegistryName()));
     }
 
 }

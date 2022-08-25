@@ -61,7 +61,7 @@ public class ShinsuQuality extends ForgeRegistryEntry<ShinsuQuality> {
     }
 
     public static void setQuality(ItemStack item, @Nullable ShinsuQuality quality) {
-        CompoundNBT tag = item.getOrCreateChildTag(TowerOfGod.MOD_ID);
+        CompoundNBT tag = item.getOrCreateTagElement(TowerOfGod.MOD_ID);
         if (quality == null) {
             tag.remove("Quality");
         } else {
@@ -71,7 +71,7 @@ public class ShinsuQuality extends ForgeRegistryEntry<ShinsuQuality> {
 
     @Nullable
     public static ShinsuQuality getQuality(ItemStack item) {
-        CompoundNBT nbt = item.getOrCreateChildTag(TowerOfGod.MOD_ID);
+        CompoundNBT nbt = item.getOrCreateTagElement(TowerOfGod.MOD_ID);
         if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
             try {
                 return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality")));
@@ -118,7 +118,7 @@ public class ShinsuQuality extends ForgeRegistryEntry<ShinsuQuality> {
     }
 
     public TranslationTextComponent getName() {
-        return new TranslationTextComponent(Util.makeTranslationKey("quality", getRegistryName()));
+        return new TranslationTextComponent(Util.makeDescriptionId("quality", getRegistryName()));
     }
 
 }

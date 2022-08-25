@@ -19,11 +19,11 @@ public class SpearItemStackRenderer extends ItemStackTileEntityRenderer {
     }
 
     @Override
-    public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transforms, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
-        matrixStack.push();
+    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType transforms, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+        matrixStack.pushPose();
         matrixStack.scale(1, -1, -1);
-        IVertexBuilder builder = ItemRenderer.getEntityGlintVertexBuilder(buffer, spear.getRenderType(spear.getTextureLocation(((SpearItem) stack.getItem()).getTier())), false, stack.hasEffect());
-        spear.render(matrixStack, builder, combinedLight, combinedOverlay, 1, 1, 1, 1);
-        matrixStack.pop();
+        IVertexBuilder builder = ItemRenderer.getFoilBufferDirect(buffer, spear.renderType(spear.getTextureLocation(((SpearItem) stack.getItem()).getTier())), false, stack.hasFoil());
+        spear.renderToBuffer(matrixStack, builder, combinedLight, combinedOverlay, 1, 1, 1, 1);
+        matrixStack.popPose();
     }
 }

@@ -28,7 +28,7 @@ public final class ObserverEventBusSubscriber {
         @SubscribeEvent
         public static void preRenderLiving(RenderLivingEvent.Pre<LivingEntity, EntityModel<LivingEntity>> event) {
             LivingEntity entity = event.getEntity();
-            UUID id = entity.getUniqueID();
+            UUID id = entity.getUUID();
             boolean included = false;
             boolean stillGlowing = false;
             for (UUID key : new HashSet<>(START_STOP_HIGHLIGHT.keySet())) {

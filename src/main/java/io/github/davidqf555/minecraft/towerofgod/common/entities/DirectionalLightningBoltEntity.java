@@ -15,56 +15,56 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 public class DirectionalLightningBoltEntity extends LightningBoltEntity {
 
-    private static final DataParameter<Float> X = EntityDataManager.createKey(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> Y = EntityDataManager.createKey(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> Z = EntityDataManager.createKey(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> X = EntityDataManager.defineId(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> Y = EntityDataManager.defineId(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> Z = EntityDataManager.defineId(DirectionalLightningBoltEntity.class, DataSerializers.FLOAT);
 
     public DirectionalLightningBoltEntity(EntityType<DirectionalLightningBoltEntity> type, World world) {
         super(type, world);
     }
 
     @Override
-    protected void registerData() {
-        EntityDataManager manager = getDataManager();
-        manager.register(X, 0f);
-        manager.register(Y, 0f);
-        manager.register(Z, 0f);
+    protected void defineSynchedData() {
+        EntityDataManager manager = getEntityData();
+        manager.define(X, 0f);
+        manager.define(Y, 0f);
+        manager.define(Z, 0f);
     }
 
     public Vector3f getStart() {
-        EntityDataManager manager = getDataManager();
+        EntityDataManager manager = getEntityData();
         return new Vector3f(manager.get(X), manager.get(Y), manager.get(Z));
     }
 
     public void setStart(Vector3f pos) {
-        EntityDataManager manager = getDataManager();
-        manager.set(X, pos.getX());
-        manager.set(Y, pos.getY());
-        manager.set(Z, pos.getZ());
+        EntityDataManager manager = getEntityData();
+        manager.set(X, pos.x());
+        manager.set(Y, pos.y());
+        manager.set(Z, pos.z());
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundNBT compound) {
         if (compound.contains("X", Constants.NBT.TAG_FLOAT) && compound.contains("Y", Constants.NBT.TAG_FLOAT) && compound.contains("Z", Constants.NBT.TAG_FLOAT)) {
             setStart(new Vector3f(compound.getFloat("X"), compound.getFloat("Y"), compound.getFloat("Z")));
         }
     }
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundNBT compound) {
         Vector3f start = getStart();
-        compound.putFloat("X", start.getX());
-        compound.putFloat("Y", start.getY());
-        compound.putFloat("Z", start.getZ());
+        compound.putFloat("X", start.x());
+        compound.putFloat("Y", start.y());
+        compound.putFloat("Z", start.z());
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 

@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 @MethodsReturnNonnullByDefault
 public enum ModArmorTier implements IArmorMaterial {
 
-    SUSPENDIUM(TowerOfGod.MOD_ID + ":suspendium", 15, new int[]{2, 6, 5, 2}, 15, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 0.5f, () -> Ingredient.fromItems(ItemRegistry.SUSPENDIUM.get()), -2);
+    SUSPENDIUM(TowerOfGod.MOD_ID + ":suspendium", 15, new int[]{2, 6, 5, 2}, 15, SoundEvents.ARMOR_EQUIP_GENERIC, 0.5f, () -> Ingredient.of(ItemRegistry.SUSPENDIUM.get()), -2);
 
     private static final int[] MAX_DAMAGE_ARRAY = new int[]{11, 16, 15, 13};
     private final String name;
@@ -38,27 +38,27 @@ public enum ModArmorTier implements IArmorMaterial {
     }
 
     @Override
-    public int getDurability(EquipmentSlotType slotIn) {
+    public int getDurabilityForSlot(EquipmentSlotType slotIn) {
         return MAX_DAMAGE_ARRAY[slotIn.getIndex()] * max;
     }
 
     @Override
-    public int getDamageReductionAmount(EquipmentSlotType slotIn) {
+    public int getDefenseForSlot(EquipmentSlotType slotIn) {
         return damageReduction[slotIn.getIndex()];
     }
 
     @Override
-    public int getEnchantability() {
+    public int getEnchantmentValue() {
         return enchantability;
     }
 
     @Override
-    public SoundEvent getSoundEvent() {
+    public SoundEvent getEquipSound() {
         return sound;
     }
 
     @Override
-    public Ingredient getRepairMaterial() {
+    public Ingredient getRepairIngredient() {
         return repair.get();
     }
 

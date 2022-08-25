@@ -44,19 +44,19 @@ public class RankerEntity extends BasicShinsuUserEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
-        return RankerEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.215)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 20)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 1);
+        return RankerEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32)
+                .add(Attributes.MOVEMENT_SPEED, 0.215)
+                .add(Attributes.MAX_HEALTH, 20)
+                .add(Attributes.ATTACK_DAMAGE, 1);
     }
 
     @Nullable
     @Override
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        FloorProperty property = FloorDimensionsHelper.getFloorProperty(worldIn.getWorld());
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        FloorProperty property = FloorDimensionsHelper.getFloorProperty(worldIn.getLevel());
         floorLevel = property == null ? 1 : property.getLevel();
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
     @Override
@@ -74,9 +74,9 @@ public class RankerEntity extends BasicShinsuUserEntity {
     }
 
     @Override
-    public void onDeath(DamageSource cause) {
-        super.onDeath(cause);
-        Entity best = cause.getTrueSource();
+    public void die(DamageSource cause) {
+        super.die(cause);
+        Entity best = cause.getEntity();
         if (best instanceof PlayerEntity || best instanceof IShinsuUser) {
             ShinsuStats stats = ShinsuStats.get(best);
             if (stats.getLevel() == floorLevel) {
@@ -84,35 +84,35 @@ public class RankerEntity extends BasicShinsuUserEntity {
                 IFormattableTextComponent text = new TranslationTextComponent(DEFEAT, floorLevel, floorLevel + 1);
                 Group group = getGroup();
                 if (group != null) {
-                    text = text.mergeStyle(group.getTextFormattingColor());
+                    text = text.withStyle(group.getTextFormattingColor());
                 }
-                best.sendMessage(text, getUniqueID());
+                best.sendMessage(text, getUUID());
             }
         }
     }
 
     @Override
-    public void livingTick() {
-        super.livingTick();
+    public void aiStep() {
+        super.aiStep();
         info.setPercent(getHealth() / getMaxHealth());
-        info.setVisible(getAttackTarget() != null);
+        info.setVisible(getTarget() != null);
     }
 
     @Override
-    public void addTrackingPlayer(ServerPlayerEntity player) {
-        super.addTrackingPlayer(player);
+    public void startSeenByPlayer(ServerPlayerEntity player) {
+        super.startSeenByPlayer(player);
         info.addPlayer(player);
     }
 
     @Override
-    public void removeTrackingPlayer(ServerPlayerEntity player) {
-        super.removeTrackingPlayer(player);
+    public void stopSeenByPlayer(ServerPlayerEntity player) {
+        super.stopSeenByPlayer(player);
         info.removePlayer(player);
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (hasCustomName()) {
             info.setName(getDisplayName());
         }
@@ -122,8 +122,8 @@ public class RankerEntity extends BasicShinsuUserEntity {
     }
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         compound.putInt("Floor", floorLevel);
     }
 
@@ -144,12 +144,12 @@ public class RankerEntity extends BasicShinsuUserEntity {
     }
 
     @Override
-    protected int getExperiencePoints(PlayerEntity player) {
-        return ShinsuStats.get(this).getLevel() - rand.nextInt(3) + 7;
+    protected int getExperienceReward(PlayerEntity player) {
+        return ShinsuStats.get(this).getLevel() - random.nextInt(3) + 7;
     }
 
     @Override
-    protected float getDropChance(EquipmentSlotType slotIn) {
+    protected float getEquipmentDropChance(EquipmentSlotType slotIn) {
         return 0;
     }
 

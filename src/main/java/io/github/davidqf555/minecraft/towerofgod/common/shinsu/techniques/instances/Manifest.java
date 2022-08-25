@@ -47,7 +47,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     public void onUse(ServerWorld world) {
         Entity user = getUser(world);
         ItemStack item = shape.getItem();
-        item.getOrCreateChildTag(TowerOfGod.MOD_ID).putUniqueId("Technique", getID());
+        item.getOrCreateTagElement(TowerOfGod.MOD_ID).putUUID("Technique", getID());
         ShinsuQuality.setQuality(item, quality);
         IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         for (int i = 0; i < inventory.getSlots(); i++) {
@@ -78,8 +78,8 @@ public class Manifest extends ShinsuTechniqueInstance {
         UUID id = getID();
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack slot = inventory.getStackInSlot(i);
-            CompoundNBT tag = slot.getChildTag(TowerOfGod.MOD_ID);
-            if (!slot.isEmpty() && tag != null && tag.contains("Technique", Constants.NBT.TAG_INT_ARRAY) && id.equals(tag.getUniqueId("Technique"))) {
+            CompoundNBT tag = slot.getTagElement(TowerOfGod.MOD_ID);
+            if (!slot.isEmpty() && tag != null && tag.contains("Technique", Constants.NBT.TAG_INT_ARRAY) && id.equals(tag.getUUID("Technique"))) {
                 contains = true;
                 break;
             }

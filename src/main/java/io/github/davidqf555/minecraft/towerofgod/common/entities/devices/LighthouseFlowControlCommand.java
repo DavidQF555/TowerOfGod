@@ -42,14 +42,14 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
         FlyingDevice device = getEntity();
         Entity owner = device.getOwner();
         targets.clear();
-        targets.addAll(device.world.getLoadedEntitiesWithinAABB(LivingEntity.class, AxisAlignedBB.fromVector(device.getPositionVec()).grow(range), EntityPredicates.CAN_AI_TARGET.and(entity -> entity.getDistanceSq(device) <= range * range && !device.isOnSameTeam(entity))));
+        targets.addAll(device.level.getLoadedEntitiesOfClass(LivingEntity.class, AxisAlignedBB.unitCubeFromLowerCorner(device.position()).inflate(range), EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity.distanceToSqr(device) <= range * range && !device.isAlliedTo(entity))));
         Effect effect = EffectRegistry.REVERSE_FLOW.get();
         for (LivingEntity entity : targets) {
-            double resistance = ShinsuStats.getNetResistance((ServerWorld) device.world, owner, entity);
+            double resistance = ShinsuStats.getNetResistance((ServerWorld) device.level, owner, entity);
             int amplifier = (int) (getAffectingLighthouses(entity) / resistance);
-            entity.addPotionEffect(new EffectInstance(effect, 2, amplifier - 1, false, true));
+            entity.addEffect(new EffectInstance(effect, 2, amplifier - 1, false, true));
         }
-        Random rand = device.getRNG();
+        Random rand = device.getRandom();
         int particles = (int) (Math.PI * range * range / 3);
         for (int i = 0; i < particles; i++) {
             float yaw = rand.nextFloat() * 2 * (float) Math.PI;
@@ -59,13 +59,13 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
             double cos = MathHelper.cos(pitch);
             double dX = MathHelper.sin(yaw) * cos * dist;
             double dZ = MathHelper.cos(yaw) * cos * dist;
-            Vector3d pos = device.getPositionVec().add(dX, dY, dZ);
-            ((ServerWorld) device.world).getServer().getPlayerList().sendToAllNearExcept(null, pos.getX(), pos.getY(), pos.getZ(), 64, device.world.getDimensionKey(), new SSpawnParticlePacket(RedstoneParticleData.REDSTONE_DUST, false, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, 0, 0));
+            Vector3d pos = device.position().add(dX, dY, dZ);
+            ((ServerWorld) device.level).getServer().getPlayerList().broadcast(null, pos.x(), pos.y(), pos.z(), 64, device.level.dimension(), new SSpawnParticlePacket(RedstoneParticleData.REDSTONE, false, pos.x(), pos.y(), pos.z(), 0, 0, 0, 0, 0));
         }
     }
 
     private int getAffectingLighthouses(LivingEntity entity) {
-        return entity.world.getLoadedEntitiesWithinAABB(LighthouseEntity.class, AxisAlignedBB.fromVector(entity.getPositionVec()).grow(range), target -> target.getDistanceSq(entity) <= range * range && target.goalSelector.getRunningGoals().map(PrioritizedGoal::getGoal).filter(goal -> goal instanceof LighthouseFlowControlCommand).map(goal -> (LighthouseFlowControlCommand) goal).anyMatch(command -> command.targets.contains(entity))).size();
+        return entity.level.getLoadedEntitiesOfClass(LighthouseEntity.class, AxisAlignedBB.unitCubeFromLowerCorner(entity.position()).inflate(range), target -> target.distanceToSqr(entity) <= range * range && target.goalSelector.getRunningGoals().map(PrioritizedGoal::getGoal).filter(goal -> goal instanceof LighthouseFlowControlCommand).map(goal -> (LighthouseFlowControlCommand) goal).anyMatch(command -> command.targets.contains(entity))).size();
     }
 
     @Override

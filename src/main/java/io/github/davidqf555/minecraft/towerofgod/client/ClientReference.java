@@ -41,7 +41,7 @@ public final class ClientReference {
     }
 
     public static void renderTextureData(TextureRenderData data, RenderContext context) {
-        Matrix4f matrix = context.getMatrixStack().getLast().getMatrix();
+        Matrix4f matrix = context.getMatrixStack().last().pose();
         float x = context.getX();
         float y = context.getY();
         int width = context.getWidth();
@@ -49,47 +49,47 @@ public final class ClientReference {
         float x2 = x + width;
         float y2 = y + height;
         int color = context.getColor();
-        int a = ColorHelper.PackedColor.getAlpha(color);
-        int r = ColorHelper.PackedColor.getRed(color);
-        int g = ColorHelper.PackedColor.getGreen(color);
-        int b = ColorHelper.PackedColor.getBlue(color);
+        int a = ColorHelper.PackedColor.alpha(color);
+        int r = ColorHelper.PackedColor.red(color);
+        int g = ColorHelper.PackedColor.green(color);
+        int b = ColorHelper.PackedColor.blue(color);
         float minU = data.getStartX() * 1f / data.getTextureWidth();
         float maxU = (data.getStartX() + data.getBlitWidth()) * 1f / data.getTextureWidth();
         float minV = data.getStartY() * 1f / data.getTextureHeight();
         float maxV = (data.getStartY() + data.getBlitHeight()) * 1f / data.getTextureHeight();
         float blitOffset = context.getBlitOffset();
-        Minecraft.getInstance().getTextureManager().bindTexture(data.getTexture());
-        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+        Minecraft.getInstance().getTextureManager().bind(data.getTexture());
+        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuilder();
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX);
-        bufferbuilder.pos(matrix, x, y2, blitOffset).color(r, g, b, a).tex(minU, maxV).endVertex();
-        bufferbuilder.pos(matrix, x2, y2, blitOffset).color(r, g, b, a).tex(maxU, maxV).endVertex();
-        bufferbuilder.pos(matrix, x2, y, blitOffset).color(r, g, b, a).tex(maxU, minV).endVertex();
-        bufferbuilder.pos(matrix, x, y, blitOffset).color(r, g, b, a).tex(minU, minV).endVertex();
-        bufferbuilder.finishDrawing();
+        bufferbuilder.vertex(matrix, x, y2, blitOffset).color(r, g, b, a).uv(minU, maxV).endVertex();
+        bufferbuilder.vertex(matrix, x2, y2, blitOffset).color(r, g, b, a).uv(maxU, maxV).endVertex();
+        bufferbuilder.vertex(matrix, x2, y, blitOffset).color(r, g, b, a).uv(maxU, minV).endVertex();
+        bufferbuilder.vertex(matrix, x, y, blitOffset).color(r, g, b, a).uv(minU, minV).endVertex();
+        bufferbuilder.end();
         RenderSystem.enableBlend();
-        WorldVertexBufferUploader.draw(bufferbuilder);
+        WorldVertexBufferUploader.end(bufferbuilder);
         RenderSystem.disableBlend();
     }
 
     public static void renderItemStackData(ItemStackRenderData data, RenderContext context) {
-        Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGUI(data.get(), (int) context.getX(), (int) context.getY());
+        Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(data.get(), (int) context.getX(), (int) context.getY());
     }
 
     public static void openFloorTeleportationTerminalScreen(int level, BlockPos teleporter, Direction direction) {
-        Minecraft.getInstance().displayGuiScreen(new FloorTeleportationTerminalScreen(level, teleporter, direction));
+        Minecraft.getInstance().setScreen(new FloorTeleportationTerminalScreen(level, teleporter, direction));
     }
 
     public static void openCombinationGUI(Set<ShinsuTechnique> unlocked) {
         PlayerEntity player = Minecraft.getInstance().player;
-        ClientReference.combo = new ShinsuCombinationGui(unlocked, player.rotationYawHead, player.getPitch(1));
+        ClientReference.combo = new ShinsuCombinationGui(unlocked, player.yHeadRot, player.getViewXRot(1));
     }
 
     public static void openGuideScreen(ShinsuTechnique[] pages, int color) {
-        Minecraft.getInstance().displayGuiScreen(new GuideScreen(pages, 221, 180, color));
+        Minecraft.getInstance().setScreen(new GuideScreen(pages, 221, 180, color));
     }
 
     public static void updateDimensions(RegistryKey<World> key) {
-        Minecraft.getInstance().player.connection.getDimensionKeys().add(key);
+        Minecraft.getInstance().player.connection.levels().add(key);
     }
 
 }

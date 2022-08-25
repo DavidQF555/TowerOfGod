@@ -43,14 +43,14 @@ public class FloorProperty {
         List<Pair<Biome.Attributes, Supplier<Biome>>> biomes = new ArrayList<>();
         getBiomes(lookup).forEach(supplier -> {
             Biome biome = supplier.get();
-            biomes.add(Pair.of(new Biome.Attributes(biome.getTemperature(), biome.getDownfall(), 0, 0, 0), supplier));
+            biomes.add(Pair.of(new Biome.Attributes(biome.getBaseTemperature(), biome.getDownfall(), 0, 0, 0), supplier));
         });
         return biomes;
     }
 
     public List<Supplier<Biome>> getBiomes(Registry<Biome> lookup) {
         List<Supplier<Biome>> biomes = new ArrayList<>();
-        for (Map.Entry<RegistryKey<Biome>, Biome> entry : lookup.getEntries()) {
+        for (Map.Entry<RegistryKey<Biome>, Biome> entry : lookup.entrySet()) {
             RegistryKey<Biome> key = entry.getKey();
             for (BiomeDictionary.Type type : types) {
                 if (BiomeDictionary.hasType(key, type)) {

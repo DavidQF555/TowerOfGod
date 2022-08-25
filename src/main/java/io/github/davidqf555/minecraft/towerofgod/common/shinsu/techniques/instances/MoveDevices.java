@@ -58,8 +58,8 @@ public class MoveDevices extends BasicCommandTechnique {
         Entity user = getUser(world);
         Vector3d eye = user.getEyePosition(1);
         Vector3d end = eye.add(direction.scale(distance));
-        EntityRayTraceResult trace = ProjectileHelper.rayTraceEntities(world, user, eye, end, AxisAlignedBB.withSizeAtOrigin(distance * 2, distance * 2, distance * 2), null);
-        Vector3d target = trace == null ? world.rayTraceBlocks(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity)).getHitVec() : trace.getHitVec();
+        EntityRayTraceResult trace = ProjectileHelper.getEntityHitResult(world, user, eye, end, AxisAlignedBB.ofSize(distance * 2, distance * 2, distance * 2), null);
+        Vector3d target = trace == null ? world.clip(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity)).getLocation() : trace.getLocation();
         return new MoveCommand(entity, getID(), target, speed);
     }
 
@@ -80,9 +80,9 @@ public class MoveDevices extends BasicCommandTechnique {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
-        nbt.putDouble("X", direction.getX());
-        nbt.putDouble("Y", direction.getY());
-        nbt.putDouble("Z", direction.getZ());
+        nbt.putDouble("X", direction.x());
+        nbt.putDouble("Y", direction.y());
+        nbt.putDouble("Z", direction.z());
         nbt.putFloat("Speed", speed);
         nbt.putDouble("Distance", distance);
         return nbt;

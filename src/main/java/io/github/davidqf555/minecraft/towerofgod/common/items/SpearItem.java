@@ -33,12 +33,12 @@ public class SpearItem extends ToolItem implements IVanishable {
     }
 
     @Override
-    public boolean canPlayerBreakBlockWhileHolding(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
+    public boolean canAttackBlock(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
         return !player.isCreative();
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.SPEAR;
     }
 
@@ -48,26 +48,26 @@ public class SpearItem extends ToolItem implements IVanishable {
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, LivingEntity entity, int timeLeft) {
+    public void releaseUsing(ItemStack stack, World worldIn, LivingEntity entity, int timeLeft) {
         if (entity instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) entity;
             int duration = getUseDuration(stack) - timeLeft;
             if (duration >= 10) {
-                if (!worldIn.isRemote()) {
-                    stack.damageItem(1, player, p -> p.sendBreakAnimation(entity.getActiveHand()));
+                if (!worldIn.isClientSide()) {
+                    stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(entity.getUsedItemHand()));
                     AbstractArrowEntity proj = createProjectile(worldIn, stack);
-                    proj.setShooter(player);
-                    proj.setDirectionAndMovement(player, player.rotationPitch, player.rotationYaw, 0, 2.5f, 1);
-                    proj.setPosition(player.getPosX(), player.getPosYEye(), player.getPosZ());
-                    if (player.abilities.isCreativeMode) {
-                        proj.pickupStatus = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
+                    proj.setOwner(player);
+                    proj.shootFromRotation(player, player.xRot, player.yRot, 0, 2.5f, 1);
+                    proj.setPos(player.getX(), player.getEyeY(), player.getZ());
+                    if (player.abilities.instabuild) {
+                        proj.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
                     }
-                    worldIn.addEntity(proj);
-                    worldIn.playMovingSound(null, proj, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1, 1);
-                    if (!player.abilities.isCreativeMode) {
-                        player.inventory.deleteStack(stack);
+                    worldIn.addFreshEntity(proj);
+                    worldIn.playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundCategory.PLAYERS, 1, 1);
+                    if (!player.abilities.instabuild) {
+                        player.inventory.removeItem(stack);
                     }
-                    player.addStat(Stats.ITEM_USED.get(this));
+                    player.awardStat(Stats.ITEM_USED.get(this));
                 }
             }
         }
@@ -78,13 +78,13 @@ public class SpearItem extends ToolItem implements IVanishable {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack item = playerIn.getHeldItem(handIn);
-        if (item.getDamage() >= item.getMaxDamage() - 1) {
-            return ActionResult.resultFail(item);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack item = playerIn.getItemInHand(handIn);
+        if (item.getDamageValue() >= item.getMaxDamage() - 1) {
+            return ActionResult.fail(item);
         }
-        playerIn.setActiveHand(handIn);
-        return ActionResult.resultConsume(item);
+        playerIn.startUsingItem(handIn);
+        return ActionResult.consume(item);
     }
 
 

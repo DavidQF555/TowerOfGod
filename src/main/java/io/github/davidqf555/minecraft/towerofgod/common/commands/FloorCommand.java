@@ -14,14 +14,14 @@ public final class FloorCommand {
 
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("floor")
-                .requires(source -> source.hasPermissionLevel(2))
+                .requires(source -> source.hasPermission(2))
                 .then(Commands.argument("level", IntegerArgumentType.integer(1))
-                        .executes(context -> execute(context.getSource().asPlayer(), IntegerArgumentType.getInteger(context, "level")))));
+                        .executes(context -> execute(context.getSource().getPlayerOrException(), IntegerArgumentType.getInteger(context, "level")))));
 
     }
 
     private static int execute(ServerPlayerEntity player, int floor) {
-        FloorDimensionsHelper.forceSendPlayerToFloor(player, floor, player.getPositionVec());
+        FloorDimensionsHelper.forceSendPlayerToFloor(player, floor, player.position());
         return 0;
     }
 }

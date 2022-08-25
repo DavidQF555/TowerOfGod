@@ -43,11 +43,11 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
 
     public static final Codec<FloorChunkGenerator> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             FloorProperty.CODEC.fieldOf("floor_property").forGetter(FloorChunkGenerator::getFloorProperty),
-            BiomeProvider.CODEC.fieldOf("biome_source").forGetter(gen -> gen.biomeProvider),
-            Codec.LONG.fieldOf("seed").stable().forGetter(gen -> gen.field_236084_w_),
-            DimensionSettings.DIMENSION_SETTINGS_CODEC.fieldOf("settings").forGetter(gen -> gen.field_236080_h_)
+            BiomeProvider.CODEC.fieldOf("biome_source").forGetter(gen -> gen.biomeSource),
+            Codec.LONG.fieldOf("seed").stable().forGetter(gen -> gen.seed),
+            DimensionSettings.CODEC.fieldOf("settings").forGetter(gen -> gen.settings)
     ).apply(builder, builder.stable(FloorChunkGenerator::new)));
-    private static final BlockState AIR = Blocks.AIR.getDefaultState();
+    private static final BlockState AIR = Blocks.AIR.defaultBlockState();
     private static final Map<RegistryKey<Biome>, Pair<BlockState, BlockState>> DEFAULTS = new HashMap<>();
     private final FloorProperty property;
 
@@ -61,26 +61,26 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
     }
 
     @Override
-    protected Codec<? extends ChunkGenerator> func_230347_a_() {
+    protected Codec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
 
     @Override
-    public ChunkGenerator func_230349_a_(long seed) {
-        return new FloorChunkGenerator(getFloorProperty(), biomeProvider.getBiomeProvider(seed), seed, field_236080_h_);
+    public ChunkGenerator withSeed(long seed) {
+        return new FloorChunkGenerator(getFloorProperty(), biomeSource.withSeed(seed), seed, settings);
     }
 
     @Override
-    protected int func_236087_a_(int p_236087_1_, int p_236087_2_, @Nullable BlockState[] p_236087_3_, @Nullable Predicate<BlockState> p_236087_4_) {
-        int i = Math.floorDiv(p_236087_1_, horizontalNoiseGranularity);
-        int j = Math.floorDiv(p_236087_2_, horizontalNoiseGranularity);
-        int k = Math.floorMod(p_236087_1_, horizontalNoiseGranularity);
-        int l = Math.floorMod(p_236087_2_, horizontalNoiseGranularity);
-        double d0 = (double) k / (double) horizontalNoiseGranularity;
-        double d1 = (double) l / (double) horizontalNoiseGranularity;
-        double[][] adouble = new double[][]{func_222547_b(i, j), func_222547_b(i, j + 1), func_222547_b(i + 1, j), func_222547_b(i + 1, j + 1)};
-        BiomeProvider provider = getBiomeProvider();
-        for (int i1 = noiseSizeY - 1; i1 >= 0; --i1) {
+    protected int iterateNoiseColumn(int p_236087_1_, int p_236087_2_, @Nullable BlockState[] p_236087_3_, @Nullable Predicate<BlockState> p_236087_4_) {
+        int i = Math.floorDiv(p_236087_1_, chunkWidth);
+        int j = Math.floorDiv(p_236087_2_, chunkWidth);
+        int k = Math.floorMod(p_236087_1_, chunkWidth);
+        int l = Math.floorMod(p_236087_2_, chunkWidth);
+        double d0 = (double) k / (double) chunkWidth;
+        double d1 = (double) l / (double) chunkWidth;
+        double[][] adouble = new double[][]{makeAndFillNoiseColumn(i, j), makeAndFillNoiseColumn(i, j + 1), makeAndFillNoiseColumn(i + 1, j), makeAndFillNoiseColumn(i + 1, j + 1)};
+        BiomeProvider provider = getBiomeSource();
+        for (int i1 = chunkCountY - 1; i1 >= 0; --i1) {
             double d2 = adouble[0][i1];
             double d3 = adouble[1][i1];
             double d4 = adouble[2][i1];
@@ -89,10 +89,10 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
             double d7 = adouble[1][i1 + 1];
             double d8 = adouble[2][i1 + 1];
             double d9 = adouble[3][i1 + 1];
-            for (int j1 = verticalNoiseGranularity - 1; j1 >= 0; --j1) {
-                double d10 = (double) j1 / (double) verticalNoiseGranularity;
+            for (int j1 = chunkHeight - 1; j1 >= 0; --j1) {
+                double d10 = (double) j1 / (double) chunkHeight;
                 double d11 = MathHelper.lerp3(d10, d0, d1, d2, d6, d4, d8, d3, d7, d5, d9);
-                int k1 = i1 * verticalNoiseGranularity + j1;
+                int k1 = i1 * chunkHeight + j1;
                 BlockState blockstate = getDefaultBlockState(provider.getNoiseBiome(p_236087_1_, k1, p_236087_2_), d11, k1);
                 if (p_236087_3_ != null) {
                     p_236087_3_[k1] = blockstate;
@@ -106,15 +106,15 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
     }
 
     @Override
-    public void generateSurface(WorldGenRegion p_225551_1_, IChunk p_225551_2_) {
+    public void buildSurfaceAndBedrock(WorldGenRegion p_225551_1_, IChunk p_225551_2_) {
         ChunkPos chunkpos = p_225551_2_.getPos();
         int i = chunkpos.x;
         int j = chunkpos.z;
         SharedSeedRandom sharedseedrandom = new SharedSeedRandom();
         sharedseedrandom.setBaseChunkSeed(i, j);
         ChunkPos chunkpos1 = p_225551_2_.getPos();
-        int k = chunkpos1.getXStart();
-        int l = chunkpos1.getZStart();
+        int k = chunkpos1.getMinBlockX();
+        int l = chunkpos1.getMinBlockZ();
         Pair<BlockState, BlockState> defaults = getDefaults(p_225551_1_.getNoiseBiome(k, 0, l));
         BlockState block = defaults.getFirst();
         BlockState fluid = defaults.getSecond();
@@ -123,16 +123,16 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
             for (int j1 = 0; j1 < 16; ++j1) {
                 int k1 = k + i1;
                 int l1 = l + j1;
-                int i2 = p_225551_2_.getTopBlockY(Heightmap.Type.WORLD_SURFACE_WG, i1, j1) + 1;
-                double d1 = surfaceDepthNoise.noiseAt((double) k1 * 0.0625D, (double) l1 * 0.0625D, 0.0625D, (double) i1 * 0.0625D) * 15;
-                p_225551_1_.getBiome(blockpos$mutable.setPos(k1, i2, l1)).buildSurface(sharedseedrandom, p_225551_2_, k1, l1, i2, d1, block, fluid, getSeaLevel(), p_225551_1_.getSeed());
+                int i2 = p_225551_2_.getHeight(Heightmap.Type.WORLD_SURFACE_WG, i1, j1) + 1;
+                double d1 = surfaceNoise.getSurfaceNoiseValue((double) k1 * 0.0625D, (double) l1 * 0.0625D, 0.0625D, (double) i1 * 0.0625D) * 15;
+                p_225551_1_.getBiome(blockpos$mutable.set(k1, i2, l1)).buildSurfaceAt(sharedseedrandom, p_225551_2_, k1, l1, i2, d1, block, fluid, getSeaLevel(), p_225551_1_.getSeed());
             }
         }
-        makeBedrock(p_225551_2_, sharedseedrandom);
+        setBedrock(p_225551_2_, sharedseedrandom);
     }
 
     @Override
-    public void func_230352_b_(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_) {
+    public void fillFromNoise(IWorld p_230352_1_, StructureManager p_230352_2_, IChunk p_230352_3_) {
         ObjectList<StructurePiece> objectlist = new ObjectArrayList<>(10);
         ObjectList<JigsawJunction> objectlist1 = new ObjectArrayList<>(32);
         ChunkPos chunkpos = p_230352_3_.getPos();
@@ -140,13 +140,13 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
         int j = chunkpos.z;
         int k = i << 4;
         int l = j << 4;
-        for (Structure<?> structure : Structure.field_236384_t_) {
-            p_230352_2_.func_235011_a_(SectionPos.from(chunkpos, 0), structure).forEach((p_236089_5_) -> {
-                for (StructurePiece structurepiece1 : p_236089_5_.getComponents()) {
-                    if (structurepiece1.func_214810_a(chunkpos, 12)) {
+        for (Structure<?> structure : Structure.NOISE_AFFECTING_FEATURES) {
+            p_230352_2_.startsForFeature(SectionPos.of(chunkpos, 0), structure).forEach((p_236089_5_) -> {
+                for (StructurePiece structurepiece1 : p_236089_5_.getPieces()) {
+                    if (structurepiece1.isCloseToChunk(chunkpos, 12)) {
                         if (structurepiece1 instanceof AbstractVillagePiece) {
                             AbstractVillagePiece abstractvillagepiece = (AbstractVillagePiece) structurepiece1;
-                            JigsawPattern.PlacementBehaviour jigsawpattern$placementbehaviour = abstractvillagepiece.getJigsawPiece().getPlacementBehaviour();
+                            JigsawPattern.PlacementBehaviour jigsawpattern$placementbehaviour = abstractvillagepiece.getElement().getProjection();
                             if (jigsawpattern$placementbehaviour == JigsawPattern.PlacementBehaviour.RIGID) {
                                 objectlist.add(abstractvillagepiece);
                             }
@@ -164,27 +164,27 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
                 }
             });
         }
-        double[][][] adouble = new double[2][noiseSizeZ + 1][noiseSizeY + 1];
-        for (int i5 = 0; i5 < noiseSizeZ + 1; ++i5) {
-            adouble[0][i5] = new double[noiseSizeY + 1];
-            fillNoiseColumn(adouble[0][i5], i * noiseSizeX, j * noiseSizeZ + i5);
-            adouble[1][i5] = new double[noiseSizeY + 1];
+        double[][][] adouble = new double[2][chunkCountZ + 1][chunkCountY + 1];
+        for (int i5 = 0; i5 < chunkCountZ + 1; ++i5) {
+            adouble[0][i5] = new double[chunkCountY + 1];
+            fillNoiseColumn(adouble[0][i5], i * chunkCountX, j * chunkCountZ + i5);
+            adouble[1][i5] = new double[chunkCountY + 1];
         }
         Biome biome = p_230352_1_.getBiome(new BlockPos(k, 0, l));
         ChunkPrimer chunkprimer = (ChunkPrimer) p_230352_3_;
-        Heightmap heightmap = chunkprimer.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
-        Heightmap heightmap1 = chunkprimer.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
+        Heightmap heightmap = chunkprimer.getOrCreateHeightmapUnprimed(Heightmap.Type.OCEAN_FLOOR_WG);
+        Heightmap heightmap1 = chunkprimer.getOrCreateHeightmapUnprimed(Heightmap.Type.WORLD_SURFACE_WG);
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
         ObjectListIterator<StructurePiece> objectlistiterator = objectlist.iterator();
         ObjectListIterator<JigsawJunction> objectlistiterator1 = objectlist1.iterator();
-        for (int i1 = 0; i1 < noiseSizeX; ++i1) {
-            for (int j1 = 0; j1 < noiseSizeZ + 1; ++j1) {
-                fillNoiseColumn(adouble[1][j1], i * noiseSizeX + i1 + 1, j * noiseSizeZ + j1);
+        for (int i1 = 0; i1 < chunkCountX; ++i1) {
+            for (int j1 = 0; j1 < chunkCountZ + 1; ++j1) {
+                fillNoiseColumn(adouble[1][j1], i * chunkCountX + i1 + 1, j * chunkCountZ + j1);
             }
-            for (int j5 = 0; j5 < noiseSizeZ; ++j5) {
-                ChunkSection chunksection = chunkprimer.getSection(15);
-                chunksection.lock();
-                for (int k1 = noiseSizeY - 1; k1 >= 0; --k1) {
+            for (int j5 = 0; j5 < chunkCountZ; ++j5) {
+                ChunkSection chunksection = chunkprimer.getOrCreateSection(15);
+                chunksection.acquire();
+                for (int k1 = chunkCountY - 1; k1 >= 0; --k1) {
                     double d0 = adouble[0][j5][k1];
                     double d1 = adouble[0][j5 + 1][k1];
                     double d2 = adouble[1][j5][k1];
@@ -193,41 +193,41 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
                     double d5 = adouble[0][j5 + 1][k1 + 1];
                     double d6 = adouble[1][j5][k1 + 1];
                     double d7 = adouble[1][j5 + 1][k1 + 1];
-                    for (int l1 = verticalNoiseGranularity - 1; l1 >= 0; --l1) {
-                        int i2 = k1 * verticalNoiseGranularity + l1;
+                    for (int l1 = chunkHeight - 1; l1 >= 0; --l1) {
+                        int i2 = k1 * chunkHeight + l1;
                         int j2 = i2 & 15;
                         int k2 = i2 >> 4;
-                        if (chunksection.getYLocation() >> 4 != k2) {
-                            chunksection.unlock();
-                            chunksection = chunkprimer.getSection(k2);
-                            chunksection.lock();
+                        if (chunksection.bottomBlockY() >> 4 != k2) {
+                            chunksection.release();
+                            chunksection = chunkprimer.getOrCreateSection(k2);
+                            chunksection.acquire();
                         }
-                        double d8 = (double) l1 / (double) verticalNoiseGranularity;
+                        double d8 = (double) l1 / (double) chunkHeight;
                         double d9 = MathHelper.lerp(d8, d0, d4);
                         double d10 = MathHelper.lerp(d8, d2, d6);
                         double d11 = MathHelper.lerp(d8, d1, d5);
                         double d12 = MathHelper.lerp(d8, d3, d7);
-                        for (int l2 = 0; l2 < horizontalNoiseGranularity; ++l2) {
-                            int i3 = k + i1 * horizontalNoiseGranularity + l2;
+                        for (int l2 = 0; l2 < chunkWidth; ++l2) {
+                            int i3 = k + i1 * chunkWidth + l2;
                             int j3 = i3 & 15;
-                            double d13 = (double) l2 / (double) horizontalNoiseGranularity;
+                            double d13 = (double) l2 / (double) chunkWidth;
                             double d14 = MathHelper.lerp(d13, d9, d10);
                             double d15 = MathHelper.lerp(d13, d11, d12);
-                            for (int k3 = 0; k3 < horizontalNoiseGranularity; ++k3) {
-                                int l3 = l + j5 * horizontalNoiseGranularity + k3;
+                            for (int k3 = 0; k3 < chunkWidth; ++k3) {
+                                int l3 = l + j5 * chunkWidth + k3;
                                 int i4 = l3 & 15;
-                                double d16 = (double) k3 / (double) horizontalNoiseGranularity;
+                                double d16 = (double) k3 / (double) chunkWidth;
                                 double d17 = MathHelper.lerp(d16, d14, d15);
                                 double d18 = MathHelper.clamp(d17 / 200, -1, 1);
                                 int j4;
                                 int k4;
                                 int l4;
-                                for (d18 = d18 / 2 - d18 * d18 * d18 / 24; objectlistiterator.hasNext(); d18 += func_222556_a(j4, k4, l4) * 0.8D) {
+                                for (d18 = d18 / 2 - d18 * d18 * d18 / 24; objectlistiterator.hasNext(); d18 += getContribution(j4, k4, l4) * 0.8D) {
                                     StructurePiece structurepiece = objectlistiterator.next();
                                     MutableBoundingBox mutableboundingbox = structurepiece.getBoundingBox();
-                                    j4 = Math.max(0, Math.max(mutableboundingbox.minX - i3, i3 - mutableboundingbox.maxX));
-                                    k4 = i2 - (mutableboundingbox.minY + (structurepiece instanceof AbstractVillagePiece ? ((AbstractVillagePiece) structurepiece).getGroundLevelDelta() : 0));
-                                    l4 = Math.max(0, Math.max(mutableboundingbox.minZ - l3, l3 - mutableboundingbox.maxZ));
+                                    j4 = Math.max(0, Math.max(mutableboundingbox.x0 - i3, i3 - mutableboundingbox.x1));
+                                    k4 = i2 - (mutableboundingbox.y0 + (structurepiece instanceof AbstractVillagePiece ? ((AbstractVillagePiece) structurepiece).getGroundLevelDelta() : 0));
+                                    l4 = Math.max(0, Math.max(mutableboundingbox.z0 - l3, l3 - mutableboundingbox.z1));
                                 }
                                 objectlistiterator.back(objectlist.size());
                                 while (objectlistiterator1.hasNext()) {
@@ -235,14 +235,14 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
                                     int k5 = i3 - jigsawjunction.getSourceX();
                                     j4 = i2 - jigsawjunction.getSourceGroundY();
                                     k4 = l3 - jigsawjunction.getSourceZ();
-                                    d18 += func_222556_a(k5, j4, k4) * 0.4D;
+                                    d18 += getContribution(k5, j4, k4) * 0.4D;
                                 }
                                 objectlistiterator1.back(objectlist1.size());
                                 BlockState blockstate = getDefaultBlockState(biome, d18, i2);
                                 if (blockstate != AIR) {
-                                    blockpos$mutable.setPos(i3, i2, l3);
+                                    blockpos$mutable.set(i3, i2, l3);
                                     if (blockstate.getLightValue(chunkprimer, blockpos$mutable) != 0) {
-                                        chunkprimer.addLightPosition(blockpos$mutable);
+                                        chunkprimer.addLight(blockpos$mutable);
                                     }
                                     chunksection.setBlockState(j3, j2, i4, blockstate, false);
                                     heightmap.update(j3, i2, i4, blockstate);
@@ -252,7 +252,7 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
                         }
                     }
                 }
-                chunksection.unlock();
+                chunksection.release();
             }
             double[][] adouble1 = adouble[0];
             adouble[0] = adouble[1];
@@ -272,23 +272,23 @@ public class FloorChunkGenerator extends NoiseChunkGenerator {
     }
 
     private Pair<BlockState, BlockState> getDefaults(Biome biome) {
-        RegistryKey<Biome> key = RegistryKey.getOrCreateKey(Registry.BIOME_KEY, biome.getRegistryName());
+        RegistryKey<Biome> key = RegistryKey.create(Registry.BIOME_REGISTRY, biome.getRegistryName());
         if (DEFAULTS.containsKey(key)) {
             return DEFAULTS.get(key);
         } else {
             Pair<BlockState, BlockState> states = null;
-            for (Map.Entry<RegistryKey<Dimension>, Dimension> entry : ServerLifecycleHooks.getCurrentServer().getServerConfiguration().getDimensionGeneratorSettings().func_236224_e_().getEntries()) {
-                if (!entry.getKey().getLocation().getNamespace().equals(TowerOfGod.MOD_ID)) {
-                    ChunkGenerator gen = entry.getValue().getChunkGenerator();
-                    if (gen instanceof NoiseChunkGenerator && gen.getBiomeProvider().getBiomes().stream().anyMatch(b -> key.getLocation().equals(b.getRegistryName()))) {
-                        DimensionSettings settings = ((NoiseChunkGenerator) gen).field_236080_h_.get();
+            for (Map.Entry<RegistryKey<Dimension>, Dimension> entry : ServerLifecycleHooks.getCurrentServer().getWorldData().worldGenSettings().dimensions().entrySet()) {
+                if (!entry.getKey().location().getNamespace().equals(TowerOfGod.MOD_ID)) {
+                    ChunkGenerator gen = entry.getValue().generator();
+                    if (gen instanceof NoiseChunkGenerator && gen.getBiomeSource().possibleBiomes().stream().anyMatch(b -> key.location().equals(b.getRegistryName()))) {
+                        DimensionSettings settings = ((NoiseChunkGenerator) gen).settings.get();
                         states = Pair.of(settings.getDefaultBlock(), settings.getDefaultFluid());
                         break;
                     }
                 }
             }
             if (states == null) {
-                states = Pair.of(Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState());
+                states = Pair.of(Blocks.STONE.defaultBlockState(), Blocks.WATER.defaultBlockState());
             }
             DEFAULTS.put(key, states);
             return states;

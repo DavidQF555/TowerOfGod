@@ -30,40 +30,40 @@ public class RangedMainHandAttackGoal<T extends MobEntity & IRangedAttackMob> ex
         maxAttackDistanceSq = maxAttackDistanceIn * maxAttackDistanceIn;
         attackTime = -1;
         strafingTime = -1;
-        setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
     @Override
-    public boolean shouldExecute() {
-        return entity.getAttackTarget() != null && entity.isAlive() && entity.getHeldItemMainhand().getItem() instanceof ShootableItem;
+    public boolean canUse() {
+        return entity.getTarget() != null && entity.isAlive() && entity.getMainHandItem().getItem() instanceof ShootableItem;
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
-        return (shouldExecute() || !entity.getNavigator().noPath()) && entity.getHeldItemMainhand().getItem() instanceof ShootableItem;
+    public boolean canContinueToUse() {
+        return (canUse() || !entity.getNavigation().isDone()) && entity.getMainHandItem().getItem() instanceof ShootableItem;
     }
 
     @Override
-    public void startExecuting() {
-        super.startExecuting();
-        entity.setAggroed(true);
+    public void start() {
+        super.start();
+        entity.setAggressive(true);
     }
 
     @Override
-    public void resetTask() {
-        super.resetTask();
-        entity.setAggroed(false);
+    public void stop() {
+        super.stop();
+        entity.setAggressive(false);
         seeTime = 0;
         attackTime = -1;
-        entity.resetActiveHand();
+        entity.stopUsingItem();
     }
 
     @Override
     public void tick() {
-        LivingEntity target = entity.getAttackTarget();
+        LivingEntity target = entity.getTarget();
         if (target != null) {
-            double distSq = entity.getDistanceSq(target.getPosX(), target.getPosY(), target.getPosZ());
-            boolean canSee = entity.getEntitySenses().canSee(target);
+            double distSq = entity.distanceToSqr(target.getX(), target.getY(), target.getZ());
+            boolean canSee = entity.getSensing().canSee(target);
             boolean positive = seeTime > 0;
             if (canSee != positive) {
                 seeTime = 0;
@@ -74,14 +74,14 @@ public class RangedMainHandAttackGoal<T extends MobEntity & IRangedAttackMob> ex
                 seeTime--;
             }
             if (distSq <= maxAttackDistanceSq && seeTime >= 20) {
-                entity.getNavigator().clearPath();
+                entity.getNavigation().stop();
                 ++strafingTime;
             } else {
-                entity.getNavigator().tryMoveToEntityLiving(target, moveSpeedAmp);
+                entity.getNavigation().moveTo(target, moveSpeedAmp);
                 strafingTime = -1;
             }
             if (strafingTime >= 20) {
-                Random rand = entity.getRNG();
+                Random rand = entity.getRandom();
                 if (rand.nextFloat() < 0.3) {
                     strafingClockwise = !strafingClockwise;
                 }
@@ -96,24 +96,24 @@ public class RangedMainHandAttackGoal<T extends MobEntity & IRangedAttackMob> ex
                 } else if (distSq < maxAttackDistanceSq * 0.25) {
                     strafingBackwards = true;
                 }
-                entity.getMoveHelper().strafe(strafingBackwards ? -0.5f : 0.5f, strafingClockwise ? 0.5f : -0.5f);
-                entity.faceEntity(target, 30, 30);
+                entity.getMoveControl().strafe(strafingBackwards ? -0.5f : 0.5f, strafingClockwise ? 0.5f : -0.5f);
+                entity.lookAt(target, 30, 30);
             } else {
-                entity.getLookController().setLookPositionWithEntity(target, 30, 30);
+                entity.getLookControl().setLookAt(target, 30, 30);
             }
-            if (entity.isHandActive()) {
+            if (entity.isUsingItem()) {
                 if (!canSee && seeTime < -60) {
-                    entity.resetActiveHand();
+                    entity.stopUsingItem();
                 } else if (canSee) {
-                    int count = entity.getItemInUseMaxCount();
+                    int count = entity.getTicksUsingItem();
                     if (count >= 20) {
-                        entity.resetActiveHand();
-                        entity.attackEntityWithRangedAttack(target, BowItem.getArrowVelocity(count));
+                        entity.stopUsingItem();
+                        entity.performRangedAttack(target, BowItem.getPowerForTime(count));
                         attackTime = attackCooldown;
                     }
                 }
             } else if (--attackTime <= 0 && seeTime >= -60) {
-                entity.setActiveHand(Hand.MAIN_HAND);
+                entity.startUsingItem(Hand.MAIN_HAND);
             }
         }
     }

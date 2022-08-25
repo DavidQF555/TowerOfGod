@@ -20,17 +20,17 @@ public class PlaceSphereQualityEffect<T extends RayTraceResult> implements Shins
 
     @Override
     public void apply(Entity user, T clip) {
-        BlockPos hitPos = new BlockPos(clip.getHitVec());
+        BlockPos hitPos = new BlockPos(clip.getLocation());
         for (int y = -radius; y <= radius; y++) {
             double xRadius = Math.sqrt(radius * radius - y * y);
             int xRounded = (int) xRadius;
             for (int x = -xRounded; x <= xRounded; x++) {
                 int zRounded = (int) Math.sqrt(xRadius * xRadius - x * x);
                 for (int z = -zRounded; z <= zRounded; z++) {
-                    BlockPos pos = hitPos.add(x, y, z);
-                    BlockState state = this.state.apply(user.world, pos);
+                    BlockPos pos = hitPos.offset(x, y, z);
+                    BlockState state = this.state.apply(user.level, pos);
                     if (state != null) {
-                        user.world.setBlockState(pos, state);
+                        user.level.setBlockAndUpdate(pos, state);
                     }
                 }
             }

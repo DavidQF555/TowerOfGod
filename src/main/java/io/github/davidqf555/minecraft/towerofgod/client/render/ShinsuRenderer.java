@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 public class ShinsuRenderer extends EntityRenderer<ShinsuEntity> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/shinsu.png");
-    private static final RenderType TYPE = RenderType.getEntityCutoutNoCull(TEXTURE);
+    private static final RenderType TYPE = RenderType.entityCutoutNoCull(TEXTURE);
 
     public ShinsuRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);
@@ -29,29 +29,29 @@ public class ShinsuRenderer extends EntityRenderer<ShinsuEntity> {
 
     @Nonnull
     @Override
-    public ResourceLocation getEntityTexture(@Nonnull ShinsuEntity entity) {
+    public ResourceLocation getTextureLocation(@Nonnull ShinsuEntity entity) {
         return TEXTURE;
     }
 
     @Override
     public void render(@Nonnull ShinsuEntity entityIn, float entityYaw, float partialTicks, @Nonnull MatrixStack matrixStackIn, @Nonnull IRenderTypeBuffer bufferIn, int packedLightIn) {
         int hex = ShinsuQuality.getColor(entityIn.getQuality());
-        int red = ColorHelper.PackedColor.getRed(hex);
-        int green = ColorHelper.PackedColor.getGreen(hex);
-        int blue = ColorHelper.PackedColor.getBlue(hex);
-        int alpha = ColorHelper.PackedColor.getAlpha(hex);
-        matrixStackIn.push();
-        matrixStackIn.rotate(renderManager.getCameraOrientation());
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180f));
+        int red = ColorHelper.PackedColor.red(hex);
+        int green = ColorHelper.PackedColor.green(hex);
+        int blue = ColorHelper.PackedColor.blue(hex);
+        int alpha = ColorHelper.PackedColor.alpha(hex);
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(entityRenderDispatcher.cameraOrientation());
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180f));
         IVertexBuilder builder = bufferIn.getBuffer(TYPE);
-        MatrixStack.Entry entry = matrixStackIn.getLast();
-        Matrix4f matrix4f = entry.getMatrix();
-        Matrix3f matrix3f = entry.getNormal();
-        builder.pos(matrix4f, -1, 1.5f, 0).color(red, green, blue, alpha).tex(0, 1).overlay(OverlayTexture.NO_OVERLAY).lightmap(packedLightIn).normal(matrix3f, 0, 1, 0).endVertex();
-        builder.pos(matrix4f, 1, 1.5f, 0).color(red, green, blue, alpha).tex(1, 1).overlay(OverlayTexture.NO_OVERLAY).lightmap(packedLightIn).normal(matrix3f, 0, 1, 0).endVertex();
-        builder.pos(matrix4f, 1, -0.5f, 0).color(red, green, blue, alpha).tex(1, 0).overlay(OverlayTexture.NO_OVERLAY).lightmap(packedLightIn).normal(matrix3f, 0, 1, 0).endVertex();
-        builder.pos(matrix4f, -1, -0.5f, 0).color(red, green, blue, alpha).tex(0, 0).overlay(OverlayTexture.NO_OVERLAY).lightmap(packedLightIn).normal(matrix3f, 0, 1, 0).endVertex();
-        matrixStackIn.pop();
+        MatrixStack.Entry entry = matrixStackIn.last();
+        Matrix4f matrix4f = entry.pose();
+        Matrix3f matrix3f = entry.normal();
+        builder.vertex(matrix4f, -1, 1.5f, 0).color(red, green, blue, alpha).uv(0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0, 1, 0).endVertex();
+        builder.vertex(matrix4f, 1, 1.5f, 0).color(red, green, blue, alpha).uv(1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0, 1, 0).endVertex();
+        builder.vertex(matrix4f, 1, -0.5f, 0).color(red, green, blue, alpha).uv(1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0, 1, 0).endVertex();
+        builder.vertex(matrix4f, -1, -0.5f, 0).color(red, green, blue, alpha).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(matrix3f, 0, 1, 0).endVertex();
+        matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 

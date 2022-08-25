@@ -46,8 +46,8 @@ public class CastShinsuPacket {
         ServerPlayerEntity player = context.getSender();
         context.enqueueWork(() -> {
             Vector3d eye = player.getEyePosition(1);
-            EntityRayTraceResult result = ProjectileHelper.rayTraceEntities(player.world, player, eye, eye.add(player.getLookVec().scale(ShinsuStats.ENTITY_RANGE)), AxisAlignedBB.fromVector(eye).grow(ShinsuStats.ENTITY_RANGE), null);
-            technique.cast(player, result == null ? null : result.getEntity(), player.getLookVec());
+            EntityRayTraceResult result = ProjectileHelper.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuStats.ENTITY_RANGE)), AxisAlignedBB.unitCubeFromLowerCorner(eye).inflate(ShinsuStats.ENTITY_RANGE), null);
+            technique.cast(player, result == null ? null : result.getEntity(), player.getLookAngle());
         });
         context.setPacketHandled(true);
     }

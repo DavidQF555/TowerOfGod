@@ -28,64 +28,64 @@ public class DataGenRecipeProvider extends RecipeProvider {
     }
 
     @Override
-    protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
+    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
         for (RegistryObject<NeedleItem> registry : ItemRegistry.NEEDLE_ITEMS) {
             NeedleItem item = registry.get();
             IItemTier tier = item.getTier();
-            Ingredient material = tier.getRepairMaterial();
+            Ingredient material = tier.getRepairIngredient();
             if (tier.equals(ItemTier.NETHERITE)) {
-                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(ItemRegistry.DIAMOND_NEEDLE.get()), material, item)
-                        .addCriterion("has_material", hasItem(getPredicates(material)))
-                        .build(consumer, ForgeRegistries.ITEMS.getKey(item));
+                SmithingRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_NEEDLE.get()), material, item)
+                        .unlocks("has_material", inventoryTrigger(getPredicates(material)))
+                        .save(consumer, ForgeRegistries.ITEMS.getKey(item));
 
             } else {
-                ShapedRecipeBuilder.shapedRecipe(item)
-                        .patternLine("x  ")
-                        .patternLine(" x ")
-                        .patternLine("  y")
-                        .key('x', material)
-                        .key('y', Items.IRON_INGOT)
-                        .addCriterion("has_material", hasItem(getPredicates(material)))
-                        .build(consumer);
+                ShapedRecipeBuilder.shaped(item)
+                        .pattern("x  ")
+                        .pattern(" x ")
+                        .pattern("  y")
+                        .define('x', material)
+                        .define('y', Items.IRON_INGOT)
+                        .unlockedBy("has_material", inventoryTrigger(getPredicates(material)))
+                        .save(consumer);
             }
         }
         for (RegistryObject<HookItem> registry : ItemRegistry.HOOK_ITEMS) {
             HookItem item = registry.get();
             IItemTier tier = item.getTier();
-            Ingredient material = tier.getRepairMaterial();
+            Ingredient material = tier.getRepairIngredient();
             if (tier.equals(ItemTier.NETHERITE)) {
-                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(ItemRegistry.DIAMOND_HOOK.get()), material, item)
-                        .addCriterion("has_material", hasItem(getPredicates(material)))
-                        .build(consumer, ForgeRegistries.ITEMS.getKey(item));
+                SmithingRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_HOOK.get()), material, item)
+                        .unlocks("has_material", inventoryTrigger(getPredicates(material)))
+                        .save(consumer, ForgeRegistries.ITEMS.getKey(item));
 
             } else {
-                ShapedRecipeBuilder.shapedRecipe(item)
-                        .patternLine("xxx")
-                        .patternLine("x x")
-                        .patternLine("x  ")
-                        .key('x', material)
-                        .addCriterion("has_material", hasItem(getPredicates(material)))
-                        .build(consumer);
+                ShapedRecipeBuilder.shaped(item)
+                        .pattern("xxx")
+                        .pattern("x x")
+                        .pattern("x  ")
+                        .define('x', material)
+                        .unlockedBy("has_material", inventoryTrigger(getPredicates(material)))
+                        .save(consumer);
             }
         }
         for (RegistryObject<SpearItem> registry : ItemRegistry.SPEARS) {
             SpearItem item = registry.get();
             IItemTier tier = item.getTier();
-            Ingredient material = tier.getRepairMaterial();
+            Ingredient material = tier.getRepairIngredient();
             if (tier.equals(ItemTier.NETHERITE)) {
-                SmithingRecipeBuilder.smithingRecipe(Ingredient.fromItems(ItemRegistry.DIAMOND_SPEAR.get()), material, item)
-                        .addCriterion("has_material", hasItem(getPredicates(material)))
-                        .build(consumer, ForgeRegistries.ITEMS.getKey(item));
+                SmithingRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_SPEAR.get()), material, item)
+                        .unlocks("has_material", inventoryTrigger(getPredicates(material)))
+                        .save(consumer, ForgeRegistries.ITEMS.getKey(item));
 
             } else {
-                ShapedRecipeBuilder.shapedRecipe(item)
-                        .patternLine(" xx")
-                        .patternLine(" yx")
-                        .patternLine("y  ")
-                        .key('x', material)
-                        .key('y', Items.STICK)
-                        .addCriterion("has_material", hasItem(getPredicates(material)))
-                        .build(consumer);
+                ShapedRecipeBuilder.shaped(item)
+                        .pattern(" xx")
+                        .pattern(" yx")
+                        .pattern("y  ")
+                        .define('x', material)
+                        .define('y', Items.STICK)
+                        .unlockedBy("has_material", inventoryTrigger(getPredicates(material)))
+                        .save(consumer);
             }
         }
     }
@@ -93,31 +93,31 @@ public class DataGenRecipeProvider extends RecipeProvider {
     private ItemPredicate[] getPredicates(Ingredient ingredient) {
         Set<ITag<Item>> tags = new HashSet<>();
         Set<ItemStack> items = new HashSet<>();
-        for (Ingredient.IItemList list : ingredient.acceptedItems) {
+        for (Ingredient.IItemList list : ingredient.values) {
             if (list instanceof Ingredient.TagList) {
                 tags.add(((Ingredient.TagList) list).tag);
             } else {
-                items.addAll(list.getStacks());
+                items.addAll(list.getItems());
             }
         }
         ItemPredicate[] predicates = new ItemPredicate[tags.size() + items.size()];
         int i = 0;
         for (ITag<Item> tag : tags) {
-            predicates[i] = ItemPredicate.Builder.create().tag(tag).build();
+            predicates[i] = ItemPredicate.Builder.item().of(tag).build();
             i++;
         }
         for (ItemStack item : items) {
-            ItemPredicate.Builder builder = ItemPredicate.Builder.create().item(item.getItem());
+            ItemPredicate.Builder builder = ItemPredicate.Builder.item().of(item.getItem());
             CompoundNBT nbt = item.getTag();
             if (nbt != null) {
-                builder.nbt(nbt);
+                builder.hasNbt(nbt);
             }
-            for (INBT tag : item.getEnchantmentTagList()) {
-                Enchantment enchantment = Enchantment.getEnchantmentByID(((CompoundNBT) tag).getInt("id"));
+            for (INBT tag : item.getEnchantmentTags()) {
+                Enchantment enchantment = Enchantment.byId(((CompoundNBT) tag).getInt("id"));
                 int level = ((CompoundNBT) tag).getInt("lvl");
-                builder.enchantment(new EnchantmentPredicate(enchantment, MinMaxBounds.IntBound.atLeast(level)));
+                builder.hasEnchantment(new EnchantmentPredicate(enchantment, MinMaxBounds.IntBound.atLeast(level)));
             }
-            predicates[i] = ItemPredicate.Builder.create().item(item.getItem()).nbt(item.getTag()).build();
+            predicates[i] = ItemPredicate.Builder.item().of(item.getItem()).hasNbt(item.getTag()).build();
             i++;
         }
         return predicates;

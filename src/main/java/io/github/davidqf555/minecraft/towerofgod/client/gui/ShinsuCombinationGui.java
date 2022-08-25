@@ -66,39 +66,39 @@ public class ShinsuCombinationGui extends AbstractGui {
             Minecraft client = Minecraft.getInstance();
             if (hasError) {
                 ITextComponent error = ClientReference.ERRORS.get(selected);
-                client.fontRenderer.drawTextWithShadow(matrixStack, error, centerX - client.fontRenderer.getStringPropertyWidth(error) / 2f, centerY + ICON_HEIGHT / 2f + client.fontRenderer.FONT_HEIGHT + 2, 0xFF660000);
+                client.font.drawShadow(matrixStack, error, centerX - client.font.width(error) / 2f, centerY + ICON_HEIGHT / 2f + client.font.lineHeight + 2, 0xFF660000);
             }
             selected.getIcon().render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
-            ITextComponent text = selected.getText().mergeStyle(TextFormatting.BOLD);
-            client.fontRenderer.drawTextWithShadow(matrixStack, text, centerX - client.fontRenderer.getStringPropertyWidth(text) / 2f, centerY + ICON_HEIGHT / 2f + 1, hasError ? 0xFF660000 : color);
+            ITextComponent text = selected.getText().withStyle(TextFormatting.BOLD);
+            client.font.drawShadow(matrixStack, text, centerX - client.font.width(text) / 2f, centerY + ICON_HEIGHT / 2f + 1, hasError ? 0xFF660000 : color);
         }
     }
 
     public void tick() {
         Minecraft client = Minecraft.getInstance();
         if (getSelected() == null) {
-            float dYaw = MathHelper.wrapDegrees(client.player.rotationYaw - prevYaw);
-            float dPitch = MathHelper.wrapDegrees(client.player.rotationPitch - prevPitch);
+            float dYaw = MathHelper.wrapDegrees(client.player.yRot - prevYaw);
+            float dPitch = MathHelper.wrapDegrees(client.player.xRot - prevPitch);
             int resistivity = ClientConfigs.INSTANCE.shinsuCombinationResistivity.get();
             if (dPitch > resistivity) {
                 addMarker(Direction.DOWN);
-                prevYaw = client.player.rotationYaw;
-                prevPitch = client.player.rotationPitch;
+                prevYaw = client.player.yRot;
+                prevPitch = client.player.xRot;
             } else if (dPitch < -resistivity) {
                 addMarker(Direction.UP);
-                prevYaw = client.player.rotationYaw;
-                prevPitch = client.player.rotationPitch;
+                prevYaw = client.player.yRot;
+                prevPitch = client.player.xRot;
             } else if (dYaw > resistivity) {
                 addMarker(Direction.RIGHT);
-                prevYaw = client.player.rotationYaw;
-                prevPitch = client.player.rotationPitch;
+                prevYaw = client.player.yRot;
+                prevPitch = client.player.xRot;
             } else if (dYaw < -resistivity) {
                 addMarker(Direction.LEFT);
-                prevYaw = client.player.rotationYaw;
-                prevPitch = client.player.rotationPitch;
+                prevYaw = client.player.yRot;
+                prevPitch = client.player.xRot;
             }
         }
-        if (client.player.world.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
+        if (client.player.level.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
             TowerOfGod.CHANNEL.sendToServer(new ClientUpdateClientErrorPacket());
         }
     }
@@ -187,12 +187,12 @@ public class ShinsuCombinationGui extends AbstractGui {
         private void render(MatrixStack matrixStack, float x, float y) {
             float centerX = x + WIDTH / 2f;
             float centerY = y + HEIGHT / 2f;
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(centerX, centerY, 0);
-            matrixStack.rotate(Vector3f.ZP.rotationDegrees(direction.getAngle() + offset + 180));
+            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(direction.getAngle() + offset + 180));
             matrixStack.translate(-centerX, -centerY, 0);
             type.texture.render(new RenderContext(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ShinsuQuality.getColor(ClientReference.quality)));
-            matrixStack.pop();
+            matrixStack.popPose();
         }
 
         private enum Type {

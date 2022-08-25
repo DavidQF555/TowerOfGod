@@ -45,22 +45,22 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
         Entity user = getUser(world);
         DirectionalLightningBoltEntity lightning = EntityRegistry.DIRECTIONAL_LIGHTNING.get().create(world);
         if (lightning != null) {
-            Vector3d start = new Vector3d(user.getPosX(), user.getPosYEye(), user.getPosZ());
-            Vector3d end = start.add(direction.mul(RANGE, RANGE, RANGE));
-            EntityRayTraceResult entity = ProjectileHelper.rayTraceEntities(world, lightning, start, end, AxisAlignedBB.withSizeAtOrigin(RANGE * 2, RANGE * 2, RANGE * 2).offset(start), null);
+            Vector3d start = new Vector3d(user.getX(), user.getEyeY(), user.getZ());
+            Vector3d end = start.add(direction.multiply(RANGE, RANGE, RANGE));
+            EntityRayTraceResult entity = ProjectileHelper.getEntityHitResult(world, lightning, start, end, AxisAlignedBB.ofSize(RANGE * 2, RANGE * 2, RANGE * 2).move(start), null);
             Vector3d pos;
             if (entity != null) {
-                pos = entity.getHitVec();
+                pos = entity.getLocation();
             } else {
-                pos = world.rayTraceBlocks(new RayTraceContext(start, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, lightning)).getHitVec();
+                pos = world.clip(new RayTraceContext(start, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, lightning)).getLocation();
             }
             if (user instanceof ServerPlayerEntity) {
-                lightning.setCaster((ServerPlayerEntity) user);
+                lightning.setCause((ServerPlayerEntity) user);
             }
             lightning.setDamage(damage);
-            lightning.setPosition(pos.getX(), pos.getY(), pos.getZ());
+            lightning.setPos(pos.x(), pos.y(), pos.z());
             lightning.setStart(new Vector3f(start));
-            world.addEntity(lightning);
+            world.addFreshEntity(lightning);
         }
         super.onUse(world);
     }
@@ -94,9 +94,9 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
-        nbt.putDouble("X", direction.getX());
-        nbt.putDouble("Y", direction.getY());
-        nbt.putDouble("Z", direction.getZ());
+        nbt.putDouble("X", direction.x());
+        nbt.putDouble("Y", direction.y());
+        nbt.putDouble("Z", direction.z());
         nbt.putFloat("Damage", damage);
         return nbt;
     }

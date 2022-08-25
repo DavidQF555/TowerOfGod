@@ -12,9 +12,9 @@ public class ReverseFlowEffect extends Effect {
 
     public ReverseFlowEffect() {
         super(EffectType.HARMFUL, COLOR);
-        addAttributesModifier(Attributes.ATTACK_SPEED, ID, -0.4, AttributeModifier.Operation.ADDITION);
-        addAttributesModifier(Attributes.FLYING_SPEED, ID, -0.01, AttributeModifier.Operation.ADDITION);
-        addAttributesModifier(Attributes.HORSE_JUMP_STRENGTH, ID, -0.2, AttributeModifier.Operation.MULTIPLY_TOTAL);
-        addAttributesModifier(Attributes.MOVEMENT_SPEED, ID, -0.01, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.ATTACK_SPEED, ID, -0.4, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.FLYING_SPEED, ID, -0.01, AttributeModifier.Operation.ADDITION);
+        addAttributeModifier(Attributes.JUMP_STRENGTH, ID, -0.2, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        addAttributeModifier(Attributes.MOVEMENT_SPEED, ID, -0.01, AttributeModifier.Operation.ADDITION);
     }
 }

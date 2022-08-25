@@ -20,7 +20,7 @@ public class ScoutCommand extends DeviceCommand {
         this.center = center;
         this.speed = speed;
         this.range = range;
-        setMutexFlags(EnumSet.of(Flag.MOVE));
+        setFlags(EnumSet.of(Flag.MOVE));
     }
 
     public static ScoutCommand emptyBuild(FlyingDevice device) {
@@ -30,8 +30,8 @@ public class ScoutCommand extends DeviceCommand {
     @Override
     public void tick() {
         FlyingDevice device = getEntity();
-        PathNavigator nav = device.getNavigator();
-        if (nav.noPath()) {
+        PathNavigator nav = device.getNavigation();
+        if (nav.isDone()) {
             List<BlockPos> air = new ArrayList<>();
             List<BlockPos> border = new ArrayList<>();
             for (int y = -range; y <= range; y++) {
@@ -40,11 +40,11 @@ public class ScoutCommand extends DeviceCommand {
                 for (int x = -xRounded; x <= xRounded; x++) {
                     int zRounded = (int) Math.sqrt(xRange * xRange - x * x);
                     for (int z = -zRounded; z <= zRounded; z++) {
-                        BlockPos pos = center.add(x, y, z);
-                        if (device.world.isAirBlock(pos)) {
+                        BlockPos pos = center.offset(x, y, z);
+                        if (device.level.isEmptyBlock(pos)) {
                             air.add(pos);
                             for (Direction direction : Direction.values()) {
-                                if (!device.world.isAirBlock(pos.offset(direction))) {
+                                if (!device.level.isEmptyBlock(pos.relative(direction))) {
                                     border.add(pos);
                                     break;
                                 }
@@ -54,16 +54,16 @@ public class ScoutCommand extends DeviceCommand {
                 }
             }
             boolean set = false;
-            Random rand = device.getRNG();
+            Random rand = device.getRandom();
             while (!border.isEmpty()) {
                 int i = rand.nextInt(border.size());
                 BlockPos pos = border.get(i);
-                Path path = nav.getPathToPos(pos, 1);
+                Path path = nav.createPath(pos, 1);
                 if (path == null) {
                     border.remove(i);
                     air.remove(pos);
                 } else {
-                    nav.setPath(path, speed);
+                    nav.moveTo(path, speed);
                     set = true;
                     break;
                 }
@@ -71,11 +71,11 @@ public class ScoutCommand extends DeviceCommand {
             if (!set) {
                 while (!air.isEmpty()) {
                     int i = rand.nextInt(air.size());
-                    Path path = nav.getPathToPos(air.get(i), 1);
+                    Path path = nav.createPath(air.get(i), 1);
                     if (path == null) {
                         air.remove(i);
                     } else {
-                        nav.setPath(path, speed);
+                        nav.moveTo(path, speed);
                         set = true;
                         break;
                     }
@@ -89,8 +89,8 @@ public class ScoutCommand extends DeviceCommand {
     }
 
     @Override
-    public void resetTask() {
-        getEntity().getNavigator().clearPath();
+    public void stop() {
+        getEntity().getNavigation().stop();
     }
 
     @Override

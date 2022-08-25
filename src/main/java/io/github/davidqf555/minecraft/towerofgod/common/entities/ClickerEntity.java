@@ -28,8 +28,8 @@ public class ClickerEntity extends Entity {
     private static final int PARTICLES = 2;
     private static final int SPEED = 5;
     private static final int DURATION = 200;
-    private static final DataParameter<String> QUALITY = EntityDataManager.createKey(ClickerEntity.class, DataSerializers.STRING);
-    private static final DataParameter<String> SHAPE = EntityDataManager.createKey(ClickerEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> QUALITY = EntityDataManager.defineId(ClickerEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> SHAPE = EntityDataManager.defineId(ClickerEntity.class, DataSerializers.STRING);
     private int ticksLeft;
 
     public ClickerEntity(EntityType<ClickerEntity> type, World world) {
@@ -38,19 +38,19 @@ public class ClickerEntity extends Entity {
     }
 
     @Override
-    protected void registerData() {
-        EntityDataManager manager = getDataManager();
-        manager.register(QUALITY, "");
-        manager.register(SHAPE, ShinsuShapeRegistry.SWORD.getId().toString());
+    protected void defineSynchedData() {
+        EntityDataManager manager = getEntityData();
+        manager.define(QUALITY, "");
+        manager.define(SHAPE, ShinsuShapeRegistry.SWORD.getId().toString());
     }
 
     @Override
     public void tick() {
-        prevRotationYaw = rotationYaw;
-        rotationYaw += SPEED;
+        yRotO = yRot;
+        yRot += SPEED;
         IParticleData particle = ShinsuQuality.getParticles(getQuality());
         for (int i = 0; i < PARTICLES; i++) {
-            world.addParticle(particle, getPosXRandom(1), getPosYRandom(), getPosZRandom(1), 0, 0, 0);
+            level.addParticle(particle, getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
         }
         ticksLeft--;
         if (ticksLeft <= 0) {
@@ -61,23 +61,23 @@ public class ClickerEntity extends Entity {
 
     @Nullable
     public ShinsuQuality getQuality() {
-        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(dataManager.get(QUALITY)));
+        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(QUALITY)));
     }
 
     public void setQuality(@Nullable ShinsuQuality quality) {
-        dataManager.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
+        entityData.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
     }
 
     public ShinsuShape getShape() {
-        return ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(dataManager.get(SHAPE)));
+        return ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(SHAPE)));
     }
 
     public void setShape(ShinsuShape shape) {
-        dataManager.set(SHAPE, shape.getRegistryName().toString());
+        entityData.set(SHAPE, shape.getRegistryName().toString());
     }
 
     @Override
-    public void readAdditional(CompoundNBT nbt) {
+    public void readAdditionalSaveData(CompoundNBT nbt) {
         if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
             ticksLeft = nbt.getInt("Duration");
         }
@@ -90,7 +90,7 @@ public class ClickerEntity extends Entity {
     }
 
     @Override
-    public void writeAdditional(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundNBT nbt) {
         nbt.putInt("Duration", ticksLeft);
         ShinsuQuality quality = getQuality();
         if (quality != null) {
@@ -100,7 +100,7 @@ public class ClickerEntity extends Entity {
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

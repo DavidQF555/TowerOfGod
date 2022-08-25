@@ -79,7 +79,7 @@ public class FloorTeleportationTerminalScreen extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         BACKGROUND.render(new RenderContext(matrixStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF));
-        font.drawText(matrixStack, title, x + (xSize - font.getStringPropertyWidth(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
+        font.draw(matrixStack, title, x + (xSize - font.width(title)) / 2f, y + ySize / 20f, TITLE_COLOR);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
@@ -90,8 +90,8 @@ public class FloorTeleportationTerminalScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == Minecraft.getInstance().gameSettings.keyBindInventory.getKey().getKeyCode()) {
-            closeScreen();
+        if (keyCode == Minecraft.getInstance().options.keyInventory.getKey().getValue()) {
+            onClose();
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -111,12 +111,12 @@ public class FloorTeleportationTerminalScreen extends Screen {
         }
 
         @Override
-        public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             RENDER.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             String value = this.value.toString();
-            int textX = x + (width - screen.font.getStringWidth(value)) / 2;
-            int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
-            screen.font.drawString(matrixStack, value, textX, textY, valid ? 0xFFFFFFFF : 0xFFFF0000);
+            int textX = x + (width - screen.font.width(value)) / 2;
+            int textY = y + (height - screen.font.lineHeight) / 2;
+            screen.font.draw(matrixStack, value, textX, textY, valid ? 0xFFFFFFFF : 0xFFFF0000);
         }
 
         private void updateValidity() {
@@ -139,12 +139,12 @@ public class FloorTeleportationTerminalScreen extends Screen {
         }
 
         @Override
-        public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             BUTTON.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             String text = "<";
-            int textX = x + (width - screen.font.getStringWidth(text)) / 2;
-            int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
-            screen.font.drawString(matrixStack, text, textX, textY, 0xFFFFFFFF);
+            int textX = x + (width - screen.font.width(text)) / 2;
+            int textY = y + (height - screen.font.lineHeight) / 2;
+            screen.font.draw(matrixStack, text, textX, textY, 0xFFFFFFFF);
         }
 
         @Override
@@ -166,12 +166,12 @@ public class FloorTeleportationTerminalScreen extends Screen {
         }
 
         @Override
-        public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             BUTTON.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             String text = ">";
-            int textX = x + (width - screen.font.getStringWidth(text)) / 2;
-            int textY = y + (height - screen.font.FONT_HEIGHT) / 2;
-            screen.font.drawString(matrixStack, text, textX, textY, 0xFFFFFFFF);
+            int textX = x + (width - screen.font.width(text)) / 2;
+            int textY = y + (height - screen.font.lineHeight) / 2;
+            screen.font.draw(matrixStack, text, textX, textY, 0xFFFFFFFF);
         }
 
         @Override
@@ -193,12 +193,12 @@ public class FloorTeleportationTerminalScreen extends Screen {
         }
 
         @Override
-        public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             BUTTON.render(new RenderContext(matrixStack, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
             String value = "" + this.value;
-            int textX = x + (width - font.getStringWidth(value)) / 2;
-            int textY = y + (height - font.FONT_HEIGHT) / 2;
-            font.drawString(matrixStack, value, textX, textY, 0xFFFFFFFF);
+            int textX = x + (width - font.width(value)) / 2;
+            int textY = y + (height - font.lineHeight) / 2;
+            font.draw(matrixStack, value, textX, textY, 0xFFFFFFFF);
         }
 
         @Override

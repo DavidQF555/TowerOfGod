@@ -23,7 +23,7 @@ public class SpearModel extends Model {
     private final ModelRenderer spear;
 
     public SpearModel() {
-        super(RenderType::getEntitySolid);
+        super(RenderType::entitySolid);
         spear = new ModelRenderer(18, 26, 0, 0);
         spear.addBox(-0.5f, 2, -0.5f, 1, 25, 1);
         ModelRenderer point1 = new ModelRenderer(18, 26, 4, 0);
@@ -53,7 +53,7 @@ public class SpearModel extends Model {
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         spear.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 

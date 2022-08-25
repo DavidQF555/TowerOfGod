@@ -53,10 +53,10 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     }
 
     public static AttributeModifierMap.MutableAttribute setAttributes() {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FLYING_SPEED, 0.2)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.2)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 10);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FLYING_SPEED, 0.2)
+                .add(Attributes.MOVEMENT_SPEED, 0.2)
+                .add(Attributes.MAX_HEALTH, 10);
     }
 
     public static ItemStackHandler createInventory() {
@@ -78,21 +78,21 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     }
 
     @Override
-    public void dropInventory() {
+    public void dropEquipment() {
         for (int i = 0; i < inventory.getSlots(); i++) {
-            ItemEntity item = new ItemEntity(world, getPosX(), getPosY(), getPosZ(), inventory.extractItem(i, inventory.getSlotLimit(i), false));
-            world.addEntity(item);
+            ItemEntity item = new ItemEntity(level, getX(), getY(), getZ(), inventory.extractItem(i, inventory.getSlotLimit(i), false));
+            level.addFreshEntity(item);
         }
     }
 
     @Override
-    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d vec, Hand hand) {
-        ActionResultType ret = super.applyPlayerInteraction(player, vec, hand);
+    public ActionResultType interactAt(PlayerEntity player, Vector3d vec, Hand hand) {
+        ActionResultType ret = super.interactAt(player, vec, hand);
         if (player instanceof ServerPlayerEntity && player.equals(getOwner())) {
-            if (!player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
+            if (!player.isCrouching() && player.getItemInHand(hand).isEmpty()) {
                 return player.startRiding(this) ? ActionResultType.SUCCESS : ActionResultType.PASS;
             } else {
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, buf -> buf.writeVarInt(getEntityId()));
+                NetworkHooks.openGui((ServerPlayerEntity) player, this, buf -> buf.writeVarInt(getId()));
                 return ActionResultType.SUCCESS;
             }
         }
@@ -101,17 +101,17 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
 
     @Override
     public SoundEvent getAmbientSound() {
-        return SoundEvents.BLOCK_BEACON_AMBIENT;
+        return SoundEvents.BEACON_AMBIENT;
     }
 
     @Override
     public SoundEvent getHurtSound(DamageSource s) {
-        return SoundEvents.BLOCK_BEACON_POWER_SELECT;
+        return SoundEvents.BEACON_POWER_SELECT;
     }
 
     @Override
     public SoundEvent getDeathSound() {
-        return SoundEvents.BLOCK_BEACON_DEACTIVATE;
+        return SoundEvents.BEACON_DEACTIVATE;
     }
 
     @Nullable
@@ -128,32 +128,32 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     @Override
     public void tick() {
         super.tick();
-        BlockPos pos = new BlockPos(getPositionVec());
+        BlockPos pos = new BlockPos(position());
         if (!pos.equals(light)) {
             removeLight(light);
             light = null;
         }
-        if (world.isAirBlock(pos) && light == null && isAlive()) {
+        if (level.isEmptyBlock(pos) && light == null && isAlive()) {
             light = pos;
-            world.setBlockState(pos, BlockRegistry.LIGHT.get().getDefaultState());
+            level.setBlockAndUpdate(pos, BlockRegistry.LIGHT.get().defaultBlockState());
         }
     }
 
     @Override
-    public void onDeathUpdate() {
-        super.onDeathUpdate();
+    public void tickDeath() {
+        super.tickDeath();
         removeLight(light);
     }
 
     private void removeLight(BlockPos pos) {
-        if (light != null && world.getBlockState(pos).getBlock().equals(BlockRegistry.LIGHT.get())) {
-            world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        if (light != null && level.getBlockState(pos).getBlock().equals(BlockRegistry.LIGHT.get())) {
+            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         }
     }
 
     @Override
-    public void readAdditional(CompoundNBT nbt) {
-        super.readAdditional(nbt);
+    public void readAdditionalSaveData(CompoundNBT nbt) {
+        super.readAdditionalSaveData(nbt);
         if (nbt.contains("Inventory", Constants.NBT.TAG_COMPOUND)) {
             inventory.deserializeNBT(nbt.getCompound("Inventory"));
         }
@@ -164,8 +164,8 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     }
 
     @Override
-    public void writeAdditional(CompoundNBT nbt) {
-        super.writeAdditional(nbt);
+    public void addAdditionalSaveData(CompoundNBT nbt) {
+        super.addAdditionalSaveData(nbt);
         nbt.put("Inventory", inventory.serializeNBT());
         if (light != null) {
             nbt.putIntArray("Light", new int[]{light.getX(), light.getY(), light.getZ()});
@@ -195,29 +195,29 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
         }
 
         @Override
-        public boolean canInteractWith(PlayerEntity playerIn) {
+        public boolean stillValid(PlayerEntity playerIn) {
             return playerIn.equals(lighthouse.getOwner());
         }
 
         @Override
-        public ItemStack transferStackInSlot(PlayerEntity player, int index) {
+        public ItemStack quickMoveStack(PlayerEntity player, int index) {
             ItemStack returnStack = ItemStack.EMPTY;
-            final Slot slot = inventorySlots.get(index);
-            if (slot != null && slot.getHasStack()) {
-                final ItemStack slotStack = slot.getStack();
+            final Slot slot = slots.get(index);
+            if (slot != null && slot.hasItem()) {
+                final ItemStack slotStack = slot.getItem();
                 returnStack = slotStack.copy();
-                final int containerSlots = inventorySlots.size() - player.inventory.mainInventory.size();
+                final int containerSlots = slots.size() - player.inventory.items.size();
                 if (index < containerSlots) {
-                    if (!mergeItemStack(slotStack, containerSlots, inventorySlots.size(), true)) {
+                    if (!moveItemStackTo(slotStack, containerSlots, slots.size(), true)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (!mergeItemStack(slotStack, 0, containerSlots, false)) {
+                } else if (!moveItemStackTo(slotStack, 0, containerSlots, false)) {
                     return ItemStack.EMPTY;
                 }
                 if (slotStack.getCount() == 0) {
-                    slot.putStack(ItemStack.EMPTY);
+                    slot.set(ItemStack.EMPTY);
                 } else {
-                    slot.onSlotChanged();
+                    slot.setChanged();
                 }
                 if (slotStack.getCount() == returnStack.getCount()) {
                     return ItemStack.EMPTY;
@@ -231,7 +231,7 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
             @Nullable
             @Override
             public LighthouseContainer create(int windowId, PlayerInventory playerInv, PacketBuffer extraData) {
-                LighthouseEntity entity = (LighthouseEntity) playerInv.player.world.getEntityByID(extraData.readVarInt());
+                LighthouseEntity entity = (LighthouseEntity) playerInv.player.level.getEntity(extraData.readVarInt());
                 return entity != null ? new LighthouseContainer(windowId, playerInv, entity) : null;
             }
         }

@@ -32,35 +32,35 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @MethodsReturnNonnullByDefault
 public class FloorTeleportationTerminalBlock extends Block {
 
-    public static final DirectionProperty FACING = HorizontalBlock.HORIZONTAL_FACING;
-    private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 2, 16);
-    private static final VoxelShape POST_SHAPE = Block.makeCuboidShape(4, 2, 4, 12, 14, 12);
+    public static final DirectionProperty FACING = HorizontalBlock.FACING;
+    private static final VoxelShape BASE_SHAPE = Block.box(0, 0, 0, 16, 2, 16);
+    private static final VoxelShape POST_SHAPE = Block.box(4, 2, 4, 12, 14, 12);
     private static final VoxelShape COMMON_SHAPE = VoxelShapes.or(BASE_SHAPE, POST_SHAPE);
-    private static final VoxelShape COLLISION_SHAPE = VoxelShapes.or(COMMON_SHAPE, Block.makeCuboidShape(0, 15, 0, 16, 15, 16));
-    private static final VoxelShape WEST_SHAPE = VoxelShapes.or(Block.makeCuboidShape(1, 10, 0, 5.333333, 14, 16), Block.makeCuboidShape(5.333333, 12, 0, 9.666667, 16, 16), Block.makeCuboidShape(9.666667, 14, 0, 14, 18, 16), COMMON_SHAPE);
-    private static final VoxelShape NORTH_SHAPE = VoxelShapes.or(Block.makeCuboidShape(0, 10, 1, 16, 14, 5.333333), Block.makeCuboidShape(0, 12, 5.333333, 16, 16, 9.666667), Block.makeCuboidShape(0, 14, 9.666667, 16, 18, 14), COMMON_SHAPE);
-    private static final VoxelShape EAST_SHAPE = VoxelShapes.or(Block.makeCuboidShape(15, 10, 0, 10.666667, 14, 16), Block.makeCuboidShape(10.666667, 12, 0, 6.333333, 16, 16), Block.makeCuboidShape(6.333333, 14, 0, 2, 18, 16), COMMON_SHAPE);
-    private static final VoxelShape SOUTH_SHAPE = VoxelShapes.or(Block.makeCuboidShape(0, 10, 15, 16, 14, 10.666667), Block.makeCuboidShape(0, 12, 10.666667, 16, 16, 6.333333), Block.makeCuboidShape(0, 14, 6.333333, 16, 18, 2), COMMON_SHAPE);
+    private static final VoxelShape COLLISION_SHAPE = VoxelShapes.or(COMMON_SHAPE, Block.box(0, 15, 0, 16, 15, 16));
+    private static final VoxelShape WEST_SHAPE = VoxelShapes.or(Block.box(1, 10, 0, 5.333333, 14, 16), Block.box(5.333333, 12, 0, 9.666667, 16, 16), Block.box(9.666667, 14, 0, 14, 18, 16), COMMON_SHAPE);
+    private static final VoxelShape NORTH_SHAPE = VoxelShapes.or(Block.box(0, 10, 1, 16, 14, 5.333333), Block.box(0, 12, 5.333333, 16, 16, 9.666667), Block.box(0, 14, 9.666667, 16, 18, 14), COMMON_SHAPE);
+    private static final VoxelShape EAST_SHAPE = VoxelShapes.or(Block.box(15, 10, 0, 10.666667, 14, 16), Block.box(10.666667, 12, 0, 6.333333, 16, 16), Block.box(6.333333, 14, 0, 2, 18, 16), COMMON_SHAPE);
+    private static final VoxelShape SOUTH_SHAPE = VoxelShapes.or(Block.box(0, 10, 15, 16, 14, 10.666667), Block.box(0, 12, 10.666667, 16, 16, 6.333333), Block.box(0, 14, 6.333333, 16, 18, 2), COMMON_SHAPE);
 
     public FloorTeleportationTerminalBlock() {
-        super(Properties.create(Material.IRON)
-                .setRequiresTool()
-                .hardnessAndResistance(50, 1200)
+        super(Properties.of(Material.METAL)
+                .requiresCorrectToolForDrops()
+                .strength(50, 1200)
         );
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
         if (player instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new OpenFloorTeleportationTerminalPacket(ShinsuStats.get(player).getLevel(), pos, state.get(FACING)));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new OpenFloorTeleportationTerminalPacket(ShinsuStats.get(player).getLevel(), pos, state.getValue(FACING)));
         }
         return ActionResultType.SUCCESS;
     }
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @SuppressWarnings("deprecation")
@@ -72,7 +72,7 @@ public class FloorTeleportationTerminalBlock extends Block {
     @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        switch (state.get(FACING)) {
+        switch (state.getValue(FACING)) {
             case NORTH:
                 return NORTH_SHAPE;
             case SOUTH:
@@ -89,23 +89,23 @@ public class FloorTeleportationTerminalBlock extends Block {
     @SuppressWarnings("deprecation")
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {
-        return state.with(FACING, rot.rotate(state.get(FACING)));
+        return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
-        return state.rotate(mirrorIn.toRotation(state.get(FACING)));
+        return state.rotate(mirrorIn.getRotation(state.getValue(FACING)));
     }
 
     @Override
-    public void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    public void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean isTransparent(BlockState state) {
+    public boolean useShapeForLightOcclusion(BlockState state) {
         return true;
     }
 }

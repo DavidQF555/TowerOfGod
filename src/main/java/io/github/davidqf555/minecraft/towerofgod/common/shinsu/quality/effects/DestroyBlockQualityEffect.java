@@ -17,9 +17,9 @@ public class DestroyBlockQualityEffect implements ShinsuQualityEffect<BlockRayTr
 
     @Override
     public void apply(Entity user, BlockRayTraceResult clip) {
-        BlockPos pos = clip.getPos();
-        if (condition.test(user.world, pos)) {
-            user.world.destroyBlock(pos, true, user);
+        BlockPos pos = clip.getBlockPos();
+        if (condition.test(user.level, pos)) {
+            user.level.destroyBlock(pos, true, user);
         }
     }
 

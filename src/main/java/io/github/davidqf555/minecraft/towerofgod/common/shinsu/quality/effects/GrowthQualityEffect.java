@@ -17,20 +17,20 @@ public class GrowthQualityEffect implements ShinsuQualityEffect<BlockRayTraceRes
 
     @Override
     public void apply(Entity user, BlockRayTraceResult clip) {
-        BlockPos hit = clip.getPos();
-        BlockPos pos = hit.offset(clip.getFace());
-        BlockState state = user.world.getBlockState(pos);
+        BlockPos hit = clip.getBlockPos();
+        BlockPos pos = hit.relative(clip.getDirection());
+        BlockState state = user.level.getBlockState(pos);
         Block b = state.getBlock();
         if (b instanceof IGrowable) {
-            if (user.world instanceof ServerWorld && ((IGrowable) b).canGrow(user.world, pos, state, user.world.isRemote())) {
-                ((IGrowable) b).grow((ServerWorld) user.world, user.world.rand, pos, state);
+            if (user.level instanceof ServerWorld && ((IGrowable) b).isValidBonemealTarget(user.level, pos, state, user.level.isClientSide())) {
+                ((IGrowable) b).performBonemeal((ServerWorld) user.level, user.level.random, pos, state);
             }
         } else {
-            state = user.world.getBlockState(hit);
+            state = user.level.getBlockState(hit);
             b = state.getBlock();
             if (b instanceof IGrowable) {
-                if (user.world instanceof ServerWorld && ((IGrowable) b).canGrow(user.world, hit, state, user.world.isRemote())) {
-                    ((IGrowable) b).grow((ServerWorld) user.world, user.world.rand, hit, state);
+                if (user.level instanceof ServerWorld && ((IGrowable) b).isValidBonemealTarget(user.level, hit, state, user.level.isClientSide())) {
+                    ((IGrowable) b).performBonemeal((ServerWorld) user.level, user.level.random, hit, state);
                 }
             }
         }

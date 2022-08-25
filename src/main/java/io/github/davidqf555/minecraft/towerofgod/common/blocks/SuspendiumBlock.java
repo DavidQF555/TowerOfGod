@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
 public class SuspendiumBlock extends Block {
 
     public SuspendiumBlock() {
-        super(Block.Properties.create(Material.ROCK)
-                .hardnessAndResistance(3f, 3f)
+        super(Block.Properties.of(Material.STONE)
+                .strength(3f, 3f)
                 .sound(SoundType.STONE).harvestLevel(1)
                 .harvestTool(ToolType.PICKAXE)
         );

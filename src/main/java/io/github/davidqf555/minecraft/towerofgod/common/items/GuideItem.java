@@ -30,8 +30,8 @@ public class GuideItem extends Item {
 
     public GuideItem(Supplier<ShinsuTechnique[]> pages, ITextComponent author, int color) {
         super(new Properties()
-                .group(TowerOfGod.TAB)
-                .maxStackSize(1)
+                .tab(TowerOfGod.TAB)
+                .stacksTo(1)
                 .rarity(Rarity.UNCOMMON)
         );
         this.pages = pages;
@@ -40,17 +40,17 @@ public class GuideItem extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent("book.byAuthor", author).mergeStyle(TextFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(new TranslationTextComponent("book.byAuthor", author).withStyle(TextFormatting.GRAY));
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack item = playerIn.getHeldItem(handIn);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack item = playerIn.getItemInHand(handIn);
         if (playerIn instanceof ServerPlayerEntity) {
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new OpenGuideScreenPacket(pages.get(), color));
         }
-        playerIn.addStat(Stats.ITEM_USED.get(this));
-        return ActionResult.func_233538_a_(item, worldIn.isRemote());
+        playerIn.awardStat(Stats.ITEM_USED.get(this));
+        return ActionResult.sidedSuccess(item, worldIn.isClientSide());
     }
 }

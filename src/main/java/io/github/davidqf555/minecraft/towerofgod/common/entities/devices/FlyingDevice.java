@@ -42,26 +42,26 @@ import java.util.UUID;
 @ParametersAreNonnullByDefault
 public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal {
 
-    private static final DataParameter<Integer> COLOR = EntityDataManager.createKey(FlyingDevice.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> COLOR = EntityDataManager.defineId(FlyingDevice.class, DataSerializers.INT);
     private final List<DeviceCommand> commands;
     private UUID owner;
 
     public FlyingDevice(EntityType<? extends FlyingDevice> type, World worldIn) {
         super(type, worldIn);
-        moveController = new FlyingMovementController(this, 90, true);
-        setPathPriority(PathNodeType.WATER, 0);
+        moveControl = new FlyingMovementController(this, 90, true);
+        setPathfindingMalus(PathNodeType.WATER, 0);
         commands = new ArrayList<>();
         owner = null;
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
-        dataManager.register(COLOR, DyeColor.WHITE.getId());
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(COLOR, DyeColor.WHITE.getId());
     }
 
     @Override
-    public void livingTick() {
+    public void aiStep() {
         for (int i = 0; i < commands.size(); i++) {
             DeviceCommand command = commands.get(i);
             command.passiveTick();
@@ -71,19 +71,19 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
                 i--;
             }
         }
-        super.livingTick();
+        super.aiStep();
     }
 
     @Override
-    public boolean isOnSameTeam(Entity entityIn) {
-        return super.isOnSameTeam(entityIn) || entityIn.getUniqueID().equals(owner) || (entityIn instanceof FlyingDevice && owner != null && owner.equals(((FlyingDevice) entityIn).owner));
+    public boolean isAlliedTo(Entity entityIn) {
+        return super.isAlliedTo(entityIn) || entityIn.getUUID().equals(owner) || (entityIn instanceof FlyingDevice && owner != null && owner.equals(((FlyingDevice) entityIn).owner));
     }
 
     @Override
-    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d vec, Hand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+    public ActionResultType interactAt(PlayerEntity player, Vector3d vec, Hand hand) {
+        ItemStack stack = player.getItemInHand(hand);
         Item item = stack.getItem();
-        if (item instanceof DyeItem && !stack.isEmpty() && player.getUniqueID().equals(owner)) {
+        if (item instanceof DyeItem && !stack.isEmpty() && player.getUUID().equals(owner)) {
             DyeColor color = ((DyeItem) item).getDyeColor();
             if (color != getColor()) {
                 if (!player.isCreative()) {
@@ -93,7 +93,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
                 return ActionResultType.CONSUME;
             }
         }
-        return super.applyPlayerInteraction(player, vec, hand);
+        return super.interactAt(player, vec, hand);
     }
 
     public void addCommand(DeviceCommand command) {
@@ -109,22 +109,22 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     }
 
     public DyeColor getColor() {
-        return DyeColor.byId(dataManager.get(COLOR));
+        return DyeColor.byId(entityData.get(COLOR));
     }
 
     public void setColor(DyeColor color) {
-        dataManager.set(COLOR, color.getId());
+        entityData.set(COLOR, color.getId());
     }
 
     @Override
-    public PathNavigator createNavigator(World worldIn) {
+    public PathNavigator createNavigation(World worldIn) {
         return new FlyingPathNavigator(this, worldIn);
     }
 
     @Nullable
     public Entity getOwner() {
-        if (owner != null && world instanceof ServerWorld) {
-            return ((ServerWorld) world).getEntityByUuid(owner);
+        if (owner != null && level instanceof ServerWorld) {
+            return ((ServerWorld) level).getEntity(owner);
         }
         return null;
     }
@@ -139,7 +139,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     }
 
     @Override
-    public boolean canDespawn(double distanceToClosestPlayer) {
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
     }
 
@@ -153,20 +153,20 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
         float speed = (float) getAttributeValue(Attributes.FLYING_SPEED);
         Entity owner = getOwner();
         if (owner != null) {
-            speed *= ShinsuStats.get(owner).getTension((ServerWorld) world);
+            speed *= ShinsuStats.get(owner).getTension((ServerWorld) level);
         }
         moveRelative(speed, vec);
-        move(MoverType.SELF, getMotion());
-        Vector3d motion = getMotion().scale(0.91);
-        setMotion(motion);
-        getLookController().setLookPosition(getEyePosition(1).add(motion));
+        move(MoverType.SELF, getDeltaMovement());
+        Vector3d motion = getDeltaMovement().scale(0.91);
+        setDeltaMovement(motion);
+        getLookControl().setLookAt(getEyePosition(1).add(motion));
     }
 
     @Override
-    protected void dropLoot(DamageSource damageSourceIn, boolean attackedRecently) {
+    protected void dropFromLootTable(DamageSource damageSourceIn, boolean attackedRecently) {
         ItemStack item = getDeviceItem();
-        item.getOrCreateChildTag(TowerOfGod.MOD_ID).putInt("Color", getColor().getId());
-        entityDropItem(item);
+        item.getOrCreateTagElement(TowerOfGod.MOD_ID).putInt("Color", getColor().getId());
+        spawnAtLocation(item);
     }
 
     protected ItemStack getDeviceItem() {
@@ -174,8 +174,8 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     }
 
     @Override
-    public void readAdditional(CompoundNBT nbt) {
-        super.readAdditional(nbt);
+    public void readAdditionalSaveData(CompoundNBT nbt) {
+        super.readAdditionalSaveData(nbt);
         if (nbt.contains("Commands", Constants.NBT.TAG_LIST)) {
             for (INBT command : nbt.getList("Commands", Constants.NBT.TAG_COMPOUND)) {
                 CommandType type = CommandType.valueOf(((CompoundNBT) command).getString("Type"));
@@ -186,24 +186,24 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
             }
         }
         if (nbt.contains("Owner", Constants.NBT.TAG_INT_ARRAY)) {
-            owner = nbt.getUniqueId("Owner");
+            owner = nbt.getUUID("Owner");
         }
         if (nbt.contains("Color", Constants.NBT.TAG_INT)) {
-            dataManager.set(COLOR, nbt.getInt("Color"));
+            entityData.set(COLOR, nbt.getInt("Color"));
         }
     }
 
     @Override
-    public void writeAdditional(CompoundNBT nbt) {
-        super.writeAdditional(nbt);
+    public void addAdditionalSaveData(CompoundNBT nbt) {
+        super.addAdditionalSaveData(nbt);
         ListNBT commands = new ListNBT();
         for (DeviceCommand command : this.commands) {
             commands.add(command.serializeNBT());
         }
         nbt.put("Commands", commands);
         if (owner != null) {
-            nbt.putUniqueId("Owner", owner);
+            nbt.putUUID("Owner", owner);
         }
-        nbt.putInt("Color", dataManager.get(COLOR));
+        nbt.putInt("Color", entityData.get(COLOR));
     }
 }

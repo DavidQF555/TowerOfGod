@@ -19,15 +19,15 @@ public class PushQualityEffect<T extends RayTraceResult> implements ShinsuQualit
 
     @Override
     public void apply(Entity user, T clip) {
-        Vector3d center = clip.getHitVec();
+        Vector3d center = clip.getLocation();
         AxisAlignedBB box = new AxisAlignedBB(center.add(-radius, -radius, -radius), center.add(radius, radius, radius));
-        for (Entity target : user.world.getEntitiesWithinAABBExcludingEntity(user, box)) {
-            Vector3d dir = target.getPositionVec().subtract(center.getX(), center.getY(), center.getZ());
+        for (Entity target : user.level.getEntities(user, box)) {
+            Vector3d dir = target.position().subtract(center.x(), center.y(), center.z());
             double length = dir.length();
             if (length <= radius) {
                 double magnitude = this.magnitude.apply(length);
                 Vector3d vec = dir.normalize().scale(magnitude);
-                target.addVelocity(vec.x, vec.y, vec.z);
+                target.push(vec.x, vec.y, vec.z);
             }
         }
     }

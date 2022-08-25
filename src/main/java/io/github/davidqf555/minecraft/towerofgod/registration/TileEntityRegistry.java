@@ -19,7 +19,7 @@ public final class TileEntityRegistry {
     }
 
     private static <T extends TileEntity> RegistryObject<TileEntityType<T>> register(String name, Supplier<T> supplier, Supplier<Block[]> valid) {
-        return TYPES.register(name, () -> TileEntityType.Builder.create(supplier, valid.get()).build(null));
+        return TYPES.register(name, () -> TileEntityType.Builder.of(supplier, valid.get()).build(null));
     }
 
     public static final RegistryObject<TileEntityType<SuspendiumTileEntity>> SUSPENDIUM = register("suspendium", SuspendiumTileEntity::new, () -> new Block[]{BlockRegistry.SUSPENDIUM_BLOCK.get()});

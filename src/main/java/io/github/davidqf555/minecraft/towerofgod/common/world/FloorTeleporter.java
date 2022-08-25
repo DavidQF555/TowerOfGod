@@ -42,20 +42,20 @@ public class FloorTeleporter extends Teleporter {
     @Nullable
     @Override
     public PortalInfo getPortalInfo(Entity entity, ServerWorld destWorld, Function<ServerWorld, PortalInfo> defaultPortalInfo) {
-        DimensionType target = destWorld.getDimensionType();
-        double scale = DimensionType.getCoordinateDifference(world.getDimensionType(), target);
+        DimensionType target = destWorld.dimensionType();
+        double scale = DimensionType.getTeleportationScale(level.dimensionType(), target);
         WorldBorder border = destWorld.getWorldBorder();
-        BlockPos portal = teleporter.offset(direction);
+        BlockPos portal = teleporter.relative(direction);
         BlockPos scaled = new BlockPos(portal.getX() * scale, portal.getY(), portal.getZ() * scale);
-        BlockPos clamped = new BlockPos(MathHelper.clamp(scaled.getX(), border.minX(), border.maxX()), MathHelper.clamp(scaled.getY(), 1, target.getLogicalHeight()), MathHelper.clamp(scaled.getZ(), border.minZ(), border.maxZ()));
+        BlockPos clamped = new BlockPos(MathHelper.clamp(scaled.getX(), border.getMinX(), border.getMaxX()), MathHelper.clamp(scaled.getY(), 1, target.logicalHeight()), MathHelper.clamp(scaled.getZ(), border.getMinZ(), border.getMaxZ()));
         return getOrCreatePortal(clamped, direction).map(result -> {
-            Vector3d vec = new Vector3d(result.startPos.getX() + 0.5, result.startPos.getY(), result.startPos.getZ() + 0.5);
-            return new PortalInfo(vec, entity.getMotion(), entity.rotationYaw, entity.rotationPitch);
+            Vector3d vec = new Vector3d(result.minCorner.getX() + 0.5, result.minCorner.getY(), result.minCorner.getZ() + 0.5);
+            return new PortalInfo(vec, entity.getDeltaMovement(), entity.yRot, entity.xRot);
         }).orElse(null);
     }
 
     private Optional<TeleportationRepositioner.Result> getOrCreatePortal(BlockPos pos, Direction direction) {
-        Optional<TeleportationRepositioner.Result> existing = getExistingPortal(pos, false);
+        Optional<TeleportationRepositioner.Result> existing = findPortalAround(pos, false);
         if (existing.isPresent()) {
             return existing;
         } else {
@@ -64,45 +64,45 @@ public class FloorTeleporter extends Teleporter {
     }
 
     @Override
-    public Optional<TeleportationRepositioner.Result> getExistingPortal(BlockPos pos, boolean isNether) {
-        BlockPos teleporter = pos.offset(direction.getOpposite());
-        PointOfInterestManager manager = world.getPointOfInterestManager();
-        manager.ensureLoadedAndValid(world, teleporter, DISTANCE);
+    public Optional<TeleportationRepositioner.Result> findPortalAround(BlockPos pos, boolean isNether) {
+        BlockPos teleporter = pos.relative(direction.getOpposite());
+        PointOfInterestManager manager = level.getPoiManager();
+        manager.ensureLoadedAndValid(level, teleporter, DISTANCE);
         Optional<PointOfInterest> optional = manager.getInSquare(poiType -> poiType == PointOfInterestRegistry.FLOOR_TELEPORTATION_TERMINAL.get(), teleporter, DISTANCE, PointOfInterestManager.Status.ANY)
-                .filter(poi -> world.getBlockState(poi.getPos()).hasProperty(FloorTeleportationTerminalBlock.FACING))
+                .filter(poi -> level.getBlockState(poi.getPos()).hasProperty(FloorTeleportationTerminalBlock.FACING))
                 .filter(poi -> {
                     BlockPos poiPos = poi.getPos();
-                    BlockPos middle = poiPos.offset(world.getBlockState(poiPos).get(FloorTeleportationTerminalBlock.FACING));
-                    BlockPos up = middle.up();
-                    BlockPos down = middle.down();
-                    return world.isAirBlock(up) && world.isAirBlock(middle) && world.getBlockState(down).isSolid();
+                    BlockPos middle = poiPos.relative(level.getBlockState(poiPos).getValue(FloorTeleportationTerminalBlock.FACING));
+                    BlockPos up = middle.above();
+                    BlockPos down = middle.below();
+                    return level.isEmptyBlock(up) && level.isEmptyBlock(middle) && level.getBlockState(down).canOcclude();
                 })
-                .min(Comparator.<PointOfInterest>comparingDouble(poi -> poi.getPos().distanceSq(teleporter)).thenComparingInt(poi -> poi.getPos().getY()));
+                .min(Comparator.<PointOfInterest>comparingDouble(poi -> poi.getPos().distSqr(teleporter)).thenComparingInt(poi -> poi.getPos().getY()));
         return optional.map(poi -> {
-            BlockPos blockpos = poi.getPos().offset(world.getBlockState(poi.getPos()).get(FloorTeleportationTerminalBlock.FACING));
+            BlockPos blockpos = poi.getPos().relative(level.getBlockState(poi.getPos()).getValue(FloorTeleportationTerminalBlock.FACING));
             return new TeleportationRepositioner.Result(blockpos, 1, 1);
         });
     }
 
     @Override
-    public Optional<TeleportationRepositioner.Result> makePortal(BlockPos pos, Direction.Axis axis) {
-        return makePortal(pos, Direction.getFacingFromAxisDirection(axis, Direction.AxisDirection.POSITIVE));
+    public Optional<TeleportationRepositioner.Result> createPortal(BlockPos pos, Direction.Axis axis) {
+        return makePortal(pos, Direction.fromAxisAndDirection(axis, Direction.AxisDirection.POSITIVE));
     }
 
     private Optional<TeleportationRepositioner.Result> makePortal(BlockPos pos, Direction direction) {
         for (int dX = -3; dX <= 3; dX++) {
             for (int dY = -1; dY <= 2; dY++) {
                 for (int dZ = -3; dZ <= 3; dZ++) {
-                    BlockPos check = pos.add(dX, dY, dZ);
+                    BlockPos check = pos.offset(dX, dY, dZ);
                     if (dY == -1) {
-                        world.setBlockState(check, Blocks.QUARTZ_BLOCK.getDefaultState());
+                        level.setBlockAndUpdate(check, Blocks.QUARTZ_BLOCK.defaultBlockState());
                     } else {
-                        world.setBlockState(check, Blocks.AIR.getDefaultState());
+                        level.setBlockAndUpdate(check, Blocks.AIR.defaultBlockState());
                     }
                 }
             }
         }
-        world.setBlockState(pos.offset(direction.getOpposite()), BlockRegistry.FLOOR_TELEPORTATION_TERMINAL.get().getDefaultState().with(FloorTeleportationTerminalBlock.FACING, direction));
-        return Optional.of(new TeleportationRepositioner.Result(teleporter.offset(direction), 1, 1));
+        level.setBlockAndUpdate(pos.relative(direction.getOpposite()), BlockRegistry.FLOOR_TELEPORTATION_TERMINAL.get().defaultBlockState().setValue(FloorTeleportationTerminalBlock.FACING, direction));
+        return Optional.of(new TeleportationRepositioner.Result(teleporter.relative(direction), 1, 1));
     }
 }

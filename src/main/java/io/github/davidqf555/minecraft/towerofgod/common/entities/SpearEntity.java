@@ -24,7 +24,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class SpearEntity extends AbstractArrowEntity {
 
-    private static final DataParameter<ItemStack> STACK = EntityDataManager.createKey(SpearEntity.class, DataSerializers.ITEMSTACK);
+    private static final DataParameter<ItemStack> STACK = EntityDataManager.defineId(SpearEntity.class, DataSerializers.ITEM_STACK);
 
     public SpearEntity(EntityType<SpearEntity> type, World world) {
         this(type, world, ItemStack.EMPTY);
@@ -36,72 +36,72 @@ public class SpearEntity extends AbstractArrowEntity {
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
-        getDataManager().register(STACK, ItemStack.EMPTY);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        getEntityData().define(STACK, ItemStack.EMPTY);
     }
 
     @Override
-    protected ItemStack getArrowStack() {
-        return getDataManager().get(STACK).copy();
+    protected ItemStack getPickupItem() {
+        return getEntityData().get(STACK).copy();
     }
 
     public void setStack(ItemStack stack) {
-        getDataManager().set(STACK, stack);
+        getEntityData().set(STACK, stack);
     }
 
     public boolean hasEffect() {
-        return getArrowStack().hasEffect();
+        return getPickupItem().hasFoil();
     }
 
     public IItemTier getTier() {
-        Item item = getArrowStack().getItem();
+        Item item = getPickupItem().getItem();
         return item instanceof TieredItem ? ((TieredItem) item).getTier() : ItemTier.IRON;
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("Stack", Constants.NBT.TAG_COMPOUND)) {
-            setStack(ItemStack.read(compound.getCompound("Stack")));
+            setStack(ItemStack.of(compound.getCompound("Stack")));
         }
     }
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
-        compound.put("Stack", getArrowStack().write(new CompoundNBT()));
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
+        compound.put("Stack", getPickupItem().save(new CompoundNBT()));
     }
 
     @Override
-    protected void onEntityHit(EntityRayTraceResult result) {
+    protected void onHitEntity(EntityRayTraceResult result) {
         Entity target = result.getEntity();
-        ItemStack stack = getArrowStack();
-        Vector3d motion = getMotion();
-        double damage = (((TieredItem) stack.getItem()).getTier().getAttackDamage() * 2 + 2) * motion.length();
+        ItemStack stack = getPickupItem();
+        Vector3d motion = getDeltaMovement();
+        double damage = (((TieredItem) stack.getItem()).getTier().getAttackDamageBonus() * 2 + 2) * motion.length();
         if (target instanceof LivingEntity) {
-            damage += EnchantmentHelper.getModifierForCreature(stack, ((LivingEntity) target).getCreatureAttribute());
+            damage += EnchantmentHelper.getDamageBonus(stack, ((LivingEntity) target).getMobType());
         }
-        Entity shooter = getShooter();
-        DamageSource source = DamageSource.causeTridentDamage(this, shooter == null ? this : shooter);
-        if (target.attackEntityFrom(source, (float) damage)) {
+        Entity shooter = getOwner();
+        DamageSource source = DamageSource.trident(this, shooter == null ? this : shooter);
+        if (target.hurt(source, (float) damage)) {
             if (target.getType() == EntityType.ENDERMAN) {
                 return;
             }
             if (target instanceof LivingEntity) {
                 if (shooter instanceof LivingEntity) {
-                    EnchantmentHelper.applyThornEnchantments((LivingEntity) target, shooter);
-                    EnchantmentHelper.applyArthropodEnchantments((LivingEntity) shooter, target);
+                    EnchantmentHelper.doPostHurtEffects((LivingEntity) target, shooter);
+                    EnchantmentHelper.doPostDamageEffects((LivingEntity) shooter, target);
                 }
-                arrowHit((LivingEntity) target);
+                doPostHurtEffects((LivingEntity) target);
             }
         }
-        setMotion(motion.mul(-0.01, -0.1, -0.01));
-        playSound(SoundEvents.ITEM_TRIDENT_HIT, 1, 1);
+        setDeltaMovement(motion.multiply(-0.01, -0.1, -0.01));
+        playSound(SoundEvents.TRIDENT_HIT, 1, 1);
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

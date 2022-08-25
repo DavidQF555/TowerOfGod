@@ -18,7 +18,7 @@ public class ObserverRenderer extends DeviceRenderer<ObserverEntity, ObserverMod
 
     @Nonnull
     @Override
-    public ResourceLocation getEntityTexture(@Nonnull ObserverEntity entity) {
+    public ResourceLocation getTextureLocation(@Nonnull ObserverEntity entity) {
         return TEXTURE;
     }
 

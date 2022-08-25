@@ -22,7 +22,7 @@ public class ShinsuToolLootModifier extends LootModifier {
     @Nonnull
     @Override
     protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
-        ItemStack tool = context.get(LootParameters.TOOL);
+        ItemStack tool = context.getParamOrNull(LootParameters.TOOL);
         ShinsuQuality quality = ShinsuQuality.getQuality(tool);
         if (quality != null) {
             return quality.filterDrops(generatedLoot, context);

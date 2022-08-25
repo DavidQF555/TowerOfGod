@@ -47,16 +47,16 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
 
     @Override
     public void periodicTick(ServerWorld world, int period) {
-        Entity target = world.getEntityByUuid(this.target);
+        Entity target = world.getEntity(this.target);
         if (target instanceof LivingEntity) {
             Entity user = getUser(world);
-            if (user.getDistanceSq(target) > RANGE * RANGE) {
+            if (user.distanceToSqr(target) > RANGE * RANGE) {
                 remove(world);
                 return;
             }
             double resistance = ShinsuStats.getNetResistance(world, user, target);
             int amp = (int) (resistance * level);
-            ((LivingEntity) target).addPotionEffect(new EffectInstance(EffectRegistry.REVERSE_FLOW.get(), Math.min(period, getDuration() - getTicks()) + 1, amp - 1));
+            ((LivingEntity) target).addEffect(new EffectInstance(EffectRegistry.REVERSE_FLOW.get(), Math.min(period, getDuration() - getTicks()) + 1, amp - 1));
         }
         super.periodicTick(world, period);
     }
@@ -80,7 +80,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
         if (nbt.contains("Target", Constants.NBT.TAG_INT_ARRAY)) {
-            target = nbt.getUniqueId("Target");
+            target = nbt.getUUID("Target");
         }
         if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
             duration = nbt.getInt("Duration");
@@ -93,7 +93,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
-        nbt.putUniqueId("Target", target);
+        nbt.putUUID("Target", target);
         nbt.putInt("Duration", getDuration());
         nbt.putInt("Level", level);
         return nbt;
@@ -105,7 +105,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
         @Override
         public Either<ReverseFlowControl, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
             int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DISRUPTION).getLevel();
-            return target instanceof LivingEntity && user.getDistanceSq(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUniqueID(), 20 + level * 10, level)) : Either.right(Messages.REQUIRES_TARGET.apply(RANGE));
+            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 20 + level * 10, level)) : Either.right(Messages.REQUIRES_TARGET.apply(RANGE));
         }
 
         @Override

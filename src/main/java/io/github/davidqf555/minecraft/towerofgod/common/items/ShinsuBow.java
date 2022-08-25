@@ -43,7 +43,7 @@ public class ShinsuBow extends BowItem {
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, LivingEntity entity, int timeLeft) {
+    public void releaseUsing(ItemStack stack, World worldIn, LivingEntity entity, int timeLeft) {
         if (entity instanceof PlayerEntity) {
             PlayerEntity shooter = (PlayerEntity) entity;
             int charge = getUseDuration(stack) - timeLeft;
@@ -51,13 +51,13 @@ public class ShinsuBow extends BowItem {
             if (charge < 0) {
                 return;
             }
-            float speed = getArrowVelocity(charge);
-            if (speed >= 0.1 && !worldIn.isRemote()) {
-                ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(shooter, null, shooter.getLookVec()).ifLeft(instance -> {
+            float speed = getPowerForTime(charge);
+            if (speed >= 0.1 && !worldIn.isClientSide()) {
+                ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(shooter, null, shooter.getLookAngle()).ifLeft(instance -> {
                     ((ShootShinsuArrow) instance).setVelocity(speed);
                     instance.getTechnique().cast(entity, instance);
-                    worldIn.playSound(null, shooter.getPosX(), shooter.getPosY(), shooter.getPosZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1, 1 / (random.nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
-                    shooter.addStat(Stats.ITEM_USED.get(this));
+                    worldIn.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ARROW_SHOOT, SoundCategory.PLAYERS, 1, 1 / (random.nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
+                    shooter.awardStat(Stats.ITEM_USED.get(this));
                 });
             }
         }
@@ -65,26 +65,26 @@ public class ShinsuBow extends BowItem {
 
     @Override
     public AbstractArrowEntity customArrow(AbstractArrowEntity arrow) {
-        ShinsuArrowEntity shinsu = EntityRegistry.SHINSU_ARROW.get().create(arrow.world);
+        ShinsuArrowEntity shinsu = EntityRegistry.SHINSU_ARROW.get().create(arrow.level);
         if (shinsu == null) {
             return arrow;
         } else {
-            shinsu.setPositionAndRotation(arrow.getPosX(), arrow.getPosY(), arrow.getPosZ(), arrow.rotationYaw, arrow.rotationPitch);
+            shinsu.absMoveTo(arrow.getX(), arrow.getY(), arrow.getZ(), arrow.yRot, arrow.xRot);
             return shinsu;
         }
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
         ActionResult<ItemStack> ret = ForgeEventFactory.onArrowNock(itemstack, worldIn, playerIn, handIn, true);
         if (ret != null) {
             return ret;
-        } else if (ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(playerIn, null, playerIn.getLookVec()).left().isPresent()) {
-            playerIn.setActiveHand(handIn);
-            return ActionResult.resultConsume(itemstack);
+        } else if (ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(playerIn, null, playerIn.getLookAngle()).left().isPresent()) {
+            playerIn.startUsingItem(handIn);
+            return ActionResult.consume(itemstack);
         } else {
-            return ActionResult.resultFail(itemstack);
+            return ActionResult.fail(itemstack);
         }
     }
 
@@ -92,9 +92,9 @@ public class ShinsuBow extends BowItem {
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
         if (worldIn instanceof ServerWorld) {
-            CompoundNBT nbt = stack.getChildTag(TowerOfGod.MOD_ID);
+            CompoundNBT nbt = stack.getTagElement(TowerOfGod.MOD_ID);
             if (!stack.isEmpty() && nbt != null) {
-                UUID id = nbt.getUniqueId("Technique");
+                UUID id = nbt.getUUID("Technique");
                 ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
                 if (technique == null) {
                     IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
@@ -112,13 +112,13 @@ public class ShinsuBow extends BowItem {
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         Vector3d dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
         ShinsuQuality quality = ShinsuQuality.getQuality(stack);
         if (quality != null) {
             quality.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
         }
-        return super.hitEntity(stack, target, attacker);
+        return super.hurtEnemy(stack, target, attacker);
     }
 
     @Override

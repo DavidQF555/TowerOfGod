@@ -51,26 +51,26 @@ public final class FloorDimensionsHelper {
 
     public static void forceSendPlayerToFloor(ServerPlayerEntity player, int floor, Vector3d pos) {
         ServerWorld world = getOrCreateWorld(player.server, floor);
-        world.getChunk(SectionPos.toChunk((int) pos.getX()), SectionPos.toChunk((int) pos.getZ()));
-        player.teleport(world, pos.getX(), pos.getY(), pos.getZ(), player.rotationYaw, player.rotationPitch);
+        world.getChunk(SectionPos.blockToSectionCoord((int) pos.x()), SectionPos.blockToSectionCoord((int) pos.z()));
+        player.teleportTo(world, pos.x(), pos.y(), pos.z(), player.yRot, player.xRot);
     }
 
     public static void sendPlayerToFloor(ServerPlayerEntity serverPlayer, BlockPos teleporter, Direction direction, int floor) {
         ServerWorld world = getOrCreateWorld(serverPlayer.server, floor);
-        if (serverPlayer.canChangeDimension()) {
+        if (serverPlayer.canChangeDimensions()) {
             serverPlayer.changeDimension(world, new FloorTeleporter(world, teleporter, direction));
         }
     }
 
     private static RegistryKey<World> createWorldKey(int level) {
-        return RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(TowerOfGod.MOD_ID, "floor_" + level));
+        return RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(TowerOfGod.MOD_ID, "floor_" + level));
     }
 
     @Nullable
     public static FloorProperty getFloorProperty(ServerWorld world) {
-        Dimension dim = world.getServer().getServerConfiguration().getDimensionGeneratorSettings().func_236224_e_().getValueForKey(RegistryKey.getOrCreateKey(Registry.DIMENSION_KEY, world.getDimensionKey().getLocation()));
+        Dimension dim = world.getServer().getWorldData().worldGenSettings().dimensions().get(RegistryKey.create(Registry.LEVEL_STEM_REGISTRY, world.dimension().location()));
         if (dim != null) {
-            ChunkGenerator gen = dim.getChunkGenerator();
+            ChunkGenerator gen = dim.generator();
             if (gen instanceof FloorChunkGenerator) {
                 return ((FloorChunkGenerator) gen).getFloorProperty();
             }
@@ -81,7 +81,7 @@ public final class FloorDimensionsHelper {
     @SuppressWarnings("deprecation")
     public static ServerWorld getOrCreateWorld(MinecraftServer server, int level) {
         if (level <= 1) {
-            return server.getWorld(World.OVERWORLD);
+            return server.getLevel(World.OVERWORLD);
         }
         Map<RegistryKey<World>, ServerWorld> map = server.forgeGetWorldMap();
         RegistryKey<World> worldKey = createWorldKey(level);
@@ -94,14 +94,14 @@ public final class FloorDimensionsHelper {
 
     @SuppressWarnings("deprecation")
     private static ServerWorld createAndRegisterWorldAndDimension(MinecraftServer server, Map<RegistryKey<World>, ServerWorld> map, RegistryKey<World> worldKey, int level) {
-        ServerWorld overworld = server.getWorld(World.OVERWORLD);
-        RegistryKey<Dimension> dimensionKey = RegistryKey.getOrCreateKey(Registry.DIMENSION_KEY, worldKey.getLocation());
+        ServerWorld overworld = server.getLevel(World.OVERWORLD);
+        RegistryKey<Dimension> dimensionKey = RegistryKey.create(Registry.LEVEL_STEM_REGISTRY, worldKey.location());
         Dimension dimension = createFloorDimension(server, level);
-        IServerConfiguration serverConfig = server.getServerConfiguration();
-        DimensionGeneratorSettings dimensionGeneratorSettings = serverConfig.getDimensionGeneratorSettings();
-        dimensionGeneratorSettings.func_236224_e_().register(dimensionKey, dimension, Lifecycle.experimental());
-        DerivedWorldInfo derivedWorldInfo = new DerivedWorldInfo(serverConfig, serverConfig.getServerWorldInfo());
-        ServerWorld newWorld = new ServerWorld(server, server.backgroundExecutor, server.anvilConverterForAnvilFile, derivedWorldInfo, worldKey, dimension.getDimensionType(), server.chunkStatusListenerFactory.create(11), dimension.getChunkGenerator(), dimensionGeneratorSettings.hasDebugChunkGenerator(), BiomeManager.getHashedSeed(dimensionGeneratorSettings.getSeed()), ImmutableList.of(), false);
+        IServerConfiguration serverConfig = server.getWorldData();
+        DimensionGeneratorSettings dimensionGeneratorSettings = serverConfig.worldGenSettings();
+        dimensionGeneratorSettings.dimensions().register(dimensionKey, dimension, Lifecycle.experimental());
+        DerivedWorldInfo derivedWorldInfo = new DerivedWorldInfo(serverConfig, serverConfig.overworldData());
+        ServerWorld newWorld = new ServerWorld(server, server.executor, server.storageSource, derivedWorldInfo, worldKey, dimension.type(), server.progressListenerFactory.create(11), dimension.generator(), dimensionGeneratorSettings.isDebug(), BiomeManager.obfuscateSeed(dimensionGeneratorSettings.seed()), ImmutableList.of(), false);
         overworld.getWorldBorder().addListener(new IBorderListener.Impl(newWorld.getWorldBorder()));
         map.put(worldKey, newWorld);
         server.markWorldsDirty();
@@ -111,7 +111,7 @@ public final class FloorDimensionsHelper {
     }
 
     private static Dimension createFloorDimension(MinecraftServer server, int level) {
-        ServerWorld overworld = server.getWorld(World.OVERWORLD);
+        ServerWorld overworld = server.getLevel(World.OVERWORLD);
         long seed = overworld.getSeed() + level - 1;
         SharedSeedRandom random = new SharedSeedRandom(seed);
         FloorProperty property = randomProperty(level, random);
@@ -119,13 +119,13 @@ public final class FloorDimensionsHelper {
         ResourceLocation effect;
         int rand = random.nextInt(3);
         if (rand == 0) {
-            effect = DimensionType.OVERWORLD_ID;
+            effect = DimensionType.OVERWORLD_EFFECTS;
         } else if (rand == 1) {
-            effect = DimensionType.THE_NETHER_ID;
+            effect = DimensionType.NETHER_EFFECTS;
         } else {
-            effect = DimensionType.THE_END_ID;
+            effect = DimensionType.END_EFFECTS;
         }
-        BiomeProvider provider = new NetherBiomeProvider(seed, property.getBiomeAttributesList(server.getDynamicRegistries().getRegistry(Registry.BIOME_KEY)), Optional.empty());
+        BiomeProvider provider = new NetherBiomeProvider(seed, property.getBiomeAttributesList(server.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY)), Optional.empty());
         DimensionSettings settings = createSettings(property);
         ChunkGenerator generator = new FloorChunkGenerator(property, provider, seed, () -> settings);
         DimensionType type = createDimensionType(property, effect, lighting);
@@ -222,16 +222,16 @@ public final class FloorDimensionsHelper {
         SlideSettings bottomSlide = new SlideSettings(bottomTarget, bottomSize, bottomOffset);
         ScalingSettings sampling = new ScalingSettings(xzScale, yScale, xzFactor, yFactor);
         NoiseSettings noise = new NoiseSettings(height, sampling, topSlide, bottomSlide, sizeHorizontal, sizeVertical, densityFactor, densityOffset, false, true, false, false);
-        Map<Structure<?>, StructureSeparationSettings> map = Maps.newHashMap(DimensionStructuresSettings.field_236191_b_);
+        Map<Structure<?>, StructureSeparationSettings> map = Maps.newHashMap(DimensionStructuresSettings.DEFAULTS);
         if (hasCeiling) {
             for (Structure<?> structure : new HashSet<>(map.keySet())) {
-                if (structure.getDecorationStage() == GenerationStage.Decoration.SURFACE_STRUCTURES) {
+                if (structure.step() == GenerationStage.Decoration.SURFACE_STRUCTURES) {
                     map.remove(structure);
                 }
             }
         }
         DimensionStructuresSettings structures = new DimensionStructuresSettings(Optional.empty(), map);
-        return new DimensionSettings(structures, noise, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), ceilingOffset, floorOffset, seaLevel, false);
+        return new DimensionSettings(structures, noise, Blocks.STONE.defaultBlockState(), Blocks.WATER.defaultBlockState(), ceilingOffset, floorOffset, seaLevel, false);
     }
 
     private static FloorProperty randomProperty(int level, Random rand) {

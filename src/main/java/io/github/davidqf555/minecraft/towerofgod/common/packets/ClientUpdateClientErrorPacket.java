@@ -41,11 +41,11 @@ public class ClientUpdateClientErrorPacket {
         ServerPlayerEntity player = context.getSender();
         context.enqueueWork(() -> {
             Vector3d eye = player.getEyePosition(1);
-            EntityRayTraceResult result = ProjectileHelper.rayTraceEntities(player.world, player, eye, eye.add(player.getLookVec().scale(ShinsuStats.ENTITY_RANGE)), AxisAlignedBB.fromVector(eye).grow(ShinsuStats.ENTITY_RANGE), null);
+            EntityRayTraceResult result = ProjectileHelper.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuStats.ENTITY_RANGE)), AxisAlignedBB.unitCubeFromLowerCorner(eye).inflate(ShinsuStats.ENTITY_RANGE), null);
             Entity target = result == null ? null : result.getEntity();
             Map<ShinsuTechnique, ITextComponent> errors = new HashMap<>();
             for (ShinsuTechnique technique : ShinsuTechniqueRegistry.getRegistry()) {
-                technique.create(player, target, player.getLookVec()).ifRight(error -> errors.put(technique, error));
+                technique.create(player, target, player.getLookAngle()).ifRight(error -> errors.put(technique, error));
             }
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ServerUpdateClientErrorPacket(errors));
         });

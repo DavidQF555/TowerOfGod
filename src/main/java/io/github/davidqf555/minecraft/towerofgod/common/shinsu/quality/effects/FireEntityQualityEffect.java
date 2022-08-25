@@ -13,7 +13,7 @@ public class FireEntityQualityEffect implements ShinsuQualityEffect<EntityRayTra
 
     @Override
     public void apply(Entity user, EntityRayTraceResult clip) {
-        clip.getEntity().setFire(duration);
+        clip.getEntity().setSecondsOnFire(duration);
     }
 
 }

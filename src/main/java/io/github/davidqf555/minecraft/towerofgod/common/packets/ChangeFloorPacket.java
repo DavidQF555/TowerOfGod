@@ -22,11 +22,11 @@ public class ChangeFloorPacket {
         buffer.writeInt(message.teleporter.getY());
         buffer.writeInt(message.teleporter.getZ());
         buffer.writeInt(message.level);
-        buffer.writeInt(message.direction.getIndex());
+        buffer.writeInt(message.direction.get3DDataValue());
     };
     private static final Function<PacketBuffer, ChangeFloorPacket> DECODER = buffer -> {
         BlockPos pos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
-        return new ChangeFloorPacket(buffer.readInt(), pos, Direction.byIndex(buffer.readInt()));
+        return new ChangeFloorPacket(buffer.readInt(), pos, Direction.from3DDataValue(buffer.readInt()));
     };
     private static final BiConsumer<ChangeFloorPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();

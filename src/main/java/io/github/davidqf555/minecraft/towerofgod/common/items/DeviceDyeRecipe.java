@@ -31,8 +31,8 @@ public class DeviceDyeRecipe extends SpecialRecipe {
     public boolean matches(CraftingInventory inv, @Nonnull World worldIn) {
         ItemStack device = ItemStack.EMPTY;
         ItemStack dye = ItemStack.EMPTY;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack item = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack item = inv.getItem(i);
             if (!item.isEmpty()) {
                 if (device.isEmpty() && COLORABLE.contains(item.getItem())) {
                     device = item;
@@ -47,11 +47,11 @@ public class DeviceDyeRecipe extends SpecialRecipe {
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         ItemStack device = ItemStack.EMPTY;
         ItemStack dye = ItemStack.EMPTY;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack item = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack item = inv.getItem(i);
             if (!item.isEmpty()) {
                 if (device.isEmpty() && COLORABLE.contains(item.getItem())) {
                     device = item;
@@ -65,14 +65,14 @@ public class DeviceDyeRecipe extends SpecialRecipe {
         if (!device.isEmpty() && !dye.isEmpty()) {
             ItemStack result = device.copy();
             result.setCount(1);
-            result.getOrCreateChildTag(TowerOfGod.MOD_ID).putInt("Color", ((DyeItem) dye.getItem()).getDyeColor().getId());
+            result.getOrCreateTagElement(TowerOfGod.MOD_ID).putInt("Color", ((DyeItem) dye.getItem()).getDyeColor().getId());
             return result;
         }
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return width * height >= 2;
     }
 

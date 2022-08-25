@@ -17,8 +17,8 @@ import java.util.function.Supplier;
 
 public class UpdateClientDimensionsPacket {
 
-    private static final BiConsumer<UpdateClientDimensionsPacket, PacketBuffer> ENCODER = (message, buffer) -> buffer.writeString(message.key.getLocation().toString());
-    private static final Function<PacketBuffer, UpdateClientDimensionsPacket> DECODER = buffer -> new UpdateClientDimensionsPacket(RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(buffer.readString())));
+    private static final BiConsumer<UpdateClientDimensionsPacket, PacketBuffer> ENCODER = (message, buffer) -> buffer.writeUtf(message.key.location().toString());
+    private static final Function<PacketBuffer, UpdateClientDimensionsPacket> DECODER = buffer -> new UpdateClientDimensionsPacket(RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(buffer.readUtf())));
     private static final BiConsumer<UpdateClientDimensionsPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);

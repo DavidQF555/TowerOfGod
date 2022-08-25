@@ -26,33 +26,33 @@ public class LighthouseScreen extends ContainerScreen<LighthouseEntity.Lighthous
 
     public LighthouseScreen(LighthouseEntity.LighthouseContainer screenContainer, PlayerInventory inv, ITextComponent titleIn) {
         super(screenContainer, inv, titleIn);
-        titleY -= 4;
-        playerInventoryTitleY += 2;
+        titleLabelY -= 4;
+        inventoryLabelY += 2;
     }
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        renderHoveredTooltip(matrixStack, mouseX, mouseY);
+        renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    public void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-        int x = (width - xSize) / 2;
-        int y = (height - ySize) / 2;
+    public void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        int x = (width - imageWidth) / 2;
+        int y = (height - imageHeight) / 2;
         int offset = getBlitOffset();
-        INVENTORY.render(new RenderContext(matrixStack, x, y + 72, offset, xSize, 94, 0xFFFFFFFF));
-        int hex = container.lighthouse.getColor().getColorValue();
-        LIGHTHOUSE.render(new RenderContext(matrixStack, x, y, offset, xSize, 71, ColorHelper.PackedColor.packColor(255, ColorHelper.PackedColor.getRed(hex), ColorHelper.PackedColor.getGreen(hex), ColorHelper.PackedColor.getBlue(hex))));
+        INVENTORY.render(new RenderContext(matrixStack, x, y + 72, offset, imageWidth, 94, 0xFFFFFFFF));
+        int hex = menu.lighthouse.getColor().getColorValue();
+        LIGHTHOUSE.render(new RenderContext(matrixStack, x, y, offset, imageWidth, 71, ColorHelper.PackedColor.color(255, ColorHelper.PackedColor.red(hex), ColorHelper.PackedColor.green(hex), ColorHelper.PackedColor.blue(hex))));
     }
 
     @Override
-    public void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        int hex = container.lighthouse.getColor().getColorValue();
-        int color = ColorHelper.PackedColor.packColor(255, Math.min(255, ColorHelper.PackedColor.getRed(hex) + 64), Math.min(255, ColorHelper.PackedColor.getGreen(hex) + 64), Math.min(255, ColorHelper.PackedColor.getBlue(hex) + 64));
-        font.drawText(matrixStack, title, (float) titleX, (float) titleY, color);
-        font.drawText(matrixStack, playerInventory.getDisplayName(), (float) playerInventoryTitleX, (float) playerInventoryTitleY, INVENTORY_TITLE_COLOR);
+    public void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+        int hex = menu.lighthouse.getColor().getColorValue();
+        int color = ColorHelper.PackedColor.color(255, Math.min(255, ColorHelper.PackedColor.red(hex) + 64), Math.min(255, ColorHelper.PackedColor.green(hex) + 64), Math.min(255, ColorHelper.PackedColor.blue(hex) + 64));
+        font.draw(matrixStack, title, (float) titleLabelX, (float) titleLabelY, color);
+        font.draw(matrixStack, inventory.getDisplayName(), (float) inventoryLabelX, (float) inventoryLabelY, INVENTORY_TITLE_COLOR);
     }
 
     public static class Factory implements ScreenManager.IScreenFactory<LighthouseEntity.LighthouseContainer, LighthouseScreen> {

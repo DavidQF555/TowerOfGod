@@ -51,17 +51,17 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
                 LivingEntity user = (LivingEntity) u;
                 ShinsuStats stats = ShinsuStats.get(u);
                 ShinsuQuality quality = stats.getQuality();
-                shinsu.setShooter(user);
+                shinsu.setOwner(user);
                 shinsu.setQuality(quality);
                 shinsu.setTechnique(this);
-                shinsu.setPosition(user.getPosX(), user.getPosYEye() - shinsu.getBoundingBox().getYSize() / 2, user.getPosZ());
+                shinsu.setPos(user.getX(), user.getEyeY() - shinsu.getBoundingBox().getYsize() / 2, user.getZ());
                 float speed = BASE_SPEED;
                 if (quality != null) {
                     speed *= quality.getSpeed();
                 }
-                shinsu.shoot(direction.getX(), direction.getY(), direction.getZ(), speed, 0);
-                blast = shinsu.getUniqueID();
-                world.addEntity(shinsu);
+                shinsu.shoot(direction.x(), direction.y(), direction.z(), speed, 0);
+                blast = shinsu.getUUID();
+                world.addFreshEntity(shinsu);
             }
         }
         super.onUse(world);
@@ -69,7 +69,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
 
     @Override
     public void periodicTick(ServerWorld world, int period) {
-        if (blast == null || world.getEntityByUuid(blast) == null) {
+        if (blast == null || world.getEntity(blast) == null) {
             remove(world);
         }
         super.periodicTick(world, period);
@@ -94,11 +94,11 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
         if (blast != null) {
-            nbt.putUniqueId("Blast", blast);
+            nbt.putUUID("Blast", blast);
         }
-        nbt.putDouble("X", direction.getX());
-        nbt.putDouble("Y", direction.getY());
-        nbt.putDouble("Z", direction.getZ());
+        nbt.putDouble("X", direction.x());
+        nbt.putDouble("Y", direction.y());
+        nbt.putDouble("Z", direction.z());
         return nbt;
     }
 
@@ -106,7 +106,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
         if (nbt.contains("Blast", Constants.NBT.TAG_INT_ARRAY)) {
-            blast = nbt.getUniqueId("Blast");
+            blast = nbt.getUUID("Blast");
         }
         if (nbt.contains("X", Constants.NBT.TAG_DOUBLE) && nbt.contains("Y", Constants.NBT.TAG_DOUBLE) && nbt.contains("Z", Constants.NBT.TAG_DOUBLE)) {
             direction = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));

@@ -19,7 +19,7 @@ public class MoveCommand extends DeviceCommand {
         super(entity, technique, 1);
         this.target = pos;
         this.speed = speed;
-        setMutexFlags(EnumSet.of(Flag.MOVE));
+        setFlags(EnumSet.of(Flag.MOVE));
     }
 
     public static MoveCommand emptyBuild(FlyingDevice device) {
@@ -28,7 +28,7 @@ public class MoveCommand extends DeviceCommand {
 
     @Override
     public void passiveTick() {
-        if (getEntity().getDistanceSq(target) <= 1) {
+        if (getEntity().distanceToSqr(target) <= 1) {
             remove();
         }
         super.passiveTick();
@@ -36,16 +36,16 @@ public class MoveCommand extends DeviceCommand {
 
     @Override
     public void tick() {
-        PathNavigator nav = getEntity().getNavigator();
-        if (nav.noPath() && !nav.tryMoveToXYZ(target.getX(), target.getY(), target.getZ(), speed)) {
+        PathNavigator nav = getEntity().getNavigation();
+        if (nav.isDone() && !nav.moveTo(target.x(), target.y(), target.z(), speed)) {
             remove();
         }
         super.tick();
     }
 
     @Override
-    public void resetTask() {
-        getEntity().getNavigator().clearPath();
+    public void stop() {
+        getEntity().getNavigation().stop();
     }
 
     @Override
@@ -58,9 +58,9 @@ public class MoveCommand extends DeviceCommand {
         CompoundNBT nbt = super.serializeNBT();
         nbt.putFloat("Speed", speed);
         ListNBT target = new ListNBT();
-        target.add(DoubleNBT.valueOf(this.target.getX()));
-        target.add(DoubleNBT.valueOf(this.target.getY()));
-        target.add(DoubleNBT.valueOf(this.target.getZ()));
+        target.add(DoubleNBT.valueOf(this.target.x()));
+        target.add(DoubleNBT.valueOf(this.target.y()));
+        target.add(DoubleNBT.valueOf(this.target.z()));
         nbt.put("Target", target);
         return nbt;
     }

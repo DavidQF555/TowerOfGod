@@ -38,8 +38,8 @@ public final class WorldGenRegistry {
         @SubscribeEvent
         public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
             event.enqueueWork(() -> {
-                SUSPENDIUM_ORE = Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), Feature.ORE.withConfiguration(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.BASE_STONE_OVERWORLD, BlockRegistry.SUSPENDIUM_ORE.get().getDefaultState(), 8)).withPlacement(Placement.RANGE.configure(new TopSolidRangeConfig(17, 0, 100))).square().count(3));
-                Registry.register(Registry.CHUNK_GENERATOR_CODEC, new ResourceLocation(TowerOfGod.MOD_ID, "floor"), FloorChunkGenerator.CODEC);
+                SUSPENDIUM_ORE = Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), Feature.ORE.configured(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE, BlockRegistry.SUSPENDIUM_ORE.get().defaultBlockState(), 8)).decorated(Placement.RANGE.configured(new TopSolidRangeConfig(17, 0, 100))).squared().count(3));
+                Registry.register(Registry.CHUNK_GENERATOR, new ResourceLocation(TowerOfGod.MOD_ID, "floor"), FloorChunkGenerator.CODEC);
             });
         }
     }

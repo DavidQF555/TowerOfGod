@@ -28,7 +28,7 @@ public final class GuiEventBusSubscriber {
     public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
         Minecraft client = Minecraft.getInstance();
         if (usingValid(client)) {
-            if (renderBars() && !client.gameSettings.hideGUI && !client.player.isCreative()) {
+            if (renderBars() && !client.options.hideGui && !client.player.isCreative()) {
                 if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
                     event.getMatrixStack().translate(0, -10, 0);
                 } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
@@ -36,12 +36,12 @@ public final class GuiEventBusSubscriber {
                     ClientReference.baangs.render(event.getMatrixStack());
                 }
             }
-            if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isKeyDown()) {
+            if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
                 if (ClientReference.combo == null) {
                     TowerOfGod.CHANNEL.sendToServer(new ClientOpenCombinationGUIPacket());
-                } else if (!client.gameSettings.hideGUI && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
-                    MainWindow window = client.getMainWindow();
-                    ClientReference.combo.render(event.getMatrixStack(), (window.getScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getScaledHeight() - ClientReference.combo.getHeight()) / 2f - 50);
+                } else if (!client.options.hideGui && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
+                    MainWindow window = client.getWindow();
+                    ClientReference.combo.render(event.getMatrixStack(), (window.getGuiScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getGuiScaledHeight() - ClientReference.combo.getHeight()) / 2f - 50);
                 }
             } else {
                 ClientReference.combo = null;
@@ -52,7 +52,7 @@ public final class GuiEventBusSubscriber {
     @SubscribeEvent
     public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
         Minecraft client = Minecraft.getInstance();
-        if (usingValid(client) && renderBars() && !client.gameSettings.hideGUI && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
+        if (usingValid(client) && renderBars() && !client.options.hideGui && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
             event.getMatrixStack().translate(0, 10, 0);
         }
     }
@@ -67,7 +67,7 @@ public final class GuiEventBusSubscriber {
 
     @SubscribeEvent
     public static void onMouseInput(InputEvent.KeyInputEvent event) {
-        if (ClientReference.combo != null && KeyBindingsList.SHINSU_TECHNIQUE_GUI.matchesKey(event.getKey(), event.getScanCode()) && event.getAction() == GLFW.GLFW_RELEASE) {
+        if (ClientReference.combo != null && KeyBindingsList.SHINSU_TECHNIQUE_GUI.matches(event.getKey(), event.getScanCode()) && event.getAction() == GLFW.GLFW_RELEASE) {
             ShinsuTechnique selected = ClientReference.combo.getSelected();
             if (selected != null && !ClientReference.ERRORS.containsKey(selected)) {
                 TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
@@ -123,9 +123,9 @@ public final class GuiEventBusSubscriber {
         }
 
         private static void setMeterPositions() {
-            MainWindow window = Minecraft.getInstance().getMainWindow();
-            int width = window.getScaledWidth();
-            int y = window.getScaledHeight() - 36;
+            MainWindow window = Minecraft.getInstance().getWindow();
+            int width = window.getGuiScaledWidth();
+            int y = window.getGuiScaledHeight() - 36;
             if (ClientReference.shinsu != null) {
                 ClientReference.shinsu.setX(width / 2 - 91);
                 ClientReference.shinsu.setY(y);

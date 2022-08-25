@@ -33,7 +33,7 @@ import java.util.Optional;
 @ParametersAreNonnullByDefault
 public abstract class BasicShinsuUserEntity extends CreatureEntity implements IShinsuUser, IGeared<BasicShinsuUserEntity>, IRangedAttackMob {
 
-    private static final DataParameter<String> GROUP = EntityDataManager.createKey(BasicShinsuUserEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> GROUP = EntityDataManager.defineId(BasicShinsuUserEntity.class, DataSerializers.STRING);
 
     public BasicShinsuUserEntity(EntityType<? extends BasicShinsuUserEntity> type, World worldIn) {
         super(type, worldIn);
@@ -41,46 +41,46 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
 
     @Nullable
     @Override
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         initializeShinsuStats(worldIn);
         initializeWeapons();
         Group group = getGroup();
         IFormattableTextComponent text;
         if (group != null) {
-            text = new TranslationTextComponent(getType().getTranslationKey() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).mergeStyle(group.getTextFormattingColor());
+            text = new TranslationTextComponent(getType().getDescription() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).withStyle(group.getTextFormattingColor());
         } else {
-            text = new TranslationTextComponent(getType().getTranslationKey() + ".name", ShinsuStats.get(this).getLevel());
+            text = new TranslationTextComponent(getType().getDescriptionId() + ".name", ShinsuStats.get(this).getLevel());
         }
         setCustomName(text);
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
-        dataManager.register(GROUP, "");
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(GROUP, "");
     }
 
     @Override
-    public void livingTick() {
-        super.livingTick();
+    public void aiStep() {
+        super.aiStep();
         heal(0.025f);
-        if (world instanceof ServerWorld && world.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
-            shinsuTick((ServerWorld) world);
+        if (level instanceof ServerWorld && level.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
+            shinsuTick((ServerWorld) level);
         }
     }
 
     @Override
-    public void readAdditional(CompoundNBT nbt) {
-        super.readAdditional(nbt);
+    public void readAdditionalSaveData(CompoundNBT nbt) {
+        super.readAdditionalSaveData(nbt);
         if (nbt.contains("Group", Constants.NBT.TAG_STRING)) {
             setGroup(GroupRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Group"))));
         }
     }
 
     @Override
-    public void writeAdditional(CompoundNBT nbt) {
-        super.writeAdditional(nbt);
+    public void addAdditionalSaveData(CompoundNBT nbt) {
+        super.addAdditionalSaveData(nbt);
         Group group = getGroup();
         if (group != null) {
             nbt.putString("Group", group.getRegistryName().toString());
@@ -95,28 +95,28 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     @Nullable
     @Override
     public Group getGroup() {
-        return GroupRegistry.getRegistry().getValue(new ResourceLocation(dataManager.get(GROUP)));
+        return GroupRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(GROUP)));
     }
 
     @Override
     public void setGroup(@Nullable Group group) {
-        dataManager.set(GROUP, group == null ? "" : group.getRegistryName().toString());
+        entityData.set(GROUP, group == null ? "" : group.getRegistryName().toString());
     }
 
     @Override
-    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
-        ItemStack hand = getHeldItem(Hand.MAIN_HAND);
-        ItemStack ammo = findAmmo(hand);
-        AbstractArrowEntity arrow = ProjectileHelper.fireArrow(this, ammo, distanceFactor);
-        if (getHeldItemMainhand().getItem() instanceof BowItem) {
-            arrow = ((BowItem) getHeldItemMainhand().getItem()).customArrow(arrow);
+    public void performRangedAttack(LivingEntity target, float distanceFactor) {
+        ItemStack hand = getItemInHand(Hand.MAIN_HAND);
+        ItemStack ammo = getProjectile(hand);
+        AbstractArrowEntity arrow = ProjectileHelper.getMobArrow(this, ammo, distanceFactor);
+        if (getMainHandItem().getItem() instanceof BowItem) {
+            arrow = ((BowItem) getMainHandItem().getItem()).customArrow(arrow);
         }
-        double dX = target.getPosX() - getPosX();
-        double dZ = target.getPosZ() - getPosZ();
-        double dY = target.getPosYHeight(0.3333333333333333) - arrow.getPosY() + MathHelper.sqrt(dX * dX + dZ * dZ) * 0.2;
+        double dX = target.getX() - getX();
+        double dZ = target.getZ() - getZ();
+        double dY = target.getY(0.3333333333333333) - arrow.getY() + MathHelper.sqrt(dX * dX + dZ * dZ) * 0.2;
         ShinsuStats stats = ShinsuStats.get(this);
         float velocity = 1.6f;
-        float inaccuracy = (14 - world.getDifficulty().getId() * 4f) / stats.getLevel();
+        float inaccuracy = (14 - level.getDifficulty().getId() * 4f) / stats.getLevel();
         if (arrow instanceof ShinsuArrowEntity) {
             Vector3d dir = new Vector3d(dX, dY, dZ);
             Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(this, target, dir).left();
@@ -126,15 +126,15 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
                 inst.getTechnique().cast(target, inst);
                 return;
             } else {
-                arrow = ((ArrowItem) Items.ARROW).createArrow(world, new ItemStack(Items.ARROW), this);
+                arrow = ((ArrowItem) Items.ARROW).createArrow(level, new ItemStack(Items.ARROW), this);
             }
         }
         arrow.shoot(dX, dY, dZ, velocity, inaccuracy);
-        world.addEntity(arrow);
+        level.addFreshEntity(arrow);
     }
 
     @Override
-    public boolean canDespawn(double distanceToClosestPlayer) {
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
     }
 

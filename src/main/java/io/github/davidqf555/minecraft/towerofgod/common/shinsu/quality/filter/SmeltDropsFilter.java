@@ -21,11 +21,11 @@ public class SmeltDropsFilter implements DropsFilter {
 
     @Override
     public List<ItemStack> apply(LootContext context, List<ItemStack> original) {
-        World world = context.getWorld();
+        World world = context.getLevel();
         List<ItemStack> smelted = new ArrayList<>();
-        RecipeManager manager = context.getWorld().getRecipeManager();
+        RecipeManager manager = context.getLevel().getRecipeManager();
         for (ItemStack drop : original) {
-            smelted.add(manager.getRecipe(IRecipeType.SMELTING, new Inventory(drop), world).map(FurnaceRecipe::getRecipeOutput).filter(item -> !item.isEmpty()).map(item -> ItemHandlerHelper.copyStackWithSize(item, drop.getCount() * item.getCount())).orElse(drop));
+            smelted.add(manager.getRecipeFor(IRecipeType.SMELTING, new Inventory(drop), world).map(FurnaceRecipe::getResultItem).filter(item -> !item.isEmpty()).map(item -> ItemHandlerHelper.copyStackWithSize(item, drop.getCount() * item.getCount())).orElse(drop));
         }
         return smelted;
     }

@@ -33,25 +33,25 @@ public class ShinsuArrowRenderer extends EntityRenderer<ShinsuArrowEntity> {
     @Override
     public void render(ShinsuArrowEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
         int hex = ShinsuQuality.getColor(entityIn.getQuality());
-        int red = ColorHelper.PackedColor.getRed(hex);
-        int green = ColorHelper.PackedColor.getGreen(hex);
-        int blue = ColorHelper.PackedColor.getBlue(hex);
-        int alpha = ColorHelper.PackedColor.getAlpha(hex);
-        matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.prevRotationYaw, entityIn.rotationYaw) - 90.0F));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.prevRotationPitch, entityIn.rotationPitch)));
-        float shake = entityIn.arrowShake - partialTicks;
+        int red = ColorHelper.PackedColor.red(hex);
+        int green = ColorHelper.PackedColor.green(hex);
+        int blue = ColorHelper.PackedColor.blue(hex);
+        int alpha = ColorHelper.PackedColor.alpha(hex);
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.yRotO, entityIn.yRot) - 90.0F));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(MathHelper.lerp(partialTicks, entityIn.xRotO, entityIn.xRot)));
+        float shake = entityIn.shakeTime - partialTicks;
         if (shake > 0) {
             float shakeRotation = -MathHelper.sin(shake * 3) * shake;
-            matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(shakeRotation));
+            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(shakeRotation));
         }
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(45));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
         matrixStackIn.scale(0.05625F, 0.05625F, 0.05625F);
         matrixStackIn.translate(-4, 0, 0);
-        IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.getEntityCutout(this.getEntityTexture(entityIn)));
-        MatrixStack.Entry entry = matrixStackIn.getLast();
-        Matrix4f matrix4f = entry.getMatrix();
-        Matrix3f matrix3f = entry.getNormal();
+        IVertexBuilder ivertexbuilder = bufferIn.getBuffer(RenderType.entityCutout(this.getTextureLocation(entityIn)));
+        MatrixStack.Entry entry = matrixStackIn.last();
+        Matrix4f matrix4f = entry.pose();
+        Matrix3f matrix3f = entry.normal();
         drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -7, -2, -2, 0.0F, 0.15625F, -1, 0, 0, packedLightIn);
         drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -7, -2, 2, 0.15625F, 0.15625F, -1, 0, 0, packedLightIn);
         drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -7, 2, 2, 0.15625F, 0.3125F, -1, 0, 0, packedLightIn);
@@ -61,23 +61,23 @@ public class ShinsuArrowRenderer extends EntityRenderer<ShinsuArrowEntity> {
         drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -7, -2, 2, 0.15625F, 0.3125F, 1, 0, 0, packedLightIn);
         drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -7, -2, -2, 0.0F, 0.3125F, 1, 0, 0, packedLightIn);
         for (int i = 0; i < 4; i++) {
-            matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
             drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, packedLightIn);
             drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, packedLightIn);
             drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, packedLightIn);
             drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -8, 2, 0, 0.0F, 0.15625F, 0, 1, 0, packedLightIn);
         }
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     private void drawColoredVertex(Matrix4f matrix, Matrix3f normals, IVertexBuilder vertexBuilder, int red, int green, int blue, int alpha, float offsetX, float offsetY, float offsetZ, float textureX, float textureY, float p_229039_9_, float p_229039_10_, float p_229039_11_, int packedLightIn) {
-        vertexBuilder.pos(matrix, offsetX, offsetY, offsetZ).color(red, green, blue, alpha).tex(textureX, textureY).overlay(OverlayTexture.NO_OVERLAY).lightmap(packedLightIn).normal(normals, p_229039_9_, p_229039_11_, p_229039_10_).endVertex();
+        vertexBuilder.vertex(matrix, offsetX, offsetY, offsetZ).color(red, green, blue, alpha).uv(textureX, textureY).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(packedLightIn).normal(normals, p_229039_9_, p_229039_11_, p_229039_10_).endVertex();
     }
 
     @Nonnull
     @Override
-    public ResourceLocation getEntityTexture(@Nullable ShinsuArrowEntity entity) {
+    public ResourceLocation getTextureLocation(@Nullable ShinsuArrowEntity entity) {
         return TEXTURE;
     }
 }

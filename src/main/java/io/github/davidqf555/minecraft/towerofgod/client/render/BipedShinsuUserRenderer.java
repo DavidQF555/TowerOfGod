@@ -22,7 +22,7 @@ public class BipedShinsuUserRenderer<T extends MobEntity & IShinsuUser> extends 
 
     @Nonnull
     @Override
-    public ResourceLocation getEntityTexture(T entity) {
+    public ResourceLocation getTextureLocation(T entity) {
         Group group = entity.getGroup();
         return group == null ? DEFAULT : group.getTexture();
     }

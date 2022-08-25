@@ -32,9 +32,9 @@ public class ShinsuShovel extends ShovelItem {
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
         if (worldIn instanceof ServerWorld) {
-            CompoundNBT nbt = stack.getChildTag(TowerOfGod.MOD_ID);
+            CompoundNBT nbt = stack.getTagElement(TowerOfGod.MOD_ID);
             if (!stack.isEmpty() && nbt != null) {
-                UUID id = nbt.getUniqueId("Technique");
+                UUID id = nbt.getUUID("Technique");
                 ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
                 if (technique == null) {
                     IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
@@ -52,13 +52,13 @@ public class ShinsuShovel extends ShovelItem {
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         Vector3d dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
         ShinsuQuality quality = ShinsuQuality.getQuality(stack);
         if (quality != null) {
             quality.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
         }
-        return super.hitEntity(stack, target, attacker);
+        return super.hurtEnemy(stack, target, attacker);
     }
 
     @Override

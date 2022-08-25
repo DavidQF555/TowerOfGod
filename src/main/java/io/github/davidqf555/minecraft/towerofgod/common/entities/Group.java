@@ -44,16 +44,16 @@ public class Group extends ForgeRegistryEntry<Group> {
     }
 
     private static BossInfo.Color getBossInfoColor(int color) {
-        int red = ColorHelper.PackedColor.getRed(color);
-        int green = ColorHelper.PackedColor.getGreen(color);
-        int blue = ColorHelper.PackedColor.getBlue(color);
+        int red = ColorHelper.PackedColor.red(color);
+        int green = ColorHelper.PackedColor.green(color);
+        int blue = ColorHelper.PackedColor.blue(color);
         BossInfo.Color closest = BossInfo.Color.WHITE;
         int min = 766;
         for (BossInfo.Color info : BossInfo.Color.values()) {
             TextFormatting format = info.getFormatting();
             if (format.isColor()) {
                 int hex = format.getColor();
-                int dif = Math.abs(red - ColorHelper.PackedColor.getRed(hex)) + Math.abs(blue - ColorHelper.PackedColor.getBlue(hex)) + Math.abs(green - ColorHelper.PackedColor.getGreen(hex));
+                int dif = Math.abs(red - ColorHelper.PackedColor.red(hex)) + Math.abs(blue - ColorHelper.PackedColor.blue(hex)) + Math.abs(green - ColorHelper.PackedColor.green(hex));
                 if (dif < min) {
                     min = dif;
                     closest = info;
@@ -64,15 +64,15 @@ public class Group extends ForgeRegistryEntry<Group> {
     }
 
     private static TextFormatting getTextFormattingColor(int color) {
-        int red = ColorHelper.PackedColor.getRed(color);
-        int green = ColorHelper.PackedColor.getGreen(color);
-        int blue = ColorHelper.PackedColor.getBlue(color);
+        int red = ColorHelper.PackedColor.red(color);
+        int green = ColorHelper.PackedColor.green(color);
+        int blue = ColorHelper.PackedColor.blue(color);
         TextFormatting closest = TextFormatting.WHITE;
         int min = 766;
         for (TextFormatting format : TextFormatting.values()) {
             if (format.isColor()) {
                 int hex = format.getColor();
-                int dif = Math.abs(red - ColorHelper.PackedColor.getRed(hex)) + Math.abs(blue - ColorHelper.PackedColor.getBlue(hex)) + Math.abs(green - ColorHelper.PackedColor.getGreen(hex));
+                int dif = Math.abs(red - ColorHelper.PackedColor.red(hex)) + Math.abs(blue - ColorHelper.PackedColor.blue(hex)) + Math.abs(green - ColorHelper.PackedColor.green(hex));
                 if (dif < min) {
                     min = dif;
                     closest = format;
@@ -132,7 +132,7 @@ public class Group extends ForgeRegistryEntry<Group> {
     }
 
     public TranslationTextComponent getName() {
-        return new TranslationTextComponent(Util.makeTranslationKey("group", getRegistryName()));
+        return new TranslationTextComponent(Util.makeDescriptionId("group", getRegistryName()));
     }
 
 }

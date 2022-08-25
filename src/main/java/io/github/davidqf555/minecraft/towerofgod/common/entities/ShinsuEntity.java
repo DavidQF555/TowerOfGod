@@ -35,7 +35,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
 
     private static final int PARTICLES = 3;
     private static final float DAMAGE = 0.625f;
-    private static final DataParameter<String> QUALITY = EntityDataManager.createKey(ShinsuEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> QUALITY = EntityDataManager.defineId(ShinsuEntity.class, DataSerializers.STRING);
     private UUID technique;
     private BlockRayTraceResult latestHit;
 
@@ -46,67 +46,67 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     }
 
     @Override
-    public void registerData() {
-        super.registerData();
-        dataManager.register(QUALITY, "");
+    public void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(QUALITY, "");
     }
 
     @Override
-    public boolean isFireballFiery() {
+    public boolean displayFireAnimation() {
         return false;
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
     @Override
-    public IParticleData getParticle() {
+    public IParticleData getTrailParticle() {
         return ShinsuQuality.getParticles(getQuality());
     }
 
     @Nullable
     public ShinsuQuality getQuality() {
-        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(dataManager.get(QUALITY)));
+        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(QUALITY)));
     }
 
     public void setQuality(@Nullable ShinsuQuality quality) {
-        dataManager.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
+        entityData.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
     }
 
     @Override
-    public void setMotion(Vector3d motionIn) {
-        super.setMotion(motionIn);
+    public void setDeltaMovement(Vector3d motionIn) {
+        super.setDeltaMovement(motionIn);
         double length = motionIn.length();
-        accelerationX = motionIn.getX() / length * 0.1;
-        accelerationY = motionIn.getY() / length * 0.1;
-        accelerationZ = motionIn.getZ() / length * 0.1;
+        xPower = motionIn.x() / length * 0.1;
+        yPower = motionIn.y() / length * 0.1;
+        zPower = motionIn.z() / length * 0.1;
     }
 
     @Override
-    public void onEntityHit(EntityRayTraceResult rayTraceResult) {
-        super.onEntityHit(rayTraceResult);
-        if (world instanceof ServerWorld) {
-            Entity shooter = getShooter();
+    public void onHitEntity(EntityRayTraceResult rayTraceResult) {
+        super.onHitEntity(rayTraceResult);
+        if (level instanceof ServerWorld) {
+            Entity shooter = getOwner();
             Entity target = rayTraceResult.getEntity();
             float damage = DAMAGE;
             if (shooter != null) {
-                damage *= ShinsuStats.getNetResistance((ServerWorld) world, shooter, target);
+                damage *= ShinsuStats.getNetResistance((ServerWorld) level, shooter, target);
             }
             ShinsuQuality quality = getQuality();
             if (quality != null) {
                 damage *= quality.getDamage();
                 quality.applyEntityEffect(this, rayTraceResult);
             }
-            target.attackEntityFrom(ShinsuQuality.getDamageSource(quality), damage);
+            target.hurt(ShinsuQuality.getDamageSource(quality), damage);
         }
         remove();
     }
 
     @Nullable
     public ShinsuTechniqueInstance getTechnique() {
-        Entity shooter = getShooter();
+        Entity shooter = getOwner();
         if (technique != null && shooter != null) {
             return ShinsuTechniqueInstance.get(shooter, technique);
         }
@@ -123,35 +123,35 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             remove();
         }
         for (int i = 0; i < PARTICLES; i++) {
-            world.addParticle(getParticle(), getPosXRandom(1), getPosYRandom(), getPosZRandom(1), 0, 0, 0);
+            level.addParticle(getTrailParticle(), getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
         }
         super.tick();
     }
 
     @Override
-    protected void func_230299_a_(BlockRayTraceResult rayTraceResult) {
+    protected void onHitBlock(BlockRayTraceResult rayTraceResult) {
         latestHit = rayTraceResult;
-        super.func_230299_a_(rayTraceResult);
+        super.onHitBlock(rayTraceResult);
         remove();
     }
 
     @Override
     public void onRemovedFromWorld() {
-        if (world instanceof ServerWorld) {
+        if (level instanceof ServerWorld) {
             ShinsuQuality quality = getQuality();
             if (quality != null) {
-                Vector3d motion = getMotion();
-                quality.applyBlockEffect(this, latestHit == null || isAirBorne ? new BlockRayTraceResult(motion, Direction.getFacingFromVector(motion.x, motion.y, motion.z), getPosition(), true) : latestHit);
+                Vector3d motion = getDeltaMovement();
+                quality.applyBlockEffect(this, latestHit == null || hasImpulse ? new BlockRayTraceResult(motion, Direction.getNearest(motion.x, motion.y, motion.z), blockPosition(), true) : latestHit);
             }
         }
         super.onRemovedFromWorld();
     }
 
     @Override
-    public void readAdditional(CompoundNBT nbt) {
-        super.readAdditional(nbt);
+    public void readAdditionalSaveData(CompoundNBT nbt) {
+        super.readAdditionalSaveData(nbt);
         if (nbt.contains("Technique", Constants.NBT.TAG_INT_ARRAY)) {
-            technique = nbt.getUniqueId("Technique");
+            technique = nbt.getUUID("Technique");
         }
         if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
             setQuality(ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality"))));
@@ -159,10 +159,10 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     }
 
     @Override
-    public void writeAdditional(CompoundNBT nbt) {
-        super.writeAdditional(nbt);
+    public void addAdditionalSaveData(CompoundNBT nbt) {
+        super.addAdditionalSaveData(nbt);
         if (technique != null) {
-            nbt.putUniqueId("Technique", technique);
+            nbt.putUUID("Technique", technique);
         }
         ShinsuQuality quality = getQuality();
         if (quality != null) {
@@ -171,7 +171,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

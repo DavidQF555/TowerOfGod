@@ -24,12 +24,12 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
 
     public BasicCommandTechnique(LivingEntity user) {
         super(user);
-        devices = user == null ? new ArrayList<>() : ((ServerWorld) user.world).getEntities()
+        devices = user == null ? new ArrayList<>() : ((ServerWorld) user.level).getEntities()
                 .filter(entity -> entity instanceof FlyingDevice)
                 .map(entity -> (FlyingDevice) entity)
-                .filter(entity -> user.getUniqueID().equals(entity.getOwnerID()))
+                .filter(entity -> user.getUUID().equals(entity.getOwnerID()))
                 .filter(this::isTarget)
-                .map(Entity::getUniqueID)
+                .map(Entity::getUUID)
                 .collect(Collectors.toList());
     }
 
@@ -46,7 +46,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
     @Override
     public void onUse(ServerWorld world) {
         devices.stream()
-                .map(world::getEntityByUuid)
+                .map(world::getEntity)
                 .filter(Objects::nonNull)
                 .forEach(entity -> ((FlyingDevice) entity).addCommand(createCommand((FlyingDevice) entity, world)));
         super.onUse(world);
@@ -56,7 +56,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
     public void onEnd(ServerWorld world) {
         UUID id = getID();
         devices.stream()
-                .map(entity -> (FlyingDevice) world.getEntityByUuid(entity))
+                .map(entity -> (FlyingDevice) world.getEntity(entity))
                 .filter(Objects::nonNull)
                 .map(entity -> entity.goalSelector.getRunningGoals())
                 .forEach(stream ->
@@ -73,11 +73,11 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
     public void periodicTick(ServerWorld world, int period) {
         Entity user = getUser(world);
         if (user != null) {
-            UUID userID = user.getUniqueID();
+            UUID userID = user.getUUID();
             boolean removed = false;
             UUID id = getID();
             for (int i = devices.size() - 1; i >= 0; i--) {
-                Entity device = world.getEntityByUuid(devices.get(i));
+                Entity device = world.getEntity(devices.get(i));
                 if (!(device instanceof FlyingDevice) || !userID.equals(((FlyingDevice) device).getOwnerID()) || ((FlyingDevice) device).getCommands().stream().noneMatch(command -> id.equals(command.getTechniqueID()))) {
                     devices.remove(i);
                     removed = true;
@@ -97,7 +97,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
         CompoundNBT nbt = super.serializeNBT();
         ListNBT devices = new ListNBT();
         for (UUID id : this.devices) {
-            devices.add(NBTUtil.func_240626_a_(id));
+            devices.add(NBTUtil.createUUID(id));
         }
         nbt.put("Devices", devices);
         return nbt;
@@ -108,7 +108,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
         super.deserializeNBT(nbt);
         if (nbt.contains("Devices", Constants.NBT.TAG_LIST)) {
             for (INBT tag : nbt.getList("Devices", Constants.NBT.TAG_INT_ARRAY)) {
-                devices.add(NBTUtil.readUniqueId(tag));
+                devices.add(NBTUtil.loadUUID(tag));
             }
         }
     }

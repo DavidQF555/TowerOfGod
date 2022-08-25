@@ -22,12 +22,12 @@ public class SuspendiumTileEntity extends TileEntity implements ITickableTileEnt
 
     @Override
     public void tick() {
-        World world = getWorld();
+        World world = getLevel();
         if (world != null && world.getGameTime() % PERIOD == 0) {
-            BlockPos pos = getPos();
-            AxisAlignedBB bounds = AxisAlignedBB.withSizeAtOrigin(RADIUS * 2, RADIUS * 2, RADIUS * 2).offset(pos);
-            for (LivingEntity entity : world.getEntitiesWithinAABB(LivingEntity.class, bounds, entity -> entity.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) <= RADIUS * RADIUS)) {
-                entity.addPotionEffect(new EffectInstance(Effects.LEVITATION, PERIOD, LEVEL - 1));
+            BlockPos pos = getBlockPos();
+            AxisAlignedBB bounds = AxisAlignedBB.ofSize(RADIUS * 2, RADIUS * 2, RADIUS * 2).move(pos);
+            for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, bounds, entity -> entity.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= RADIUS * RADIUS)) {
+                entity.addEffect(new EffectInstance(Effects.LEVITATION, PERIOD, LEVEL - 1));
             }
         }
     }

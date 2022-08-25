@@ -34,7 +34,7 @@ public abstract class DeviceCommand extends Goal implements INBTSerializable<Com
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         return true;
     }
 
@@ -78,7 +78,7 @@ public abstract class DeviceCommand extends Goal implements INBTSerializable<Com
         nbt.putInt("Ticks", ticks);
         nbt.putInt("Duration", duration);
         nbt.putBoolean("Remove", remove);
-        nbt.putUniqueId("Technique", technique);
+        nbt.putUUID("Technique", technique);
         return nbt;
     }
 
@@ -94,7 +94,7 @@ public abstract class DeviceCommand extends Goal implements INBTSerializable<Com
             remove = nbt.getBoolean("Remove");
         }
         if (nbt.contains("Technique", Constants.NBT.TAG_INT_ARRAY)) {
-            technique = nbt.getUniqueId("Technique");
+            technique = nbt.getUUID("Technique");
         }
     }
 }

@@ -59,11 +59,11 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
                 if (quality != null) {
                     speed *= quality.getSpeed();
                 }
-                arrow.shoot(direction.getX(), direction.getY(), direction.getZ(), speed, 1);
-                arrow.setShooter(user);
-                arrow.setPosition(user.getPosX(), user.getPosYEye() - 0.1, user.getPosZ());
-                this.arrow = arrow.getUniqueID();
-                world.addEntity(arrow);
+                arrow.shoot(direction.x(), direction.y(), direction.z(), speed, 1);
+                arrow.setOwner(user);
+                arrow.setPos(user.getX(), user.getEyeY() - 0.1, user.getZ());
+                this.arrow = arrow.getUUID();
+                world.addFreshEntity(arrow);
             }
         }
         super.onUse(world);
@@ -81,7 +81,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
 
     @Override
     public void periodicTick(ServerWorld world, int period) {
-        if (arrow == null || world.getEntityByUuid(arrow) == null) {
+        if (arrow == null || world.getEntity(arrow) == null) {
             remove(world);
         }
         super.periodicTick(world, period);
@@ -91,12 +91,12 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
         if (arrow != null) {
-            nbt.putUniqueId("Arrow", arrow);
+            nbt.putUUID("Arrow", arrow);
         }
         nbt.putFloat("Velocity", velocity);
-        nbt.putDouble("X", direction.getX());
-        nbt.putDouble("Y", direction.getY());
-        nbt.putDouble("Z", direction.getZ());
+        nbt.putDouble("X", direction.x());
+        nbt.putDouble("Y", direction.y());
+        nbt.putDouble("Z", direction.z());
         return nbt;
     }
 
@@ -104,7 +104,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
         if (nbt.contains("Arrow", Constants.NBT.TAG_INT_ARRAY)) {
-            arrow = nbt.getUniqueId("Arrow");
+            arrow = nbt.getUUID("Arrow");
         }
         if (nbt.contains("Velocity", Constants.NBT.TAG_FLOAT)) {
             setVelocity(nbt.getFloat("Velocity"));

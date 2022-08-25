@@ -19,22 +19,22 @@ public final class EffectEventSubscriber {
     @SubscribeEvent
     public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
         LivingEntity entity = event.getEntityLiving();
-        EffectInstance reinforcement = entity.getActivePotionEffect(EffectRegistry.BODY_REINFORCEMENT.get());
+        EffectInstance reinforcement = entity.getEffect(EffectRegistry.BODY_REINFORCEMENT.get());
         if (reinforcement != null) {
-            Vector3d motion = entity.getMotion().add(0, reinforcement.getAmplifier() * 0.025 + 0.025, 0);
-            entity.setMotion(motion);
+            Vector3d motion = entity.getDeltaMovement().add(0, reinforcement.getAmplifier() * 0.025 + 0.025, 0);
+            entity.setDeltaMovement(motion);
         }
-        EffectInstance reverse = entity.getActivePotionEffect(EffectRegistry.REVERSE_FLOW.get());
+        EffectInstance reverse = entity.getEffect(EffectRegistry.REVERSE_FLOW.get());
         if (reverse != null) {
-            Vector3d motion = entity.getMotion();
-            entity.setMotion(motion.getX(), Math.max(0, motion.getY() - reverse.getAmplifier() * 0.025 - 0.025), motion.getZ());
+            Vector3d motion = entity.getDeltaMovement();
+            entity.setDeltaMovement(motion.x(), Math.max(0, motion.y() - reverse.getAmplifier() * 0.025 - 0.025), motion.z());
         }
     }
 
     @SubscribeEvent
     public static void onLivingFall(LivingFallEvent event) {
         LivingEntity entity = event.getEntityLiving();
-        EffectInstance effect = entity.getActivePotionEffect(EffectRegistry.BODY_REINFORCEMENT.get());
+        EffectInstance effect = entity.getEffect(EffectRegistry.BODY_REINFORCEMENT.get());
         if (effect != null) {
             event.setDistance(event.getDistance() - effect.getAmplifier() * 0.5f - 0.5f);
         }

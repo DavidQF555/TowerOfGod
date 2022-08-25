@@ -17,10 +17,10 @@ public class SummonQualityEffect<T extends RayTraceResult, M extends Entity> imp
 
     @Override
     public void apply(Entity user, T clip) {
-        M entity = factory.apply(user.world);
-        Vector3d pos = clip.getHitVec();
-        entity.setPosition(pos.getX(), pos.getY(), pos.getZ());
-        user.world.addEntity(entity);
+        M entity = factory.apply(user.level);
+        Vector3d pos = clip.getLocation();
+        entity.setPos(pos.x(), pos.y(), pos.z());
+        user.level.addFreshEntity(entity);
     }
 
 }

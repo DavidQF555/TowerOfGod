@@ -13,7 +13,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class SwapWeaponToMainHandGoal<T extends MobEntity> extends Goal {
 
-    private static final int MAIN_HAND = EquipmentSlotType.MAINHAND.getSlotIndex();
+    private static final int MAIN_HAND = EquipmentSlotType.MAINHAND.getIndex();
     private final T entity;
     private final float closeRange;
     private int swap;
@@ -25,9 +25,9 @@ public class SwapWeaponToMainHandGoal<T extends MobEntity> extends Goal {
     }
 
     @Override
-    public boolean shouldExecute() {
-        LivingEntity target = entity.getAttackTarget();
-        if (target == null || !target.isAlive() || target.getDistanceSq(entity) > closeRange * closeRange) {
+    public boolean canUse() {
+        LivingEntity target = entity.getTarget();
+        if (target == null || !target.isAlive() || target.distanceToSqr(entity) > closeRange * closeRange) {
             swap = getBestShootableItemSlot();
         }
         if (swap == -1) {
@@ -41,17 +41,17 @@ public class SwapWeaponToMainHandGoal<T extends MobEntity> extends Goal {
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
+    public boolean canContinueToUse() {
         return false;
     }
 
     @Override
-    public void resetTask() {
+    public void stop() {
         swap = -1;
     }
 
     @Override
-    public void startExecuting() {
+    public void start() {
         IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         ItemStack hand = inventory.extractItem(MAIN_HAND, inventory.getSlotLimit(MAIN_HAND), false);
         ItemStack swap = inventory.extractItem(this.swap, inventory.getSlotLimit(this.swap), false);
@@ -61,7 +61,7 @@ public class SwapWeaponToMainHandGoal<T extends MobEntity> extends Goal {
 
     private int getBestMeleeItemSlot() {
         int index = MAIN_HAND;
-        ItemStack held = entity.getHeldItemMainhand();
+        ItemStack held = entity.getMainHandItem();
         double maxDamage = IGeared.getAttribute(Attributes.ATTACK_DAMAGE, entity, held, EquipmentSlotType.MAINHAND);
         double maxSpeed = IGeared.getAttribute(Attributes.ATTACK_SPEED, entity, held, EquipmentSlotType.MAINHAND);
         IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
@@ -81,7 +81,7 @@ public class SwapWeaponToMainHandGoal<T extends MobEntity> extends Goal {
     }
 
     private int getBestShootableItemSlot() {
-        ItemStack held = entity.getHeldItemMainhand();
+        ItemStack held = entity.getMainHandItem();
         IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);

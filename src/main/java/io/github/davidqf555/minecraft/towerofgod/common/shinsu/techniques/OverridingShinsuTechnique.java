@@ -41,10 +41,10 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
 
     @Override
     public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
-        if (user.world instanceof ServerWorld) {
+        if (user.level instanceof ServerWorld) {
             for (ShinsuTechniqueInstance inst : new ArrayList<>(ShinsuStats.get(user).getTechniques())) {
                 if (equals(inst.getTechnique())) {
-                    inst.remove((ServerWorld) user.world);
+                    inst.remove((ServerWorld) user.level);
                 }
             }
         }

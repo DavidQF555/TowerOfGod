@@ -18,7 +18,7 @@ public class FollowOwnerCommand extends DeviceCommand {
         this.speed = speed;
         recalculate = 0;
         owner = null;
-        setMutexFlags(EnumSet.of(Flag.MOVE));
+        setFlags(EnumSet.of(Flag.MOVE));
     }
 
     public static FollowOwnerCommand emptyBuild(FlyingDevice device) {
@@ -26,27 +26,27 @@ public class FollowOwnerCommand extends DeviceCommand {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         FlyingDevice entity = getEntity();
         owner = entity.getOwner();
-        return owner != null && !owner.isSpectator() && entity.getDistanceSq(owner) >= DISTANCE * DISTANCE;
+        return owner != null && !owner.isSpectator() && entity.distanceToSqr(owner) >= DISTANCE * DISTANCE;
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
-        return shouldExecute() && !getEntity().getNavigator().noPath();
+    public boolean canContinueToUse() {
+        return canUse() && !getEntity().getNavigation().isDone();
     }
 
     @Override
-    public void resetTask() {
-        getEntity().getNavigator().clearPath();
+    public void stop() {
+        getEntity().getNavigation().stop();
         recalculate = 0;
     }
 
     @Override
     public void tick() {
         if (--recalculate <= 0) {
-            getEntity().getNavigator().tryMoveToEntityLiving(owner, speed);
+            getEntity().getNavigation().moveTo(owner, speed);
             recalculate = RECALCULATE_PERIOD;
         }
     }

@@ -56,7 +56,7 @@ public interface IShinsuUser {
     default void initializeShinsuStats(IServerWorld world) {
         Random random = world.getRandom();
         ShinsuStats stats = getShinsuStats();
-        FloorProperty property = FloorDimensionsHelper.getFloorProperty(world.getWorld());
+        FloorProperty property = FloorDimensionsHelper.getFloorProperty(world.getLevel());
         int floor = property == null ? 1 : property.getLevel();
         stats.addLevel(getInitialShinsuLevel(random, floor) - stats.getLevel());
         setGroup(getInitialGroup(random));
@@ -190,37 +190,37 @@ public interface IShinsuUser {
         }
 
         @Override
-        public boolean shouldExecute() {
-            target = entity.getAttackTarget();
+        public boolean canUse() {
+            target = entity.getTarget();
             if (target == null || !target.isAlive()) {
                 return false;
             }
             List<ShinsuTechniqueInstance> tech = new ArrayList<>();
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
                 ShinsuTechnique.IFactory<?> builder = technique.getFactory();
-                Vector3d dir = entity.canEntityBeSeen(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookVec();
+                Vector3d dir = entity.canSee(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookAngle();
                 builder.create(entity, target, dir).ifLeft(tech::add);
             }
             if (tech.isEmpty()) {
                 return false;
             }
-            technique = tech.get(entity.getRNG().nextInt(tech.size()));
+            technique = tech.get(entity.getRandom().nextInt(tech.size()));
             return true;
         }
 
         @Override
-        public void startExecuting() {
+        public void start() {
             technique.getTechnique().cast(entity, technique);
         }
 
         @Override
-        public void resetTask() {
+        public void stop() {
             technique = null;
             target = null;
         }
 
         @Override
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 

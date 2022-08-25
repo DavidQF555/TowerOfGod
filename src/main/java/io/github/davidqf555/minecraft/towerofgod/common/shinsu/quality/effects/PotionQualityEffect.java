@@ -17,7 +17,7 @@ public class PotionQualityEffect implements ShinsuQualityEffect<EntityRayTraceRe
     public void apply(Entity user, EntityRayTraceResult clip) {
         Entity entity = clip.getEntity();
         if (entity instanceof LivingEntity) {
-            ((LivingEntity) entity).addPotionEffect(effect);
+            ((LivingEntity) entity).addEffect(effect);
         }
     }
 

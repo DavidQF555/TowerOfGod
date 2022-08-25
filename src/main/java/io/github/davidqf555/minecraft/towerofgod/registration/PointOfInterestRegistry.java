@@ -15,7 +15,7 @@ public final class PointOfInterestRegistry {
 
     public static final DeferredRegister<PointOfInterestType> TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, TowerOfGod.MOD_ID);
 
-    public static final RegistryObject<PointOfInterestType> FLOOR_TELEPORTATION_TERMINAL = register("floor_teleportation_terminal", () -> new HashSet<>(BlockRegistry.FLOOR_TELEPORTATION_TERMINAL.get().getStateContainer().getValidStates()), 0, 1);
+    public static final RegistryObject<PointOfInterestType> FLOOR_TELEPORTATION_TERMINAL = register("floor_teleportation_terminal", () -> new HashSet<>(BlockRegistry.FLOOR_TELEPORTATION_TERMINAL.get().getStateDefinition().getPossibleStates()), 0, 1);
 
     private PointOfInterestRegistry() {
     }

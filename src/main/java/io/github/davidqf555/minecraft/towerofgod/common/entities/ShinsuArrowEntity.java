@@ -33,7 +33,7 @@ import java.util.UUID;
 public class ShinsuArrowEntity extends AbstractArrowEntity {
 
     private static final int PARTICLES = 2;
-    private static final DataParameter<String> QUALITY = EntityDataManager.createKey(ShinsuArrowEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> QUALITY = EntityDataManager.defineId(ShinsuArrowEntity.class, DataSerializers.STRING);
     private UUID technique;
     private BlockRayTraceResult latestHit;
 
@@ -48,9 +48,9 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     }
 
     @Override
-    public void registerData() {
-        super.registerData();
-        dataManager.register(QUALITY, "");
+    public void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(QUALITY, "");
     }
 
     @Override
@@ -64,14 +64,14 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
             particles = (int) Math.ceil(particles / 2.0);
         }
         for (int i = 0; i < particles; i++) {
-            world.addParticle(particle, getPosXRandom(1), getPosYRandom(), getPosZRandom(1), 0, 0, 0);
+            level.addParticle(particle, getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
         }
         super.tick();
     }
 
     @Override
-    protected void onEntityHit(EntityRayTraceResult rayTraceResult) {
-        super.onEntityHit(rayTraceResult);
+    protected void onHitEntity(EntityRayTraceResult rayTraceResult) {
+        super.onHitEntity(rayTraceResult);
         ShinsuQuality quality = getQuality();
         if (quality != null) {
             quality.applyEntityEffect(this, rayTraceResult);
@@ -79,25 +79,25 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     }
 
     @Override
-    protected void func_230299_a_(BlockRayTraceResult rayTraceResult) {
+    protected void onHitBlock(BlockRayTraceResult rayTraceResult) {
         latestHit = rayTraceResult;
-        super.func_230299_a_(rayTraceResult);
+        super.onHitBlock(rayTraceResult);
     }
 
     @Override
-    protected void func_225516_i_() {
-        if (timeInGround >= 0) {
+    protected void tickDespawn() {
+        if (inGroundTime >= 0) {
             remove();
         }
     }
 
     @Override
     public void onRemovedFromWorld() {
-        if (world instanceof ServerWorld) {
-            Vector3d motion = getMotion();
+        if (level instanceof ServerWorld) {
+            Vector3d motion = getDeltaMovement();
             ShinsuQuality quality = getQuality();
             if (quality != null) {
-                quality.applyBlockEffect(this, latestHit == null || isAirBorne ? new BlockRayTraceResult(motion, Direction.getFacingFromVector(motion.x, motion.y, motion.z), getPosition(), true) : latestHit);
+                quality.applyBlockEffect(this, latestHit == null || hasImpulse ? new BlockRayTraceResult(motion, Direction.getNearest(motion.x, motion.y, motion.z), blockPosition(), true) : latestHit);
             }
         }
         super.onRemovedFromWorld();
@@ -105,24 +105,24 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
 
     @Nullable
     public ShinsuQuality getQuality() {
-        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(dataManager.get(QUALITY)));
+        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(QUALITY)));
     }
 
     public void setQuality(@Nullable ShinsuQuality quality) {
         ShinsuQuality original = getQuality();
-        setDamage(getDamage() * (quality == null ? 1 : quality.getDamage()) / (original == null ? 1 : original.getDamage()));
-        dataManager.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
+        setBaseDamage(getBaseDamage() * (quality == null ? 1 : quality.getDamage()) / (original == null ? 1 : original.getDamage()));
+        entityData.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
     }
 
     @Override
-    public void setShooter(@Nullable Entity entityIn) {
-        super.setShooter(entityIn);
-        pickupStatus = PickupStatus.DISALLOWED;
+    public void setOwner(@Nullable Entity entityIn) {
+        super.setOwner(entityIn);
+        pickup = PickupStatus.DISALLOWED;
     }
 
     @Nullable
     public ShinsuTechniqueInstance getTechnique() {
-        Entity shooter = getShooter();
+        Entity shooter = getOwner();
         if (technique != null && shooter != null) {
             return ShinsuTechniqueInstance.get(shooter, technique);
         }
@@ -134,40 +134,40 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     }
 
     @Override
-    protected ItemStack getArrowStack() {
+    protected ItemStack getPickupItem() {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean getIsCritical() {
+    public boolean isCritArrow() {
         return false;
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public void readAdditional(CompoundNBT nbt) {
-        super.readAdditional(nbt);
+    public void readAdditionalSaveData(CompoundNBT nbt) {
+        super.readAdditionalSaveData(nbt);
         if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
             setQuality(ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality"))));
         }
         if (nbt.contains("Technique", Constants.NBT.TAG_INT_ARRAY)) {
-            setTechnique(nbt.getUniqueId("Technique"));
+            setTechnique(nbt.getUUID("Technique"));
         }
     }
 
     @Override
-    public void writeAdditional(CompoundNBT nbt) {
-        super.writeAdditional(nbt);
+    public void addAdditionalSaveData(CompoundNBT nbt) {
+        super.addAdditionalSaveData(nbt);
         ShinsuQuality quality = getQuality();
         if (quality != null) {
             nbt.putString("Quality", quality.getRegistryName().toString());
         }
         if (technique != null) {
-            nbt.putUniqueId("Technique", technique);
+            nbt.putUUID("Technique", technique);
         }
     }
 
