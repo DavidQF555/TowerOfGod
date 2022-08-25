@@ -15,7 +15,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.tags.ITag;
 import net.minecraftforge.fml.RegistryObject;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +35,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
             if (tier.equals(ItemTier.NETHERITE)) {
                 SmithingRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_NEEDLE.get()), material, item)
                         .unlocks("has_material", inventoryTrigger(getPredicates(material)))
-                        .save(consumer, ForgeRegistries.ITEMS.getKey(item));
+                        .save(consumer, registry.getId());
 
             } else {
                 ShapedRecipeBuilder.shaped(item)
@@ -56,7 +55,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
             if (tier.equals(ItemTier.NETHERITE)) {
                 SmithingRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_HOOK.get()), material, item)
                         .unlocks("has_material", inventoryTrigger(getPredicates(material)))
-                        .save(consumer, ForgeRegistries.ITEMS.getKey(item));
+                        .save(consumer, registry.getId());
 
             } else {
                 ShapedRecipeBuilder.shaped(item)
@@ -75,7 +74,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
             if (tier.equals(ItemTier.NETHERITE)) {
                 SmithingRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_SPEAR.get()), material, item)
                         .unlocks("has_material", inventoryTrigger(getPredicates(material)))
-                        .save(consumer, ForgeRegistries.ITEMS.getKey(item));
+                        .save(consumer, registry.getId());
 
             } else {
                 ShapedRecipeBuilder.shaped(item)
