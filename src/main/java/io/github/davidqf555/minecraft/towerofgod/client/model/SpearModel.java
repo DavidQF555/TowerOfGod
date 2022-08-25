@@ -2,24 +2,14 @@ package io.github.davidqf555.minecraft.towerofgod.client.model;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.Model;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.ItemTier;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
 public class SpearModel extends Model {
 
-    private static final ResourceLocation WOOD = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/wooden_spear.png");
-    private static final ResourceLocation STONE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/stone_spear.png");
-    private static final ResourceLocation IRON = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/iron_spear.png");
-    private static final ResourceLocation GOLD = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/golden_spear.png");
-    private static final ResourceLocation DIAMOND = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/diamond_spear.png");
-    private static final ResourceLocation NETHERITE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/netherite_spear.png");
-    private static final ResourceLocation SUSPENDIUM = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/spear/suspendium_spear.png");
     private final ModelRenderer spear;
 
     public SpearModel() {
@@ -57,21 +47,8 @@ public class SpearModel extends Model {
         spear.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 
-    public ResourceLocation getTextureLocation(IItemTier tier) {
-        if (tier.equals(ItemTier.WOOD)) {
-            return WOOD;
-        } else if (tier.equals(ItemTier.STONE)) {
-            return STONE;
-        } else if (tier.equals(ItemTier.GOLD)) {
-            return GOLD;
-        } else if (tier.equals(ItemTier.DIAMOND)) {
-            return DIAMOND;
-        } else if (tier.equals(ItemTier.NETHERITE)) {
-            return NETHERITE;
-        } else if (tier.equals(ModToolTier.SUSPENDIUM)) {
-            return SUSPENDIUM;
-        } else {
-            return IRON;
-        }
+    public ResourceLocation getTextureLocation(Item item) {
+        ResourceLocation registry = item.getRegistryName();
+        return new ResourceLocation(registry.getNamespace(), "textures/entity/spear/" + registry.getPath() + ".png");
     }
 }

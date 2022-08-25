@@ -377,16 +377,4 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         }
     }
 
-    public static class Storage implements Capability.IStorage<ShinsuStats> {
-
-        @Override
-        public INBT writeNBT(Capability<ShinsuStats> capability, ShinsuStats instance, Direction side) {
-            return instance.serializeNBT();
-        }
-
-        @Override
-        public void readNBT(Capability<ShinsuStats> capability, ShinsuStats instance, Direction side, INBT nbt) {
-            instance.deserializeNBT((CompoundNBT) nbt);
-        }
-    }
 }

@@ -6,14 +6,12 @@ import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
-import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -55,11 +53,4 @@ public class LighthouseScreen extends ContainerScreen<LighthouseEntity.Lighthous
         font.draw(matrixStack, inventory.getDisplayName(), (float) inventoryLabelX, (float) inventoryLabelY, INVENTORY_TITLE_COLOR);
     }
 
-    public static class Factory implements ScreenManager.IScreenFactory<LighthouseEntity.LighthouseContainer, LighthouseScreen> {
-        @Nonnull
-        @Override
-        public LighthouseScreen create(LighthouseEntity.LighthouseContainer con, PlayerInventory inv, ITextComponent text) {
-            return new LighthouseScreen(con, inv, text);
-        }
-    }
 }

@@ -23,6 +23,6 @@ public class QualityRequirement implements IRequirement {
 
     @Override
     public ITextComponent getText() {
-        return quality == null ? Messages.REQUIRES_NO_QUALITY : Messages.REQUIRES_QUALITY.apply(quality);
+        return quality == null ? Messages.REQUIRES_NO_QUALITY : Messages.getRequiresQuality(quality);
     }
 }

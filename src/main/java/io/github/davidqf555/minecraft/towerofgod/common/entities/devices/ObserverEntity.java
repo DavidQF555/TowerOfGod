@@ -42,7 +42,7 @@ public class ObserverEntity extends FlyingDevice {
     @Override
     public void aiStep() {
         targets.clear();
-        AxisAlignedBB bounds = AxisAlignedBB.unitCubeFromLowerCorner(position()).inflate(RANGE);
+        AxisAlignedBB bounds = AxisAlignedBB.ofSize(RANGE, RANGE, RANGE).move(position());
         for (Entity entity : level.getEntities(this, bounds, target -> EntityPredicates.NO_CREATIVE_OR_SPECTATOR.test(target) && distanceToSqr(target) <= RANGE * RANGE && canSee(target))) {
             targets.add(entity.getUUID());
         }

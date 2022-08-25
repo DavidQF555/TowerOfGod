@@ -105,7 +105,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
         @Override
         public Either<ReverseFlowControl, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
             int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DISRUPTION).getLevel();
-            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 20 + level * 10, level)) : Either.right(Messages.REQUIRES_TARGET.apply(RANGE));
+            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 20 + level * 10, level)) : Either.right(Messages.getRequiresTarget(RANGE));
         }
 
         @Override
