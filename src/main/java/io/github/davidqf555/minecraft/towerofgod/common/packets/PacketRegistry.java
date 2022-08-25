@@ -24,10 +24,8 @@ public final class PacketRegistry {
             UpdateClientQualityPacket.register(index++);
             ObserverChangeHighlightPacket.register(index++);
             UpdateClientDimensionsPacket.register(index++);
-            OpenFloorTeleportationTerminalPacket.register(index++);
             ClientOpenCombinationGUIPacket.register(index++);
             ServerOpenCombinationGUIPacket.register(index++);
-            ChangeFloorPacket.register(index++);
             OpenGuideScreenPacket.register(index++);
         });
     }

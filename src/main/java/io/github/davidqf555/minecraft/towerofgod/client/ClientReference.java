@@ -1,7 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.FloorTeleportationTerminalScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.GuideScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuCombinationGui;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.StatsMeterGui;
@@ -17,9 +16,7 @@ import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ColorHelper;
-import net.minecraft.util.Direction;
 import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -73,10 +70,6 @@ public final class ClientReference {
 
     public static void renderItemStackData(ItemStackRenderData data, RenderContext context) {
         Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(data.get(), (int) context.getX(), (int) context.getY());
-    }
-
-    public static void openFloorTeleportationTerminalScreen(int level, BlockPos teleporter, Direction direction) {
-        Minecraft.getInstance().setScreen(new FloorTeleportationTerminalScreen(level, teleporter, direction));
     }
 
     public static void openCombinationGUI(Set<ShinsuTechnique> unlocked) {

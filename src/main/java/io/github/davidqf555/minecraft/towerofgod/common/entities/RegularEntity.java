@@ -80,8 +80,13 @@ public class RegularEntity extends BasicShinsuUserEntity {
     }
 
     @Override
-    public int getMaxInitialLevel(int floor) {
-        return floor * 2 + 3;
+    public int getMinInitialLevel() {
+        return 1;
+    }
+
+    @Override
+    public int getMaxInitialLevel() {
+        return 50;
     }
 
     @Override

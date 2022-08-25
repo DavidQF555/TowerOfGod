@@ -54,7 +54,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
                 remove(world);
                 return;
             }
-            double resistance = ShinsuStats.getNetResistance(world, user, target);
+            double resistance = ShinsuStats.getNetResistance(user, target);
             int amp = (int) (resistance * level);
             ((LivingEntity) target).addEffect(new EffectInstance(EffectRegistry.REVERSE_FLOW.get(), 2, amp - 1));
         }

@@ -1,7 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.registration;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.world.FloorChunkGenerator;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
@@ -39,7 +38,6 @@ public final class WorldGenRegistry {
         public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
             event.enqueueWork(() -> {
                 SUSPENDIUM_ORE = Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, new ResourceLocation(TowerOfGod.MOD_ID, "suspendium_ore"), Feature.ORE.configured(new OreFeatureConfig(OreFeatureConfig.FillerBlockType.NATURAL_STONE, BlockRegistry.SUSPENDIUM_ORE.get().defaultBlockState(), 8)).decorated(Placement.RANGE.configured(new TopSolidRangeConfig(17, 0, 100))).squared().count(3));
-                Registry.register(Registry.CHUNK_GENERATOR, new ResourceLocation(TowerOfGod.MOD_ID, "floor"), FloorChunkGenerator.CODEC);
             });
         }
     }

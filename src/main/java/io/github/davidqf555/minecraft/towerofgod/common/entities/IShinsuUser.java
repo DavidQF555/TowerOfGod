@@ -7,8 +7,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.common.world.FloorDimensionsHelper;
-import io.github.davidqf555.minecraft.towerofgod.common.world.FloorProperty;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
@@ -55,9 +53,7 @@ public interface IShinsuUser {
     default void initializeShinsuStats(IServerWorld world) {
         Random random = world.getRandom();
         ShinsuStats stats = getShinsuStats();
-        FloorProperty property = FloorDimensionsHelper.getFloorProperty(world.getLevel());
-        int floor = property == null ? 1 : property.getLevel();
-        stats.addLevel(getInitialShinsuLevel(random, floor) - stats.getLevel());
+        stats.addLevel(getInitialShinsuLevel(random) - stats.getLevel());
         setGroup(getInitialGroup(random));
         stats.addMaxShinsu(getInitialMaxShinsu(random) - stats.getMaxShinsu());
         stats.addMaxBaangs(getInitialMaxBaangs(random) - stats.getMaxBaangs());
@@ -143,9 +139,9 @@ public interface IShinsuUser {
         return groups.get(random.nextInt(groups.size()));
     }
 
-    default int getInitialShinsuLevel(Random rand, int floor) {
-        int min = getMinInitialLevel(floor);
-        int total = getMaxInitialLevel(floor) - min;
+    default int getInitialShinsuLevel(Random rand) {
+        int min = getMinInitialLevel();
+        int total = getMaxInitialLevel() - min;
         double current = 0;
         double random = rand.nextDouble();
         double rate = 0.8;
@@ -165,11 +161,9 @@ public interface IShinsuUser {
         return total;
     }
 
-    default int getMinInitialLevel(int floor) {
-        return floor;
-    }
+    int getMinInitialLevel();
 
-    int getMaxInitialLevel(int floor);
+    int getMaxInitialLevel();
 
     @Nullable
     Group getGroup();
