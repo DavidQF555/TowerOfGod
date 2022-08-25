@@ -10,4 +10,5 @@ public class DeviceItemColor implements IItemColor {
     public int getColor(ItemStack item, int tintIndex) {
         return ((DeviceItem) item.getItem()).getColor(item).getColorValue();
     }
+
 }

@@ -34,6 +34,7 @@ public class SpearRenderer extends EntityRenderer<SpearEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(SpearEntity entity) {
-        return model.getTextureLocation(entity.getTier());
+        return model.getTextureLocation(entity.getPickupItem().getItem());
     }
+
 }

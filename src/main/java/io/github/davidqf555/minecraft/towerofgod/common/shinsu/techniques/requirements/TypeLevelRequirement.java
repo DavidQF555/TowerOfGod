@@ -23,6 +23,6 @@ public class TypeLevelRequirement implements IRequirement {
 
     @Override
     public ITextComponent getText() {
-        return Messages.REQUIRES_LEVEL.apply(type, level);
+        return Messages.getRequiresLevel(type, level);
     }
 }

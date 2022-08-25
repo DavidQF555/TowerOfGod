@@ -26,4 +26,5 @@ public class BipedShinsuUserRenderer<T extends MobEntity & IShinsuUser> extends 
         Group group = entity.getGroup();
         return group == null ? DEFAULT : group.getTexture();
     }
+
 }

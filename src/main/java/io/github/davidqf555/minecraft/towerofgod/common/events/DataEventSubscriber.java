@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.events;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.data.NBTCapabilityStorage;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
@@ -60,7 +61,7 @@ public final class DataEventSubscriber {
 
         @SubscribeEvent
         public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
-            CapabilityManager.INSTANCE.register(ShinsuStats.class, new ShinsuStats.Storage(), ShinsuStats::new);
+            CapabilityManager.INSTANCE.register(ShinsuStats.class, new NBTCapabilityStorage<>(), ShinsuStats::new);
         }
     }
 

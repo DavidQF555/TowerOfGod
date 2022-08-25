@@ -50,7 +50,7 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     @Override
     public void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(QUALITY, "");
+        getEntityData().define(QUALITY, "");
     }
 
     @Override
@@ -94,9 +94,9 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     @Override
     public void onRemovedFromWorld() {
         if (level instanceof ServerWorld) {
-            Vector3d motion = getDeltaMovement();
             ShinsuQuality quality = getQuality();
             if (quality != null) {
+                Vector3d motion = getDeltaMovement();
                 quality.applyBlockEffect(this, latestHit == null || hasImpulse ? new BlockRayTraceResult(motion, Direction.getNearest(motion.x, motion.y, motion.z), blockPosition(), true) : latestHit);
             }
         }
@@ -105,13 +105,13 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
 
     @Nullable
     public ShinsuQuality getQuality() {
-        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(QUALITY)));
+        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(getEntityData().get(QUALITY)));
     }
 
     public void setQuality(@Nullable ShinsuQuality quality) {
         ShinsuQuality original = getQuality();
         setBaseDamage(getBaseDamage() * (quality == null ? 1 : quality.getDamage()) / (original == null ? 1 : original.getDamage()));
-        entityData.set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
+        getEntityData().set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
     }
 
     @Override

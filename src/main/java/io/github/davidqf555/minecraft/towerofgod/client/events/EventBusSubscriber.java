@@ -36,12 +36,10 @@ public final class EventBusSubscriber {
     @SubscribeEvent
     public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
         Minecraft client = Minecraft.getInstance();
-        if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.screen == null) {
-            if (client.player.getEffect(EffectRegistry.REVERSE_FLOW.get()) != null) {
-                ModifiableAttributeInstance attribute = client.player.getAttribute(Attributes.ATTACK_SPEED);
-                if (attribute == null || attribute.getValue() <= 0) {
-                    event.setCanceled(true);
-                }
+        if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.screen == null && client.player.getEffect(EffectRegistry.REVERSE_FLOW.get()) != null) {
+            ModifiableAttributeInstance attribute = client.player.getAttribute(Attributes.ATTACK_SPEED);
+            if (attribute == null || attribute.getValue() <= 0) {
+                event.setCanceled(true);
             }
         }
     }
@@ -65,7 +63,7 @@ public final class EventBusSubscriber {
             RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), DirectionalLightningRenderer::new);
             KeyBindingsList.register();
             event.enqueueWork(() -> {
-                ScreenManager.register(ContainerRegistry.LIGHTHOUSE.get(), new LighthouseScreen.Factory());
+                ScreenManager.register(ContainerRegistry.LIGHTHOUSE.get(), LighthouseScreen::new);
                 ItemModelsProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.getProperty(Items.BOW, new ResourceLocation("pull")));
                 ItemModelsProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.getProperty(Items.BOW, new ResourceLocation("pulling")));
                 for (RegistryObject<SpearItem> spear : ItemRegistry.SPEARS) {

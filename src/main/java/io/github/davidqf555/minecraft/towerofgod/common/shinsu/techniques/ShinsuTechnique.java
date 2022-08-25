@@ -117,7 +117,7 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         if (!isUnlocked(user)) {
             return Either.right(Messages.LOCKED);
         } else if (cooldown > 0) {
-            return Either.right(Messages.ON_COOLDOWN.apply(cooldown / 20.0));
+            return Either.right(Messages.getOnCooldown(cooldown / 20.0));
         }
         Either<? extends ShinsuTechniqueInstance, ITextComponent> either = getFactory().create(user, target, dir);
         Optional<? extends ShinsuTechniqueInstance> op = either.left();
@@ -126,9 +126,9 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
             int netShinsuUse = getNetShinsuUse(user, instance);
             int netBaangsUse = getNetBaangsUse(user, instance);
             if (stats.getBaangs() < netBaangsUse) {
-                return Either.right(Messages.REQUIRES_BAANGS.apply(netBaangsUse));
+                return Either.right(Messages.getRequiresBaangs(netBaangsUse));
             } else if (stats.getShinsu() < netShinsuUse) {
-                return Either.right(Messages.REQUIRES_SHINSU.apply(netShinsuUse));
+                return Either.right(Messages.getRequiresShinsu(netShinsuUse));
             }
             return Either.left(instance);
         }
