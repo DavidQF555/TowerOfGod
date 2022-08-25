@@ -98,7 +98,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
         @Override
         public Either<FlareWaveExplosion, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
             int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DISRUPTION).getLevel();
-            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, target.getUUID(), level * 2.5f, level)) : Either.right(Messages.REQUIRES_TARGET.apply(RANGE));
+            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, target.getUUID(), level * 2.5f, level)) : Either.right(Messages.getRequiresTarget(RANGE));
         }
 
         @Override
