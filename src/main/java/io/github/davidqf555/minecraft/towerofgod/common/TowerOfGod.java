@@ -39,7 +39,6 @@ public class TowerOfGod {
 
     public TowerOfGod() {
         ModLoadingContext context = ModLoadingContext.get();
-        context.registerConfig(ModConfig.Type.SERVER, ServerConfigs.SPEC);
         context.registerConfig(ModConfig.Type.CLIENT, ClientConfigs.SPEC);
         registerRegistries(FMLJavaModLoadingContext.get().getModEventBus());
         MinecraftForge.EVENT_BUS.register(this);

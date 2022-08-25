@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientConfigs;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
-import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
@@ -98,9 +97,7 @@ public class ShinsuCombinationGui extends AbstractGui {
                 prevPitch = client.player.xRot;
             }
         }
-        if (client.player.level.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
-            TowerOfGod.CHANNEL.sendToServer(new ClientUpdateClientErrorPacket());
-        }
+        TowerOfGod.CHANNEL.sendToServer(new ClientUpdateClientErrorPacket());
     }
 
     protected void reset() {

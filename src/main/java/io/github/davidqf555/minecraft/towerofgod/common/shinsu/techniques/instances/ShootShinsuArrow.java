@@ -80,11 +80,11 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void periodicTick(ServerWorld world, int period) {
+    public void tick(ServerWorld world) {
         if (arrow == null || world.getEntity(arrow) == null) {
             remove(world);
         }
-        super.periodicTick(world, period);
+        super.tick(world);
     }
 
     @Override

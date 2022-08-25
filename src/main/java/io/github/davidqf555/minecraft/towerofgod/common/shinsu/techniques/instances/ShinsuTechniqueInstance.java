@@ -85,9 +85,9 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         }
     }
 
-    public void periodicTick(ServerWorld world, int period) {
+    public void tick(ServerWorld world) {
         if (!getTechnique().isIndefinite()) {
-            ticks += period;
+            ticks++;
         }
     }
 

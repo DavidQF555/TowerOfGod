@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
@@ -65,7 +64,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     public void aiStep() {
         super.aiStep();
         heal(0.025f);
-        if (level instanceof ServerWorld && level.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
+        if (level instanceof ServerWorld) {
             shinsuTick((ServerWorld) level);
         }
     }

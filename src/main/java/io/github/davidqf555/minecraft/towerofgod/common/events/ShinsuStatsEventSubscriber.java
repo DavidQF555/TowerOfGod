@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.events;
 
-import io.github.davidqf555.minecraft.towerofgod.common.ServerConfigs;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
@@ -23,8 +22,8 @@ public final class ShinsuStatsEventSubscriber {
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START && event.player.level.getGameTime() % ServerConfigs.INSTANCE.shinsuUpdatePeriod.get() == 0) {
-            ShinsuStats.get(event.player).periodicTick((ServerWorld) event.player.level, ServerConfigs.INSTANCE.shinsuUpdatePeriod.get());
+        if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START) {
+            ShinsuStats.get(event.player).tick((ServerWorld) event.player.level);
         }
     }
 

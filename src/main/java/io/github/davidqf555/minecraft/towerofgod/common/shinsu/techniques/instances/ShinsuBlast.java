@@ -68,11 +68,11 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void periodicTick(ServerWorld world, int period) {
+    public void tick(ServerWorld world) {
         if (blast == null || world.getEntity(blast) == null) {
             remove(world);
         }
-        super.periodicTick(world, period);
+        super.tick(world);
     }
 
     @Override

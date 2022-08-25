@@ -278,10 +278,10 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         return cooldowns.getOrDefault(technique, 0);
     }
 
-    public void periodicTick(ServerWorld world, int period) {
+    public void tick(ServerWorld world) {
         List<ShinsuTechniqueInstance> techniques = new ArrayList<>(getTechniques());
         for (ShinsuTechniqueInstance technique : techniques) {
-            technique.periodicTick(world, period);
+            technique.tick(world);
             if (technique.getTicks() >= technique.getDuration()) {
                 technique.remove(world);
             }
@@ -289,7 +289,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
             int cooldown = getCooldown(technique);
             if (cooldown > 0) {
-                setCooldown(technique, cooldown - period);
+                setCooldown(technique, cooldown - 1);
             }
         }
     }
