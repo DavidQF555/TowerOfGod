@@ -46,7 +46,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         Group group = getGroup();
         IFormattableTextComponent text;
         if (group != null) {
-            text = new TranslationTextComponent(getType().getDescription() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).withStyle(group.getTextFormattingColor());
+            text = new TranslationTextComponent(getType().getDescriptionId() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).withStyle(group.getTextFormattingColor());
         } else {
             text = new TranslationTextComponent(getType().getDescriptionId() + ".name", ShinsuStats.get(this).getLevel());
         }
