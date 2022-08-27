@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.world;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;

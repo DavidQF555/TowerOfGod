@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.data;
+package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;

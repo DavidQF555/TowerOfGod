@@ -1,6 +1,7 @@
-package io.github.davidqf555.minecraft.towerofgod.common.data;
+package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
@@ -16,17 +17,14 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
@@ -37,6 +35,8 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
 
     public static final int ENTITY_RANGE = 32;
     private static final String LEVEL_UP = "entity." + TowerOfGod.MOD_ID + ".level_up";
+    @CapabilityInject(ShinsuStats.class)
+    public static Capability<ShinsuStats> capability = null;
     private final Map<ShinsuTechniqueType, ShinsuTypeData> data;
     private final Map<ShinsuTechnique, Integer> cooldowns;
     private final List<ShinsuTechniqueInstance> techniques;
@@ -67,7 +67,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
 
     @Nonnull
     public static ShinsuStats get(Entity user) {
-        return user.getCapability(Provider.capability).orElseGet(ShinsuStats::new);
+        return user.getCapability(capability).orElseGet(ShinsuStats::new);
     }
 
     public static double getNetResistance(Entity user, Entity target) {
@@ -351,29 +351,6 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             for (String key : data.getAllKeys()) {
                 setCooldown(ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(key)), data.getInt(key));
             }
-        }
-    }
-
-    public static class Provider implements ICapabilitySerializable<INBT> {
-
-        @CapabilityInject(ShinsuStats.class)
-        public static Capability<ShinsuStats> capability = null;
-        private final LazyOptional<ShinsuStats> instance = LazyOptional.of(() -> Objects.requireNonNull(capability.getDefaultInstance()));
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction side) {
-            return cap == capability ? instance.cast() : LazyOptional.empty();
-        }
-
-        @Override
-        public INBT serializeNBT() {
-            return capability.getStorage().writeNBT(capability, instance.orElseThrow(NullPointerException::new), null);
-        }
-
-        @Override
-        public void deserializeNBT(INBT nbt) {
-            capability.getStorage().readNBT(capability, instance.orElseThrow(NullPointerException::new), null, nbt);
         }
     }
 
