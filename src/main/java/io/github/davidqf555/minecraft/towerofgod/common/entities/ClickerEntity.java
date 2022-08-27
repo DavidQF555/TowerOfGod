@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -28,7 +28,7 @@ public class ClickerEntity extends Entity {
     private static final int PARTICLES = 2;
     private static final int SPEED = 5;
     private static final int DURATION = 200;
-    private static final DataParameter<String> QUALITY = EntityDataManager.defineId(ClickerEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> ATTRIBUTE = EntityDataManager.defineId(ClickerEntity.class, DataSerializers.STRING);
     private static final DataParameter<String> SHAPE = EntityDataManager.defineId(ClickerEntity.class, DataSerializers.STRING);
     private int ticksLeft;
 
@@ -40,7 +40,7 @@ public class ClickerEntity extends Entity {
     @Override
     protected void defineSynchedData() {
         EntityDataManager manager = getEntityData();
-        manager.define(QUALITY, "");
+        manager.define(ATTRIBUTE, "");
         manager.define(SHAPE, ShinsuShapeRegistry.SWORD.getId().toString());
     }
 
@@ -48,7 +48,7 @@ public class ClickerEntity extends Entity {
     public void tick() {
         yRotO = yRot;
         yRot += SPEED;
-        IParticleData particle = ShinsuQuality.getParticles(getQuality());
+        IParticleData particle = ShinsuAttribute.getParticles(getAttribute());
         for (int i = 0; i < PARTICLES; i++) {
             level.addParticle(particle, getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
         }
@@ -60,12 +60,12 @@ public class ClickerEntity extends Entity {
     }
 
     @Nullable
-    public ShinsuQuality getQuality() {
-        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(QUALITY)));
+    public ShinsuAttribute getAttribute() {
+        return ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(entityData.get(ATTRIBUTE)));
     }
 
-    public void setQuality(@Nullable ShinsuQuality quality) {
-        getEntityData().set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
+    public void setAttribute(@Nullable ShinsuAttribute attribute) {
+        getEntityData().set(ATTRIBUTE, attribute == null ? "" : attribute.getRegistryName().toString());
     }
 
     public ShinsuShape getShape() {
@@ -81,8 +81,8 @@ public class ClickerEntity extends Entity {
         if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
             ticksLeft = nbt.getInt("Duration");
         }
-        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
-            setQuality(ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality"))));
+        if (nbt.contains("Attribute", Constants.NBT.TAG_STRING)) {
+            setAttribute(ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute"))));
         }
         if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
             setShape(ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape"))));
@@ -92,9 +92,9 @@ public class ClickerEntity extends Entity {
     @Override
     public void addAdditionalSaveData(CompoundNBT nbt) {
         nbt.putInt("Duration", ticksLeft);
-        ShinsuQuality quality = getQuality();
-        if (quality != null) {
-            nbt.putString("Quality", quality.getRegistryName().toString());
+        ShinsuAttribute attribute = getAttribute();
+        if (attribute != null) {
+            nbt.putString("Attribute", attribute.getRegistryName().toString());
         }
         nbt.putString("Shape", getShape().getRegistryName().toString());
     }

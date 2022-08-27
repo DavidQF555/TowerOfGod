@@ -2,13 +2,13 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -63,7 +63,7 @@ public interface IShinsuUser {
             ShinsuTypeData data = stats.getData(type);
             data.setLevel(data.getLevel() + 1);
         }
-        stats.setQuality(getInitialQuality(random));
+        stats.setAttribute(getInitialAttribute(random));
         stats.setShape(getInitialShape(random));
     }
 
@@ -89,17 +89,17 @@ public interface IShinsuUser {
         getShinsuStats().tick(world);
     }
 
-    default double getPreferredQualityChance() {
+    default double getPreferredAttributeChance() {
         return 0.75;
     }
 
-    default ShinsuQuality getInitialQuality(Random random) {
-        ShinsuQuality[] pref = getPreferredQualities();
-        if (pref.length > 0 && random.nextDouble() < getPreferredQualityChance()) {
+    default ShinsuAttribute getInitialAttribute(Random random) {
+        ShinsuAttribute[] pref = getPreferredQualities();
+        if (pref.length > 0 && random.nextDouble() < getPreferredAttributeChance()) {
             return pref[random.nextInt(pref.length)];
         } else {
-            List<ShinsuQuality> qualities = new ArrayList<>(ShinsuQualityRegistry.getRegistry().getValues());
-            return qualities.get(random.nextInt(qualities.size()));
+            List<ShinsuAttribute> attributes = new ArrayList<>(ShinsuAttributeRegistry.getRegistry().getValues());
+            return attributes.get(random.nextInt(attributes.size()));
         }
     }
 
@@ -123,9 +123,9 @@ public interface IShinsuUser {
         return group == null ? new ShinsuTechniqueType[0] : group.getPreferredTechniqueTypes();
     }
 
-    default ShinsuQuality[] getPreferredQualities() {
+    default ShinsuAttribute[] getPreferredQualities() {
         Group group = getGroup();
-        return group == null ? new ShinsuQuality[0] : group.getQualities();
+        return group == null ? new ShinsuAttribute[0] : group.getAttributes();
     }
 
     default ShinsuShape[] getPreferredShapes() {

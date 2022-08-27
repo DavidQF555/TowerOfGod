@@ -4,12 +4,12 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
@@ -45,20 +45,20 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     private int baangs;
     private double resistance;
     private double tension;
-    private ShinsuQuality quality;
+    private ShinsuAttribute attribute;
     private ShinsuShape shape;
 
     public ShinsuStats() {
         this(1, 0, 0, 1, 1, null, null);
     }
 
-    private ShinsuStats(int level, int shinsu, int baangs, double resistance, double tension, ShinsuQuality quality, @Nullable ShinsuShape shape) {
+    private ShinsuStats(int level, int shinsu, int baangs, double resistance, double tension, ShinsuAttribute attribute, @Nullable ShinsuShape shape) {
         this.level = level;
         this.shinsu = shinsu;
         this.baangs = baangs;
         this.resistance = resistance;
         this.tension = tension;
-        this.quality = quality;
+        this.attribute = attribute;
         this.shape = shape;
         data = new EnumMap<>(ShinsuTechniqueType.class);
         cooldowns = new HashMap<>();
@@ -145,12 +145,12 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     }
 
     @Nullable
-    public ShinsuQuality getQuality() {
-        return quality;
+    public ShinsuAttribute getAttribute() {
+        return attribute;
     }
 
-    public void setQuality(@Nullable ShinsuQuality quality) {
-        this.quality = quality;
+    public void setAttribute(@Nullable ShinsuAttribute attribute) {
+        this.attribute = attribute;
     }
 
     @Nullable
@@ -284,9 +284,9 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         tag.putInt("Baangs", baangs);
         tag.putDouble("Resistance", resistance);
         tag.putDouble("Tension", tension);
-        ShinsuQuality quality = getQuality();
-        if (quality != null) {
-            tag.putString("Quality", quality.getRegistryName().toString());
+        ShinsuAttribute attribute = getAttribute();
+        if (attribute != null) {
+            tag.putString("Attribute", attribute.getRegistryName().toString());
         }
         ShinsuShape shape = getShape();
         if (shape != null) {
@@ -323,8 +323,8 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         if (nbt.contains("Tension", Constants.NBT.TAG_DOUBLE)) {
             tension = nbt.getDouble("Tension");
         }
-        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
-            quality = ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality")));
+        if (nbt.contains("Attribute", Constants.NBT.TAG_STRING)) {
+            attribute = ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute")));
         }
         if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
             shape = ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape")));

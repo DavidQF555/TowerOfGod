@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client.render;
 
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.ItemStack;
 
@@ -10,7 +10,7 @@ public class ShinsuItemColor implements IItemColor {
 
     @Override
     public int getColor(@Nonnull ItemStack item, int tintIndex) {
-        return ShinsuQuality.getColor(ShinsuQuality.getQuality(item));
+        return ShinsuAttribute.getColor(ShinsuAttribute.getAttribute(item));
     }
 
 }

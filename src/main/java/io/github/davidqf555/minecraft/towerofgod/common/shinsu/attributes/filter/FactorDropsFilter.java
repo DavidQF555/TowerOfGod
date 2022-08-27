@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.filter;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;

@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.effects;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -8,12 +8,12 @@ import net.minecraft.world.World;
 
 import java.util.function.BiFunction;
 
-public class PlaceSphereQualityEffect<T extends RayTraceResult> implements ShinsuQualityEffect<T> {
+public class PlaceSphereAttributeEffect<T extends RayTraceResult> implements ShinsuAttributeEffect<T> {
 
     private final BiFunction<World, BlockPos, BlockState> state;
     private final int radius;
 
-    public PlaceSphereQualityEffect(int radius, BiFunction<World, BlockPos, BlockState> state) {
+    public PlaceSphereAttributeEffect(int radius, BiFunction<World, BlockPos, BlockState> state) {
         this.radius = radius;
         this.state = state;
     }

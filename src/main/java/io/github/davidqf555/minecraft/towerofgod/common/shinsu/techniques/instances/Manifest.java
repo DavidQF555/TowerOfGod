@@ -3,10 +3,10 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
@@ -30,12 +30,12 @@ import java.util.UUID;
 public class Manifest extends ShinsuTechniqueInstance {
 
     private ShinsuShape shape;
-    private ShinsuQuality quality;
+    private ShinsuAttribute attribute;
 
-    public Manifest(LivingEntity user, ShinsuShape shape, @Nullable ShinsuQuality quality) {
+    public Manifest(LivingEntity user, ShinsuShape shape, @Nullable ShinsuAttribute attribute) {
         super(user);
         this.shape = shape;
-        this.quality = quality;
+        this.attribute = attribute;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class Manifest extends ShinsuTechniqueInstance {
         Entity user = getUser(world);
         ItemStack item = shape.getItem();
         item.getOrCreateTagElement(TowerOfGod.MOD_ID).putUUID("Technique", getID());
-        ShinsuQuality.setQuality(item, quality);
+        ShinsuAttribute.setAttribute(item, attribute);
         IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         for (int i = 0; i < inventory.getSlots(); i++) {
             if (inventory.isItemValid(i, item)) {
@@ -96,8 +96,8 @@ public class Manifest extends ShinsuTechniqueInstance {
         if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
             shape = ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape")));
         }
-        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
-            quality = ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality")));
+        if (nbt.contains("Attribute", Constants.NBT.TAG_STRING)) {
+            attribute = ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute")));
         }
     }
 
@@ -105,8 +105,8 @@ public class Manifest extends ShinsuTechniqueInstance {
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
         nbt.putString("Shape", shape.getRegistryName().toString());
-        if (quality != null) {
-            nbt.putString("Quality", quality.getRegistryName().toString());
+        if (attribute != null) {
+            nbt.putString("Attribute", attribute.getRegistryName().toString());
         }
         return nbt;
     }
@@ -118,7 +118,7 @@ public class Manifest extends ShinsuTechniqueInstance {
         @Override
         public Either<Manifest, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
             ShinsuStats stats = ShinsuStats.get(user);
-            return Either.left(new Manifest(user, stats.getShape(), stats.getQuality()));
+            return Either.left(new Manifest(user, stats.getShape(), stats.getAttribute()));
         }
 
         @Override

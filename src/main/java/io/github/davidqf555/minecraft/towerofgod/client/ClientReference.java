@@ -7,7 +7,7 @@ import io.github.davidqf555.minecraft.towerofgod.client.gui.StatsMeterGui;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -32,7 +32,7 @@ public final class ClientReference {
     public static StatsMeterGui shinsu = null;
     public static StatsMeterGui baangs = null;
     public static ShinsuCombinationGui combo = null;
-    public static ShinsuQuality quality = null;
+    public static ShinsuAttribute attribute = null;
 
     private ClientReference() {
     }

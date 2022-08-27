@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
@@ -52,12 +52,12 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
         if (user != null) {
             ShinsuArrowEntity arrow = EntityRegistry.SHINSU_ARROW.get().create(world);
             if (arrow != null) {
-                ShinsuQuality quality = ShinsuStats.get(user).getQuality();
-                arrow.setQuality(quality);
+                ShinsuAttribute attribute = ShinsuStats.get(user).getAttribute();
+                arrow.setAttribute(attribute);
                 arrow.setTechnique(getID());
                 float speed = velocity * 3;
-                if (quality != null) {
-                    speed *= quality.getSpeed();
+                if (attribute != null) {
+                    speed *= attribute.getSpeed();
                 }
                 arrow.shoot(direction.x(), direction.y(), direction.z(), speed, 1);
                 arrow.setOwner(user);

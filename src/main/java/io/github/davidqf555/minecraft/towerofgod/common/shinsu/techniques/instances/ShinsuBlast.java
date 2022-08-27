@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
@@ -50,14 +50,14 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
             if (shinsu != null) {
                 LivingEntity user = (LivingEntity) u;
                 ShinsuStats stats = ShinsuStats.get(u);
-                ShinsuQuality quality = stats.getQuality();
+                ShinsuAttribute attribute = stats.getAttribute();
                 shinsu.setOwner(user);
-                shinsu.setQuality(quality);
+                shinsu.setAttribute(attribute);
                 shinsu.setTechnique(this);
                 shinsu.setPos(user.getX(), user.getEyeY() - shinsu.getBoundingBox().getYsize() / 2, user.getZ());
                 float speed = BASE_SPEED;
-                if (quality != null) {
-                    speed *= quality.getSpeed();
+                if (attribute != null) {
+                    speed *= attribute.getSpeed();
                 }
                 shinsu.shoot(direction.x(), direction.y(), direction.z(), speed, 0);
                 blast = shinsu.getUUID();

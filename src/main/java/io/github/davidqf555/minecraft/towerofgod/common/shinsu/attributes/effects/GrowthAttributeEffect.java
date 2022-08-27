@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.effects;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -8,11 +8,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.server.ServerWorld;
 
-public class GrowthQualityEffect implements ShinsuQualityEffect<BlockRayTraceResult> {
+public class GrowthAttributeEffect implements ShinsuAttributeEffect<BlockRayTraceResult> {
 
-    public static final GrowthQualityEffect INSTANCE = new GrowthQualityEffect();
+    public static final GrowthAttributeEffect INSTANCE = new GrowthAttributeEffect();
 
-    protected GrowthQualityEffect() {
+    protected GrowthAttributeEffect() {
     }
 
     @Override

@@ -2,27 +2,27 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requi
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
 
-public class QualityRequirement implements IRequirement {
+public class AttributeRequirement implements IRequirement {
 
-    private final ShinsuQuality quality;
+    private final ShinsuAttribute attribute;
 
-    public QualityRequirement(@Nullable ShinsuQuality quality) {
-        this.quality = quality;
+    public AttributeRequirement(@Nullable ShinsuAttribute attribute) {
+        this.attribute = attribute;
     }
 
     @Override
     public boolean isUnlocked(LivingEntity user) {
-        return ShinsuStats.get(user).getQuality() == quality;
+        return ShinsuStats.get(user).getAttribute() == attribute;
     }
 
     @Override
     public ITextComponent getText() {
-        return quality == null ? Messages.REQUIRES_NO_QUALITY : Messages.getRequiresQuality(quality);
+        return attribute == null ? Messages.REQUIRES_NO_ATTRIBUTE : Messages.getRequiresAttribute(attribute);
     }
 }

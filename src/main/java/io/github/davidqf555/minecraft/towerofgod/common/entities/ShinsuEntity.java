@@ -1,9 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -35,7 +35,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
 
     private static final int PARTICLES = 3;
     private static final float DAMAGE = 0.625f;
-    private static final DataParameter<String> QUALITY = EntityDataManager.defineId(ShinsuEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> ATTRIBUTE = EntityDataManager.defineId(ShinsuEntity.class, DataSerializers.STRING);
     private UUID technique;
     private BlockRayTraceResult latestHit;
 
@@ -48,7 +48,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     @Override
     public void defineSynchedData() {
         super.defineSynchedData();
-        getEntityData().define(QUALITY, "");
+        getEntityData().define(ATTRIBUTE, "");
     }
 
     @Override
@@ -63,16 +63,16 @@ public class ShinsuEntity extends DamagingProjectileEntity {
 
     @Override
     public IParticleData getTrailParticle() {
-        return ShinsuQuality.getParticles(getQuality());
+        return ShinsuAttribute.getParticles(getAttribute());
     }
 
     @Nullable
-    public ShinsuQuality getQuality() {
-        return ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(getEntityData().get(QUALITY)));
+    public ShinsuAttribute getAttribute() {
+        return ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(getEntityData().get(ATTRIBUTE)));
     }
 
-    public void setQuality(@Nullable ShinsuQuality quality) {
-        getEntityData().set(QUALITY, quality == null ? "" : quality.getRegistryName().toString());
+    public void setAttribute(@Nullable ShinsuAttribute attribute) {
+        getEntityData().set(ATTRIBUTE, attribute == null ? "" : attribute.getRegistryName().toString());
     }
 
     @Override
@@ -94,12 +94,12 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             if (shooter != null) {
                 damage *= ShinsuStats.getNetResistance(shooter, target);
             }
-            ShinsuQuality quality = getQuality();
-            if (quality != null) {
-                damage *= quality.getDamage();
-                quality.applyEntityEffect(this, rayTraceResult);
+            ShinsuAttribute attribute = getAttribute();
+            if (attribute != null) {
+                damage *= attribute.getDamage();
+                attribute.applyEntityEffect(this, rayTraceResult);
             }
-            target.hurt(ShinsuQuality.getDamageSource(quality), damage);
+            target.hurt(ShinsuAttribute.getDamageSource(attribute), damage);
         }
         remove();
     }
@@ -138,10 +138,10 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     @Override
     public void onRemovedFromWorld() {
         if (level instanceof ServerWorld) {
-            ShinsuQuality quality = getQuality();
-            if (quality != null) {
+            ShinsuAttribute attribute = getAttribute();
+            if (attribute != null) {
                 Vector3d motion = getDeltaMovement();
-                quality.applyBlockEffect(this, latestHit == null || hasImpulse ? new BlockRayTraceResult(motion, Direction.getNearest(motion.x, motion.y, motion.z), blockPosition(), true) : latestHit);
+                attribute.applyBlockEffect(this, latestHit == null || hasImpulse ? new BlockRayTraceResult(motion, Direction.getNearest(motion.x, motion.y, motion.z), blockPosition(), true) : latestHit);
             }
         }
         super.onRemovedFromWorld();
@@ -153,8 +153,8 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         if (nbt.contains("Technique", Constants.NBT.TAG_INT_ARRAY)) {
             technique = nbt.getUUID("Technique");
         }
-        if (nbt.contains("Quality", Constants.NBT.TAG_STRING)) {
-            setQuality(ShinsuQualityRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Quality"))));
+        if (nbt.contains("Attribute", Constants.NBT.TAG_STRING)) {
+            setAttribute(ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute"))));
         }
     }
 
@@ -164,9 +164,9 @@ public class ShinsuEntity extends DamagingProjectileEntity {
         if (technique != null) {
             nbt.putUUID("Technique", technique);
         }
-        ShinsuQuality quality = getQuality();
-        if (quality != null) {
-            nbt.putString("Quality", quality.getRegistryName().toString());
+        ShinsuAttribute attribute = getAttribute();
+        if (attribute != null) {
+            nbt.putString("Attribute", attribute.getRegistryName().toString());
         }
     }
 

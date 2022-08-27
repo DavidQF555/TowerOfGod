@@ -21,7 +21,7 @@ public final class PacketRegistry {
             UpdateBaangsMeterPacket.register(index++);
             ClientUpdateClientErrorPacket.register(index++);
             ServerUpdateClientErrorPacket.register(index++);
-            UpdateClientQualityPacket.register(index++);
+            UpdateClientAttributePacket.register(index++);
             ObserverChangeHighlightPacket.register(index++);
             UpdateClientDimensionsPacket.register(index++);
             ClientOpenCombinationGUIPacket.register(index++);

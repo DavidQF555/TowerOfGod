@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.effects;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -7,11 +7,11 @@ import net.minecraft.world.World;
 
 import java.util.function.BiPredicate;
 
-public class DestroyBlockQualityEffect implements ShinsuQualityEffect<BlockRayTraceResult> {
+public class DestroyBlockAttributeEffect implements ShinsuAttributeEffect<BlockRayTraceResult> {
 
     private final BiPredicate<World, BlockPos> condition;
 
-    public DestroyBlockQualityEffect(BiPredicate<World, BlockPos> condition) {
+    public DestroyBlockAttributeEffect(BiPredicate<World, BlockPos> condition) {
         this.condition = condition;
     }
 

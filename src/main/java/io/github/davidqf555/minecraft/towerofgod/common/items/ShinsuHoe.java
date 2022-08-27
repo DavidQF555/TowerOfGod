@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -53,9 +53,9 @@ public class ShinsuHoe extends HoeItem {
     @Nonnull
     @Override
     public ActionResultType useOn(ItemUseContext context) {
-        ShinsuQuality quality = ShinsuQuality.getQuality(context.getItemInHand());
-        if (quality != null) {
-            quality.applyBlockEffect(context.getPlayer(), new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside()));
+        ShinsuAttribute attribute = ShinsuAttribute.getAttribute(context.getItemInHand());
+        if (attribute != null) {
+            attribute.applyBlockEffect(context.getPlayer(), new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside()));
         }
         return super.useOn(context);
     }
@@ -68,9 +68,9 @@ public class ShinsuHoe extends HoeItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         Vector3d dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
-        ShinsuQuality quality = ShinsuQuality.getQuality(stack);
-        if (quality != null) {
-            quality.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
+        ShinsuAttribute attribute = ShinsuAttribute.getAttribute(stack);
+        if (attribute != null) {
+            attribute.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
         }
         return super.hurtEnemy(stack, target, attacker);
     }

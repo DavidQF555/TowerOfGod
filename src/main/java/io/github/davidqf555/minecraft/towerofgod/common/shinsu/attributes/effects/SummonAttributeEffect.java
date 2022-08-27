@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.effects;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.RayTraceResult;
@@ -7,11 +7,11 @@ import net.minecraft.world.World;
 
 import java.util.function.Function;
 
-public class SummonQualityEffect<T extends RayTraceResult, M extends Entity> implements ShinsuQualityEffect<T> {
+public class SummonAttributeEffect<T extends RayTraceResult, M extends Entity> implements ShinsuAttributeEffect<T> {
 
     private final Function<World, M> factory;
 
-    public SummonQualityEffect(Function<World, M> factory) {
+    public SummonAttributeEffect(Function<World, M> factory) {
         this.factory = factory;
     }
 

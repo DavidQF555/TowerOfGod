@@ -1,14 +1,14 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.effects;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 
-public class KnockbackQualityEffect implements ShinsuQualityEffect<EntityRayTraceResult> {
+public class KnockbackAttributeEffect implements ShinsuAttributeEffect<EntityRayTraceResult> {
 
     private final double magnitude;
 
-    public KnockbackQualityEffect(double magnitude) {
+    public KnockbackAttributeEffect(double magnitude) {
         this.magnitude = magnitude;
     }
 

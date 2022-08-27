@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.item.Item;
@@ -20,7 +20,7 @@ public class Group extends ForgeRegistryEntry<Group> {
     private final int color;
     private final TextFormatting format;
     private final BossInfo.Color bossColor;
-    private final Supplier<ShinsuQuality[]> qualities;
+    private final Supplier<ShinsuAttribute[]> attributes;
     private final Supplier<ShinsuShape[]> shapes;
     private final Supplier<ShinsuTechniqueType[]> types;
     private final Predicate<Item> weapons;
@@ -29,11 +29,11 @@ public class Group extends ForgeRegistryEntry<Group> {
     private final double shinsu;
     private final double baangs;
 
-    public Group(int color, Supplier<ShinsuQuality[]> qualities, Supplier<ShinsuShape[]> shapes, Supplier<ShinsuTechniqueType[]> types, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
+    public Group(int color, Supplier<ShinsuAttribute[]> attributes, Supplier<ShinsuShape[]> shapes, Supplier<ShinsuTechniqueType[]> types, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
         this.color = color;
         bossColor = getBossInfoColor(color);
         format = getTextFormattingColor(color);
-        this.qualities = qualities;
+        this.attributes = attributes;
         this.shapes = shapes;
         this.types = types;
         this.weapons = weapons;
@@ -99,8 +99,8 @@ public class Group extends ForgeRegistryEntry<Group> {
         return format;
     }
 
-    public ShinsuQuality[] getQualities() {
-        return qualities.get();
+    public ShinsuAttribute[] getAttributes() {
+        return attributes.get();
     }
 
     public ShinsuShape[] getShapes() {

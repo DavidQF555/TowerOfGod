@@ -1,13 +1,13 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.effects;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.EntityRayTraceResult;
 
-public class FireEntityQualityEffect implements ShinsuQualityEffect<EntityRayTraceResult> {
+public class FireEntityAttributeEffect implements ShinsuAttributeEffect<EntityRayTraceResult> {
 
     private final int duration;
 
-    public FireEntityQualityEffect(int duration) {
+    public FireEntityAttributeEffect(int duration) {
         this.duration = duration;
     }
 

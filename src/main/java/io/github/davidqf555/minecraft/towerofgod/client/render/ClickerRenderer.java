@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -26,7 +26,7 @@ public class ClickerRenderer extends EntityRenderer<ClickerEntity> {
     @Override
     public void render(ClickerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
         ItemStack item = entityIn.getShape().getItem();
-        ShinsuQuality.setQuality(item, entityIn.getQuality());
+        ShinsuAttribute.setAttribute(item, entityIn.getAttribute());
         matrixStackIn.pushPose();
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(entityIn.yRot));
         matrixStackIn.translate(0, 0.25, 0);

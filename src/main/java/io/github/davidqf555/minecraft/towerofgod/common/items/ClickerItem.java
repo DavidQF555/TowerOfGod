@@ -3,11 +3,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientQualityPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.ShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientAttributePacket;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuQualityRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -52,16 +52,16 @@ public class ClickerItem extends Item {
             }
             if (playerIn instanceof ServerPlayerEntity) {
                 ServerPlayerEntity serverPlayer = (ServerPlayerEntity) playerIn;
-                ShinsuQuality quality = getQuality(serverPlayer);
+                ShinsuAttribute attribute = getAttribute(serverPlayer);
                 ShinsuShape shape = getShape(serverPlayer);
                 ShinsuStats stats = ShinsuStats.get(serverPlayer);
-                stats.setQuality(quality);
+                stats.setAttribute(attribute);
                 stats.setShape(shape);
-                entity.setQuality(quality);
+                entity.setAttribute(attribute);
                 entity.setShape(shape);
                 CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
                 serverPlayer.awardStat(Stats.ITEM_USED.get(this));
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new UpdateClientQualityPacket(quality));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new UpdateClientAttributePacket(attribute));
             }
             worldIn.addFreshEntity(entity);
             return ActionResult.sidedSuccess(item, playerIn.level.isClientSide());
@@ -69,25 +69,25 @@ public class ClickerItem extends Item {
         return ActionResult.pass(playerIn.getItemInHand(handIn));
     }
 
-    private ShinsuQuality getQuality(ServerPlayerEntity player) {
+    private ShinsuAttribute getAttribute(ServerPlayerEntity player) {
         double total = 0;
-        Map<ShinsuQuality, Double> suitabilities = new HashMap<>();
-        for (ShinsuQuality quality : ShinsuQualityRegistry.getRegistry()) {
-            double suitability = quality.getSuitability(player);
+        Map<ShinsuAttribute, Double> suitabilities = new HashMap<>();
+        for (ShinsuAttribute attribute : ShinsuAttributeRegistry.getRegistry()) {
+            double suitability = attribute.getSuitability(player);
             if (suitability > 0) {
                 total += suitability;
-                suitabilities.put(quality, suitability);
+                suitabilities.put(attribute, suitability);
             }
         }
         double current = 0;
         double random = player.getRandom().nextDouble() * total;
-        for (ShinsuQuality quality : suitabilities.keySet()) {
-            current += suitabilities.get(quality);
+        for (ShinsuAttribute attribute : suitabilities.keySet()) {
+            current += suitabilities.get(attribute);
             if (random < current) {
-                return quality;
+                return attribute;
             }
         }
-        List<ShinsuQuality> all = new ArrayList<>(ShinsuQualityRegistry.getRegistry().getValues());
+        List<ShinsuAttribute> all = new ArrayList<>(ShinsuAttributeRegistry.getRegistry().getValues());
         return all.get(player.getRandom().nextInt(all.size()));
     }
 

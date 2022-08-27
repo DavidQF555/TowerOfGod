@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.effects;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -7,12 +7,12 @@ import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.function.Function;
 
-public class PushQualityEffect<T extends RayTraceResult> implements ShinsuQualityEffect<T> {
+public class PushAttributeEffect<T extends RayTraceResult> implements ShinsuAttributeEffect<T> {
 
     private final double radius;
     private final Function<Double, Double> magnitude;
 
-    public PushQualityEffect(double radius, Function<Double, Double> magnitude) {
+    public PushAttributeEffect(double radius, Function<Double, Double> magnitude) {
         this.radius = radius;
         this.magnitude = magnitude;
     }

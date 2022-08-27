@@ -1,15 +1,15 @@
-package io.github.davidqf555.minecraft.towerofgod.common.shinsu.quality.effects;
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.EntityRayTraceResult;
 
-public class PotionQualityEffect implements ShinsuQualityEffect<EntityRayTraceResult> {
+public class PotionAttributeEffect implements ShinsuAttributeEffect<EntityRayTraceResult> {
 
     private final EffectInstance effect;
 
-    public PotionQualityEffect(EffectInstance effect) {
+    public PotionAttributeEffect(EffectInstance effect) {
         this.effect = effect;
     }
 
