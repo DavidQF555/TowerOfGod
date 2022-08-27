@@ -28,6 +28,7 @@ public class PushQualityEffect<T extends RayTraceResult> implements ShinsuQualit
                 double magnitude = this.magnitude.apply(length);
                 Vector3d vec = dir.normalize().scale(magnitude);
                 target.push(vec.x, vec.y, vec.z);
+                target.hurtMarked = true;
             }
         }
     }

@@ -17,6 +17,7 @@ public class KnockbackQualityEffect implements ShinsuQualityEffect<EntityRayTrac
         Entity target = clip.getEntity();
         Vector3d push = clip.getLocation().normalize().scale(magnitude);
         target.push(push.x(), push.y(), push.z());
+        target.hurtMarked = true;
     }
 
 }
