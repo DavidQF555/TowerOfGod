@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[36,)"
+loaderVersion = "[40,)"
 license = "GPLv3"
 issueTrackerURL = "https://github.com/DavidQF555/TowerOfGod/issues"
 [[mods]]
@@ -14,12 +14,12 @@ description = 'This mod adds in many features of the Tower of God universe made 
 [[dependencies.towerofgod]]
 modId = "forge"
 mandatory = true
-versionRange = "[36,)"
+versionRange = "[40,)"
 ordering = "NONE"
 side = "BOTH"
 [[dependencies.towerofgod]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16.5,1.17)"
+versionRange = "[1.18.2,1.19)"
 ordering = "NONE"
 side = "BOTH"
