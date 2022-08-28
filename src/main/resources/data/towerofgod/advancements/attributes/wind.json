@@ -1,0 +1,33 @@
+{
+  "parent": "towerofgod:attributes",
+  "display": {
+    "title": {
+      "translate": "attribute.towerofgod.wind"
+    },
+    "icon": {
+      "item": "feather"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.attributes.affinity",
+      "with": [
+        {
+          "translate": "attribute.towerofgod.wind"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "levitate": {
+      "trigger": "levitation",
+      "conditions": {
+        "distance": {
+          "y": {
+            "min": 8
+          }
+        }
+      }
+    }
+  }
+}

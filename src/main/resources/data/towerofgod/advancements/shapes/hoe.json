@@ -1,0 +1,33 @@
+{
+  "parent": "towerofgod:shapes",
+  "display": {
+    "title": {
+      "translate": "shape.towerofgod.hoe"
+    },
+    "icon": {
+      "item": "iron_hoe"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.shapes.affinity",
+      "with": [
+        {
+          "translate": "shape.towerofgod.hoe"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "collect_crops": {
+      "trigger": "inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "towerofgod:harvest"
+          }
+        ]
+      }
+    }
+  }
+}

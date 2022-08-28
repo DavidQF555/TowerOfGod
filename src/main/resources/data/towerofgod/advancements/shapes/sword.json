@@ -1,0 +1,37 @@
+{
+  "parent": "towerofgod:shapes",
+  "display": {
+    "title": {
+      "translate": "shape.towerofgod.sword"
+    },
+    "icon": {
+      "item": "iron_sword"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.shapes.affinity",
+      "with": [
+        {
+          "translate": "shape.towerofgod.sword"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "hurt_entity": {
+      "trigger": "player_hurt_entity",
+      "conditions": {
+        "damage": {
+          "blocked": false,
+          "dealt": {
+            "min": 7
+          },
+          "type": {
+            "is_projectile": false
+          }
+        }
+      }
+    }
+  }
+}

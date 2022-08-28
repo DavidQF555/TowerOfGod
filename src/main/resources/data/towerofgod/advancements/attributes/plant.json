@@ -1,0 +1,33 @@
+{
+  "parent": "towerofgod:attributes",
+  "display": {
+    "title": {
+      "translate": "attribute.towerofgod.plant"
+    },
+    "icon": {
+      "item": "oak_sapling"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.attributes.affinity",
+      "with": [
+        {
+          "translate": "attribute.towerofgod.plant"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "pickup_plants": {
+      "trigger": "inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "towerofgod:seeds"
+          }
+        ]
+      }
+    }
+  }
+}

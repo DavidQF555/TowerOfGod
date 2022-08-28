@@ -1,0 +1,28 @@
+{
+  "display": {
+    "background": "towerofgod:textures/gui/advancements/background.png",
+    "title": {
+      "translate": "advancement.towerofgod.attributes"
+    },
+    "icon": {
+      "item": "potion",
+      "nbt": "{Potion:\"water\"}"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.attributes.description"
+    },
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "obtain_clicker": {
+      "trigger": "inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "towerofgod:clicker"
+          }
+        ]
+      }
+    }
+  }
+}

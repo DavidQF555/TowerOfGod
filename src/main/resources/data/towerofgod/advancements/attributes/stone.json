@@ -1,0 +1,34 @@
+{
+  "parent": "towerofgod:attributes",
+  "display": {
+    "title": {
+      "translate": "attribute.towerofgod.stone"
+    },
+    "icon": {
+      "item": "stone"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.attributes.affinity",
+      "with": [
+        {
+          "translate": "attribute.towerofgod.stone"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "pickup_stone": {
+      "trigger": "inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "count": 64,
+            "tag": "stone_crafting_materials"
+          }
+        ]
+      }
+    }
+  }
+}

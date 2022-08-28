@@ -1,0 +1,27 @@
+{
+  "display": {
+    "background": "towerofgod:textures/gui/advancements/background.png",
+    "title": {
+      "translate": "advancement.towerofgod.shapes"
+    },
+    "icon": {
+      "item": "towerofgod:shinsu_pickaxe"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.shapes.description"
+    },
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "obtain_clicker": {
+      "trigger": "inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "towerofgod:clicker"
+          }
+        ]
+      }
+    }
+  }
+}

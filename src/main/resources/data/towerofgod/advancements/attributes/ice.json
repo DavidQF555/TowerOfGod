@@ -1,0 +1,33 @@
+{
+  "parent": "towerofgod:attributes",
+  "display": {
+    "title": {
+      "translate": "attribute.towerofgod.ice"
+    },
+    "icon": {
+      "item": "ice"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.attributes.affinity",
+      "with": [
+        {
+          "translate": "attribute.towerofgod.ice"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "pickup_cold": {
+      "trigger": "inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "towerofgod:cold"
+          }
+        ]
+      }
+    }
+  }
+}

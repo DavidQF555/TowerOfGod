@@ -1,0 +1,43 @@
+{
+  "parent": "towerofgod:attributes",
+  "display": {
+    "title": {
+      "translate": "attribute.towerofgod.lightning"
+    },
+    "icon": {
+      "item": "gold_ingot"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.attributes.affinity",
+      "with": [
+        {
+          "translate": "attribute.towerofgod.lightning"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "lightning_damage": {
+      "trigger": "entity_hurt_player",
+      "conditions": {
+        "damage": {
+          "blocked": false,
+          "type": {
+            "is_lightning": true
+          }
+        }
+      }
+    },
+    "channeled_lightning": {
+      "trigger": "channeled_lightning"
+    }
+  },
+  "requirements": [
+    [
+      "lightning_damage",
+      "channeled_lightning"
+    ]
+  ]
+}

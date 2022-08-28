@@ -1,0 +1,29 @@
+{
+  "parent": "towerofgod:attributes",
+  "display": {
+    "title": {
+      "translate": "attribute.towerofgod.fire"
+    },
+    "icon": {
+      "item": "lava_bucket"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.attributes.affinity",
+      "with": [
+        {
+          "translate": "attribute.towerofgod.fire"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "enter_nether": {
+      "trigger": "changed_dimension",
+      "conditions": {
+        "to": "the_nether"
+      }
+    }
+  }
+}

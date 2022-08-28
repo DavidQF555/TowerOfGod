@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PredictedShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientAttributePacket;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
@@ -25,10 +27,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -70,46 +68,19 @@ public class ClickerItem extends Item {
     }
 
     private ShinsuAttribute getAttribute(ServerPlayerEntity player) {
-        double total = 0;
-        Map<ShinsuAttribute, Double> suitabilities = new HashMap<>();
-        for (ShinsuAttribute attribute : ShinsuAttributeRegistry.getRegistry()) {
-            double suitability = attribute.getSuitability(player);
-            if (suitability > 0) {
-                total += suitability;
-                suitabilities.put(attribute, suitability);
-            }
+        ShinsuAttribute predicted = PredictedShinsuQuality.get(player).getAttribute();
+        if (predicted == null) {
+            return Util.getRandom(ShinsuAttributeRegistry.getRegistry().getValues().toArray(new ShinsuAttribute[0]), player.getRandom());
         }
-        double current = 0;
-        double random = player.getRandom().nextDouble() * total;
-        for (ShinsuAttribute attribute : suitabilities.keySet()) {
-            current += suitabilities.get(attribute);
-            if (random < current) {
-                return attribute;
-            }
-        }
-        List<ShinsuAttribute> all = new ArrayList<>(ShinsuAttributeRegistry.getRegistry().getValues());
-        return all.get(player.getRandom().nextInt(all.size()));
+        return predicted;
     }
 
     private ShinsuShape getShape(ServerPlayerEntity player) {
-        double total = 0;
-        Map<ShinsuShape, Double> suitabilities = new HashMap<>();
-        for (ShinsuShape shape : ShinsuShapeRegistry.getRegistry()) {
-            double suitability = shape.getSuitability(player);
-            if (suitability > 0) {
-                total += suitability;
-                suitabilities.put(shape, suitability);
-            }
+        ShinsuShape predicted = PredictedShinsuQuality.get(player).getShape();
+        if (predicted == null) {
+            return Util.getRandom(ShinsuShapeRegistry.getRegistry().getValues().toArray(new ShinsuShape[0]), player.getRandom());
         }
-        double current = 0;
-        double random = player.getRandom().nextDouble() * total;
-        for (ShinsuShape shape : suitabilities.keySet()) {
-            current += suitabilities.get(shape);
-            if (random < current) {
-                return shape;
-            }
-        }
-        ShinsuShape[] all = ShinsuShapeRegistry.getRegistry().getValues().toArray(new ShinsuShape[0]);
-        return all[player.getRandom().nextInt(all.length)];
+        return predicted;
     }
+
 }

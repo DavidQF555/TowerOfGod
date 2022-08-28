@@ -3,10 +3,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects.ShinsuAttributeEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter.DropsFilter;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.suitability.SuitabilityCalculator;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.nbt.CompoundNBT;
@@ -34,9 +32,8 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
     private final ShinsuAttributeEffect<EntityRayTraceResult> entityEffect;
     private final ShinsuAttributeEffect<BlockRayTraceResult> blockEffect;
     private final DropsFilter dropsFilter;
-    private final SuitabilityCalculator suitability;
 
-    public ShinsuAttribute(IParticleData particleType, DamageSource source, double speed, double damage, int color, ShinsuAttributeEffect<EntityRayTraceResult> entityEffect, ShinsuAttributeEffect<BlockRayTraceResult> blockEffect, DropsFilter dropsFilter, SuitabilityCalculator suitability) {
+    public ShinsuAttribute(IParticleData particleType, DamageSource source, double speed, double damage, int color, ShinsuAttributeEffect<EntityRayTraceResult> entityEffect, ShinsuAttributeEffect<BlockRayTraceResult> blockEffect, DropsFilter dropsFilter) {
         this.particleType = particleType;
         this.source = source;
         this.speed = speed;
@@ -45,7 +42,6 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
         this.entityEffect = entityEffect;
         this.blockEffect = blockEffect;
         this.dropsFilter = dropsFilter;
-        this.suitability = suitability;
     }
 
     public static int getColor(@Nullable ShinsuAttribute attribute) {
@@ -99,10 +95,6 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
 
     protected int getColor() {
         return color;
-    }
-
-    public double getSuitability(ServerPlayerEntity player) {
-        return suitability.calculate(player);
     }
 
     public void applyEntityEffect(Entity user, EntityRayTraceResult rayTrace) {

@@ -1,0 +1,34 @@
+{
+  "parent": "towerofgod:shapes",
+  "display": {
+    "title": {
+      "translate": "shape.towerofgod.axe"
+    },
+    "icon": {
+      "item": "iron_axe"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.shapes.affinity",
+      "with": [
+        {
+          "translate": "shape.towerofgod.axe"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "collect_logs": {
+      "trigger": "inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "count": 64,
+            "tag": "logs"
+          }
+        ]
+      }
+    }
+  }
+}

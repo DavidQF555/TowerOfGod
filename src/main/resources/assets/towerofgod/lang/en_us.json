@@ -146,5 +146,11 @@
   "commands.towerofgod.shinsu.remove_shape": "Removed the Shinsu shape of %s",
   "commands.towerofgod.shinsu.remove_attribute": "Removed the Shinsu attribute of %s",
   "commands.towerofgod.shinsu.instances.entity": "%1$s: ",
-  "commands.towerofgod.shinsu.instances": " %1$s (%2$ss)"
+  "commands.towerofgod.shinsu.instances": " %1$s (%2$ss)",
+  "advancement.towerofgod.attributes": "Shinsu Attributes",
+  "advancement.towerofgod.attributes.description": "Gain an affinity towards a Shinsu attribute",
+  "advancement.towerofgod.attributes.affinity": "Gain an affinity towards the %s attribute",
+  "advancement.towerofgod.shapes": "Shinsu Shapes",
+  "advancement.towerofgod.shapes.description": "Gain an affinity towards a Shinsu shape",
+  "advancement.towerofgod.shapes.affinity": "Gain an affinity towards the %s shape"
 }

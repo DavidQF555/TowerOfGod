@@ -1,0 +1,31 @@
+{
+  "parent": "towerofgod:shapes",
+  "display": {
+    "title": {
+      "translate": "shape.towerofgod.pickaxe"
+    },
+    "icon": {
+      "item": "iron_pickaxe"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.shapes.affinity",
+      "with": [
+        {
+          "translate": "shape.towerofgod.pickaxe"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "place_stone": {
+      "trigger": "placed_block",
+      "conditions": {
+        "item": {
+          "tag": "stone_crafting_materials"
+        }
+      }
+    }
+  }
+}

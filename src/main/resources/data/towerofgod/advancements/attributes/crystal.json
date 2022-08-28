@@ -1,0 +1,31 @@
+{
+  "parent": "towerofgod:attributes",
+  "display": {
+    "title": {
+      "translate": "attribute.towerofgod.crystal"
+    },
+    "icon": {
+      "item": "glass"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.attributes.affinity",
+      "with": [
+        {
+          "translate": "attribute.towerofgod.crystal"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "use_crystal": {
+      "trigger": "consume_item",
+      "conditions": {
+        "item": {
+          "tag": "towerofgod:crystal"
+        }
+      }
+    }
+  }
+}
