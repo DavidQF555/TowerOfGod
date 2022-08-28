@@ -190,9 +190,8 @@ public interface IShinsuUser {
             }
             List<ShinsuTechniqueInstance> tech = new ArrayList<>();
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                ShinsuTechnique.IFactory<?> builder = technique.getFactory();
                 Vector3d dir = entity.canSee(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookAngle();
-                builder.create(entity, target, dir).ifLeft(tech::add);
+                technique.create(entity, target, dir).ifLeft(tech::add);
             }
             if (tech.isEmpty()) {
                 return false;
