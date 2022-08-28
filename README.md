@@ -6,4 +6,3 @@ Features:
 * Unique Regular and Ranker entities with their own skills
 * Lighthouses and Observers that can be used for utility
 * Various Shinsu skills
-* Dynamically generating dimensions for every floor
