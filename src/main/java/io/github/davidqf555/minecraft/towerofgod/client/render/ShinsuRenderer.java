@@ -35,7 +35,7 @@ public class ShinsuRenderer extends EntityRenderer<ShinsuEntity> {
 
     @Override
     public void render(@Nonnull ShinsuEntity entityIn, float entityYaw, float partialTicks, @Nonnull MatrixStack matrixStackIn, @Nonnull IRenderTypeBuffer bufferIn, int packedLightIn) {
-        int hex = ShinsuAttribute.getColor(entityIn.getAttribute());
+        int hex = ShinsuAttribute.getColor(null);
         int red = ColorHelper.PackedColor.red(hex);
         int green = ColorHelper.PackedColor.green(hex);
         int blue = ColorHelper.PackedColor.blue(hex);
