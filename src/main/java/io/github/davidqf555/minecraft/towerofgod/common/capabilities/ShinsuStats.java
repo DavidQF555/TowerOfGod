@@ -12,31 +12,31 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instan
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.Util;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class ShinsuStats implements INBTSerializable<CompoundNBT> {
+public class ShinsuStats implements INBTSerializable<CompoundTag> {
 
     public static final int ENTITY_RANGE = 32;
+    public static final Capability<ShinsuStats> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
     private static final String LEVEL_UP = "entity." + TowerOfGod.MOD_ID + ".level_up";
-    @CapabilityInject(ShinsuStats.class)
-    public static Capability<ShinsuStats> capability = null;
     private final Map<ShinsuTechniqueType, ShinsuTypeData> data;
     private final Map<ShinsuTechnique, Integer> cooldowns;
     private final List<ShinsuTechniqueInstance> techniques;
@@ -67,7 +67,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
 
     @Nonnull
     public static ShinsuStats get(Entity user) {
-        return user.getCapability(capability).orElseGet(ShinsuStats::new);
+        return user.getCapability(CAPABILITY).orElseGet(ShinsuStats::new);
     }
 
     public static double getNetResistance(Entity user, Entity target) {
@@ -173,12 +173,12 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
             addExperience(type, killed.getData(type).getLevel());
             int after = data.getLevel();
             if (initial != after) {
-                owner.sendMessage(new TranslationTextComponent(LEVEL_UP, type.getText(), after), Util.NIL_UUID);
+                owner.sendMessage(new TranslatableComponent(LEVEL_UP, type.getText(), after), Util.NIL_UUID);
             }
         }
-        if (owner instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateShinsuMeterPacket(getShinsu(), getMaxShinsu()));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) owner), new UpdateBaangsMeterPacket(getBaangs(), getMaxBaangs()));
+        if (owner instanceof ServerPlayer) {
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) owner), new UpdateShinsuMeterPacket(getShinsu(), getMaxShinsu()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) owner), new UpdateBaangsMeterPacket(getBaangs(), getMaxBaangs()));
         }
     }
 
@@ -260,7 +260,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         return cooldowns.getOrDefault(technique, 0);
     }
 
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
         List<ShinsuTechniqueInstance> techniques = new ArrayList<>(getTechniques());
         for (ShinsuTechniqueInstance technique : techniques) {
             technique.tick(world);
@@ -277,8 +277,8 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = new CompoundTag();
         tag.putInt("Level", level);
         tag.putInt("Shinsu", shinsu);
         tag.putInt("Baangs", baangs);
@@ -292,62 +292,62 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         if (shape != null) {
             tag.putString("Shape", shape.getRegistryName().toString());
         }
-        ListNBT instances = new ListNBT();
+        ListTag instances = new ListTag();
         for (ShinsuTechniqueInstance instance : techniques) {
             instances.add(instance.serializeNBT());
         }
         tag.put("Techniques", instances);
-        CompoundNBT data = new CompoundNBT();
+        CompoundTag data = new CompoundTag();
         this.data.forEach((type, value) -> data.put(type.name(), value.serializeNBT()));
         tag.put("Data", data);
-        CompoundNBT cooldowns = new CompoundNBT();
+        CompoundTag cooldowns = new CompoundTag();
         this.cooldowns.forEach((technique, cooldown) -> cooldowns.putInt(technique.getRegistryName().toString(), cooldown));
         tag.put("Cooldowns", cooldowns);
         return tag;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
+    public void deserializeNBT(CompoundTag nbt) {
+        if (nbt.contains("Level", Tag.TAG_INT)) {
             level = nbt.getInt("Level");
         }
-        if (nbt.contains("Shinsu", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Shinsu", Tag.TAG_INT)) {
             shinsu = nbt.getInt("Shinsu");
         }
-        if (nbt.contains("Baangs", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Baangs", Tag.TAG_INT)) {
             baangs = nbt.getInt("Baangs");
         }
-        if (nbt.contains("Resistance", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("Resistance", Tag.TAG_DOUBLE)) {
             resistance = nbt.getDouble("Resistance");
         }
-        if (nbt.contains("Tension", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("Tension", Tag.TAG_DOUBLE)) {
             tension = nbt.getDouble("Tension");
         }
-        if (nbt.contains("Attribute", Constants.NBT.TAG_STRING)) {
+        if (nbt.contains("Attribute", Tag.TAG_STRING)) {
             attribute = ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute")));
         }
-        if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
+        if (nbt.contains("Shape", Tag.TAG_STRING)) {
             shape = ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape")));
         }
-        if (nbt.contains("Techniques", Constants.NBT.TAG_LIST)) {
-            ListNBT list = nbt.getList("Techniques", Constants.NBT.TAG_COMPOUND);
-            for (INBT data : list) {
-                ShinsuTechnique type = ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(((CompoundNBT) data).getString("Technique")));
+        if (nbt.contains("Techniques", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("Techniques", Tag.TAG_COMPOUND);
+            for (Tag data : list) {
+                ShinsuTechnique type = ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(((CompoundTag) data).getString("Technique")));
                 ShinsuTechniqueInstance tech = type.getFactory().blankCreate();
-                tech.deserializeNBT((CompoundNBT) data);
+                tech.deserializeNBT((CompoundTag) data);
                 techniques.add(tech);
             }
         }
-        if (nbt.contains("Data", Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT data = nbt.getCompound("Data");
+        if (nbt.contains("Data", Tag.TAG_COMPOUND)) {
+            CompoundTag data = nbt.getCompound("Data");
             for (String key : data.getAllKeys()) {
                 ShinsuTypeData d = new ShinsuTypeData();
                 d.deserializeNBT(data.getCompound(key));
                 this.data.put(ShinsuTechniqueType.valueOf(key), d);
             }
         }
-        if (nbt.contains("Cooldowns", Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT data = nbt.getCompound("Cooldowns");
+        if (nbt.contains("Cooldowns", Tag.TAG_COMPOUND)) {
+            CompoundTag data = nbt.getCompound("Cooldowns");
             for (String key : data.getAllKeys()) {
                 setCooldown(ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(key)), data.getInt(key));
             }

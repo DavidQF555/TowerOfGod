@@ -2,20 +2,22 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -28,12 +30,12 @@ public class RegularEntity extends BasicShinsuUserEntity {
 
     private Personality personality;
 
-    public RegularEntity(EntityType<RegularEntity> type, World world) {
+    public RegularEntity(EntityType<RegularEntity> type, Level world) {
         super(type, world);
         personality = Personality.NEUTRAL;
     }
 
-    public static AttributeModifierMap.MutableAttribute setAttributes() {
+    public static AttributeSupplier.Builder setAttributes() {
         return RegularEntity.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 32)
                 .add(Attributes.MOVEMENT_SPEED, 0.215)
@@ -43,38 +45,38 @@ public class RegularEntity extends BasicShinsuUserEntity {
 
     @Nullable
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        personality = MonsterEntity.isDarkEnoughToSpawn(worldIn, blockPosition().below(), random) && random.nextBoolean() ? RegularEntity.Personality.AGGRESSIVE : RegularEntity.Personality.NEUTRAL;
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
+        personality = Monster.isDarkEnoughToSpawn(worldIn, blockPosition().below(), random) && random.nextBoolean() ? RegularEntity.Personality.AGGRESSIVE : RegularEntity.Personality.NEUTRAL;
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
     @Override
     public void registerGoals() {
         super.registerGoals();
-        goalSelector.addGoal(0, new SwimGoal(this));
+        goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new FindRegularTeamGoal(this, 5, 16));
         goalSelector.addGoal(2, new SwapWeaponToMainHandGoal<>(this, 5));
         goalSelector.addGoal(3, new CastShinsuGoal<>(this));
         goalSelector.addGoal(4, new RangedMainHandAttackGoal<>(this, 1, 12, 15));
         goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.5, true));
-        goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 8));
+        goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8));
         goalSelector.addGoal(7, new FollowRegularTeamLeaderGoal(this, 1, 8));
-        goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1));
-        goalSelector.addGoal(9, new LookRandomlyGoal(this));
+        goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
         targetSelector.addGoal(0, new RegularHurtByTargetGoal(this));
         targetSelector.addGoal(1, new RegularNearestAttackableTargetGoal(this));
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT nbt) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
-        if (nbt.contains("Personality", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Personality", Tag.TAG_INT)) {
             personality = Personality.values()[nbt.getInt("Personality")];
         }
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
         nbt.putInt("Personality", personality.ordinal());
     }
@@ -90,14 +92,14 @@ public class RegularEntity extends BasicShinsuUserEntity {
     }
 
     @Override
-    protected int getExperienceReward(PlayerEntity player) {
+    protected int getExperienceReward(Player player) {
         return ShinsuStats.get(this).getLevel() - random.nextInt(3) + 7;
     }
 
     @Nullable
     public RegularTeamsSavedData.RegularTeam getRegularTeam() {
-        if (level instanceof ServerWorld) {
-            return RegularTeamsSavedData.getOrCreateTeam((ServerWorld) level, this);
+        if (level instanceof ServerLevel) {
+            return RegularTeamsSavedData.getOrCreateTeam((ServerLevel) level, this);
         }
         return null;
     }
@@ -133,14 +135,14 @@ public class RegularEntity extends BasicShinsuUserEntity {
         @Override
         public boolean canUse() {
             RegularTeamsSavedData.RegularTeam team = entity.getRegularTeam();
-            if (!(entity.level instanceof ServerWorld) || team == null || entity.getTarget() != null) {
+            if (!(entity.level instanceof ServerLevel) || team == null || entity.getTarget() != null) {
                 return false;
             } else {
                 UUID id = team.getLeader();
                 if (id == null || entity.getUUID().equals(id)) {
                     return false;
                 } else {
-                    leader = ((ServerWorld) entity.level).getEntity(id);
+                    leader = ((ServerLevel) entity.level).getEntity(id);
                     return leader != null && entity.distanceToSqr(leader) > range * range;
                 }
             }
@@ -166,7 +168,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
     private static class RegularNearestAttackableTargetGoal extends NearestAttackableTargetGoal<LivingEntity> {
 
         public RegularNearestAttackableTargetGoal(RegularEntity entity) {
-            super(entity, LivingEntity.class, 10, true, false, target -> (target instanceof RegularEntity || target instanceof PlayerEntity) && !entity.isAlliedTo(target));
+            super(entity, LivingEntity.class, 10, true, false, target -> (target instanceof RegularEntity || target instanceof Player) && !entity.isAlliedTo(target));
         }
 
         @Override
@@ -199,8 +201,8 @@ public class RegularEntity extends BasicShinsuUserEntity {
             RegularTeamsSavedData.RegularTeam team = entity.getRegularTeam();
             if (team != null) {
                 List<UUID> members = team.getMembers();
-                AxisAlignedBB bounds = AxisAlignedBB.ofSize(range, range, range).move(entity.position());
-                List<RegularEntity> nearby = entity.level.getEntitiesOfClass(RegularEntity.class, bounds, EntityPredicates.NO_SPECTATORS.and(reg -> reg.distanceToSqr(entity) <= range * range));
+                AABB bounds = AABB.ofSize(entity.position(), range, range, range);
+                List<RegularEntity> nearby = entity.level.getEntitiesOfClass(RegularEntity.class, bounds, EntitySelector.NO_SPECTATORS.and(reg -> reg.distanceToSqr(entity) <= range * range));
                 UUID id = entity.getUUID();
                 for (RegularEntity near : nearby) {
                     if (near.personality == entity.personality) {
@@ -232,7 +234,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
         }
 
         @Override
-        protected boolean canAttack(@Nullable LivingEntity potentialTarget, EntityPredicate targetPredicate) {
+        protected boolean canAttack(@Nullable LivingEntity potentialTarget, TargetingConditions targetPredicate) {
             return super.canAttack(potentialTarget, targetPredicate) && !mob.isAlliedTo(potentialTarget);
         }
 
@@ -241,8 +243,8 @@ public class RegularEntity extends BasicShinsuUserEntity {
             LivingEntity revenge = mob.getLastHurtByMob();
             if (revenge != null) {
                 double range = this.getFollowDistance();
-                AxisAlignedBB bounds = AxisAlignedBB.ofSize(range, 10, range).move(mob.position());
-                List<RegularEntity> nearby = mob.level.getLoadedEntitiesOfClass(RegularEntity.class, bounds);
+                AABB bounds = AABB.ofSize(mob.position(), range, 10, range);
+                List<RegularEntity> nearby = mob.level.getEntitiesOfClass(RegularEntity.class, bounds);
                 for (RegularEntity near : nearby) {
                     if (!mob.equals(near) && near.getTarget() == null && near.isAlliedTo(mob) && !near.isAlliedTo(revenge)) {
                         near.setTarget(revenge);

@@ -1,19 +1,19 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
+import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.function.Supplier;
 
 @MethodsReturnNonnullByDefault
-public enum ModArmorTier implements IArmorMaterial {
+public enum ModArmorTier implements ArmorMaterial {
 
     SUSPENDIUM(new ResourceLocation(TowerOfGod.MOD_ID, "suspendium").toString(), 15, new int[]{2, 6, 5, 2}, 15, SoundEvents.ARMOR_EQUIP_GENERIC, 0.5f, () -> Ingredient.of(ItemRegistry.SUSPENDIUM.get()), -2);
 
@@ -39,12 +39,12 @@ public enum ModArmorTier implements IArmorMaterial {
     }
 
     @Override
-    public int getDurabilityForSlot(EquipmentSlotType slotIn) {
+    public int getDurabilityForSlot(EquipmentSlot slotIn) {
         return MAX_DAMAGE_ARRAY[slotIn.getIndex()] * max;
     }
 
     @Override
-    public int getDefenseForSlot(EquipmentSlotType slotIn) {
+    public int getDefenseForSlot(EquipmentSlot slotIn) {
         return damageReduction[slotIn.getIndex()];
     }
 

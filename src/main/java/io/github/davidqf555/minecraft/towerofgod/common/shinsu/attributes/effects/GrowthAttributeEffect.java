@@ -1,14 +1,14 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IGrowable;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
-public class GrowthAttributeEffect implements ShinsuAttributeEffect<BlockRayTraceResult> {
+public class GrowthAttributeEffect implements ShinsuAttributeEffect<BlockHitResult> {
 
     public static final GrowthAttributeEffect INSTANCE = new GrowthAttributeEffect();
 
@@ -16,21 +16,21 @@ public class GrowthAttributeEffect implements ShinsuAttributeEffect<BlockRayTrac
     }
 
     @Override
-    public void apply(Entity user, BlockRayTraceResult clip) {
+    public void apply(Entity user, BlockHitResult clip) {
         BlockPos hit = clip.getBlockPos();
         BlockPos pos = hit.relative(clip.getDirection());
         BlockState state = user.level.getBlockState(pos);
         Block b = state.getBlock();
-        if (b instanceof IGrowable) {
-            if (user.level instanceof ServerWorld && ((IGrowable) b).isValidBonemealTarget(user.level, pos, state, user.level.isClientSide())) {
-                ((IGrowable) b).performBonemeal((ServerWorld) user.level, user.level.random, pos, state);
+        if (b instanceof BonemealableBlock) {
+            if (user.level instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level, pos, state, user.level.isClientSide())) {
+                ((BonemealableBlock) b).performBonemeal((ServerLevel) user.level, user.level.random, pos, state);
             }
         } else {
             state = user.level.getBlockState(hit);
             b = state.getBlock();
-            if (b instanceof IGrowable) {
-                if (user.level instanceof ServerWorld && ((IGrowable) b).isValidBonemealTarget(user.level, hit, state, user.level.isClientSide())) {
-                    ((IGrowable) b).performBonemeal((ServerWorld) user.level, user.level.random, hit, state);
+            if (b instanceof BonemealableBlock) {
+                if (user.level instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level, hit, state, user.level.isClientSide())) {
+                    ((BonemealableBlock) b).performBonemeal((ServerLevel) user.level, user.level.random, hit, state);
                 }
             }
         }

@@ -1,34 +1,33 @@
 package io.github.davidqf555.minecraft.towerofgod.common.blocks;
 
 import io.github.davidqf555.minecraft.towerofgod.registration.TileEntityRegistry;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
-public class SuspendiumTileEntity extends TileEntity implements ITickableTileEntity {
+public class SuspendiumTileEntity extends BlockEntity {
 
     private static final int RADIUS = 4;
     private static final int LEVEL = 2;
     private static final int PERIOD = 60;
 
-    public SuspendiumTileEntity() {
-        super(TileEntityRegistry.SUSPENDIUM.get());
+    public SuspendiumTileEntity(BlockPos pos, BlockState state) {
+        super(TileEntityRegistry.SUSPENDIUM.get(), pos, state);
     }
 
-    @Override
-    public void tick() {
-        World world = getLevel();
-        if (world != null && world.getGameTime() % PERIOD == 0) {
-            BlockPos pos = getBlockPos();
-            AxisAlignedBB bounds = AxisAlignedBB.ofSize(RADIUS * 2, RADIUS * 2, RADIUS * 2).move(pos);
+    public static void tick(Level world, BlockPos pos, BlockState state, SuspendiumTileEntity te) {
+        if (world.getGameTime() % PERIOD == 0) {
+            AABB bounds = AABB.ofSize(Vec3.atCenterOf(pos), RADIUS * 2, RADIUS * 2, RADIUS * 2);
             for (LivingEntity entity : world.getEntitiesOfClass(LivingEntity.class, bounds, entity -> entity.distanceToSqr(pos.getX(), pos.getY(), pos.getZ()) <= RADIUS * RADIUS)) {
-                entity.addEffect(new EffectInstance(Effects.LEVITATION, PERIOD, LEVEL - 1));
+                entity.addEffect(new MobEffectInstance(MobEffects.LEVITATION, PERIOD, LEVEL - 1));
             }
         }
     }
+
 }

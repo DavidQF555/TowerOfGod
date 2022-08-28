@@ -1,12 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 
 public interface IRequirement {
 
     boolean isUnlocked(LivingEntity user);
 
-    ITextComponent getText();
+    Component getText();
 
 }

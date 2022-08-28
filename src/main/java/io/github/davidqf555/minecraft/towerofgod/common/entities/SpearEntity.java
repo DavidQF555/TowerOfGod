@@ -1,36 +1,36 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class SpearEntity extends AbstractArrowEntity {
+public class SpearEntity extends AbstractArrow {
 
-    private static final DataParameter<ItemStack> STACK = EntityDataManager.defineId(SpearEntity.class, DataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<ItemStack> STACK = SynchedEntityData.defineId(SpearEntity.class, EntityDataSerializers.ITEM_STACK);
 
-    public SpearEntity(EntityType<SpearEntity> type, World world) {
+    public SpearEntity(EntityType<SpearEntity> type, Level world) {
         this(type, world, ItemStack.EMPTY);
     }
 
-    public SpearEntity(EntityType<SpearEntity> type, World world, ItemStack stack) {
+    public SpearEntity(EntityType<SpearEntity> type, Level world, ItemStack stack) {
         super(type, world);
         setStack(stack);
     }
@@ -54,30 +54,30 @@ public class SpearEntity extends AbstractArrowEntity {
         return getPickupItem().hasFoil();
     }
 
-    public IItemTier getTier() {
+    public Tier getTier() {
         Item item = getPickupItem().getItem();
-        return item instanceof TieredItem ? ((TieredItem) item).getTier() : ItemTier.IRON;
+        return item instanceof TieredItem ? ((TieredItem) item).getTier() : Tiers.IRON;
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        if (compound.contains("Stack", Constants.NBT.TAG_COMPOUND)) {
+        if (compound.contains("Stack", Tag.TAG_COMPOUND)) {
             setStack(ItemStack.of(compound.getCompound("Stack")));
         }
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.put("Stack", getPickupItem().save(new CompoundNBT()));
+        compound.put("Stack", getPickupItem().save(new CompoundTag()));
     }
 
     @Override
-    protected void onHitEntity(EntityRayTraceResult result) {
+    protected void onHitEntity(EntityHitResult result) {
         Entity target = result.getEntity();
         ItemStack stack = getPickupItem();
-        Vector3d motion = getDeltaMovement();
+        Vec3 motion = getDeltaMovement();
         double damage = (((TieredItem) stack.getItem()).getTier().getAttackDamageBonus() * 2 + 2) * motion.length();
         if (target instanceof LivingEntity) {
             damage += EnchantmentHelper.getDamageBonus(stack, ((LivingEntity) target).getMobType());
@@ -101,7 +101,7 @@ public class SpearEntity extends AbstractArrowEntity {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

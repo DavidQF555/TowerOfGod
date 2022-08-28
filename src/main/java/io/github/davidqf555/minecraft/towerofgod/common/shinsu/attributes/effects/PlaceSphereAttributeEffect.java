@@ -1,19 +1,19 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.HitResult;
 
 import java.util.function.BiFunction;
 
-public class PlaceSphereAttributeEffect<T extends RayTraceResult> implements ShinsuAttributeEffect<T> {
+public class PlaceSphereAttributeEffect<T extends HitResult> implements ShinsuAttributeEffect<T> {
 
-    private final BiFunction<World, BlockPos, BlockState> state;
+    private final BiFunction<Level, BlockPos, BlockState> state;
     private final int radius;
 
-    public PlaceSphereAttributeEffect(int radius, BiFunction<World, BlockPos, BlockState> state) {
+    public PlaceSphereAttributeEffect(int radius, BiFunction<Level, BlockPos, BlockState> state) {
         this.radius = radius;
         this.state = state;
     }

@@ -1,13 +1,13 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
-public enum ModToolTier implements IItemTier {
+public enum ModToolTier implements Tier {
 
     SHINSU(1000, 12, 2, 3, 0, () -> Ingredient.EMPTY),
     SUSPENDIUM(1250, 14, 1, 2, 15, () -> Ingredient.of(ItemRegistry.SUSPENDIUM.get()));

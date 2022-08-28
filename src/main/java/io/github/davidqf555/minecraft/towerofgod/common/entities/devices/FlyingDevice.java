@@ -1,36 +1,35 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
+import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.FlyingEntity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.controller.FlyingMovementController;
-import net.minecraft.entity.passive.IFlyingAnimal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.pathfinding.FlyingPathNavigator;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.FlyingMob;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.animal.FlyingAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -40,18 +39,23 @@ import java.util.UUID;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal {
+public abstract class FlyingDevice extends FlyingMob implements FlyingAnimal {
 
-    private static final DataParameter<Integer> COLOR = EntityDataManager.defineId(FlyingDevice.class, DataSerializers.INT);
+    private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(FlyingDevice.class, EntityDataSerializers.INT);
     private final List<DeviceCommand> commands;
     private UUID owner;
 
-    public FlyingDevice(EntityType<? extends FlyingDevice> type, World worldIn) {
+    public FlyingDevice(EntityType<? extends FlyingDevice> type, Level worldIn) {
         super(type, worldIn);
-        moveControl = new FlyingMovementController(this, 90, true);
-        setPathfindingMalus(PathNodeType.WATER, 0);
+        moveControl = new FlyingMoveControl(this, 90, true);
+        setPathfindingMalus(BlockPathTypes.WATER, 0);
         commands = new ArrayList<>();
         owner = null;
+    }
+
+    @Override
+    public boolean isFlying() {
+        return true;
     }
 
     @Override
@@ -80,7 +84,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     }
 
     @Override
-    public ActionResultType interactAt(PlayerEntity player, Vector3d vec, Hand hand) {
+    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         Item item = stack.getItem();
         if (item instanceof DyeItem && !stack.isEmpty() && player.getUUID().equals(owner)) {
@@ -90,7 +94,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
                     stack.setCount(stack.getCount() - 1);
                 }
                 setColor(color);
-                return ActionResultType.CONSUME;
+                return InteractionResult.CONSUME;
             }
         }
         return super.interactAt(player, vec, hand);
@@ -117,14 +121,14 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     }
 
     @Override
-    public PathNavigator createNavigation(World worldIn) {
-        return new FlyingPathNavigator(this, worldIn);
+    public PathNavigation createNavigation(Level worldIn) {
+        return new FlyingPathNavigation(this, worldIn);
     }
 
     @Nullable
     public Entity getOwner() {
-        if (owner != null && level instanceof ServerWorld) {
-            return ((ServerWorld) level).getEntity(owner);
+        if (owner != null && level instanceof ServerLevel) {
+            return ((ServerLevel) level).getEntity(owner);
         }
         return null;
     }
@@ -149,7 +153,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     }
 
     @Override
-    public void travel(Vector3d vec) {
+    public void travel(Vec3 vec) {
         float speed = (float) getAttributeValue(Attributes.FLYING_SPEED);
         Entity owner = getOwner();
         if (owner != null) {
@@ -157,7 +161,7 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
         }
         moveRelative(speed, vec);
         move(MoverType.SELF, getDeltaMovement());
-        Vector3d motion = getDeltaMovement().scale(0.91);
+        Vec3 motion = getDeltaMovement().scale(0.91);
         setDeltaMovement(motion);
         getLookControl().setLookAt(getEyePosition(1).add(motion));
     }
@@ -174,29 +178,29 @@ public abstract class FlyingDevice extends FlyingEntity implements IFlyingAnimal
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT nbt) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
-        if (nbt.contains("Commands", Constants.NBT.TAG_LIST)) {
-            for (INBT command : nbt.getList("Commands", Constants.NBT.TAG_COMPOUND)) {
-                CommandType type = CommandType.valueOf(((CompoundNBT) command).getString("Type"));
+        if (nbt.contains("Commands", Tag.TAG_LIST)) {
+            for (Tag command : nbt.getList("Commands", Tag.TAG_COMPOUND)) {
+                CommandType type = CommandType.valueOf(((CompoundTag) command).getString("Type"));
                 DeviceCommand c = type.createEmpty(this);
-                c.deserializeNBT((CompoundNBT) command);
+                c.deserializeNBT((CompoundTag) command);
                 commands.add(c);
                 goalSelector.addGoal(0, c);
             }
         }
-        if (nbt.contains("Owner", Constants.NBT.TAG_INT_ARRAY)) {
+        if (nbt.contains("Owner", Tag.TAG_INT_ARRAY)) {
             owner = nbt.getUUID("Owner");
         }
-        if (nbt.contains("Color", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Color", Tag.TAG_INT)) {
             entityData.set(COLOR, nbt.getInt("Color"));
         }
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        ListNBT commands = new ListNBT();
+        ListTag commands = new ListTag();
         for (DeviceCommand command : this.commands) {
             commands.add(command.serializeNBT());
         }

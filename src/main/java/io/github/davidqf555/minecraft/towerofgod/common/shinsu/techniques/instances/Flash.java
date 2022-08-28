@@ -1,32 +1,32 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
+import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
 public class Flash extends ShinsuTechniqueInstance {
 
     private static final double RANGE = 64;
-    private Vector3d direction;
+    private Vec3 direction;
 
-    public Flash(LivingEntity user, Vector3d direction) {
+    public Flash(LivingEntity user, Vec3 direction) {
         super(user);
         this.direction = direction;
     }
@@ -37,21 +37,21 @@ public class Flash extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void onUse(ServerWorld world) {
+    public void onUse(ServerLevel world) {
         Entity user = getUser(world);
         DirectionalLightningBoltEntity lightning = EntityRegistry.DIRECTIONAL_LIGHTNING.get().create(world);
         if (lightning != null) {
-            Vector3d start = new Vector3d(user.getX(), user.getEyeY(), user.getZ());
-            Vector3d end = start.add(direction.multiply(RANGE, RANGE, RANGE));
-            EntityRayTraceResult entity = ProjectileHelper.getEntityHitResult(world, lightning, start, end, AxisAlignedBB.ofSize(RANGE * 2, RANGE * 2, RANGE * 2).move(start), null);
-            Vector3d pos;
+            Vec3 start = new Vec3(user.getX(), user.getEyeY(), user.getZ());
+            Vec3 end = start.add(direction.multiply(RANGE, RANGE, RANGE));
+            EntityHitResult entity = ProjectileUtil.getEntityHitResult(world, lightning, start, end, AABB.ofSize(start, RANGE * 2, RANGE * 2, RANGE * 2), null);
+            Vec3 pos;
             if (entity != null) {
                 pos = entity.getLocation();
             } else {
-                pos = world.clip(new RayTraceContext(start, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, lightning)).getLocation();
+                pos = world.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, lightning)).getLocation();
             }
-            if (user instanceof ServerPlayerEntity) {
-                lightning.setCause((ServerPlayerEntity) user);
+            if (user instanceof ServerPlayer) {
+                lightning.setCause((ServerPlayer) user);
             }
             lightning.setVisualOnly(true);
             lightning.setPos(pos.x(), pos.y(), pos.z());
@@ -77,16 +77,16 @@ public class Flash extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("X", Constants.NBT.TAG_DOUBLE) && nbt.contains("Y", Constants.NBT.TAG_DOUBLE) && nbt.contains("Z", Constants.NBT.TAG_DOUBLE)) {
-            direction = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
+        if (nbt.contains("X", Tag.TAG_DOUBLE) && nbt.contains("Y", Tag.TAG_DOUBLE) && nbt.contains("Z", Tag.TAG_DOUBLE)) {
+            direction = new Vec3(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
         }
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         nbt.putDouble("X", direction.x());
         nbt.putDouble("Y", direction.y());
         nbt.putDouble("Z", direction.z());
@@ -96,13 +96,13 @@ public class Flash extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<Flash> {
 
         @Override
-        public Either<Flash, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Flash, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
             return Either.left(new Flash(user, dir));
         }
 
         @Override
         public Flash blankCreate() {
-            return new Flash(null, Vector3d.ZERO);
+            return new Flash(null, Vec3.ZERO);
         }
 
     }

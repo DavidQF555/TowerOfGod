@@ -8,13 +8,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.Util;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -99,19 +99,19 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return requirements;
     }
 
-    public TranslationTextComponent getText() {
-        return new TranslationTextComponent(Util.makeDescriptionId("technique", getRegistryName()));
+    public TranslatableComponent getText() {
+        return new TranslatableComponent(Util.makeDescriptionId("technique", getRegistryName()));
     }
 
-    public TranslationTextComponent getDescription() {
-        return new TranslationTextComponent(Util.makeDescriptionId("technique", getRegistryName()) + ".description");
+    public TranslatableComponent getDescription() {
+        return new TranslatableComponent(Util.makeDescriptionId("technique", getRegistryName()) + ".description");
     }
 
     public IRenderData getIcon() {
         return icon;
     }
 
-    public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+    public Either<? extends ShinsuTechniqueInstance, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
         ShinsuStats stats = ShinsuStats.get(user);
         int cooldown = stats.getCooldown(this);
         if (!isUnlocked(user)) {
@@ -119,7 +119,7 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         } else if (cooldown > 0) {
             return Either.right(Messages.getOnCooldown(cooldown / 20.0));
         }
-        Either<? extends ShinsuTechniqueInstance, ITextComponent> either = getFactory().create(user, target, dir);
+        Either<? extends ShinsuTechniqueInstance, Component> either = getFactory().create(user, target, dir);
         Optional<? extends ShinsuTechniqueInstance> op = either.left();
         if (op.isPresent()) {
             ShinsuTechniqueInstance instance = op.get();
@@ -143,8 +143,8 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return instance.getBaangsUse();
     }
 
-    public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-        if (user.level instanceof ServerWorld) {
+    public void cast(LivingEntity user, @Nullable Entity target, Vec3 dir) {
+        if (user.level instanceof ServerLevel) {
             ShinsuStats stats = ShinsuStats.get(user);
             if (stats.getCooldown(this) <= 0) {
                 create(user, target, dir).ifLeft(instance -> cast(user, instance));
@@ -153,17 +153,17 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
     }
 
     public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
-        if (user.level instanceof ServerWorld) {
+        if (user.level instanceof ServerLevel) {
             ShinsuStats stats = ShinsuStats.get(user);
             stats.setCooldown(this, instance.getCooldown());
             stats.addTechnique(instance);
-            instance.onUse((ServerWorld) user.level);
+            instance.onUse((ServerLevel) user.level);
         }
     }
 
     public interface IFactory<T extends ShinsuTechniqueInstance> {
 
-        Either<T, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir);
+        Either<T, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir);
 
         T blankCreate();
 

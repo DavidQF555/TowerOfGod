@@ -4,19 +4,19 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects.ShinsuAttributeEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter.DropsFilter;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.Util;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -24,16 +24,16 @@ import java.util.List;
 
 public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
 
-    private final IParticleData particleType;
+    private final ParticleOptions particleType;
     private final DamageSource source;
     private final double speed;
     private final double damage;
     private final int color;
-    private final ShinsuAttributeEffect<EntityRayTraceResult> entityEffect;
-    private final ShinsuAttributeEffect<BlockRayTraceResult> blockEffect;
+    private final ShinsuAttributeEffect<EntityHitResult> entityEffect;
+    private final ShinsuAttributeEffect<BlockHitResult> blockEffect;
     private final DropsFilter dropsFilter;
 
-    public ShinsuAttribute(IParticleData particleType, DamageSource source, double speed, double damage, int color, ShinsuAttributeEffect<EntityRayTraceResult> entityEffect, ShinsuAttributeEffect<BlockRayTraceResult> blockEffect, DropsFilter dropsFilter) {
+    public ShinsuAttribute(ParticleOptions particleType, DamageSource source, double speed, double damage, int color, ShinsuAttributeEffect<EntityHitResult> entityEffect, ShinsuAttributeEffect<BlockHitResult> blockEffect, DropsFilter dropsFilter) {
         this.particleType = particleType;
         this.source = source;
         this.speed = speed;
@@ -48,7 +48,7 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
         return attribute == null ? 0xAA24a6d1 : attribute.getColor();
     }
 
-    public static IParticleData getParticles(@Nullable ShinsuAttribute attribute) {
+    public static ParticleOptions getParticles(@Nullable ShinsuAttribute attribute) {
         return attribute == null ? ParticleTypes.DRIPPING_WATER : attribute.getParticleType();
     }
 
@@ -57,7 +57,7 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
     }
 
     public static void setAttribute(ItemStack item, @Nullable ShinsuAttribute attribute) {
-        CompoundNBT tag = item.getOrCreateTagElement(TowerOfGod.MOD_ID);
+        CompoundTag tag = item.getOrCreateTagElement(TowerOfGod.MOD_ID);
         if (attribute == null) {
             tag.remove("Attribute");
         } else {
@@ -67,8 +67,8 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
 
     @Nullable
     public static ShinsuAttribute getAttribute(ItemStack item) {
-        CompoundNBT nbt = item.getOrCreateTagElement(TowerOfGod.MOD_ID);
-        if (nbt.contains("Attribute", Constants.NBT.TAG_STRING)) {
+        CompoundTag nbt = item.getOrCreateTagElement(TowerOfGod.MOD_ID);
+        if (nbt.contains("Attribute", Tag.TAG_STRING)) {
             try {
                 return ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute")));
             } catch (IllegalArgumentException ignored) {
@@ -77,7 +77,7 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
         return null;
     }
 
-    protected IParticleData getParticleType() {
+    protected ParticleOptions getParticleType() {
         return particleType;
     }
 
@@ -97,11 +97,11 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
         return color;
     }
 
-    public void applyEntityEffect(Entity user, EntityRayTraceResult rayTrace) {
+    public void applyEntityEffect(Entity user, EntityHitResult rayTrace) {
         entityEffect.apply(user, rayTrace);
     }
 
-    public void applyBlockEffect(Entity user, BlockRayTraceResult rayTrace) {
+    public void applyBlockEffect(Entity user, BlockHitResult rayTrace) {
         blockEffect.apply(user, rayTrace);
     }
 
@@ -109,8 +109,8 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
         return dropsFilter.apply(context, drops);
     }
 
-    public TranslationTextComponent getName() {
-        return new TranslationTextComponent(Util.makeDescriptionId("attribute", getRegistryName()));
+    public TranslatableComponent getName() {
+        return new TranslatableComponent(Util.makeDescriptionId("attribute", getRegistryName()));
     }
 
 }

@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.data;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class TextureRenderData implements IRenderData {
 

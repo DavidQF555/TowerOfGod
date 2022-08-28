@@ -1,11 +1,11 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.DoubleNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -13,9 +13,9 @@ import java.util.UUID;
 public class MoveCommand extends DeviceCommand {
 
     private float speed;
-    private Vector3d target;
+    private Vec3 target;
 
-    public MoveCommand(FlyingDevice entity, UUID technique, Vector3d pos, float speed) {
+    public MoveCommand(FlyingDevice entity, UUID technique, Vec3 pos, float speed) {
         super(entity, technique, 1);
         this.target = pos;
         this.speed = speed;
@@ -23,7 +23,7 @@ public class MoveCommand extends DeviceCommand {
     }
 
     public static MoveCommand emptyBuild(FlyingDevice device) {
-        return new MoveCommand(device, null, Vector3d.ZERO, 1);
+        return new MoveCommand(device, null, Vec3.ZERO, 1);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class MoveCommand extends DeviceCommand {
 
     @Override
     public void tick() {
-        PathNavigator nav = getEntity().getNavigation();
+        PathNavigation nav = getEntity().getNavigation();
         if (nav.isDone() && !nav.moveTo(target.x(), target.y(), target.z(), speed)) {
             remove();
         }
@@ -54,26 +54,26 @@ public class MoveCommand extends DeviceCommand {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         nbt.putFloat("Speed", speed);
-        ListNBT target = new ListNBT();
-        target.add(DoubleNBT.valueOf(this.target.x()));
-        target.add(DoubleNBT.valueOf(this.target.y()));
-        target.add(DoubleNBT.valueOf(this.target.z()));
+        ListTag target = new ListTag();
+        target.add(DoubleTag.valueOf(this.target.x()));
+        target.add(DoubleTag.valueOf(this.target.y()));
+        target.add(DoubleTag.valueOf(this.target.z()));
         nbt.put("Target", target);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Speed", Constants.NBT.TAG_FLOAT)) {
+        if (nbt.contains("Speed", Tag.TAG_FLOAT)) {
             speed = nbt.getFloat("Speed");
         }
-        if (nbt.contains("Target", Constants.NBT.TAG_LIST)) {
-            ListNBT list = nbt.getList("Target", Constants.NBT.TAG_DOUBLE);
-            target = new Vector3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
+        if (nbt.contains("Target", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("Target", Tag.TAG_DOUBLE);
+            target = new Vec3(list.getDouble(0), list.getDouble(1), list.getDouble(2));
         }
     }
 }

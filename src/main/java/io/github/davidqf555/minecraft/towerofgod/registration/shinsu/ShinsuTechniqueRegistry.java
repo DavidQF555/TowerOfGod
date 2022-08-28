@@ -13,21 +13,17 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requir
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.ShapeRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.TypeLevelRequirement;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraftforge.registries.*;
 
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class ShinsuTechniqueRegistry {
 
-    public static final DeferredRegister<ShinsuTechnique> TECHNIQUES = DeferredRegister.create(ShinsuTechnique.class, TowerOfGod.MOD_ID);
+    public static final DeferredRegister<ShinsuTechnique> TECHNIQUES = DeferredRegister.create(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_techniques"), TowerOfGod.MOD_ID);
     public static final RegistryObject<OverridingShinsuTechnique> BODY_REINFORCEMENT = register("body_reinforcement", () -> new OverridingShinsuTechnique(false, new BodyReinforcement.Factory(), ShinsuIcons.RESISTANCE, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 1)}, ImmutableList.of(Direction.UP, Direction.UP, Direction.UP)));
     public static final RegistryObject<OverridingShinsuTechnique> BLACK_FISH = register("black_fish", () -> new OverridingShinsuTechnique(false, new BlackFish.Factory(), ShinsuIcons.SWIRL, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 5)}, ImmutableList.of(Direction.UP, Direction.DOWN, Direction.DOWN)));
     public static final RegistryObject<ShinsuTechnique> SHINSU_BLAST = register("shinsu_blast", () -> new ShinsuTechnique(false, new ShinsuBlast.Factory(), ShinsuIcons.BAANGS, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 2), new AttributeRequirement(null)}, ImmutableList.of(Direction.DOWN, Direction.UP)));
@@ -43,13 +39,13 @@ public final class ShinsuTechniqueRegistry {
     public static final RegistryObject<ShinsuTechnique> FLASH = register("flash", () -> new ShinsuTechnique(false, new Flash.Factory(), ShinsuIcons.FLASH, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 10), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 10), new AttributeRequirement(ShinsuAttributeRegistry.LIGHTNING.get())}, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT)));
     public static final RegistryObject<ShinsuTechnique> BOOST = register("boost", () -> new ShinsuTechnique(false, new Boost.Factory(), ShinsuIcons.SHINSU, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 10), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 10), new AttributeRequirement(ShinsuAttributeRegistry.FIRE.get())}, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT)));
     public static final RegistryObject<OverridingShinsuTechnique> FLAMETHROWER = register("flamethrower", () -> new OverridingShinsuTechnique(false, new Flamethrower.Factory(), ShinsuIcons.SHINSU, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 3), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 5), new AttributeRequirement(ShinsuAttributeRegistry.FIRE.get())}, ImmutableList.of(Direction.DOWN, Direction.UP)));
-    private static IForgeRegistry<ShinsuTechnique> registry = null;
+    private static Supplier<IForgeRegistry<ShinsuTechnique>> registry = null;
 
     private ShinsuTechniqueRegistry() {
     }
 
     public static IForgeRegistry<ShinsuTechnique> getRegistry() {
-        return registry;
+        return registry.get();
     }
 
     private static <T extends ShinsuTechnique> RegistryObject<T> register(String name, Supplier<T> technique) {
@@ -57,8 +53,8 @@ public final class ShinsuTechniqueRegistry {
     }
 
     @SubscribeEvent
-    public static void onNewRegistry(RegistryEvent.NewRegistry event) {
-        registry = new RegistryBuilder<ShinsuTechnique>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_techniques")).setType(ShinsuTechnique.class).create();
+    public static void onNewRegistry(NewRegistryEvent event) {
+        registry = event.create(new RegistryBuilder<ShinsuTechnique>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_techniques")).setType(ShinsuTechnique.class));
     }
 
 }

@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import java.util.EnumSet;
 import java.util.UUID;

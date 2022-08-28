@@ -2,11 +2,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import com.google.gson.JsonObject;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
 
@@ -15,14 +15,14 @@ import java.util.List;
 
 public class ShinsuToolLootModifier extends LootModifier {
 
-    public ShinsuToolLootModifier(ILootCondition[] conditionsIn) {
+    public ShinsuToolLootModifier(LootItemCondition[] conditionsIn) {
         super(conditionsIn);
     }
 
     @Nonnull
     @Override
     protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
-        ItemStack tool = context.getParamOrNull(LootParameters.TOOL);
+        ItemStack tool = context.getParamOrNull(LootContextParams.TOOL);
         ShinsuAttribute attribute = ShinsuAttribute.getAttribute(tool);
         if (attribute != null) {
             return attribute.filterDrops(generatedLoot, context);
@@ -33,7 +33,7 @@ public class ShinsuToolLootModifier extends LootModifier {
     public static class Serializer extends GlobalLootModifierSerializer<ShinsuToolLootModifier> {
 
         @Override
-        public ShinsuToolLootModifier read(ResourceLocation location, JsonObject object, ILootCondition[] condition) {
+        public ShinsuToolLootModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] condition) {
             return new ShinsuToolLootModifier(condition);
         }
 

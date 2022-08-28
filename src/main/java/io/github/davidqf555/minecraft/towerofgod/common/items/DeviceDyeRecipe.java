@@ -1,25 +1,25 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
+import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.RecipeRegistry;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @MethodsReturnNonnullByDefault
-public class DeviceDyeRecipe extends SpecialRecipe {
+public class DeviceDyeRecipe extends CustomRecipe {
 
     private static final List<Item> COLORABLE = ItemRegistry.COLORED_DEVICE_ITEMS.stream().map(RegistryObject::get).collect(Collectors.toList());
 
@@ -28,7 +28,7 @@ public class DeviceDyeRecipe extends SpecialRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, @Nonnull World worldIn) {
+    public boolean matches(CraftingContainer inv, @Nonnull Level worldIn) {
         ItemStack device = ItemStack.EMPTY;
         ItemStack dye = ItemStack.EMPTY;
         for (int i = 0; i < inv.getContainerSize(); i++) {
@@ -47,7 +47,7 @@ public class DeviceDyeRecipe extends SpecialRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         ItemStack device = ItemStack.EMPTY;
         ItemStack dye = ItemStack.EMPTY;
         for (int i = 0; i < inv.getContainerSize(); i++) {
@@ -77,7 +77,7 @@ public class DeviceDyeRecipe extends SpecialRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return RecipeRegistry.DEVICE_DYE.get();
     }
 }

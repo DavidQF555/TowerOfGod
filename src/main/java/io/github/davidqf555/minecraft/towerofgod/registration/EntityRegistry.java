@@ -4,23 +4,23 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.*;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.MobSpawnInfo;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraftforge.common.world.MobSpawnInfoBuilder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.world.MobSpawnSettingsBuilder;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
@@ -29,20 +29,20 @@ public final class EntityRegistry {
 
     public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(ForgeRegistries.ENTITIES, TowerOfGod.MOD_ID);
 
-    public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE = register("lighthouse", LighthouseEntity::new, EntityClassification.MISC, 0.9f, 0.9f);
-    public static final RegistryObject<EntityType<ObserverEntity>> OBSERVER = register("observer", ObserverEntity::new, EntityClassification.MISC, 0.4f, 0.4f);
-    public static final RegistryObject<EntityType<RegularEntity>> REGULAR = register("regular", RegularEntity::new, EntityClassification.CREATURE, 0.6f, 1.8f);
-    public static final RegistryObject<EntityType<ShinsuEntity>> SHINSU = register("shinsu", ShinsuEntity::new, EntityClassification.MISC, 1, 1);
-    public static final RegistryObject<EntityType<ClickerEntity>> CLICKER = register("clicker", ClickerEntity::new, EntityClassification.MISC, 1, 1);
-    public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW = register("shinsu_arrow", ShinsuArrowEntity::new, EntityClassification.MISC, 0.4f, 0.4f);
-    public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", RankerEntity::new, EntityClassification.CREATURE, 0.6f, 1.8f);
-    public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", SpearEntity::new, EntityClassification.MISC, 0.5f, 0.5f);
-    public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", DirectionalLightningBoltEntity::new, EntityClassification.MISC, 1, 1);
+    public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE = register("lighthouse", LighthouseEntity::new, MobCategory.MISC, 0.9f, 0.9f);
+    public static final RegistryObject<EntityType<ObserverEntity>> OBSERVER = register("observer", ObserverEntity::new, MobCategory.MISC, 0.4f, 0.4f);
+    public static final RegistryObject<EntityType<RegularEntity>> REGULAR = register("regular", RegularEntity::new, MobCategory.CREATURE, 0.6f, 1.8f);
+    public static final RegistryObject<EntityType<ShinsuEntity>> SHINSU = register("shinsu", ShinsuEntity::new, MobCategory.MISC, 1, 1);
+    public static final RegistryObject<EntityType<ClickerEntity>> CLICKER = register("clicker", ClickerEntity::new, MobCategory.MISC, 1, 1);
+    public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW = register("shinsu_arrow", ShinsuArrowEntity::new, MobCategory.MISC, 0.4f, 0.4f);
+    public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", RankerEntity::new, MobCategory.CREATURE, 0.6f, 1.8f);
+    public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", SpearEntity::new, MobCategory.MISC, 0.5f, 0.5f);
+    public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", DirectionalLightningBoltEntity::new, MobCategory.MISC, 1, 1);
 
     private EntityRegistry() {
     }
 
-    private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.IFactory<T> factory, EntityClassification classification, float width, float height) {
+    private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.EntityFactory<T> factory, MobCategory classification, float width, float height) {
         return register(name, () -> EntityType.Builder.of(factory, classification).sized(width, height).build(name));
     }
 
@@ -62,8 +62,8 @@ public final class EntityRegistry {
     @SubscribeEvent
     public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            EntitySpawnPlacementRegistry.register(EntityRegistry.REGULAR.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RegularEntity.class, new AxisAlignedBB(pos).inflate(64)).size() < 10);
-            EntitySpawnPlacementRegistry.register(EntityRegistry.RANKER.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AxisAlignedBB(pos).inflate(64)).size() < 1);
+            SpawnPlacements.register(EntityRegistry.REGULAR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RegularEntity.class, new AABB(pos).inflate(64)).size() < 10);
+            SpawnPlacements.register(EntityRegistry.RANKER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AABB(pos).inflate(64)).size() < 1);
         });
     }
 
@@ -72,10 +72,10 @@ public final class EntityRegistry {
 
         @SubscribeEvent
         public static void onBiomeLoading(BiomeLoadingEvent event) {
-            if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
-                MobSpawnInfoBuilder builder = event.getSpawns();
-                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.REGULAR.get(), 3, 1, 1));
-                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.RANKER.get(), 1, 1, 1));
+            if (event.getCategory() != Biome.BiomeCategory.OCEAN && event.getCategory() != Biome.BiomeCategory.RIVER) {
+                MobSpawnSettingsBuilder builder = event.getSpawns();
+                builder.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityRegistry.REGULAR.get(), 3, 1, 1));
+                builder.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityRegistry.RANKER.get(), 1, 1, 1));
             }
         }
 

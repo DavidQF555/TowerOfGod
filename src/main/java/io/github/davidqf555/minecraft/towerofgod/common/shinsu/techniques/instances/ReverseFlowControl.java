@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
+import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
@@ -7,15 +8,14 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -46,7 +46,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
         Entity target = world.getEntity(this.target);
         if (target instanceof LivingEntity) {
             Entity user = getUser(world);
@@ -56,7 +56,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
             }
             double resistance = ShinsuStats.getNetResistance(user, target);
             int amp = (int) (resistance * level);
-            ((LivingEntity) target).addEffect(new EffectInstance(EffectRegistry.REVERSE_FLOW.get(), 2, amp - 1));
+            ((LivingEntity) target).addEffect(new MobEffectInstance(EffectRegistry.REVERSE_FLOW.get(), 2, amp - 1));
         }
         super.tick(world);
     }
@@ -77,22 +77,22 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Target", Constants.NBT.TAG_INT_ARRAY)) {
+        if (nbt.contains("Target", Tag.TAG_INT_ARRAY)) {
             target = nbt.getUUID("Target");
         }
-        if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Duration", Tag.TAG_INT)) {
             duration = nbt.getInt("Duration");
         }
-        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Level", Tag.TAG_INT)) {
             level = nbt.getInt("Level");
         }
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         nbt.putUUID("Target", target);
         nbt.putInt("Duration", getDuration());
         nbt.putInt("Level", level);
@@ -103,7 +103,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<ReverseFlowControl> {
 
         @Override
-        public Either<ReverseFlowControl, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<ReverseFlowControl, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
             int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DISRUPTION).getLevel();
             return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 20 + level * 10, level)) : Either.right(Messages.getRequiresTarget(RANGE));
         }

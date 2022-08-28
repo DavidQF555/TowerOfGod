@@ -5,8 +5,8 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +41,10 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
 
     @Override
     public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
-        if (user.level instanceof ServerWorld) {
+        if (user.level instanceof ServerLevel) {
             for (ShinsuTechniqueInstance inst : new ArrayList<>(ShinsuStats.get(user).getTechniques())) {
                 if (equals(inst.getTechnique())) {
-                    inst.remove((ServerWorld) user.level);
+                    inst.remove((ServerLevel) user.level);
                 }
             }
         }

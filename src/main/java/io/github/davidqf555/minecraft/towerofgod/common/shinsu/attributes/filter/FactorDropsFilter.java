@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
 
 import java.util.ArrayList;
 import java.util.List;

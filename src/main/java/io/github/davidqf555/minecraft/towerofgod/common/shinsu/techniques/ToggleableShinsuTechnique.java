@@ -6,11 +6,11 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+    public Either<? extends ShinsuTechniqueInstance, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
         if (ShinsuStats.get(user).getTechniques().stream().anyMatch(inst -> equals(inst.getTechnique()))) {
             return Either.left(getFactory().blankCreate());
         }
@@ -31,12 +31,12 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-        if (user.level instanceof ServerWorld) {
+    public void cast(LivingEntity user, @Nullable Entity target, Vec3 dir) {
+        if (user.level instanceof ServerLevel) {
             ShinsuStats stats = ShinsuStats.get(user);
             Optional<ShinsuTechniqueInstance> used = stats.getTechniques().stream().filter(instance -> equals(instance.getTechnique())).findAny();
             if (used.isPresent()) {
-                used.get().remove((ServerWorld) user.level);
+                used.get().remove((ServerLevel) user.level);
                 return;
             }
         }

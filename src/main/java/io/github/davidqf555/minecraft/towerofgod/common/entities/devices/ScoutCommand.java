@@ -1,11 +1,11 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.level.pathfinder.Path;
 
 import java.util.*;
 
@@ -30,7 +30,7 @@ public class ScoutCommand extends DeviceCommand {
     @Override
     public void tick() {
         FlyingDevice device = getEntity();
-        PathNavigator nav = device.getNavigation();
+        PathNavigation nav = device.getNavigation();
         if (nav.isDone()) {
             List<BlockPos> air = new ArrayList<>();
             List<BlockPos> border = new ArrayList<>();
@@ -99,8 +99,8 @@ public class ScoutCommand extends DeviceCommand {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         nbt.putFloat("Speed", speed);
         nbt.putIntArray("Center", new int[]{center.getX(), center.getY(), center.getZ()});
         nbt.putInt("Range", range);
@@ -108,16 +108,16 @@ public class ScoutCommand extends DeviceCommand {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Speed", Constants.NBT.TAG_FLOAT)) {
+        if (nbt.contains("Speed", Tag.TAG_FLOAT)) {
             speed = nbt.getFloat("Speed");
         }
-        if (nbt.contains("Center", Constants.NBT.TAG_INT_ARRAY)) {
+        if (nbt.contains("Center", Tag.TAG_INT_ARRAY)) {
             int[] arr = nbt.getIntArray("Center");
             center = new BlockPos(arr[0], arr[1], arr[2]);
         }
-        if (nbt.contains("Range", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Range", Tag.TAG_INT)) {
             range = nbt.getInt("Range");
         }
     }

@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
+import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
@@ -9,16 +10,15 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -44,7 +44,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void onUse(ServerWorld world) {
+    public void onUse(ServerLevel world) {
         Entity user = getUser(world);
         ItemStack item = shape.getItem();
         item.getOrCreateTagElement(TowerOfGod.MOD_ID).putUUID("Technique", getID());
@@ -72,14 +72,14 @@ public class Manifest extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
         boolean contains = false;
         IItemHandler inventory = getUser(world).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         UUID id = getID();
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack slot = inventory.getStackInSlot(i);
-            CompoundNBT tag = slot.getTagElement(TowerOfGod.MOD_ID);
-            if (!slot.isEmpty() && tag != null && tag.contains("Technique", Constants.NBT.TAG_INT_ARRAY) && id.equals(tag.getUUID("Technique"))) {
+            CompoundTag tag = slot.getTagElement(TowerOfGod.MOD_ID);
+            if (!slot.isEmpty() && tag != null && tag.contains("Technique", Tag.TAG_INT_ARRAY) && id.equals(tag.getUUID("Technique"))) {
                 contains = true;
                 break;
             }
@@ -91,19 +91,19 @@ public class Manifest extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
+        if (nbt.contains("Shape", Tag.TAG_STRING)) {
             shape = ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape")));
         }
-        if (nbt.contains("Attribute", Constants.NBT.TAG_STRING)) {
+        if (nbt.contains("Attribute", Tag.TAG_STRING)) {
             attribute = ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute")));
         }
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         nbt.putString("Shape", shape.getRegistryName().toString());
         if (attribute != null) {
             nbt.putString("Attribute", attribute.getRegistryName().toString());
@@ -116,7 +116,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<Manifest> {
 
         @Override
-        public Either<Manifest, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Manifest, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
             ShinsuStats stats = ShinsuStats.get(user);
             return Either.left(new Manifest(user, stats.getShape(), stats.getAttribute()));
         }

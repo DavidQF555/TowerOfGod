@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
+import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
@@ -9,14 +10,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -46,21 +46,21 @@ public class FollowOwner extends BasicCommandTechnique {
     }
 
     @Override
-    protected DeviceCommand createCommand(FlyingDevice entity, ServerWorld world) {
+    protected DeviceCommand createCommand(FlyingDevice entity, ServerLevel world) {
         return new FollowOwnerCommand(entity, getID(), speed);
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Speed", Constants.NBT.TAG_FLOAT)) {
+        if (nbt.contains("Speed", Tag.TAG_FLOAT)) {
             speed = nbt.getFloat("Speed");
         }
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         nbt.putFloat("Speed", speed);
         return nbt;
     }
@@ -70,7 +70,7 @@ public class FollowOwner extends BasicCommandTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<FollowOwner> {
 
         @Override
-        public Either<FollowOwner, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<FollowOwner, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
             int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DEVICE_CONTROL).getLevel();
             FollowOwner technique = new FollowOwner(user, 1 + level / 20f);
             return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);

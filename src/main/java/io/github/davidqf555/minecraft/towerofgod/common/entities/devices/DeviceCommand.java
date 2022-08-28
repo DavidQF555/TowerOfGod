@@ -1,15 +1,15 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.UUID;
 
-public abstract class DeviceCommand extends Goal implements INBTSerializable<CompoundNBT> {
+public abstract class DeviceCommand extends Goal implements INBTSerializable<CompoundTag> {
 
     private final FlyingDevice entity;
     private UUID technique;
@@ -72,8 +72,8 @@ public abstract class DeviceCommand extends Goal implements INBTSerializable<Com
     public abstract CommandType getType();
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putString("Type", getType().name());
         nbt.putInt("Ticks", ticks);
         nbt.putInt("Duration", duration);
@@ -83,17 +83,17 @@ public abstract class DeviceCommand extends Goal implements INBTSerializable<Com
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        if (nbt.contains("Ticks", Constants.NBT.TAG_INT)) {
+    public void deserializeNBT(CompoundTag nbt) {
+        if (nbt.contains("Ticks", Tag.TAG_INT)) {
             ticks = nbt.getInt("Ticks");
         }
-        if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Duration", Tag.TAG_INT)) {
             duration = nbt.getInt("Duration");
         }
-        if (nbt.contains("Remove", Constants.NBT.TAG_BYTE)) {
+        if (nbt.contains("Remove", Tag.TAG_BYTE)) {
             remove = nbt.getBoolean("Remove");
         }
-        if (nbt.contains("Technique", Constants.NBT.TAG_INT_ARRAY)) {
+        if (nbt.contains("Technique", Tag.TAG_INT_ARRAY)) {
             technique = nbt.getUUID("Technique");
         }
     }

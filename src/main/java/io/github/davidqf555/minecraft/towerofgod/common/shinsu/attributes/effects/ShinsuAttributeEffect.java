@@ -1,13 +1,13 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.HitResult;
 
 import java.util.Collection;
 
-public interface ShinsuAttributeEffect<T extends RayTraceResult> {
+public interface ShinsuAttributeEffect<T extends HitResult> {
 
-    static <T extends RayTraceResult> CombinationAttributeEffect<T> combination(Collection<ShinsuAttributeEffect<T>> all) {
+    static <T extends HitResult> CombinationAttributeEffect<T> combination(Collection<ShinsuAttributeEffect<T>> all) {
         return new CombinationAttributeEffect<>(all);
     }
 

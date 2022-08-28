@@ -2,20 +2,20 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.PrioritizedGoal;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SSpawnParticlePacket;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +42,12 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
         FlyingDevice device = getEntity();
         Entity owner = device.getOwner();
         targets.clear();
-        targets.addAll(device.level.getLoadedEntitiesOfClass(LivingEntity.class, AxisAlignedBB.ofSize(range, range, range).move(device.position()), EntityPredicates.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity.distanceToSqr(device) <= range * range && !device.isAlliedTo(entity))));
-        Effect effect = EffectRegistry.REVERSE_FLOW.get();
+        targets.addAll(device.level.getEntitiesOfClass(LivingEntity.class, AABB.ofSize(device.position(), range, range, range), EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity.distanceToSqr(device) <= range * range && !device.isAlliedTo(entity))));
+        MobEffect effect = EffectRegistry.REVERSE_FLOW.get();
         for (LivingEntity entity : targets) {
             double resistance = ShinsuStats.getNetResistance(owner, entity);
             int amplifier = (int) (getAffectingLighthouses(entity) / resistance);
-            entity.addEffect(new EffectInstance(effect, 2, amplifier - 1, false, true));
+            entity.addEffect(new MobEffectInstance(effect, 2, amplifier - 1, false, true));
         }
         Random rand = device.getRandom();
         int particles = (int) (Math.PI * range * range / 3);
@@ -55,17 +55,17 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
             float yaw = rand.nextFloat() * 2 * (float) Math.PI;
             float pitch = rand.nextFloat() * 2 * (float) Math.PI;
             double dist = rand.nextDouble() * range;
-            double dY = MathHelper.sin(pitch) * dist;
-            double cos = MathHelper.cos(pitch);
-            double dX = MathHelper.sin(yaw) * cos * dist;
-            double dZ = MathHelper.cos(yaw) * cos * dist;
-            Vector3d pos = device.position().add(dX, dY, dZ);
-            ((ServerWorld) device.level).getServer().getPlayerList().broadcast(null, pos.x(), pos.y(), pos.z(), 64, device.level.dimension(), new SSpawnParticlePacket(RedstoneParticleData.REDSTONE, false, pos.x(), pos.y(), pos.z(), 0, 0, 0, 0, 0));
+            double dY = Mth.sin(pitch) * dist;
+            double cos = Mth.cos(pitch);
+            double dX = Mth.sin(yaw) * cos * dist;
+            double dZ = Mth.cos(yaw) * cos * dist;
+            Vec3 pos = device.position().add(dX, dY, dZ);
+            ((ServerLevel) device.level).getServer().getPlayerList().broadcast(null, pos.x(), pos.y(), pos.z(), 64, device.level.dimension(), new ClientboundLevelParticlesPacket(DustParticleOptions.REDSTONE, false, pos.x(), pos.y(), pos.z(), 0, 0, 0, 0, 0));
         }
     }
 
     private int getAffectingLighthouses(LivingEntity entity) {
-        return entity.level.getLoadedEntitiesOfClass(LighthouseEntity.class, AxisAlignedBB.ofSize(range, range, range).move(entity.position()), target -> target.distanceToSqr(entity) <= range * range && target.goalSelector.getRunningGoals().map(PrioritizedGoal::getGoal).filter(goal -> goal instanceof LighthouseFlowControlCommand).map(goal -> (LighthouseFlowControlCommand) goal).anyMatch(command -> command.targets.contains(entity))).size();
+        return entity.level.getEntitiesOfClass(LighthouseEntity.class, AABB.ofSize(entity.position(), range, range, range), target -> target.distanceToSqr(entity) <= range * range && target.goalSelector.getRunningGoals().map(WrappedGoal::getGoal).filter(goal -> goal instanceof LighthouseFlowControlCommand).map(goal -> (LighthouseFlowControlCommand) goal).anyMatch(command -> command.targets.contains(entity))).size();
     }
 
     @Override
@@ -74,16 +74,16 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Range", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("Range", Tag.TAG_DOUBLE)) {
             range = nbt.getDouble("Range");
         }
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         nbt.putDouble("Range", range);
         return nbt;
     }

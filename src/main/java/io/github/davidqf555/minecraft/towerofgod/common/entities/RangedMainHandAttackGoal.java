@@ -1,17 +1,17 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import net.minecraft.entity.IRangedAttackMob;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.ShootableItem;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.ProjectileWeaponItem;
 
 import java.util.EnumSet;
 import java.util.Random;
 
-public class RangedMainHandAttackGoal<T extends MobEntity & IRangedAttackMob> extends Goal {
+public class RangedMainHandAttackGoal<T extends Mob & RangedAttackMob> extends Goal {
 
     private final T entity;
     private final double moveSpeedAmp;
@@ -35,12 +35,12 @@ public class RangedMainHandAttackGoal<T extends MobEntity & IRangedAttackMob> ex
 
     @Override
     public boolean canUse() {
-        return entity.getTarget() != null && entity.isAlive() && entity.getMainHandItem().getItem() instanceof ShootableItem;
+        return entity.getTarget() != null && entity.isAlive() && entity.getMainHandItem().getItem() instanceof ProjectileWeaponItem;
     }
 
     @Override
     public boolean canContinueToUse() {
-        return (canUse() || !entity.getNavigation().isDone()) && entity.getMainHandItem().getItem() instanceof ShootableItem;
+        return (canUse() || !entity.getNavigation().isDone()) && entity.getMainHandItem().getItem() instanceof ProjectileWeaponItem;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class RangedMainHandAttackGoal<T extends MobEntity & IRangedAttackMob> ex
         LivingEntity target = entity.getTarget();
         if (target != null) {
             double distSq = entity.distanceToSqr(target.getX(), target.getY(), target.getZ());
-            boolean canSee = entity.getSensing().canSee(target);
+            boolean canSee = entity.getSensing().hasLineOfSight(target);
             boolean positive = seeTime > 0;
             if (canSee != positive) {
                 seeTime = 0;
@@ -113,7 +113,7 @@ public class RangedMainHandAttackGoal<T extends MobEntity & IRangedAttackMob> ex
                     }
                 }
             } else if (--attackTime <= 0 && seeTime >= -60) {
-                entity.startUsingItem(Hand.MAIN_HAND);
+                entity.startUsingItem(InteractionHand.MAIN_HAND);
             }
         }
     }

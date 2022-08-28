@@ -3,13 +3,13 @@ package io.github.davidqf555.minecraft.towerofgod.common.world;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.RegularEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
@@ -17,22 +17,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class RegularTeamsSavedData extends WorldSavedData {
+public class RegularTeamsSavedData extends SavedData {
 
     private static final String NAME = TowerOfGod.MOD_ID + "_RegularTeams";
     private static final double RANGE = 32;
     private final List<RegularTeam> teams;
 
     public RegularTeamsSavedData() {
-        super(NAME);
         teams = new ArrayList<>();
     }
 
-    public static RegularTeamsSavedData getOrCreate(ServerWorld world) {
-        return world.getDataStorage().computeIfAbsent(RegularTeamsSavedData::new, NAME);
+    public RegularTeamsSavedData(CompoundTag compound) {
+        this();
+        if (compound.contains("Teams", Tag.TAG_LIST)) {
+            ListTag teams = compound.getList("Teams", Tag.TAG_COMPOUND);
+            teams.forEach(nbt -> {
+                RegularTeam team = new RegularTeam();
+                team.deserializeNBT((CompoundTag) nbt);
+                this.teams.add(team);
+            });
+        }
     }
 
-    public static RegularTeam getOrCreateTeam(ServerWorld world, RegularEntity entity) {
+    public static RegularTeamsSavedData getOrCreate(ServerLevel world) {
+        return world.getDataStorage().computeIfAbsent(RegularTeamsSavedData::new, RegularTeamsSavedData::new, NAME);
+    }
+
+    public static RegularTeam getOrCreateTeam(ServerLevel world, RegularEntity entity) {
         RegularTeamsSavedData data = getOrCreate(world);
         UUID id = entity.getUUID();
         for (RegularTeam team : data.teams) {
@@ -47,7 +58,7 @@ public class RegularTeamsSavedData extends WorldSavedData {
         return team;
     }
 
-    public void update(ServerWorld world) {
+    public void update(ServerLevel world) {
         for (int i = teams.size() - 1; i >= 0; i--) {
             RegularTeam team = teams.get(i);
             List<RegularEntity> entities = new ArrayList<>();
@@ -83,22 +94,10 @@ public class RegularTeamsSavedData extends WorldSavedData {
         }
     }
 
-    @Override
-    public void load(CompoundNBT compound) {
-        if (compound.contains("Teams", Constants.NBT.TAG_LIST)) {
-            ListNBT teams = compound.getList("Teams", Constants.NBT.TAG_COMPOUND);
-            teams.forEach(nbt -> {
-                RegularTeam team = new RegularTeam();
-                team.deserializeNBT((CompoundNBT) nbt);
-                this.teams.add(team);
-            });
-        }
-    }
-
     @Nonnull
     @Override
-    public CompoundNBT save(@Nonnull CompoundNBT compound) {
-        ListNBT teams = new ListNBT();
+    public CompoundTag save(@Nonnull CompoundTag compound) {
+        ListTag teams = new ListTag();
         for (RegularTeam team : this.teams) {
             teams.add(team.serializeNBT());
         }
@@ -106,7 +105,7 @@ public class RegularTeamsSavedData extends WorldSavedData {
         return compound;
     }
 
-    public static class RegularTeam implements INBTSerializable<CompoundNBT> {
+    public static class RegularTeam implements INBTSerializable<CompoundTag> {
 
         private final List<UUID> members;
         private UUID leader;
@@ -124,26 +123,26 @@ public class RegularTeamsSavedData extends WorldSavedData {
         }
 
         @Override
-        public CompoundNBT serializeNBT() {
-            CompoundNBT nbt = new CompoundNBT();
-            ListNBT ids = new ListNBT();
+        public CompoundTag serializeNBT() {
+            CompoundTag nbt = new CompoundTag();
+            ListTag ids = new ListTag();
             for (UUID id : members) {
-                ids.add(NBTUtil.createUUID(id));
+                ids.add(NbtUtils.createUUID(id));
             }
             nbt.put("Members", ids);
             if (leader != null) {
-                nbt.put("Leader", NBTUtil.createUUID(leader));
+                nbt.put("Leader", NbtUtils.createUUID(leader));
             }
             return nbt;
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
-            if (nbt.contains("Members", Constants.NBT.TAG_LIST)) {
-                ListNBT ids = nbt.getList("Members", Constants.NBT.TAG_INT_ARRAY);
-                ids.forEach(id -> members.add(NBTUtil.loadUUID(id)));
+        public void deserializeNBT(CompoundTag nbt) {
+            if (nbt.contains("Members", Tag.TAG_LIST)) {
+                ListTag ids = nbt.getList("Members", Tag.TAG_INT_ARRAY);
+                ids.forEach(id -> members.add(NbtUtils.loadUUID(id)));
             }
-            if (nbt.contains("Leader", Constants.NBT.TAG_INT_ARRAY)) {
+            if (nbt.contains("Leader", Tag.TAG_INT_ARRAY)) {
                 leader = nbt.getUUID("Leader");
             }
         }

@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.data;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class ShinsuTypeData implements INBTSerializable<CompoundNBT> {
+public class ShinsuTypeData implements INBTSerializable<CompoundTag> {
 
     private int level, experience;
 
@@ -30,19 +30,19 @@ public class ShinsuTypeData implements INBTSerializable<CompoundNBT> {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         nbt.putInt("Level", getLevel());
         nbt.putInt("Experience", getExperience());
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
+    public void deserializeNBT(CompoundTag nbt) {
+        if (nbt.contains("Level", Tag.TAG_INT)) {
             setLevel(nbt.getInt("Level"));
         }
-        if (nbt.contains("Experience", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Experience", Tag.TAG_INT)) {
             setExperience(nbt.getInt("Experience"));
         }
     }

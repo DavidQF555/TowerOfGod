@@ -3,13 +3,13 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import net.minecraft.item.Item;
-import net.minecraft.util.ColorHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.BossInfo;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.BossEvent;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.function.Predicate;
@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 public class Group extends ForgeRegistryEntry<Group> {
 
     private final int color;
-    private final TextFormatting format;
-    private final BossInfo.Color bossColor;
+    private final ChatFormatting format;
+    private final BossEvent.BossBarColor bossColor;
     private final Supplier<ShinsuAttribute[]> attributes;
     private final Supplier<ShinsuShape[]> shapes;
     private final Supplier<ShinsuTechniqueType[]> types;
@@ -43,17 +43,17 @@ public class Group extends ForgeRegistryEntry<Group> {
         this.baangs = baangs;
     }
 
-    private static BossInfo.Color getBossInfoColor(int color) {
-        int red = ColorHelper.PackedColor.red(color);
-        int green = ColorHelper.PackedColor.green(color);
-        int blue = ColorHelper.PackedColor.blue(color);
-        BossInfo.Color closest = BossInfo.Color.WHITE;
+    private static BossEvent.BossBarColor getBossInfoColor(int color) {
+        int red = FastColor.ARGB32.red(color);
+        int green = FastColor.ARGB32.green(color);
+        int blue = FastColor.ARGB32.blue(color);
+        BossEvent.BossBarColor closest = BossEvent.BossBarColor.WHITE;
         int min = Integer.MAX_VALUE;
-        for (BossInfo.Color info : BossInfo.Color.values()) {
-            TextFormatting format = info.getFormatting();
+        for (BossEvent.BossBarColor info : BossEvent.BossBarColor.values()) {
+            ChatFormatting format = info.getFormatting();
             if (format.isColor()) {
                 int hex = format.getColor();
-                int dif = Math.abs(red - ColorHelper.PackedColor.red(hex)) + Math.abs(blue - ColorHelper.PackedColor.blue(hex)) + Math.abs(green - ColorHelper.PackedColor.green(hex));
+                int dif = Math.abs(red - FastColor.ARGB32.red(hex)) + Math.abs(blue - FastColor.ARGB32.blue(hex)) + Math.abs(green - FastColor.ARGB32.green(hex));
                 if (dif < min) {
                     min = dif;
                     closest = info;
@@ -63,16 +63,16 @@ public class Group extends ForgeRegistryEntry<Group> {
         return closest;
     }
 
-    private static TextFormatting getTextFormattingColor(int color) {
-        int red = ColorHelper.PackedColor.red(color);
-        int green = ColorHelper.PackedColor.green(color);
-        int blue = ColorHelper.PackedColor.blue(color);
-        TextFormatting closest = TextFormatting.WHITE;
+    private static ChatFormatting getTextFormattingColor(int color) {
+        int red = FastColor.ARGB32.red(color);
+        int green = FastColor.ARGB32.green(color);
+        int blue = FastColor.ARGB32.blue(color);
+        ChatFormatting closest = ChatFormatting.WHITE;
         int min = Integer.MAX_VALUE;
-        for (TextFormatting format : TextFormatting.values()) {
+        for (ChatFormatting format : ChatFormatting.values()) {
             if (format.isColor()) {
                 int hex = format.getColor();
-                int dif = Math.abs(red - ColorHelper.PackedColor.red(hex)) + Math.abs(blue - ColorHelper.PackedColor.blue(hex)) + Math.abs(green - ColorHelper.PackedColor.green(hex));
+                int dif = Math.abs(red - FastColor.ARGB32.red(hex)) + Math.abs(blue - FastColor.ARGB32.blue(hex)) + Math.abs(green - FastColor.ARGB32.green(hex));
                 if (dif < min) {
                     min = dif;
                     closest = format;
@@ -91,11 +91,11 @@ public class Group extends ForgeRegistryEntry<Group> {
         return color;
     }
 
-    public BossInfo.Color getBossInfoColor() {
+    public BossEvent.BossBarColor getBossInfoColor() {
         return bossColor;
     }
 
-    public TextFormatting getTextFormattingColor() {
+    public ChatFormatting getTextFormattingColor() {
         return format;
     }
 
@@ -131,8 +131,8 @@ public class Group extends ForgeRegistryEntry<Group> {
         return baangs;
     }
 
-    public TranslationTextComponent getName() {
-        return new TranslationTextComponent(Util.makeDescriptionId("group", getRegistryName()));
+    public TranslatableComponent getName() {
+        return new TranslatableComponent(Util.makeDescriptionId("group", getRegistryName()));
     }
 
 }

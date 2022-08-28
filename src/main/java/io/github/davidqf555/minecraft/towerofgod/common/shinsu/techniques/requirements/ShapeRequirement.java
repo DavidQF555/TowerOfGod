@@ -2,8 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requi
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 
 public class ShapeRequirement implements IRequirement {
 
@@ -13,7 +13,7 @@ public class ShapeRequirement implements IRequirement {
     }
 
     @Override
-    public ITextComponent getText() {
+    public Component getText() {
         return Messages.REQUIRES_SHAPE;
     }
 }

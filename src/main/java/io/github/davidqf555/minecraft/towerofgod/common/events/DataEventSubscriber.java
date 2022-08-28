@@ -8,15 +8,15 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class DataEventSubscriber {
@@ -30,11 +30,11 @@ public final class DataEventSubscriber {
     @SubscribeEvent
     public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
         Entity entity = event.getObject();
-        if (entity instanceof PlayerEntity) {
-            event.addCapability(SHINSU_STATS, new SimpleCapabilityProvider<>(ShinsuStats.capability));
-            event.addCapability(PREDICTED_QUALITY, new SimpleCapabilityProvider<>(PredictedShinsuQuality.capability));
+        if (entity instanceof Player) {
+            event.addCapability(SHINSU_STATS, new SimpleCapabilityProvider<>(new ShinsuStats(), ShinsuStats.CAPABILITY));
+            event.addCapability(PREDICTED_QUALITY, new SimpleCapabilityProvider<>(new PredictedShinsuQuality(), PredictedShinsuQuality.CAPABILITY));
         } else if (entity instanceof IShinsuUser) {
-            event.addCapability(SHINSU_STATS, new SimpleCapabilityProvider<>(ShinsuStats.capability));
+            event.addCapability(SHINSU_STATS, new SimpleCapabilityProvider<>(new ShinsuStats(), ShinsuStats.CAPABILITY));
         }
     }
 
@@ -42,16 +42,16 @@ public final class DataEventSubscriber {
     public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Entity entity = event.getEntity();
         ShinsuStats stats = ShinsuStats.get(entity);
-        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientAttributePacket(stats.getAttribute()));
-        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
-        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
+        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateClientAttributePacket(stats.getAttribute()));
+        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
+        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
     }
 
     @SubscribeEvent
     public static void onClonePlayerEvent(PlayerEvent.Clone event) {
         if (event.isWasDeath()) {
-            ServerPlayerEntity original = (ServerPlayerEntity) event.getOriginal();
-            ServerPlayerEntity resp = (ServerPlayerEntity) event.getPlayer();
+            ServerPlayer original = (ServerPlayer) event.getOriginal();
+            ServerPlayer resp = (ServerPlayer) event.getPlayer();
             ShinsuStats.get(resp).deserializeNBT(ShinsuStats.get(original).serializeNBT());
             PredictedShinsuQuality.get(resp).deserializeNBT(PredictedShinsuQuality.get(original).serializeNBT());
         }

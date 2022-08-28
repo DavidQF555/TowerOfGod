@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.data;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public final class ShinsuIcons {
 

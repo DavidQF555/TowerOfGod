@@ -10,12 +10,12 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instan
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -26,31 +26,31 @@ public interface IShinsuUser {
 
     ShinsuStats getShinsuStats();
 
-    default int getLevel() {
+    default int getShinsuLevel() {
         return getShinsuStats().getLevel();
     }
 
     default int getInitialMaxShinsu(Random random) {
         Group group = getGroup();
-        return 10 + (int) (getLevel() * (group == null ? 1 : group.getShinsu()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
+        return 10 + (int) (getShinsuLevel() * (group == null ? 1 : group.getShinsu()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default int getInitialMaxBaangs(Random random) {
         Group group = getGroup();
-        return 1 + (int) (0.05 * getLevel() * (group == null ? 1 : group.getBaangs()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
+        return 1 + (int) (0.05 * getShinsuLevel() * (group == null ? 1 : group.getBaangs()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
     default double getInitialResistance(Random random) {
         Group group = getGroup();
-        return 1 + getLevel() * 0.025 * (group == null ? 1 : group.getResistance()) * (random.nextGaussian() * 0.25 + 1);
+        return 1 + getShinsuLevel() * 0.025 * (group == null ? 1 : group.getResistance()) * (random.nextGaussian() * 0.25 + 1);
     }
 
     default double getInitialTension(Random random) {
         Group group = getGroup();
-        return 1 + getLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (random.nextGaussian() * 0.25 + 1);
+        return 1 + getShinsuLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (random.nextGaussian() * 0.25 + 1);
     }
 
-    default void initializeShinsuStats(IServerWorld world) {
+    default void initializeShinsuStats(ServerLevelAccessor world) {
         Random random = world.getRandom();
         ShinsuStats stats = getShinsuStats();
         stats.addLevel(getInitialShinsuLevel(random) - stats.getLevel());
@@ -82,10 +82,10 @@ public interface IShinsuUser {
     }
 
     default int getInitialTechniqueTypesTotalLevel(Random random) {
-        return 1 + (int) (getLevel() * (random.nextGaussian() * 0.25 + 1) + 0.5);
+        return 1 + (int) (getShinsuLevel() * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
-    default void shinsuTick(ServerWorld world) {
+    default void shinsuTick(ServerLevel world) {
         getShinsuStats().tick(world);
     }
 
@@ -170,7 +170,7 @@ public interface IShinsuUser {
 
     void setGroup(Group group);
 
-    class CastShinsuGoal<T extends MobEntity & IShinsuUser> extends Goal {
+    class CastShinsuGoal<T extends Mob & IShinsuUser> extends Goal {
 
         private final T entity;
         private ShinsuTechniqueInstance technique;
@@ -190,7 +190,7 @@ public interface IShinsuUser {
             }
             List<ShinsuTechniqueInstance> tech = new ArrayList<>();
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                Vector3d dir = entity.canSee(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookAngle();
+                Vec3 dir = entity.hasLineOfSight(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookAngle();
                 technique.create(entity, target, dir).ifLeft(tech::add);
             }
             if (tech.isEmpty()) {

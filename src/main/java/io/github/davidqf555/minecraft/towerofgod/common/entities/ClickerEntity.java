@@ -1,22 +1,22 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -28,33 +28,33 @@ public class ClickerEntity extends Entity {
     private static final int PARTICLES = 2;
     private static final int SPEED = 5;
     private static final int DURATION = 200;
-    private static final DataParameter<String> ATTRIBUTE = EntityDataManager.defineId(ClickerEntity.class, DataSerializers.STRING);
-    private static final DataParameter<String> SHAPE = EntityDataManager.defineId(ClickerEntity.class, DataSerializers.STRING);
+    private static final EntityDataAccessor<String> ATTRIBUTE = SynchedEntityData.defineId(ClickerEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<String> SHAPE = SynchedEntityData.defineId(ClickerEntity.class, EntityDataSerializers.STRING);
     private int ticksLeft;
 
-    public ClickerEntity(EntityType<ClickerEntity> type, World world) {
+    public ClickerEntity(EntityType<ClickerEntity> type, Level world) {
         super(type, world);
         ticksLeft = DURATION;
     }
 
     @Override
     protected void defineSynchedData() {
-        EntityDataManager manager = getEntityData();
+        SynchedEntityData manager = getEntityData();
         manager.define(ATTRIBUTE, "");
         manager.define(SHAPE, ShinsuShapeRegistry.SWORD.getId().toString());
     }
 
     @Override
     public void tick() {
-        yRotO = yRot;
-        yRot += SPEED;
-        IParticleData particle = ShinsuAttribute.getParticles(getAttribute());
+        yRotO = getYRot();
+        setYRot(yRotO + SPEED);
+        ParticleOptions particle = ShinsuAttribute.getParticles(getAttribute());
         for (int i = 0; i < PARTICLES; i++) {
             level.addParticle(particle, getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
         }
         ticksLeft--;
         if (ticksLeft <= 0) {
-            remove();
+            remove(RemovalReason.DISCARDED);
         }
         super.tick();
     }
@@ -77,20 +77,20 @@ public class ClickerEntity extends Entity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT nbt) {
-        if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
+        if (nbt.contains("Duration", Tag.TAG_INT)) {
             ticksLeft = nbt.getInt("Duration");
         }
-        if (nbt.contains("Attribute", Constants.NBT.TAG_STRING)) {
+        if (nbt.contains("Attribute", Tag.TAG_STRING)) {
             setAttribute(ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute"))));
         }
-        if (nbt.contains("Shape", Constants.NBT.TAG_STRING)) {
+        if (nbt.contains("Shape", Tag.TAG_STRING)) {
             setShape(ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape"))));
         }
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundTag nbt) {
         nbt.putInt("Duration", ticksLeft);
         ShinsuAttribute attribute = getAttribute();
         if (attribute != null) {
@@ -100,7 +100,7 @@ public class ClickerEntity extends Entity {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

@@ -2,21 +2,19 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.PrioritizedGoal;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
 
@@ -24,13 +22,14 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
 
     public BasicCommandTechnique(LivingEntity user) {
         super(user);
-        devices = user == null ? new ArrayList<>() : ((ServerWorld) user.level).getEntities()
-                .filter(entity -> entity instanceof FlyingDevice)
-                .map(entity -> (FlyingDevice) entity)
-                .filter(entity -> user.getUUID().equals(entity.getOwnerID()))
-                .filter(this::isTarget)
-                .map(Entity::getUUID)
-                .collect(Collectors.toList());
+        devices = new ArrayList<>();
+        if (user != null) {
+            for (Entity entity : ((ServerLevel) user.level).getAllEntities()) {
+                if (entity instanceof FlyingDevice && user.getUUID().equals(((FlyingDevice) entity).getOwnerID()) && isTarget((FlyingDevice) entity)) {
+                    devices.add(entity.getUUID());
+                }
+            }
+        }
     }
 
     public boolean isTarget(FlyingDevice device) {
@@ -41,10 +40,10 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
         return devices;
     }
 
-    protected abstract DeviceCommand createCommand(FlyingDevice entity, ServerWorld world);
+    protected abstract DeviceCommand createCommand(FlyingDevice entity, ServerLevel world);
 
     @Override
-    public void onUse(ServerWorld world) {
+    public void onUse(ServerLevel world) {
         devices.stream()
                 .map(world::getEntity)
                 .filter(Objects::nonNull)
@@ -53,14 +52,14 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void onEnd(ServerWorld world) {
+    public void onEnd(ServerLevel world) {
         UUID id = getID();
         devices.stream()
                 .map(entity -> (FlyingDevice) world.getEntity(entity))
                 .filter(Objects::nonNull)
                 .map(entity -> entity.goalSelector.getRunningGoals())
                 .forEach(stream ->
-                        stream.map(PrioritizedGoal::getGoal)
+                        stream.map(WrappedGoal::getGoal)
                                 .filter(goal -> goal instanceof DeviceCommand)
                                 .map(goal -> (DeviceCommand) goal)
                                 .filter(command -> id.equals(command.getTechniqueID()))
@@ -70,7 +69,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
         Entity user = getUser(world);
         if (user != null) {
             UUID userID = user.getUUID();
@@ -93,22 +92,22 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
-        ListNBT devices = new ListNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
+        ListTag devices = new ListTag();
         for (UUID id : this.devices) {
-            devices.add(NBTUtil.createUUID(id));
+            devices.add(NbtUtils.createUUID(id));
         }
         nbt.put("Devices", devices);
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Devices", Constants.NBT.TAG_LIST)) {
-            for (INBT tag : nbt.getList("Devices", Constants.NBT.TAG_INT_ARRAY)) {
-                devices.add(NBTUtil.loadUUID(tag));
+        if (nbt.contains("Devices", Tag.TAG_LIST)) {
+            for (Tag tag : nbt.getList("Devices", Tag.TAG_INT_ARRAY)) {
+                devices.add(NbtUtils.loadUUID(tag));
             }
         }
     }

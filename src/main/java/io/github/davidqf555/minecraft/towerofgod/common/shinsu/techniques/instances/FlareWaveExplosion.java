@@ -1,22 +1,22 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
+import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -43,14 +43,14 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void onUse(ServerWorld world) {
+    public void onUse(ServerLevel world) {
         Entity user = getUser(world);
         Entity t = world.getEntity(target);
         if (user != null && t instanceof LivingEntity && user.distanceToSqr(t) <= RANGE * RANGE) {
             LivingEntity target = (LivingEntity) t;
             double resistance = ShinsuStats.getNetResistance(user, target);
             target.hurt(DamageSource.MAGIC, damage / (float) resistance);
-            target.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, (int) (60 / resistance), amp - 1, false, false, false));
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (60 / resistance), amp - 1, false, false, false));
         }
     }
 
@@ -70,22 +70,22 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Target", Constants.NBT.TAG_INT_ARRAY)) {
+        if (nbt.contains("Target", Tag.TAG_INT_ARRAY)) {
             target = nbt.getUUID("Target");
         }
-        if (nbt.contains("Damage", Constants.NBT.TAG_FLOAT)) {
+        if (nbt.contains("Damage", Tag.TAG_FLOAT)) {
             damage = nbt.getFloat("Damage");
         }
-        if (nbt.contains("Amplification", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Amplification", Tag.TAG_INT)) {
             amp = nbt.getInt("Amplification");
         }
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         nbt.putUUID("Target", target);
         nbt.putFloat("Damage", damage);
         nbt.putInt("Amplification", amp);
@@ -96,7 +96,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<FlareWaveExplosion> {
 
         @Override
-        public Either<FlareWaveExplosion, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<FlareWaveExplosion, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
             int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DISRUPTION).getLevel();
             return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, target.getUUID(), level * 2.5f, level)) : Either.right(Messages.getRequiresTarget(RANGE));
         }

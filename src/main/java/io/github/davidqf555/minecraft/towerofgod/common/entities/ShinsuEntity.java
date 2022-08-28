@@ -1,23 +1,23 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.DamagingProjectileEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -25,13 +25,13 @@ import java.util.UUID;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class ShinsuEntity extends DamagingProjectileEntity {
+public class ShinsuEntity extends AbstractHurtingProjectile {
 
     private static final int PARTICLES = 3;
     private static final float DAMAGE = 0.625f;
     private UUID technique;
 
-    public ShinsuEntity(EntityType<ShinsuEntity> type, World world) {
+    public ShinsuEntity(EntityType<ShinsuEntity> type, Level world) {
         super(type, world);
         technique = null;
     }
@@ -47,12 +47,12 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     }
 
     @Override
-    public IParticleData getTrailParticle() {
+    public ParticleOptions getTrailParticle() {
         return ShinsuAttribute.getParticles(null);
     }
 
     @Override
-    public void setDeltaMovement(Vector3d motionIn) {
+    public void setDeltaMovement(Vec3 motionIn) {
         super.setDeltaMovement(motionIn);
         double length = motionIn.length();
         xPower = motionIn.x() / length * 0.1;
@@ -61,9 +61,9 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     }
 
     @Override
-    public void onHitEntity(EntityRayTraceResult rayTraceResult) {
+    public void onHitEntity(EntityHitResult rayTraceResult) {
         super.onHitEntity(rayTraceResult);
-        if (level instanceof ServerWorld) {
+        if (level instanceof ServerLevel) {
             Entity shooter = getOwner();
             Entity target = rayTraceResult.getEntity();
             float damage = DAMAGE;
@@ -72,7 +72,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
             }
             target.hurt(ShinsuAttribute.getDamageSource(null), damage);
         }
-        remove();
+        remove(RemovalReason.DISCARDED);
     }
 
     @Nullable
@@ -91,7 +91,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     @Override
     public void tick() {
         if (technique != null && getTechnique() == null) {
-            remove();
+            remove(RemovalReason.DISCARDED);
         }
         for (int i = 0; i < PARTICLES; i++) {
             level.addParticle(getTrailParticle(), getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
@@ -100,21 +100,21 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     }
 
     @Override
-    protected void onHitBlock(BlockRayTraceResult rayTraceResult) {
+    protected void onHitBlock(BlockHitResult rayTraceResult) {
         super.onHitBlock(rayTraceResult);
-        remove();
+        remove(RemovalReason.DISCARDED);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT nbt) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
-        if (nbt.contains("Technique", Constants.NBT.TAG_INT_ARRAY)) {
+        if (nbt.contains("Technique", Tag.TAG_INT_ARRAY)) {
             technique = nbt.getUUID("Technique");
         }
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
         if (technique != null) {
             nbt.putUUID("Technique", technique);
@@ -122,7 +122,7 @@ public class ShinsuEntity extends DamagingProjectileEntity {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

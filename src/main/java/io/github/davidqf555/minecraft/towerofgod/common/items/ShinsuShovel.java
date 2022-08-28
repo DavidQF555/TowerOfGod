@@ -3,16 +3,16 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ShovelItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -29,10 +29,10 @@ public class ShinsuShovel extends ShovelItem {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
-        if (worldIn instanceof ServerWorld) {
-            CompoundNBT nbt = stack.getTagElement(TowerOfGod.MOD_ID);
+        if (worldIn instanceof ServerLevel) {
+            CompoundTag nbt = stack.getTagElement(TowerOfGod.MOD_ID);
             if (!stack.isEmpty() && nbt != null) {
                 UUID id = nbt.getUUID("Technique");
                 ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
@@ -53,16 +53,16 @@ public class ShinsuShovel extends ShovelItem {
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        Vector3d dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
+        Vec3 dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
         ShinsuAttribute attribute = ShinsuAttribute.getAttribute(stack);
         if (attribute != null) {
-            attribute.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
+            attribute.applyEntityEffect(target, new EntityHitResult(target, dir));
         }
         return super.hurtEnemy(stack, target, attacker);
     }
 
     @Override
-    public int getEntityLifespan(ItemStack itemStack, World world) {
+    public int getEntityLifespan(ItemStack itemStack, Level world) {
         return 0;
     }
 }

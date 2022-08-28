@@ -1,20 +1,20 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.EntityHitResult;
 
-public class PotionAttributeEffect implements ShinsuAttributeEffect<EntityRayTraceResult> {
+public class PotionAttributeEffect implements ShinsuAttributeEffect<EntityHitResult> {
 
-    private final EffectInstance effect;
+    private final MobEffectInstance effect;
 
-    public PotionAttributeEffect(EffectInstance effect) {
+    public PotionAttributeEffect(MobEffectInstance effect) {
         this.effect = effect;
     }
 
     @Override
-    public void apply(Entity user, EntityRayTraceResult clip) {
+    public void apply(Entity user, EntityHitResult clip) {
         Entity entity = clip.getEntity();
         if (entity instanceof LivingEntity) {
             ((LivingEntity) entity).addEffect(effect);

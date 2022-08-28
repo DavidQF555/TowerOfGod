@@ -1,18 +1,19 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.BossInfo;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerBossInfo;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.BossEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -20,15 +21,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class RankerEntity extends BasicShinsuUserEntity {
 
-    private final ServerBossInfo info;
+    private final ServerBossEvent info;
 
-    public RankerEntity(EntityType<RankerEntity> type, World world) {
+    public RankerEntity(EntityType<RankerEntity> type, Level world) {
         super(type, world);
-        info = new ServerBossInfo(getDisplayName(), BossInfo.Color.WHITE, BossInfo.Overlay.PROGRESS);
+        info = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.PROGRESS);
         info.setVisible(false);
     }
 
-    public static AttributeModifierMap.MutableAttribute setAttributes() {
+    public static AttributeSupplier.Builder setAttributes() {
         return RankerEntity.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 32)
                 .add(Attributes.MOVEMENT_SPEED, 0.215)
@@ -39,38 +40,38 @@ public class RankerEntity extends BasicShinsuUserEntity {
     @Override
     public void registerGoals() {
         super.registerGoals();
-        goalSelector.addGoal(0, new SwimGoal(this));
+        goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new SwapWeaponToMainHandGoal<>(this, 5));
         goalSelector.addGoal(2, new CastShinsuGoal<>(this));
         goalSelector.addGoal(3, new RangedMainHandAttackGoal<>(this, 1, 12, 15));
         goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.5, true));
-        goalSelector.addGoal(5, new LookAtGoal(this, PlayerEntity.class, 8));
-        goalSelector.addGoal(6, new WaterAvoidingRandomWalkingGoal(this, 1));
-        goalSelector.addGoal(7, new LookRandomlyGoal(this));
+        goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 8));
+        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         targetSelector.addGoal(0, new HurtByTargetGoal(this));
     }
 
     @Override
     public void aiStep() {
         super.aiStep();
-        info.setPercent(getHealth() / getMaxHealth());
+        info.setProgress(getHealth() / getMaxHealth());
         info.setVisible(getTarget() != null);
     }
 
     @Override
-    public void startSeenByPlayer(ServerPlayerEntity player) {
+    public void startSeenByPlayer(ServerPlayer player) {
         super.startSeenByPlayer(player);
         info.addPlayer(player);
     }
 
     @Override
-    public void stopSeenByPlayer(ServerPlayerEntity player) {
+    public void stopSeenByPlayer(ServerPlayer player) {
         super.stopSeenByPlayer(player);
         info.removePlayer(player);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (hasCustomName()) {
             info.setName(getDisplayName());
@@ -78,7 +79,7 @@ public class RankerEntity extends BasicShinsuUserEntity {
     }
 
     @Override
-    public void setCustomName(@Nullable ITextComponent name) {
+    public void setCustomName(@Nullable Component name) {
         super.setCustomName(name);
         info.setName(getDisplayName());
     }
@@ -94,12 +95,12 @@ public class RankerEntity extends BasicShinsuUserEntity {
     }
 
     @Override
-    protected int getExperienceReward(PlayerEntity player) {
+    protected int getExperienceReward(Player player) {
         return ShinsuStats.get(this).getLevel() - random.nextInt(3) + 7;
     }
 
     @Override
-    protected float getEquipmentDropChance(EquipmentSlotType slotIn) {
+    protected float getEquipmentDropChance(EquipmentSlot slotIn) {
         return 0;
     }
 
