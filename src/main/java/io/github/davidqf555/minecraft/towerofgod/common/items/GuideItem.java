@@ -8,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -24,24 +23,18 @@ import java.util.function.Supplier;
 
 public class GuideItem extends Item {
 
-    private final ITextComponent author;
     private final Supplier<ShinsuTechnique[]> pages;
     private final int color;
 
-    public GuideItem(Supplier<ShinsuTechnique[]> pages, ITextComponent author, int color) {
-        super(new Properties()
-                .tab(TowerOfGod.TAB)
-                .stacksTo(1)
-                .rarity(Rarity.UNCOMMON)
-        );
+    public GuideItem(Supplier<ShinsuTechnique[]> pages, int color, Properties properties) {
+        super(properties.stacksTo(1));
         this.pages = pages;
-        this.author = author;
         this.color = color;
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent("book.byAuthor", author).withStyle(TextFormatting.GRAY));
+        tooltip.add(new TranslationTextComponent("book.byAuthor", getAuthor()).withStyle(TextFormatting.GRAY));
     }
 
     @Override
@@ -53,4 +46,9 @@ public class GuideItem extends Item {
         playerIn.awardStat(Stats.ITEM_USED.get(this));
         return ActionResult.sidedSuccess(item, worldIn.isClientSide());
     }
+
+    protected ITextComponent getAuthor() {
+        return new TranslationTextComponent(getDescriptionId() + ".author");
+    }
+
 }
