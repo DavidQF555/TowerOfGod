@@ -37,8 +37,8 @@ public class UpdateBaangsMeterPacket {
 
     private void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
-            ClientReference.baangs.setValue(baangs);
-            ClientReference.baangs.setMax(maxBaangs);
+            ClientReference.BAANGS.setValue(baangs);
+            ClientReference.BAANGS.setMax(maxBaangs);
         });
         context.setPacketHandled(true);
     }

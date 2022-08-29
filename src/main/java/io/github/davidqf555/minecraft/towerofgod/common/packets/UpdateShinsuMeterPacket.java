@@ -37,8 +37,8 @@ public class UpdateShinsuMeterPacket {
 
     private void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
-            ClientReference.shinsu.setValue(shinsu);
-            ClientReference.shinsu.setMax(maxShinsu);
+            ClientReference.SHINSU.setValue(shinsu);
+            ClientReference.SHINSU.setMax(maxShinsu);
         });
         context.setPacketHandled(true);
     }

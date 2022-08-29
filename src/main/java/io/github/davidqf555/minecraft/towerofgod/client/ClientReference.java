@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.FastColor;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
@@ -26,9 +25,9 @@ import java.util.Set;
 public final class ClientReference {
 
     public static final Map<ShinsuTechnique, Component> ERRORS = new HashMap<>();
-    public static StatsMeterGui shinsu = null;
-    public static StatsMeterGui baangs = null;
-    public static ShinsuCombinationGui combo = null;
+    public static final StatsMeterGui SHINSU = new StatsMeterGui(-91, 0, 0, 200);
+    public static final StatsMeterGui BAANGS = new StatsMeterGui(6, 0, 0, 20);
+    public static final ShinsuCombinationGui COMBO = new ShinsuCombinationGui();
     public static ShinsuAttribute attribute = null;
 
     private ClientReference() {
@@ -70,8 +69,7 @@ public final class ClientReference {
     }
 
     public static void openCombinationGUI(Set<ShinsuTechnique> unlocked) {
-        Player player = Minecraft.getInstance().player;
-        ClientReference.combo = new ShinsuCombinationGui(unlocked, player.yHeadRot, player.getViewXRot(1));
+        COMBO.setUnlocked(unlocked);
     }
 
     public static void openGuideScreen(ShinsuTechnique[] pages, int color) {

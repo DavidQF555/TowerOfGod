@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client.events;
 
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.LighthouseScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.model.LighthouseModel;
@@ -25,6 +26,8 @@ import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -82,6 +85,9 @@ public final class EventBusSubscriber {
         @SubscribeEvent
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
             KeyBindingsList.register();
+            OverlayRegistry.registerOverlayTop(new ResourceLocation(TowerOfGod.MOD_ID, "combination").toString(), ClientReference.COMBO);
+            OverlayRegistry.registerOverlayAbove(ForgeIngameGui.PLAYER_HEALTH_ELEMENT, new ResourceLocation(TowerOfGod.MOD_ID, "shinsu").toString(), ClientReference.SHINSU);
+            OverlayRegistry.registerOverlayAbove(ForgeIngameGui.PLAYER_HEALTH_ELEMENT, new ResourceLocation(TowerOfGod.MOD_ID, "baangs").toString(), ClientReference.BAANGS);
             event.enqueueWork(() -> {
                 MenuScreens.register(ContainerRegistry.LIGHTHOUSE.get(), LighthouseScreen::new);
                 ItemProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemProperties.getProperty(Items.BOW, new ResourceLocation("pull")));
