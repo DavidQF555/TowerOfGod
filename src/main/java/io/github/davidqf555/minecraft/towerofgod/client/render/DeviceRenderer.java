@@ -1,17 +1,17 @@
 package io.github.davidqf555.minecraft.towerofgod.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.LivingRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.util.ColorHelper;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderNameplateEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,14 +20,14 @@ import net.minecraftforge.eventbus.api.Event;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityModel<T>> extends LivingRenderer<T, M> {
+public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
 
-    public DeviceRenderer(EntityRendererManager rendererManager, M entityModelIn, float shadowSizeIn) {
+    public DeviceRenderer(EntityRendererProvider.Context rendererManager, M entityModelIn, float shadowSizeIn) {
         super(rendererManager, entityModelIn, shadowSizeIn);
     }
 
     @Override
-    public void render(T entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+    public void render(T entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         if (MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<>(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn))) {
             return;
         }
@@ -35,10 +35,10 @@ public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityMod
         model.attackTime = getAttackAnim(entityIn, partialTicks);
         model.riding = entityIn.isPassenger() && (entityIn.getVehicle() != null && entityIn.getVehicle().shouldRiderSit());
         model.young = entityIn.isBaby();
-        float yaw = MathHelper.rotLerp(partialTicks, entityIn.yBodyRotO, entityIn.yBodyRot);
-        float yawHead = MathHelper.rotLerp(partialTicks, entityIn.yHeadRotO, entityIn.yHeadRot);
+        float yaw = Mth.rotLerp(partialTicks, entityIn.yBodyRotO, entityIn.yBodyRot);
+        float yawHead = Mth.rotLerp(partialTicks, entityIn.yHeadRotO, entityIn.yHeadRot);
         float netYaw = yawHead - yaw;
-        float pitch = MathHelper.lerp(partialTicks, entityIn.xRotO, entityIn.xRot);
+        float pitch = Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot());
         float age = getBob(entityIn, partialTicks);
         setupRotations(entityIn, matrixStackIn, age, yaw, partialTicks);
         matrixStackIn.scale(-1, -1, 1);
@@ -47,7 +47,7 @@ public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityMod
         float limbSwingAmount = 0;
         float limbSwing = 0;
         if (!model.riding && entityIn.isAlive()) {
-            limbSwingAmount = MathHelper.lerp(partialTicks, entityIn.animationSpeedOld, entityIn.animationSpeed);
+            limbSwingAmount = Mth.lerp(partialTicks, entityIn.animationSpeedOld, entityIn.animationSpeed);
             limbSwing = entityIn.animationPosition - entityIn.animationSpeed * (1 - partialTicks);
             if (limbSwingAmount > 1) {
                 limbSwingAmount = 1;
@@ -62,15 +62,15 @@ public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityMod
         float alpha = getAlpha(invisible);
         RenderType type = getRenderType(entityIn, visible, alpha < 1, glowing);
         if (type != null) {
-            IVertexBuilder ivertexbuilder = bufferIn.getBuffer(type);
+            VertexConsumer ivertexbuilder = bufferIn.getBuffer(type);
             int overlay = getOverlayCoords(entityIn, getWhiteOverlayProgress(entityIn, partialTicks));
-            int hex = entityIn.getColor().getColorValue();
-            float red = ColorHelper.PackedColor.red(hex) / 255f;
-            float green = ColorHelper.PackedColor.green(hex) / 255f;
-            float blue = ColorHelper.PackedColor.blue(hex) / 255f;
+            int hex = entityIn.getColor().getTextColor();
+            float red = FastColor.ARGB32.red(hex) / 255f;
+            float green = FastColor.ARGB32.green(hex) / 255f;
+            float blue = FastColor.ARGB32.blue(hex) / 255f;
             model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, overlay, red, green, blue, alpha);
         }
-        for (LayerRenderer<T, M> renderer : layers) {
+        for (RenderLayer<T, M> renderer : layers) {
             renderer.render(matrixStackIn, bufferIn, packedLightIn, entityIn, limbSwing, limbSwingAmount, partialTicks, age, netYaw, pitch);
         }
         matrixStackIn.popPose();

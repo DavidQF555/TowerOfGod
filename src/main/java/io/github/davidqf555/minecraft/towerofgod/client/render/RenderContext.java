@@ -1,14 +1,14 @@
 package io.github.davidqf555.minecraft.towerofgod.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 public class RenderContext {
 
-    private final MatrixStack matrixStack;
+    private final PoseStack matrixStack;
     private final float x, y, blitOffset;
     private final int width, height, color;
 
-    public RenderContext(MatrixStack matrixStack, float x, float y, float blitOffset, int width, int height, int color) {
+    public RenderContext(PoseStack matrixStack, float x, float y, float blitOffset, int width, int height, int color) {
         this.matrixStack = matrixStack;
         this.x = x;
         this.y = y;
@@ -18,7 +18,7 @@ public class RenderContext {
         this.color = color;
     }
 
-    public MatrixStack getMatrixStack() {
+    public PoseStack getPoseStack() {
         return matrixStack;
     }
 

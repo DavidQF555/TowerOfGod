@@ -1,6 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.GuideScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuCombinationGui;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.StatsMeterGui;
@@ -10,17 +12,12 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ColorHelper;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.FastColor;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +25,7 @@ import java.util.Set;
 
 public final class ClientReference {
 
-    public static final Map<ShinsuTechnique, ITextComponent> ERRORS = new HashMap<>();
+    public static final Map<ShinsuTechnique, Component> ERRORS = new HashMap<>();
     public static StatsMeterGui shinsu = null;
     public static StatsMeterGui baangs = null;
     public static ShinsuCombinationGui combo = null;
@@ -38,7 +35,7 @@ public final class ClientReference {
     }
 
     public static void renderTextureData(TextureRenderData data, RenderContext context) {
-        Matrix4f matrix = context.getMatrixStack().last().pose();
+        Matrix4f matrix = context.getPoseStack().last().pose();
         float x = context.getX();
         float y = context.getY();
         int width = context.getWidth();
@@ -46,25 +43,25 @@ public final class ClientReference {
         float x2 = x + width;
         float y2 = y + height;
         int color = context.getColor();
-        int a = ColorHelper.PackedColor.alpha(color);
-        int r = ColorHelper.PackedColor.red(color);
-        int g = ColorHelper.PackedColor.green(color);
-        int b = ColorHelper.PackedColor.blue(color);
+        int a = FastColor.ARGB32.alpha(color);
+        int r = FastColor.ARGB32.red(color);
+        int g = FastColor.ARGB32.green(color);
+        int b = FastColor.ARGB32.blue(color);
         float minU = data.getStartX() * 1f / data.getTextureWidth();
         float maxU = (data.getStartX() + data.getBlitWidth()) * 1f / data.getTextureWidth();
         float minV = data.getStartY() * 1f / data.getTextureHeight();
         float maxV = (data.getStartY() + data.getBlitHeight()) * 1f / data.getTextureHeight();
         float blitOffset = context.getBlitOffset();
-        Minecraft.getInstance().getTextureManager().bind(data.getTexture());
-        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuilder();
-        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         bufferbuilder.vertex(matrix, x, y2, blitOffset).color(r, g, b, a).uv(minU, maxV).endVertex();
         bufferbuilder.vertex(matrix, x2, y2, blitOffset).color(r, g, b, a).uv(maxU, maxV).endVertex();
         bufferbuilder.vertex(matrix, x2, y, blitOffset).color(r, g, b, a).uv(maxU, minV).endVertex();
         bufferbuilder.vertex(matrix, x, y, blitOffset).color(r, g, b, a).uv(minU, minV).endVertex();
         bufferbuilder.end();
         RenderSystem.enableBlend();
-        WorldVertexBufferUploader.end(bufferbuilder);
+        BufferUploader.end(bufferbuilder);
         RenderSystem.disableBlend();
     }
 
@@ -73,7 +70,7 @@ public final class ClientReference {
     }
 
     public static void openCombinationGUI(Set<ShinsuTechnique> unlocked) {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         ClientReference.combo = new ShinsuCombinationGui(unlocked, player.yHeadRot, player.getViewXRot(1));
     }
 
@@ -81,7 +78,7 @@ public final class ClientReference {
         Minecraft.getInstance().setScreen(new GuideScreen(pages, 221, 180, color));
     }
 
-    public static void updateDimensions(RegistryKey<World> key) {
+    public static void updateDimensions(ResourceKey<Level> key) {
         Minecraft.getInstance().player.connection.levels().add(key);
     }
 

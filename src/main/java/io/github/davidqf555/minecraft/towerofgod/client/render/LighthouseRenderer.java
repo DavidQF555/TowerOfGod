@@ -3,19 +3,21 @@ package io.github.davidqf555.minecraft.towerofgod.client.render;
 import io.github.davidqf555.minecraft.towerofgod.client.model.LighthouseModel;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseEntity;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class LighthouseRenderer extends DeviceRenderer<LighthouseEntity, LighthouseModel> {
 
+    public static final ModelLayerLocation LOCATION = new ModelLayerLocation(new ResourceLocation(TowerOfGod.MOD_ID, "lighthouse"), "main");
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/lighthouse.png");
 
-    public LighthouseRenderer(EntityRendererManager renderManagerIn) {
-        super(renderManagerIn, new LighthouseModel(), 0.5f);
+    public LighthouseRenderer(EntityRendererProvider.Context renderManagerIn) {
+        super(renderManagerIn, new LighthouseModel(renderManagerIn.bakeLayer(LOCATION)), 0.5f);
     }
 
     @Override

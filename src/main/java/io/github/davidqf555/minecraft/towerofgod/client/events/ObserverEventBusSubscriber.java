@@ -2,8 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.client.events;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -48,7 +48,7 @@ public final class ObserverEventBusSubscriber {
                 }
             }
             if (included) {
-                entity.setGlowing(stillGlowing);
+                entity.setGlowingTag(stillGlowing);
             }
         }
     }

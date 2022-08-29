@@ -4,9 +4,9 @@ import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -15,14 +15,14 @@ import java.util.function.Supplier;
 
 public class OpenGuideScreenPacket {
 
-    private static final BiConsumer<OpenGuideScreenPacket, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<OpenGuideScreenPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.pages.length);
         for (ShinsuTechnique technique : message.pages) {
             buffer.writeResourceLocation(technique.getRegistryName());
         }
         buffer.writeInt(message.color);
     };
-    private static final Function<PacketBuffer, OpenGuideScreenPacket> DECODER = buffer -> {
+    private static final Function<FriendlyByteBuf, OpenGuideScreenPacket> DECODER = buffer -> {
         int size = buffer.readInt();
         ShinsuTechnique[] pages = new ShinsuTechnique[size];
         for (int i = 0; i < size; i++) {

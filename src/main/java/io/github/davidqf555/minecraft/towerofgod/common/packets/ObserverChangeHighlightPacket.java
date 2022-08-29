@@ -3,9 +3,9 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.client.events.ObserverEventBusSubscriber;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -17,14 +17,14 @@ import java.util.function.Supplier;
 
 public class ObserverChangeHighlightPacket {
 
-    private static final BiConsumer<ObserverChangeHighlightPacket, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<ObserverChangeHighlightPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeUUID(message.id);
         buffer.writeInt(message.entities.size());
         for (UUID id : message.entities) {
             buffer.writeUUID(id);
         }
     };
-    private static final Function<PacketBuffer, ObserverChangeHighlightPacket> DECODER = buffer -> {
+    private static final Function<FriendlyByteBuf, ObserverChangeHighlightPacket> DECODER = buffer -> {
         UUID id = buffer.readUUID();
         Set<UUID> entities = new HashSet<>();
         int size = buffer.readInt();

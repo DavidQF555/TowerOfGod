@@ -4,9 +4,9 @@ import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -17,13 +17,13 @@ import java.util.function.Supplier;
 
 public class ServerOpenCombinationGUIPacket {
 
-    private static final BiConsumer<ServerOpenCombinationGUIPacket, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<ServerOpenCombinationGUIPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.unlocked.size());
         for (ShinsuTechnique technique : message.unlocked) {
             buffer.writeResourceLocation(technique.getRegistryName());
         }
     };
-    private static final Function<PacketBuffer, ServerOpenCombinationGUIPacket> DECODER = buffer -> {
+    private static final Function<FriendlyByteBuf, ServerOpenCombinationGUIPacket> DECODER = buffer -> {
         Set<ShinsuTechnique> unlocked = new HashSet<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {

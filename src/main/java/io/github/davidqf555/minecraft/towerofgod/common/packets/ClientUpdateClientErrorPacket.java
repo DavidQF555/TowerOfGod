@@ -4,17 +4,17 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,9 +25,9 @@ import java.util.function.Supplier;
 
 public class ClientUpdateClientErrorPacket {
 
-    private static final BiConsumer<ClientUpdateClientErrorPacket, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<ClientUpdateClientErrorPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
     };
-    private static final Function<PacketBuffer, ClientUpdateClientErrorPacket> DECODER = buffer -> new ClientUpdateClientErrorPacket();
+    private static final Function<FriendlyByteBuf, ClientUpdateClientErrorPacket> DECODER = buffer -> new ClientUpdateClientErrorPacket();
     private static final BiConsumer<ClientUpdateClientErrorPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
@@ -38,12 +38,12 @@ public class ClientUpdateClientErrorPacket {
     }
 
     private void handle(NetworkEvent.Context context) {
-        ServerPlayerEntity player = context.getSender();
+        ServerPlayer player = context.getSender();
         context.enqueueWork(() -> {
-            Vector3d eye = player.getEyePosition(1);
-            EntityRayTraceResult result = ProjectileHelper.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuStats.ENTITY_RANGE)), AxisAlignedBB.ofSize(ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE).move(eye), null);
+            Vec3 eye = player.getEyePosition(1);
+            EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuStats.ENTITY_RANGE)), AABB.ofSize(eye, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE), null);
             Entity target = result == null ? null : result.getEntity();
-            Map<ShinsuTechnique, ITextComponent> errors = new HashMap<>();
+            Map<ShinsuTechnique, Component> errors = new HashMap<>();
             for (ShinsuTechnique technique : ShinsuTechniqueRegistry.getRegistry()) {
                 technique.create(player, target, player.getLookAngle()).ifRight(error -> errors.put(technique, error));
             }

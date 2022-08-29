@@ -2,11 +2,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -17,9 +17,9 @@ import java.util.function.Supplier;
 
 public class ClientOpenCombinationGUIPacket {
 
-    private static final BiConsumer<ClientOpenCombinationGUIPacket, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<ClientOpenCombinationGUIPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
     };
-    private static final Function<PacketBuffer, ClientOpenCombinationGUIPacket> DECODER = buffer -> new ClientOpenCombinationGUIPacket();
+    private static final Function<FriendlyByteBuf, ClientOpenCombinationGUIPacket> DECODER = buffer -> new ClientOpenCombinationGUIPacket();
     private static final BiConsumer<ClientOpenCombinationGUIPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
@@ -30,7 +30,7 @@ public class ClientOpenCombinationGUIPacket {
     }
 
     private void handle(NetworkEvent.Context context) {
-        ServerPlayerEntity player = context.getSender();
+        ServerPlayer player = context.getSender();
         context.enqueueWork(() -> {
             Set<ShinsuTechnique> unlocked = new HashSet<>();
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {

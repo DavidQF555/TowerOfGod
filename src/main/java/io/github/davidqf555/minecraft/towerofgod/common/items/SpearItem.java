@@ -1,10 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
+import io.github.davidqf555.minecraft.towerofgod.client.render.SpearItemStackRenderer;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.SpearEntity;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.TagRegistry;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -18,8 +20,10 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.IItemRenderProperties;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -69,6 +73,16 @@ public class SpearItem extends DiggerItem implements Vanishable {
                 }
             }
         }
+    }
+
+    @Override
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+        consumer.accept(new IItemRenderProperties() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+                return SpearItemStackRenderer.INSTANCE;
+            }
+        });
     }
 
     protected AbstractArrow createProjectile(Level world, ItemStack stack) {

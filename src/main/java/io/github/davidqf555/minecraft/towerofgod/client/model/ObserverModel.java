@@ -1,27 +1,37 @@
 package io.github.davidqf555.minecraft.towerofgod.client.model;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ObserverEntity;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
 
 import javax.annotation.Nonnull;
 
 public class ObserverModel extends EntityModel<ObserverEntity> {
 
-    private final ModelRenderer observer;
+    private final ModelPart observer;
 
-    public ObserverModel() {
-        texWidth = 32;
-        texHeight = 16;
-        observer = new ModelRenderer(this);
-        observer.setPos(0, 24, 0);
-        observer.texOffs(0, 0).addBox(-4, -8, -4, 8, 8, 8, 0, false);
+    public ObserverModel(ModelPart part) {
+        observer = part.getChild("observer");
+    }
+
+    public static LayerDefinition createLayer() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition part = mesh.getRoot();
+        part.addOrReplaceChild("observer", CubeListBuilder.create()
+                .texOffs(0, 0)
+                .addBox(-4, -8, -4, 8, 8, 8), PartPose.offset(0, 24, 0));
+        return LayerDefinition.create(mesh, 32, 16);
     }
 
     @Override
-    public void renderToBuffer(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(@Nonnull PoseStack matrixStack, @Nonnull VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         observer.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 

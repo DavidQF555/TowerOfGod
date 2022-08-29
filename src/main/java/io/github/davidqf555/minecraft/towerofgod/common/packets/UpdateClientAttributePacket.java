@@ -4,9 +4,9 @@ import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -16,13 +16,13 @@ import java.util.function.Supplier;
 
 public class UpdateClientAttributePacket {
 
-    private static final BiConsumer<UpdateClientAttributePacket, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<UpdateClientAttributePacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeBoolean(message.attribute == null);
         if (message.attribute != null) {
             buffer.writeResourceLocation(message.attribute.getRegistryName());
         }
     };
-    private static final Function<PacketBuffer, UpdateClientAttributePacket> DECODER = buffer -> new UpdateClientAttributePacket(buffer.readBoolean() ? null : ShinsuAttributeRegistry.getRegistry().getValue(buffer.readResourceLocation()));
+    private static final Function<FriendlyByteBuf, UpdateClientAttributePacket> DECODER = buffer -> new UpdateClientAttributePacket(buffer.readBoolean() ? null : ShinsuAttributeRegistry.getRegistry().getValue(buffer.readResourceLocation()));
     private static final BiConsumer<UpdateClientAttributePacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
