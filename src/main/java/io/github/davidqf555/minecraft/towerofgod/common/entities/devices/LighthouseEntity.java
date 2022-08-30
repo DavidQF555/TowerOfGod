@@ -1,7 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
 import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.registration.BlockRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.ContainerRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
@@ -10,8 +9,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -123,11 +120,6 @@ public class LighthouseEntity extends FlyingDevice implements MenuProvider {
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
         return !player.isSpectator() ? new LighthouseContainer(id, inv, this) : null;
-    }
-
-    @Override
-    public Component getDisplayName() {
-        return new TranslatableComponent("container." + TowerOfGod.MOD_ID + ".lighthouse_container");
     }
 
     @Override
