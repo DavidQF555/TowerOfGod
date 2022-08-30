@@ -1,9 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Random;
 
@@ -15,7 +15,7 @@ public class TemporaryBlock extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void tick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, Random random) {
         world.destroyBlock(pos, true);
     }
 
