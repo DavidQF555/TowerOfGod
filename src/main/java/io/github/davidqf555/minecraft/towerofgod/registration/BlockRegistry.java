@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.registration;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumBlock;
+import io.github.davidqf555.minecraft.towerofgod.common.blocks.TemporaryBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.OreBlock;
 import net.minecraft.block.SoundType;
@@ -19,7 +20,7 @@ public final class BlockRegistry {
 
     public static final RegistryObject<OreBlock> SUSPENDIUM_ORE = register("suspendium_ore", () -> new OreBlock(Block.Properties.of(Material.STONE).strength(5f, 5f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)));
     public static final RegistryObject<SuspendiumBlock> SUSPENDIUM_BLOCK = register("suspendium_block", SuspendiumBlock::new);
-    public static final RegistryObject<Block> LIGHT = register("light", () -> new Block(Block.Properties.of(Material.AIR).air().lightLevel(state -> 15)));
+    public static final RegistryObject<TemporaryBlock> LIGHT = register("light", () -> new TemporaryBlock(Block.Properties.of(Material.AIR).noCollission().noDrops().air().lightLevel(state -> 15)));
 
     private BlockRegistry() {
     }

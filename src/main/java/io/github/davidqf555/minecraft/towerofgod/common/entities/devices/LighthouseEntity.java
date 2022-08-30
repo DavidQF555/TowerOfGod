@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.registration.BlockRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.ContainerRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
@@ -23,8 +22,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -118,11 +115,6 @@ public class LighthouseEntity extends FlyingDevice implements INamedContainerPro
     @Override
     public Container createMenu(int id, PlayerInventory inv, PlayerEntity player) {
         return !player.isSpectator() ? new LighthouseContainer(id, inv, this) : null;
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("container." + TowerOfGod.MOD_ID + ".lighthouse_container");
     }
 
     @Override
