@@ -58,7 +58,7 @@ public class MoveDevices extends BasicCommandTechnique {
         Entity user = getUser(world);
         Vec3 eye = user.getEyePosition(1);
         Vec3 end = eye.add(direction.scale(distance));
-        EntityHitResult trace = ProjectileUtil.getEntityHitResult(world, user, eye, end, AABB.ofSize(eye, distance * 2, distance * 2, distance * 2), null);
+        EntityHitResult trace = ProjectileUtil.getEntityHitResult(world, user, eye, end, AABB.ofSize(eye, distance * 2, distance * 2, distance * 2), e -> true);
         Vec3 target = trace == null ? world.clip(new ClipContext(eye, end, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity)).getLocation() : trace.getLocation();
         return new MoveCommand(entity, getID(), target, speed);
     }

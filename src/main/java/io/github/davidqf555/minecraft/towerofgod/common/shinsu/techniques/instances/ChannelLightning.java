@@ -48,7 +48,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
         if (lightning != null) {
             Vec3 start = new Vec3(user.getX(), user.getEyeY(), user.getZ());
             Vec3 end = start.add(direction.multiply(RANGE, RANGE, RANGE));
-            EntityHitResult entity = ProjectileUtil.getEntityHitResult(world, lightning, start, end, AABB.ofSize(start, RANGE * 2, RANGE * 2, RANGE * 2), null);
+            EntityHitResult entity = ProjectileUtil.getEntityHitResult(world, lightning, start, end, AABB.ofSize(start, RANGE * 2, RANGE * 2, RANGE * 2), e -> true);
             Vec3 pos;
             pos = Objects.requireNonNullElseGet(entity, () -> world.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, lightning))).getLocation();
             if (user instanceof ServerPlayer) {

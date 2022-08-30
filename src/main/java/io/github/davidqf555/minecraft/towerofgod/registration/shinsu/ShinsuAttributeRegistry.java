@@ -31,7 +31,7 @@ public final class ShinsuAttributeRegistry {
 
     public static final ResourceLocation ADVANCEMENT = new ResourceLocation(TowerOfGod.MOD_ID, "attributes");
 
-    public static final DeferredRegister<ShinsuAttribute> QUALITIES = DeferredRegister.create(new ResourceLocation(TowerOfGod.MOD_ID, "attributes"), TowerOfGod.MOD_ID);
+    public static final DeferredRegister<ShinsuAttribute> QUALITIES = DeferredRegister.create(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_attributes"), TowerOfGod.MOD_ID);
 
     public static final RegistryObject<ShinsuAttribute> LIGHTNING = register("lightning", () -> new ShinsuAttribute(ParticleTypes.INSTANT_EFFECT, DamageSource.LIGHTNING_BOLT, 1.5, 1, 0xFFfbff85, ShinsuAttributeEffect.combination(ImmutableList.of(new FireEntityAttributeEffect(3), new PotionAttributeEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 3, true, false, false)))), new SummonAttributeEffect<>(EntityType.LIGHTNING_BOLT::create), DropsFilter.NONE));
     public static final RegistryObject<ShinsuAttribute> FIRE = register("fire", () -> new ShinsuAttribute(ParticleTypes.FLAME, DamageSource.ON_FIRE, 1, 1, 0xFFff8119, new FireEntityAttributeEffect(7), new PlaceBlockAttributeEffect(BaseFireBlock::getState), SmeltDropsFilter.INSTANCE));

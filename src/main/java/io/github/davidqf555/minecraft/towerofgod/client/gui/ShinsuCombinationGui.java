@@ -133,6 +133,7 @@ public class ShinsuCombinationGui implements IIngameOverlay {
         minY = Integer.MAX_VALUE;
         maxY = Integer.MIN_VALUE;
         markers.clear();
+        selected = null;
         enabled = false;
     }
 

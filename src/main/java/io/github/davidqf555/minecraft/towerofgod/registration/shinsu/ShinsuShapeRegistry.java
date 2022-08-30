@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 public final class ShinsuShapeRegistry {
 
     public static final ResourceLocation ADVANCEMENT = new ResourceLocation(TowerOfGod.MOD_ID, "shapes");
-    public static final DeferredRegister<ShinsuShape> SHAPES = DeferredRegister.create(new ResourceLocation(TowerOfGod.MOD_ID, "shapes"), TowerOfGod.MOD_ID);
+    public static final DeferredRegister<ShinsuShape> SHAPES = DeferredRegister.create(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_shapes"), TowerOfGod.MOD_ID);
     public static final RegistryObject<ShinsuShape> SHOVEL = register("shovel", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_SHOVEL.get().getDefaultInstance()));
     public static final RegistryObject<ShinsuShape> PICKAXE = register("pickaxe", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_PICKAXE.get().getDefaultInstance()));
     public static final RegistryObject<ShinsuShape> AXE = register("axe", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_AXE.get().getDefaultInstance()));

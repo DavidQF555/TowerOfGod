@@ -51,7 +51,8 @@ public final class ClientReference {
         float minV = data.getStartY() * 1f / data.getTextureHeight();
         float maxV = (data.getStartY() + data.getBlitHeight()) * 1f / data.getTextureHeight();
         float blitOffset = context.getBlitOffset();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, data.getTexture());
+        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         bufferbuilder.vertex(matrix, x, y2, blitOffset).color(r, g, b, a).uv(minU, maxV).endVertex();

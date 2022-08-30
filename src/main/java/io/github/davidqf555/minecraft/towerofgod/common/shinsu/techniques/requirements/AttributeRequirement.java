@@ -6,13 +6,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.Shinsu
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 
-import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 public class AttributeRequirement implements IRequirement {
 
-    private final ShinsuAttribute attribute;
+    private final Supplier<ShinsuAttribute> attribute;
 
-    public AttributeRequirement(@Nullable ShinsuAttribute attribute) {
+    public AttributeRequirement(Supplier<ShinsuAttribute> attribute) {
         this.attribute = attribute;
     }
 
@@ -23,6 +23,7 @@ public class AttributeRequirement implements IRequirement {
 
     @Override
     public Component getText() {
+        ShinsuAttribute attribute = this.attribute.get();
         return attribute == null ? Messages.REQUIRES_NO_ATTRIBUTE : Messages.getRequiresAttribute(attribute);
     }
 }

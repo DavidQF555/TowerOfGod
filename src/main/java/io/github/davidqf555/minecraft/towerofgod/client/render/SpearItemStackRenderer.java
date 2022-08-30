@@ -8,15 +8,20 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.ItemStack;
 
 public class SpearItemStackRenderer extends BlockEntityWithoutLevelRenderer {
 
     public static final SpearItemStackRenderer INSTANCE = new SpearItemStackRenderer();
-    private final SpearModel spear;
+    private SpearModel spear;
 
     public SpearItemStackRenderer() {
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
+    }
+
+    @Override
+    public void onResourceManagerReload(ResourceManager manager) {
         spear = new SpearModel(Minecraft.getInstance().getEntityModels().bakeLayer(SpearRenderer.LOCATION));
     }
 

@@ -20,6 +20,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class Flash extends ShinsuTechniqueInstance {
 
@@ -43,13 +44,8 @@ public class Flash extends ShinsuTechniqueInstance {
         if (lightning != null) {
             Vec3 start = new Vec3(user.getX(), user.getEyeY(), user.getZ());
             Vec3 end = start.add(direction.multiply(RANGE, RANGE, RANGE));
-            EntityHitResult entity = ProjectileUtil.getEntityHitResult(world, lightning, start, end, AABB.ofSize(start, RANGE * 2, RANGE * 2, RANGE * 2), null);
-            Vec3 pos;
-            if (entity != null) {
-                pos = entity.getLocation();
-            } else {
-                pos = world.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, lightning)).getLocation();
-            }
+            EntityHitResult entity = ProjectileUtil.getEntityHitResult(world, lightning, start, end, AABB.ofSize(start, RANGE * 2, RANGE * 2, RANGE * 2), e -> true);
+            Vec3 pos = Objects.requireNonNullElseGet(entity, () -> world.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, lightning))).getLocation();
             if (user instanceof ServerPlayer) {
                 lightning.setCause((ServerPlayer) user);
             }

@@ -46,7 +46,7 @@ public class CastShinsuPacket {
         ServerPlayer player = context.getSender();
         context.enqueueWork(() -> {
             Vec3 eye = player.getEyePosition(1);
-            EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuStats.ENTITY_RANGE)), AABB.ofSize(eye, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE), null);
+            EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuStats.ENTITY_RANGE)), AABB.ofSize(eye, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE), entity -> true);
             technique.cast(player, result == null ? null : result.getEntity(), player.getLookAngle());
         });
         context.setPacketHandled(true);
