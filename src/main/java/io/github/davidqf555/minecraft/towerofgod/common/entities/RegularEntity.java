@@ -92,7 +92,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
     }
 
     @Override
-    protected int getExperienceReward(Player player) {
+    public int getExperienceReward() {
         return ShinsuStats.get(this).getLevel() - random.nextInt(3) + 7;
     }
 

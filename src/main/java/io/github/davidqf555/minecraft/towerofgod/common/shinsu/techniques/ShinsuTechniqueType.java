@@ -1,7 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 public enum ShinsuTechniqueType {
     DISRUPTION,
@@ -9,13 +10,13 @@ public enum ShinsuTechniqueType {
     MANIFEST,
     DEVICE_CONTROL;
 
-    private final TranslatableComponent text;
+    private final MutableComponent text;
 
     ShinsuTechniqueType() {
-        text = new TranslatableComponent("type." + TowerOfGod.MOD_ID + "." + name().toLowerCase());
+        text = Component.translatable("type." + TowerOfGod.MOD_ID + "." + name().toLowerCase());
     }
 
-    public TranslatableComponent getText() {
+    public MutableComponent getText() {
         return text;
     }
 }

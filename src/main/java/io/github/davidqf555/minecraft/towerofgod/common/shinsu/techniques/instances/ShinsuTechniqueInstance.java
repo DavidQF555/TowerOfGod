@@ -107,7 +107,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user != null) {
             nbt.putUUID("User", user);
         }
-        nbt.putString("Technique", getTechnique().getRegistryName().toString());
+        nbt.putString("Technique", getTechnique().getId().toString());
         nbt.putInt("Ticks", ticks);
         return nbt;
     }

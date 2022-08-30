@@ -1,0 +1,19 @@
+{
+  "type": "ore",
+  "config": {
+    "targets": [
+      {
+        "target": {
+          "predicate_type": "tag_match",
+          "tag": "base_stone_overworld"
+        },
+        "state": {
+          "Name": "towerofgod:suspendium_ore",
+          "Properties": {}
+        }
+      }
+    ],
+    "size": 8,
+    "discard_chance_on_air_exposure": 0
+  }
+}

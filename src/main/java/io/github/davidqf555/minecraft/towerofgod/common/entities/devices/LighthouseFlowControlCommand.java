@@ -8,6 +8,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -19,7 +20,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 public class LighthouseFlowControlCommand extends DeviceCommand {
@@ -49,7 +49,7 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
             int amplifier = (int) (getAffectingLighthouses(entity) / resistance);
             entity.addEffect(new MobEffectInstance(effect, 2, amplifier - 1, false, true));
         }
-        Random rand = device.getRandom();
+        RandomSource rand = device.getRandom();
         int particles = (int) (Math.PI * range * range / 3);
         for (int i = 0; i < particles; i++) {
             float yaw = rand.nextFloat() * 2 * (float) Math.PI;

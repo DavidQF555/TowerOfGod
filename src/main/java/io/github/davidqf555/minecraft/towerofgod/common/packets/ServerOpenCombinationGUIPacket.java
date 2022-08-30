@@ -20,7 +20,7 @@ public class ServerOpenCombinationGUIPacket {
     private static final BiConsumer<ServerOpenCombinationGUIPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.unlocked.size());
         for (ShinsuTechnique technique : message.unlocked) {
-            buffer.writeResourceLocation(technique.getRegistryName());
+            buffer.writeResourceLocation(technique.getId());
         }
     };
     private static final Function<FriendlyByteBuf, ServerOpenCombinationGUIPacket> DECODER = buffer -> {

@@ -20,7 +20,7 @@ public final class AdvancementEventSubscriber {
 
     @SubscribeEvent
     public static void onAdvancement(AdvancementEvent event) {
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         Advancement advancement = event.getAdvancement();
         Advancement parent = advancement.getParent();
         if (player instanceof ServerPlayer && parent != null) {

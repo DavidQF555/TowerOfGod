@@ -3,19 +3,20 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class Group extends ForgeRegistryEntry<Group> {
+public class Group {
 
     private final int color;
     private final ChatFormatting format;
@@ -28,6 +29,7 @@ public class Group extends ForgeRegistryEntry<Group> {
     private final double tension;
     private final double shinsu;
     private final double baangs;
+    private ResourceLocation id;
 
     public Group(int color, Supplier<ShinsuAttribute[]> attributes, Supplier<ShinsuShape[]> shapes, Supplier<ShinsuTechniqueType[]> types, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
         this.color = color;
@@ -82,8 +84,15 @@ public class Group extends ForgeRegistryEntry<Group> {
         return closest;
     }
 
+    public ResourceLocation getId() {
+        if (id == null) {
+            id = GroupRegistry.getRegistry().getKey(this);
+        }
+        return id;
+    }
+
     public ResourceLocation getTexture() {
-        ResourceLocation name = getRegistryName();
+        ResourceLocation name = getId();
         return new ResourceLocation(name.getNamespace(), "textures/entity/group/" + name.getPath() + ".png");
     }
 
@@ -131,8 +140,8 @@ public class Group extends ForgeRegistryEntry<Group> {
         return baangs;
     }
 
-    public TranslatableComponent getName() {
-        return new TranslatableComponent(Util.makeDescriptionId("group", getRegistryName()));
+    public MutableComponent getName() {
+        return Component.translatable(Util.makeDescriptionId("group", getId()));
     }
 
 }

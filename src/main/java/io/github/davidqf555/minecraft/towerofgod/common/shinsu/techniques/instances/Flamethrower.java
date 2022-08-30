@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +17,6 @@ import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class Flamethrower extends ShinsuTechniqueInstance {
 
@@ -35,7 +35,7 @@ public class Flamethrower extends ShinsuTechniqueInstance {
     @Override
     public void tick(ServerLevel world) {
         Entity user = getUser(world);
-        Random rand = world.getRandom();
+        RandomSource rand = world.getRandom();
         Vec3 center = user.getLookAngle();
         for (int i = 0; i < count; i++) {
             SmallFireball fire = EntityType.SMALL_FIREBALL.create(world);

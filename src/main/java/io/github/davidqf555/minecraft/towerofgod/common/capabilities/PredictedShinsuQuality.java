@@ -49,11 +49,11 @@ public class PredictedShinsuQuality implements INBTSerializable<CompoundTag> {
         CompoundTag nbt = new CompoundTag();
         ShinsuShape shape = getShape();
         if (shape != null) {
-            nbt.putString("Shape", shape.getRegistryName().toString());
+            nbt.putString("Shape", shape.getId().toString());
         }
         ShinsuAttribute attribute = getAttribute();
         if (attribute != null) {
-            nbt.putString("Attribute", attribute.getRegistryName().toString());
+            nbt.putString("Attribute", attribute.getId().toString());
         }
         return nbt;
     }

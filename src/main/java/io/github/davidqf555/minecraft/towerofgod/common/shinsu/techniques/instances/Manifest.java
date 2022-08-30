@@ -104,9 +104,9 @@ public class Manifest extends ShinsuTechniqueInstance {
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = super.serializeNBT();
-        nbt.putString("Shape", shape.getRegistryName().toString());
+        nbt.putString("Shape", shape.getId().toString());
         if (attribute != null) {
-            nbt.putString("Attribute", attribute.getRegistryName().toString());
+            nbt.putString("Attribute", attribute.getId().toString());
         }
         return nbt;
     }

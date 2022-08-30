@@ -79,7 +79,7 @@ public final class ShinsuAttributeRegistry {
 
     @SubscribeEvent
     public static void onNewRegistry(NewRegistryEvent event) {
-        registry = event.create(new RegistryBuilder<ShinsuAttribute>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_attributes")).setType(ShinsuAttribute.class));
+        registry = event.create(new RegistryBuilder<ShinsuAttribute>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_attributes")));
     }
 
 }

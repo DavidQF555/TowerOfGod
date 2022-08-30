@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -9,7 +10,6 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ProjectileWeaponItem;
 
 import java.util.EnumSet;
-import java.util.Random;
 
 public class RangedMainHandAttackGoal<T extends Mob & RangedAttackMob> extends Goal {
 
@@ -81,7 +81,7 @@ public class RangedMainHandAttackGoal<T extends Mob & RangedAttackMob> extends G
                 strafingTime = -1;
             }
             if (strafingTime >= 20) {
-                Random rand = entity.getRandom();
+                RandomSource rand = entity.getRandom();
                 if (rand.nextFloat() < 0.3) {
                     strafingClockwise = !strafingClockwise;
                 }

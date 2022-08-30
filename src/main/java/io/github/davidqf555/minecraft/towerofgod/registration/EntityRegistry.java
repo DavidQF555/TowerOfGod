@@ -8,13 +8,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.world.MobSpawnSettingsBuilder;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -27,7 +23,7 @@ import java.util.function.Supplier;
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class EntityRegistry {
 
-    public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(ForgeRegistries.ENTITIES, TowerOfGod.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, TowerOfGod.MOD_ID);
 
     public static final RegistryObject<EntityType<LighthouseEntity>> LIGHTHOUSE = register("lighthouse", LighthouseEntity::new, MobCategory.MISC, 0.9f, 0.9f);
     public static final RegistryObject<EntityType<ObserverEntity>> OBSERVER = register("observer", ObserverEntity::new, MobCategory.MISC, 0.4f, 0.4f);
@@ -65,20 +61,6 @@ public final class EntityRegistry {
             SpawnPlacements.register(EntityRegistry.REGULAR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RegularEntity.class, new AABB(pos).inflate(64)).size() < 10);
             SpawnPlacements.register(EntityRegistry.RANKER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AABB(pos).inflate(64)).size() < 1);
         });
-    }
-
-    @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-    public static final class ForgeBus {
-
-        @SubscribeEvent
-        public static void onBiomeLoading(BiomeLoadingEvent event) {
-            if (event.getCategory() != Biome.BiomeCategory.OCEAN && event.getCategory() != Biome.BiomeCategory.RIVER) {
-                MobSpawnSettingsBuilder builder = event.getSpawns();
-                builder.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityRegistry.REGULAR.get(), 3, 1, 1));
-                builder.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityRegistry.RANKER.get(), 1, 1, 1));
-            }
-        }
-
     }
 
 }

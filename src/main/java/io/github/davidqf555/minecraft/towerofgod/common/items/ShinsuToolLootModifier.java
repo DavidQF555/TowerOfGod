@@ -1,19 +1,21 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import net.minecraft.resources.ResourceLocation;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 public class ShinsuToolLootModifier extends LootModifier {
+
+    public static final Codec<ShinsuToolLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, ShinsuToolLootModifier::new));
 
     public ShinsuToolLootModifier(LootItemCondition[] conditionsIn) {
         super(conditionsIn);
@@ -21,7 +23,7 @@ public class ShinsuToolLootModifier extends LootModifier {
 
     @Nonnull
     @Override
-    protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
+    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         ItemStack tool = context.getParamOrNull(LootContextParams.TOOL);
         ShinsuAttribute attribute = ShinsuAttribute.getAttribute(tool);
         if (attribute != null) {
@@ -30,16 +32,8 @@ public class ShinsuToolLootModifier extends LootModifier {
         return generatedLoot;
     }
 
-    public static class Serializer extends GlobalLootModifierSerializer<ShinsuToolLootModifier> {
-
-        @Override
-        public ShinsuToolLootModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] condition) {
-            return new ShinsuToolLootModifier(condition);
-        }
-
-        @Override
-        public JsonObject write(ShinsuToolLootModifier instance) {
-            return makeConditions(instance.conditions);
-        }
+    @Override
+    public Codec<? extends IGlobalLootModifier> codec() {
+        return CODEC;
     }
 }

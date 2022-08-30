@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -12,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -82,7 +83,7 @@ public interface IGeared<T extends LivingEntity> {
 
     default ItemStack getInitialArmor(EquipmentSlot slot) {
         T entity = getGearedEntity();
-        IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+        IItemHandler inventory = entity.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
         int index = slot.getIndex();
         double base = entity.getAttributeBaseValue(Attributes.ARMOR);
         Predicate<Item> condition = item -> inventory.isItemValid(index, item.getDefaultInstance()) && getAttribute(Attributes.ARMOR, entity, item.getDefaultInstance(), slot) > base;
@@ -108,14 +109,14 @@ public interface IGeared<T extends LivingEntity> {
 
     default ItemStack getInitialWeapon() {
         T entity = getGearedEntity();
-        IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+        IItemHandler inventory = entity.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
         int index = EquipmentSlot.MAINHAND.getIndex();
         double base = entity.getAttributeBaseValue(Attributes.ATTACK_DAMAGE);
         Predicate<Item> filter = item -> inventory.isItemValid(index, item.getDefaultInstance()) && getAttribute(Attributes.ATTACK_DAMAGE, entity, item.getDefaultInstance(), EquipmentSlot.MAINHAND) > base;
         List<Item> weapons = new ArrayList<>(getAllCraftableItems(entity.level, filter));
         weapons.add(Items.AIR);
         List<Item> preferred = weapons.stream().filter(this::isWeaponPreferred).collect(Collectors.toList());
-        Random random = entity.getRandom();
+        RandomSource random = entity.getRandom();
         List<Item> choices;
         if (!preferred.isEmpty() && random.nextDouble() < getPreferredWeaponChance()) {
             choices = preferred;

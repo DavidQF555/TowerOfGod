@@ -12,11 +12,10 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instan
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -173,7 +172,7 @@ public class ShinsuStats implements INBTSerializable<CompoundTag> {
             addExperience(type, killed.getData(type).getLevel());
             int after = data.getLevel();
             if (initial != after) {
-                owner.sendMessage(new TranslatableComponent(LEVEL_UP, type.getText(), after), Util.NIL_UUID);
+                owner.sendSystemMessage(Component.translatable(LEVEL_UP, type.getText(), after));
             }
         }
         if (owner instanceof ServerPlayer) {
@@ -286,11 +285,11 @@ public class ShinsuStats implements INBTSerializable<CompoundTag> {
         tag.putDouble("Tension", tension);
         ShinsuAttribute attribute = getAttribute();
         if (attribute != null) {
-            tag.putString("Attribute", attribute.getRegistryName().toString());
+            tag.putString("Attribute", attribute.getId().toString());
         }
         ShinsuShape shape = getShape();
         if (shape != null) {
-            tag.putString("Shape", shape.getRegistryName().toString());
+            tag.putString("Shape", shape.getId().toString());
         }
         ListTag instances = new ListTag();
         for (ShinsuTechniqueInstance instance : techniques) {
@@ -301,7 +300,7 @@ public class ShinsuStats implements INBTSerializable<CompoundTag> {
         this.data.forEach((type, value) -> data.put(type.name(), value.serializeNBT()));
         tag.put("Data", data);
         CompoundTag cooldowns = new CompoundTag();
-        this.cooldowns.forEach((technique, cooldown) -> cooldowns.putInt(technique.getRegistryName().toString(), cooldown));
+        this.cooldowns.forEach((technique, cooldown) -> cooldowns.putInt(technique.getId().toString(), cooldown));
         tag.put("Cooldowns", cooldowns);
         return tag;
     }

@@ -7,8 +7,8 @@ import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -47,9 +47,9 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         Group group = getGroup();
         MutableComponent text;
         if (group != null) {
-            text = new TranslatableComponent(getType().getDescriptionId() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).withStyle(group.getTextFormattingColor());
+            text = Component.translatable(getType().getDescriptionId() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).withStyle(group.getTextFormattingColor());
         } else {
-            text = new TranslatableComponent(getType().getDescriptionId() + ".name", ShinsuStats.get(this).getLevel());
+            text = Component.translatable(getType().getDescriptionId() + ".name", ShinsuStats.get(this).getLevel());
         }
         setCustomName(text);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
@@ -85,7 +85,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         super.addAdditionalSaveData(nbt);
         Group group = getGroup();
         if (group != null) {
-            nbt.putString("Group", group.getRegistryName().toString());
+            nbt.putString("Group", group.getId().toString());
         }
     }
 
@@ -102,7 +102,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
 
     @Override
     public void setGroup(@Nullable Group group) {
-        entityData.set(GROUP, group == null ? "" : group.getRegistryName().toString());
+        entityData.set(GROUP, group == null ? "" : group.getId().toString());
     }
 
     @Override

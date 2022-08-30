@@ -1,15 +1,16 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape;
 
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.NonNullSupplier;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
-public class ShinsuShape extends ForgeRegistryEntry<ShinsuShape> {
+public class ShinsuShape {
 
     private final NonNullSupplier<ItemStack> item;
+    private ResourceLocation id;
 
     public ShinsuShape(NonNullSupplier<ItemStack> item) {
         this.item = item;
@@ -20,7 +21,14 @@ public class ShinsuShape extends ForgeRegistryEntry<ShinsuShape> {
     }
 
     public Component getName() {
-        return new TranslatableComponent(Util.makeDescriptionId("shape", getRegistryName()));
+        return Component.translatable(Util.makeDescriptionId("shape", getId()));
+    }
+
+    public ResourceLocation getId() {
+        if (id == null) {
+            id = ShinsuShapeRegistry.getRegistry().getKey(this);
+        }
+        return id;
     }
 
 }

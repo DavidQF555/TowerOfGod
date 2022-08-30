@@ -41,7 +41,7 @@ public final class GroupRegistry {
 
     @SubscribeEvent
     public static void onNewRegistry(NewRegistryEvent event) {
-        registry = event.create(new RegistryBuilder<Group>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "groups")).setType(Group.class));
+        registry = event.create(new RegistryBuilder<Group>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "groups")));
     }
 
 }

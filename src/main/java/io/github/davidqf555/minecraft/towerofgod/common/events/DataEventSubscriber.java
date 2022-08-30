@@ -51,7 +51,7 @@ public final class DataEventSubscriber {
     public static void onClonePlayerEvent(PlayerEvent.Clone event) {
         if (event.isWasDeath()) {
             ServerPlayer original = (ServerPlayer) event.getOriginal();
-            ServerPlayer resp = (ServerPlayer) event.getPlayer();
+            ServerPlayer resp = (ServerPlayer) event.getEntity();
             ShinsuStats.get(resp).deserializeNBT(ShinsuStats.get(original).serializeNBT());
             PredictedShinsuQuality.get(resp).deserializeNBT(PredictedShinsuQuality.get(original).serializeNBT());
         }

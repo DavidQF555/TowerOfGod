@@ -12,7 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public final class ContainerRegistry {
 
-    public static final DeferredRegister<MenuType<?>> TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, TowerOfGod.MOD_ID);
+    public static final DeferredRegister<MenuType<?>> TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, TowerOfGod.MOD_ID);
 
     public static final RegistryObject<MenuType<LighthouseEntity.LighthouseContainer>> LIGHTHOUSE = register("lighthouse", new LighthouseEntity.LighthouseContainer.Factory());
 

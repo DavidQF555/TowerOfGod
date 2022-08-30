@@ -30,8 +30,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.network.IContainerFactory;
@@ -68,7 +68,7 @@ public class LighthouseEntity extends FlyingDevice implements MenuProvider {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (capability == ForgeCapabilities.ITEM_HANDLER) {
             return LazyOptional.of(() -> inventory).cast();
         }
         return super.getCapability(capability, facing);
@@ -94,7 +94,7 @@ public class LighthouseEntity extends FlyingDevice implements MenuProvider {
             if (!player.isCrouching() && player.getItemInHand(hand).isEmpty()) {
                 return player.startRiding(this) ? InteractionResult.SUCCESS : InteractionResult.PASS;
             } else {
-                NetworkHooks.openGui((ServerPlayer) player, this, buf -> buf.writeVarInt(getId()));
+                NetworkHooks.openScreen((ServerPlayer) player, this, buf -> buf.writeVarInt(getId()));
                 return InteractionResult.SUCCESS;
             }
         }

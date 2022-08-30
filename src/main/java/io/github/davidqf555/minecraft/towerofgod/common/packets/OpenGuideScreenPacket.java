@@ -18,7 +18,7 @@ public class OpenGuideScreenPacket {
     private static final BiConsumer<OpenGuideScreenPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.pages.length);
         for (ShinsuTechnique technique : message.pages) {
-            buffer.writeResourceLocation(technique.getRegistryName());
+            buffer.writeResourceLocation(technique.getId());
         }
         buffer.writeInt(message.color);
     };

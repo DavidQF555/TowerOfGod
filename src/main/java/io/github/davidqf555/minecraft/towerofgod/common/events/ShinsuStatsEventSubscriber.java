@@ -29,7 +29,7 @@ public final class ShinsuStatsEventSubscriber {
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
-        LivingEntity entity = event.getEntityLiving();
+        LivingEntity entity = event.getEntity();
         if (entity instanceof IShinsuUser) {
             Entity source = event.getSource().getEntity();
             if (source instanceof IShinsuUser || source instanceof Player) {
@@ -39,9 +39,9 @@ public final class ShinsuStatsEventSubscriber {
     }
 
     @SubscribeEvent
-    public static void onWorldTick(TickEvent.WorldTickEvent event) {
-        if (event.world instanceof ServerLevel && event.phase == TickEvent.Phase.START && event.world.getGameTime() % 100 == 0) {
-            RegularTeamsSavedData.getOrCreate((ServerLevel) event.world).update((ServerLevel) event.world);
+    public static void onLevelTick(TickEvent.LevelTickEvent event) {
+        if (event.level instanceof ServerLevel && event.phase == TickEvent.Phase.START && event.level.getGameTime() % 100 == 0) {
+            RegularTeamsSavedData.getOrCreate((ServerLevel) event.level).update((ServerLevel) event.level);
         }
     }
 

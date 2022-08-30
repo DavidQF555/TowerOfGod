@@ -1,10 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 public class FactorDropsFilter implements DropsFilter {
@@ -16,8 +15,8 @@ public class FactorDropsFilter implements DropsFilter {
     }
 
     @Override
-    public List<ItemStack> apply(LootContext context, List<ItemStack> original) {
-        List<ItemStack> increased = new ArrayList<>();
+    public ObjectArrayList<ItemStack> apply(LootContext context, ObjectArrayList<ItemStack> original) {
+        ObjectArrayList<ItemStack> increased = new ObjectArrayList<>();
         for (ItemStack drop : original) {
             drop.setCount((int) (drop.getCount() * factor.apply(drop)));
             increased.add(drop);

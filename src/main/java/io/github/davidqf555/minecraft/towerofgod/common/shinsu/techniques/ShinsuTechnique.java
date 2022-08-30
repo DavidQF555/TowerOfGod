@@ -10,25 +10,26 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requir
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
+public class ShinsuTechnique {
 
     private final boolean indefinite;
     private final IFactory<?> factory;
     private final IRenderData icon;
     private final IRequirement[] requirements;
     private final List<Direction> combination;
+    private ResourceLocation id;
 
     public ShinsuTechnique(boolean indefinite, ShinsuTechnique.IFactory<?> factory, IRenderData icon, IRequirement[] requirements, List<Direction> combination) {
         this.indefinite = indefinite;
@@ -99,12 +100,19 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return requirements;
     }
 
-    public TranslatableComponent getText() {
-        return new TranslatableComponent(Util.makeDescriptionId("technique", getRegistryName()));
+    public MutableComponent getText() {
+        return Component.translatable(Util.makeDescriptionId("technique", getId()));
     }
 
-    public TranslatableComponent getDescription() {
-        return new TranslatableComponent(Util.makeDescriptionId("technique", getRegistryName()) + ".description");
+    public MutableComponent getDescription() {
+        return Component.translatable(Util.makeDescriptionId("technique", getId()) + ".description");
+    }
+
+    public ResourceLocation getId() {
+        if (id == null) {
+            id = ShinsuTechniqueRegistry.getRegistry().getKey(this);
+        }
+        return id;
     }
 
     public IRenderData getIcon() {

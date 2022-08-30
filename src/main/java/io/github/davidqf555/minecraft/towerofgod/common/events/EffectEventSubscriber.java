@@ -18,7 +18,7 @@ public final class EffectEventSubscriber {
 
     @SubscribeEvent
     public static void onLivingJump(LivingEvent.LivingJumpEvent event) {
-        LivingEntity entity = event.getEntityLiving();
+        LivingEntity entity = event.getEntity();
         MobEffectInstance reinforcement = entity.getEffect(EffectRegistry.BODY_REINFORCEMENT.get());
         if (reinforcement != null) {
             Vec3 motion = entity.getDeltaMovement().add(0, reinforcement.getAmplifier() * 0.025 + 0.025, 0);
@@ -33,7 +33,7 @@ public final class EffectEventSubscriber {
 
     @SubscribeEvent
     public static void onLivingFall(LivingFallEvent event) {
-        LivingEntity entity = event.getEntityLiving();
+        LivingEntity entity = event.getEntity();
         MobEffectInstance effect = entity.getEffect(EffectRegistry.BODY_REINFORCEMENT.get());
         if (effect != null) {
             event.setDistance(event.getDistance() - effect.getAmplifier() * 0.5f - 0.5f);

@@ -11,6 +11,7 @@ import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -20,7 +21,6 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public interface IShinsuUser {
 
@@ -30,28 +30,28 @@ public interface IShinsuUser {
         return getShinsuStats().getLevel();
     }
 
-    default int getInitialMaxShinsu(Random random) {
+    default int getInitialMaxShinsu(RandomSource random) {
         Group group = getGroup();
         return 10 + (int) (getShinsuLevel() * (group == null ? 1 : group.getShinsu()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
-    default int getInitialMaxBaangs(Random random) {
+    default int getInitialMaxBaangs(RandomSource random) {
         Group group = getGroup();
         return 1 + (int) (0.05 * getShinsuLevel() * (group == null ? 1 : group.getBaangs()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
-    default double getInitialResistance(Random random) {
+    default double getInitialResistance(RandomSource random) {
         Group group = getGroup();
         return 1 + getShinsuLevel() * 0.025 * (group == null ? 1 : group.getResistance()) * (random.nextGaussian() * 0.25 + 1);
     }
 
-    default double getInitialTension(Random random) {
+    default double getInitialTension(RandomSource random) {
         Group group = getGroup();
         return 1 + getShinsuLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (random.nextGaussian() * 0.25 + 1);
     }
 
     default void initializeShinsuStats(ServerLevelAccessor world) {
-        Random random = world.getRandom();
+        RandomSource random = world.getRandom();
         ShinsuStats stats = getShinsuStats();
         stats.addLevel(getInitialShinsuLevel(random) - stats.getLevel());
         setGroup(getInitialGroup(random));
@@ -71,7 +71,7 @@ public interface IShinsuUser {
         return 0.75;
     }
 
-    default ShinsuTechniqueType[] getInitialTechniqueTypes(Random random) {
+    default ShinsuTechniqueType[] getInitialTechniqueTypes(RandomSource random) {
         ShinsuTechniqueType[] all = ShinsuTechniqueType.values();
         ShinsuTechniqueType[] preferred = getPreferredTechniqueTypes();
         ShinsuTechniqueType[] types = new ShinsuTechniqueType[getInitialTechniqueTypesTotalLevel(random)];
@@ -81,7 +81,7 @@ public interface IShinsuUser {
         return types;
     }
 
-    default int getInitialTechniqueTypesTotalLevel(Random random) {
+    default int getInitialTechniqueTypesTotalLevel(RandomSource random) {
         return 1 + (int) (getShinsuLevel() * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
@@ -93,7 +93,7 @@ public interface IShinsuUser {
         return 0.75;
     }
 
-    default ShinsuAttribute getInitialAttribute(Random random) {
+    default ShinsuAttribute getInitialAttribute(RandomSource random) {
         ShinsuAttribute[] pref = getPreferredQualities();
         if (pref.length > 0 && random.nextDouble() < getPreferredAttributeChance()) {
             return pref[random.nextInt(pref.length)];
@@ -108,7 +108,7 @@ public interface IShinsuUser {
     }
 
     @Nullable
-    default ShinsuShape getInitialShape(Random random) {
+    default ShinsuShape getInitialShape(RandomSource random) {
         ShinsuShape[] pref = getPreferredShapes();
         if (pref.length > 0 && random.nextDouble() < getPreferredShapeChance()) {
             return pref[random.nextInt(pref.length)];
@@ -134,12 +134,12 @@ public interface IShinsuUser {
     }
 
     @Nullable
-    default Group getInitialGroup(Random random) {
+    default Group getInitialGroup(RandomSource random) {
         List<Group> groups = new ArrayList<>(GroupRegistry.getRegistry().getValues());
         return groups.get(random.nextInt(groups.size()));
     }
 
-    default int getInitialShinsuLevel(Random rand) {
+    default int getInitialShinsuLevel(RandomSource rand) {
         int min = getMinInitialLevel();
         int total = getMaxInitialLevel() - min;
         double current = 0;

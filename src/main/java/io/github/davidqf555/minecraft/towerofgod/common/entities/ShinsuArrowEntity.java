@@ -111,7 +111,7 @@ public class ShinsuArrowEntity extends AbstractArrow {
     public void setAttribute(@Nullable ShinsuAttribute attribute) {
         ShinsuAttribute original = getAttribute();
         setBaseDamage(getBaseDamage() * (attribute == null ? 1 : attribute.getDamage()) / (original == null ? 1 : original.getDamage()));
-        getEntityData().set(ATTRIBUTE, attribute == null ? "" : attribute.getRegistryName().toString());
+        getEntityData().set(ATTRIBUTE, attribute == null ? "" : attribute.getId().toString());
     }
 
     @Override
@@ -164,7 +164,7 @@ public class ShinsuArrowEntity extends AbstractArrow {
         super.addAdditionalSaveData(nbt);
         ShinsuAttribute attribute = getAttribute();
         if (attribute != null) {
-            nbt.putString("Attribute", attribute.getRegistryName().toString());
+            nbt.putString("Attribute", attribute.getId().toString());
         }
         if (technique != null) {
             nbt.putUUID("Technique", technique);

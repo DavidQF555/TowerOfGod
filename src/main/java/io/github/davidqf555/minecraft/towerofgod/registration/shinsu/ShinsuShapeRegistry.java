@@ -36,7 +36,7 @@ public final class ShinsuShapeRegistry {
 
     @SubscribeEvent
     public static void onNewRegistry(NewRegistryEvent event) {
-        registry = event.create(new RegistryBuilder<ShinsuShape>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_shapes")).setType(ShinsuShape.class));
+        registry = event.create(new RegistryBuilder<ShinsuShape>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_shapes")));
     }
 
 }

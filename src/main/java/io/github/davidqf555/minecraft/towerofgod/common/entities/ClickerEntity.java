@@ -65,7 +65,7 @@ public class ClickerEntity extends Entity {
     }
 
     public void setAttribute(@Nullable ShinsuAttribute attribute) {
-        getEntityData().set(ATTRIBUTE, attribute == null ? "" : attribute.getRegistryName().toString());
+        getEntityData().set(ATTRIBUTE, attribute == null ? "" : attribute.getId().toString());
     }
 
     public ShinsuShape getShape() {
@@ -73,7 +73,7 @@ public class ClickerEntity extends Entity {
     }
 
     public void setShape(ShinsuShape shape) {
-        entityData.set(SHAPE, shape.getRegistryName().toString());
+        entityData.set(SHAPE, shape.getId().toString());
     }
 
     @Override
@@ -94,9 +94,9 @@ public class ClickerEntity extends Entity {
         nbt.putInt("Duration", ticksLeft);
         ShinsuAttribute attribute = getAttribute();
         if (attribute != null) {
-            nbt.putString("Attribute", attribute.getRegistryName().toString());
+            nbt.putString("Attribute", attribute.getId().toString());
         }
-        nbt.putString("Shape", getShape().getRegistryName().toString());
+        nbt.putString("Shape", getShape().getId().toString());
     }
 
     @Override

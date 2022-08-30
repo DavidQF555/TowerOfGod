@@ -19,7 +19,7 @@ public class UpdateClientAttributePacket {
     private static final BiConsumer<UpdateClientAttributePacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeBoolean(message.attribute == null);
         if (message.attribute != null) {
-            buffer.writeResourceLocation(message.attribute.getRegistryName());
+            buffer.writeResourceLocation(message.attribute.getId());
         }
     };
     private static final Function<FriendlyByteBuf, UpdateClientAttributePacket> DECODER = buffer -> new UpdateClientAttributePacket(buffer.readBoolean() ? null : ShinsuAttributeRegistry.getRegistry().getValue(buffer.readResourceLocation()));

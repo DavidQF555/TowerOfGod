@@ -5,7 +5,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenGuideScreenP
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -34,7 +33,7 @@ public class GuideItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.add(new TranslatableComponent("book.byAuthor", getAuthor()).withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("book.byAuthor", getAuthor()).withStyle(ChatFormatting.GRAY));
     }
 
     @Override
@@ -48,7 +47,7 @@ public class GuideItem extends Item {
     }
 
     protected Component getAuthor() {
-        return new TranslatableComponent(getDescriptionId() + ".author");
+        return Component.translatable(getDescriptionId() + ".author");
     }
 
 }

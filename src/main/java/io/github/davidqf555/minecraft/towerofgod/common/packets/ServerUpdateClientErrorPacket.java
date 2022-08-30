@@ -21,7 +21,7 @@ public class ServerUpdateClientErrorPacket {
     private static final BiConsumer<ServerUpdateClientErrorPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.errors.size());
         for (Map.Entry<ShinsuTechnique, Component> error : message.errors.entrySet()) {
-            buffer.writeResourceLocation(error.getKey().getRegistryName());
+            buffer.writeResourceLocation(error.getKey().getId());
             buffer.writeComponent(error.getValue());
         }
     };

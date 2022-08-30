@@ -4,10 +4,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.pathfinder.Path;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.UUID;
 
 public class ScoutCommand extends DeviceCommand {
 
@@ -54,7 +58,7 @@ public class ScoutCommand extends DeviceCommand {
                 }
             }
             boolean set = false;
-            Random rand = device.getRandom();
+            RandomSource rand = device.getRandom();
             while (!border.isEmpty()) {
                 int i = rand.nextInt(border.size());
                 BlockPos pos = border.get(i);

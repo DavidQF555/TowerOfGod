@@ -20,7 +20,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -31,7 +32,7 @@ import java.util.Collection;
 
 public final class ShinsuCommand {
 
-    private static final TranslatableComponent ZERO = new TranslatableComponent("commands." + TowerOfGod.MOD_ID + ".shinsu.zero");
+    private static final MutableComponent ZERO = Component.translatable("commands." + TowerOfGod.MOD_ID + ".shinsu.zero");
     private static final String REMOVE_SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_shape";
     private static final String REMOVE_ATTRIBUTE = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_attribute";
     private static final String LEVEL = "commands." + TowerOfGod.MOD_ID + ".shinsu.level";
@@ -117,7 +118,7 @@ public final class ShinsuCommand {
     private static int changeLevel(CommandSourceStack source, Collection<? extends Entity> entities, int change) {
         for (Entity entity : entities) {
             ShinsuStats.get(entity).addLevel(change);
-            source.sendSuccess(new TranslatableComponent(LEVEL, entity.getDisplayName(), change), true);
+            source.sendSuccess(Component.translatable(LEVEL, entity.getDisplayName(), change), true);
         }
         return entities.size();
     }
@@ -129,7 +130,7 @@ public final class ShinsuCommand {
             if (entity instanceof ServerPlayer) {
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
             }
-            source.sendSuccess(new TranslatableComponent(SHINSU, entity.getDisplayName(), change), true);
+            source.sendSuccess(Component.translatable(SHINSU, entity.getDisplayName(), change), true);
         }
         return entities.size();
     }
@@ -141,7 +142,7 @@ public final class ShinsuCommand {
             if (entity instanceof ServerPlayer) {
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
             }
-            source.sendSuccess(new TranslatableComponent(BAANGS, entity.getDisplayName(), change), true);
+            source.sendSuccess(Component.translatable(BAANGS, entity.getDisplayName(), change), true);
         }
         return entities.size();
     }
@@ -156,7 +157,7 @@ public final class ShinsuCommand {
         }
         for (Entity entity : entities) {
             ShinsuStats.get(entity).multiplyBaseResistance(factor);
-            source.sendSuccess(new TranslatableComponent(RESISTANCE, entity.getDisplayName(), factor), true);
+            source.sendSuccess(Component.translatable(RESISTANCE, entity.getDisplayName(), factor), true);
         }
         return entities.size();
     }
@@ -171,7 +172,7 @@ public final class ShinsuCommand {
         }
         for (Entity entity : entities) {
             ShinsuStats.get(entity).multiplyBaseTension(factor);
-            source.sendSuccess(new TranslatableComponent(TENSION, entity.getDisplayName(), factor), true);
+            source.sendSuccess(Component.translatable(TENSION, entity.getDisplayName(), factor), true);
         }
         return entities.size();
     }
@@ -185,7 +186,7 @@ public final class ShinsuCommand {
             ShinsuStats stats = ShinsuStats.get(entity);
             ShinsuTypeData d = stats.getData(type);
             d.setLevel(d.getLevel() + change);
-            source.sendSuccess(new TranslatableComponent(TECHNIQUE_TYPE, entity.getDisplayName(), type.getText(), change), true);
+            source.sendSuccess(Component.translatable(TECHNIQUE_TYPE, entity.getDisplayName(), type.getText(), change), true);
         }
         return entities.size();
     }
@@ -197,7 +198,7 @@ public final class ShinsuCommand {
             if (entity instanceof ServerPlayer) {
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateClientAttributePacket(attribute));
             }
-            source.sendSuccess(new TranslatableComponent(ATTRIBUTE, entity.getDisplayName(), attribute.getName()), true);
+            source.sendSuccess(Component.translatable(ATTRIBUTE, entity.getDisplayName(), attribute.getName()), true);
         }
         return entities.size();
     }
@@ -206,7 +207,7 @@ public final class ShinsuCommand {
         ShinsuShape shape = ShinsuShapeRegistry.getRegistry().getValue(loc);
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setShape(shape);
-            source.sendSuccess(new TranslatableComponent(SHAPE, entity.getDisplayName(), shape.getName()), true);
+            source.sendSuccess(Component.translatable(SHAPE, entity.getDisplayName(), shape.getName()), true);
         }
         return entities.size();
     }
@@ -217,7 +218,7 @@ public final class ShinsuCommand {
             if (entity instanceof ServerPlayer) {
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateClientAttributePacket(null));
             }
-            source.sendSuccess(new TranslatableComponent(REMOVE_ATTRIBUTE, entity.getDisplayName()), true);
+            source.sendSuccess(Component.translatable(REMOVE_ATTRIBUTE, entity.getDisplayName()), true);
         }
         return entities.size();
     }
@@ -225,16 +226,16 @@ public final class ShinsuCommand {
     private static int removeShape(CommandSourceStack source, Collection<? extends Entity> entities) {
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setShape(null);
-            source.sendSuccess(new TranslatableComponent(REMOVE_SHAPE, entity.getDisplayName()), true);
+            source.sendSuccess(Component.translatable(REMOVE_SHAPE, entity.getDisplayName()), true);
         }
         return entities.size();
     }
 
     private static int printInstances(CommandSourceStack source, Collection<? extends Entity> entities) {
         for (Entity entity : entities) {
-            source.sendSuccess(new TranslatableComponent(INSTANCES_TITLE, entity.getDisplayName()), true);
+            source.sendSuccess(Component.translatable(INSTANCES_TITLE, entity.getDisplayName()), true);
             for (ShinsuTechniqueInstance inst : ShinsuStats.get(entity).getTechniques()) {
-                source.sendSuccess(new TranslatableComponent(INSTANCES, inst.getTechnique().getText(), (inst.getDuration() - inst.getTicks()) / 20.0), true);
+                source.sendSuccess(Component.translatable(INSTANCES, inst.getTechnique().getText(), (inst.getDuration() - inst.getTicks()) / 20.0), true);
             }
         }
         return entities.size();

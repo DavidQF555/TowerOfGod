@@ -1,0 +1,23 @@
+{
+  "feature": "towerofgod:suspendium_ore",
+  "placement": [
+    {
+      "type": "height_range",
+      "height": {
+        "min_inclusive": {
+          "absolute": 17
+        },
+        "max_inclusive": {
+          "absolute": 117
+        }
+      }
+    },
+    {
+      "type": "in_square"
+    },
+    {
+      "type": "count",
+      "count": 3
+    }
+  ]
+}
