@@ -58,7 +58,7 @@ public class MoveDevices extends BasicCommandTechnique {
         Entity user = getUser(world);
         Vector3d eye = user.getEyePosition(1);
         Vector3d end = eye.add(direction.scale(distance));
-        EntityRayTraceResult trace = ProjectileHelper.getEntityHitResult(world, user, eye, end, AxisAlignedBB.ofSize(distance * 2, distance * 2, distance * 2), null);
+        EntityRayTraceResult trace = ProjectileHelper.getEntityHitResult(world, user, eye, end, AxisAlignedBB.ofSize(distance * 2, distance * 2, distance * 2).move(eye), null);
         Vector3d target = trace == null ? world.clip(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity)).getLocation() : trace.getLocation();
         return new MoveCommand(entity, getID(), target, speed);
     }
