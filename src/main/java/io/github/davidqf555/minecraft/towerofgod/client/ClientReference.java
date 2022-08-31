@@ -61,7 +61,7 @@ public final class ClientReference {
         bufferbuilder.vertex(matrix, x, y, blitOffset).color(r, g, b, a).uv(minU, minV).endVertex();
         bufferbuilder.end();
         RenderSystem.enableBlend();
-        BufferUploader.end(bufferbuilder);
+        BufferUploader.drawWithShader(bufferbuilder.end());
         RenderSystem.disableBlend();
     }
 

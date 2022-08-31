@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.client;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.ClientRegistry;
 
 import java.awt.event.KeyEvent;
 
@@ -13,7 +12,4 @@ public final class KeyBindingsList {
     private KeyBindingsList() {
     }
 
-    public static void register() {
-        ClientRegistry.registerKeyBinding(SHINSU_TECHNIQUE_GUI);
-    }
 }

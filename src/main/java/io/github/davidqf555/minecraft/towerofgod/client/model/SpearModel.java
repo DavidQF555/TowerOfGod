@@ -12,6 +12,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class SpearModel extends Model {
 
@@ -45,7 +46,7 @@ public class SpearModel extends Model {
     }
 
     public ResourceLocation getTextureLocation(Item item) {
-        ResourceLocation registry = item.getRegistryName();
+        ResourceLocation registry = ForgeRegistries.ITEMS.getKey(item);
         return new ResourceLocation(registry.getNamespace(), "textures/entity/spear/" + registry.getPath() + ".png");
     }
 }

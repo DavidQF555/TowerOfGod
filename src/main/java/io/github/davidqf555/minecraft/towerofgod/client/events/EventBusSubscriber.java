@@ -1,7 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client.events;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
-import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.LighthouseScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.model.LighthouseModel;
 import io.github.davidqf555.minecraft.towerofgod.client.model.ObserverModel;
@@ -22,12 +21,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.OverlayRegistry;
+import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -41,7 +36,7 @@ public final class EventBusSubscriber {
     }
 
     @SubscribeEvent
-    public static void onRawMouseInput(InputEvent.RawMouseEvent event) {
+    public static void onRawMouseInput(InputEvent.MouseButton event) {
         Minecraft client = Minecraft.getInstance();
         if (event.isCancelable() && event.getAction() != GLFW.GLFW_RELEASE && client.screen == null && client.player.getEffect(EffectRegistry.REVERSE_FLOW.get()) != null) {
             AttributeInstance attribute = client.player.getAttribute(Attributes.ATTACK_SPEED);
@@ -83,11 +78,14 @@ public final class EventBusSubscriber {
         }
 
         @SubscribeEvent
+        public static void onRegisterGuiOverlays(RegisterGuiOverlaysEvent event) {
+            event.registerAboveAll(new ResourceLocation(TowerOfGod.MOD_ID, "combination").toString(), ClientReference.COMBO);
+            event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), new ResourceLocation(TowerOfGod.MOD_ID, "shinsu").toString(), ClientReference.SHINSU);
+            event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), new ResourceLocation(TowerOfGod.MOD_ID, "baangs").toString(), ClientReference.BAANGS);
+        }
+
+        @SubscribeEvent
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
-            KeyBindingsList.register();
-            OverlayRegistry.registerOverlayTop(new ResourceLocation(TowerOfGod.MOD_ID, "combination").toString(), ClientReference.COMBO);
-            OverlayRegistry.registerOverlayAbove(ForgeIngameGui.PLAYER_HEALTH_ELEMENT, new ResourceLocation(TowerOfGod.MOD_ID, "shinsu").toString(), ClientReference.SHINSU);
-            OverlayRegistry.registerOverlayAbove(ForgeIngameGui.PLAYER_HEALTH_ELEMENT, new ResourceLocation(TowerOfGod.MOD_ID, "baangs").toString(), ClientReference.BAANGS);
             event.enqueueWork(() -> {
                 MenuScreens.register(ContainerRegistry.LIGHTHOUSE.get(), LighthouseScreen::new);
                 ItemProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemProperties.getProperty(Items.BOW, new ResourceLocation("pull")));
@@ -99,7 +97,7 @@ public final class EventBusSubscriber {
         }
 
         @SubscribeEvent
-        public static void onHandleColors(ColorHandlerEvent.Item event) {
+        public static void onHandleColors(RegisterColorHandlersEvent.Item event) {
             ShinsuItemColor shinsu = new ShinsuItemColor();
             for (RegistryObject<? extends Item> item : ItemRegistry.SHINSU_ITEMS) {
                 event.getItemColors().register(shinsu, item::get);

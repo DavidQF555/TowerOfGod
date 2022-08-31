@@ -7,10 +7,10 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
-public class StatsMeterGui implements IIngameOverlay {
+public class StatsMeterGui implements IGuiOverlay {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/bars.png");
     private static final int TEXTURE_WIDTH = 256;
@@ -40,7 +40,7 @@ public class StatsMeterGui implements IIngameOverlay {
     }
 
     @Override
-    public void render(ForgeIngameGui gui, PoseStack matrixStack, float partialTick, int screenWidth, int screenHeight) {
+    public void render(ForgeGui gui, PoseStack matrixStack, float partialTick, int screenWidth, int screenHeight) {
         if (shouldRender()) {
             int y = screenHeight - 36;
             int x = screenWidth / 2 + xOffset;

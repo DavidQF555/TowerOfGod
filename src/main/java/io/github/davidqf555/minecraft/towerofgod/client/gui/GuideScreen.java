@@ -15,8 +15,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -24,7 +22,7 @@ import java.util.List;
 
 public class GuideScreen extends Screen {
 
-    private static final Component TITLE = new TranslatableComponent("gui." + TowerOfGod.MOD_ID + ".guide");
+    private static final Component TITLE = Component.translatable("gui." + TowerOfGod.MOD_ID + ".guide");
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/guide.png");
     private static final TextureRenderData OUTLINE = new TextureRenderData(TEXTURE, 221, 370, 0, 0, 221, 180);
     private static final TextureRenderData PAGE = new TextureRenderData(TEXTURE, 221, 370, 0, 180, 221, 180);
@@ -135,7 +133,7 @@ public class GuideScreen extends Screen {
         private final int change;
 
         public ChangePageButton(IRenderData render, int change, int x, int y) {
-            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, TextComponent.EMPTY);
+            super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, Component.empty());
             this.change = change;
             this.render = render;
         }

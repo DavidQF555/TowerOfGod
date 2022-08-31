@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.event.RenderNameplateEvent;
+import net.minecraftforge.client.event.RenderNameTagEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -74,7 +74,7 @@ public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityMod
             renderer.render(matrixStackIn, bufferIn, packedLightIn, entityIn, limbSwing, limbSwingAmount, partialTicks, age, netYaw, pitch);
         }
         matrixStackIn.popPose();
-        RenderNameplateEvent nameplate = new RenderNameplateEvent(entityIn, entityIn.getDisplayName(), this, matrixStackIn, bufferIn, packedLightIn, partialTicks);
+        RenderNameTagEvent nameplate = new RenderNameTagEvent(entityIn, entityIn.getDisplayName(), this, matrixStackIn, bufferIn, packedLightIn, partialTicks);
         MinecraftForge.EVENT_BUS.post(nameplate);
         if (nameplate.getResult() != Event.Result.DENY && (nameplate.getResult() == Event.Result.ALLOW || shouldShowName(entityIn))) {
             renderNameTag(entityIn, nameplate.getContent(), matrixStackIn, bufferIn, packedLightIn);

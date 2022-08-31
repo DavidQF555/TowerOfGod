@@ -20,8 +20,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
-public class ShinsuCombinationGui implements IIngameOverlay {
+public class ShinsuCombinationGui implements IGuiOverlay {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/gui/combination.png");
     private static final int ICON_WIDTH = 20, ICON_HEIGHT = 20;
@@ -52,7 +52,7 @@ public class ShinsuCombinationGui implements IIngameOverlay {
     }
 
     @Override
-    public void render(ForgeIngameGui gui, PoseStack matrixStack, float partialTick, int screenWidth, int screenHeight) {
+    public void render(ForgeGui gui, PoseStack matrixStack, float partialTick, int screenWidth, int screenHeight) {
         Minecraft client = Minecraft.getInstance();
         if (client.player != null && !client.player.isSpectator()) {
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {

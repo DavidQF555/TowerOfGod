@@ -60,7 +60,7 @@ public final class ObserverEventBusSubscriber {
         }
 
         @SubscribeEvent
-        public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+        public static void onClientPlayerLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
             START_STOP_HIGHLIGHT.clear();
         }
 
