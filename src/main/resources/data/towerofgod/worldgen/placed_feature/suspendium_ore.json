@@ -4,6 +4,7 @@
     {
       "type": "height_range",
       "height": {
+        "type": "uniform",
         "min_inclusive": {
           "absolute": 17
         },

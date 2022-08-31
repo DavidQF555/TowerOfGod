@@ -79,9 +79,9 @@ public final class EventBusSubscriber {
 
         @SubscribeEvent
         public static void onRegisterGuiOverlays(RegisterGuiOverlaysEvent event) {
-            event.registerAboveAll(new ResourceLocation(TowerOfGod.MOD_ID, "combination").toString(), ClientReference.COMBO);
-            event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), new ResourceLocation(TowerOfGod.MOD_ID, "shinsu").toString(), ClientReference.SHINSU);
-            event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), new ResourceLocation(TowerOfGod.MOD_ID, "baangs").toString(), ClientReference.BAANGS);
+            event.registerAboveAll("combination", ClientReference.COMBO);
+            event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), "shinsu", ClientReference.SHINSU);
+            event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), "baangs", ClientReference.BAANGS);
         }
 
         @SubscribeEvent
@@ -100,11 +100,11 @@ public final class EventBusSubscriber {
         public static void onHandleColors(RegisterColorHandlersEvent.Item event) {
             ShinsuItemColor shinsu = new ShinsuItemColor();
             for (RegistryObject<? extends Item> item : ItemRegistry.SHINSU_ITEMS) {
-                event.getItemColors().register(shinsu, item::get);
+                event.register(shinsu, item::get);
             }
             DeviceItemColor device = new DeviceItemColor();
             for (RegistryObject<? extends Item> item : ItemRegistry.COLORED_DEVICE_ITEMS) {
-                event.getItemColors().register(device, item::get);
+                event.register(device, item::get);
             }
         }
     }
