@@ -5,7 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -21,7 +21,7 @@ public final class GuiEventBusSubscriber {
     public static void preRenderGameOverlay(RenderGuiOverlayEvent.Pre event) {
         Minecraft client = Minecraft.getInstance();
         if (client.player != null && !client.player.isSpectator()) {
-            if (StatsMeterGui.shouldRender() && shouldMove(event.getOverlay().overlay())) {
+            if (StatsMeterGui.shouldRender() && shouldMove(event.getOverlay())) {
                 event.getPoseStack().translate(0, -10, 0);
             }
         }
@@ -30,13 +30,13 @@ public final class GuiEventBusSubscriber {
     @SubscribeEvent
     public static void postRenderGameOverlay(RenderGuiOverlayEvent.Post event) {
         Minecraft client = Minecraft.getInstance();
-        if (client.player != null && !client.player.isSpectator() && StatsMeterGui.shouldRender() && shouldMove(event.getOverlay().overlay())) {
+        if (client.player != null && !client.player.isSpectator() && StatsMeterGui.shouldRender() && shouldMove(event.getOverlay())) {
             event.getPoseStack().translate(0, 10, 0);
         }
     }
 
-    private static boolean shouldMove(IGuiOverlay overlay) {
-        return overlay.equals(VanillaGuiOverlay.AIR_LEVEL) || overlay.equals(VanillaGuiOverlay.PLAYER_HEALTH) || overlay.equals(VanillaGuiOverlay.FOOD_LEVEL) || overlay.equals(VanillaGuiOverlay.MOUNT_HEALTH);
+    private static boolean shouldMove(NamedGuiOverlay overlay) {
+        return overlay.equals(VanillaGuiOverlay.AIR_LEVEL.type()) || overlay.equals(VanillaGuiOverlay.PLAYER_HEALTH.type()) || overlay.equals(VanillaGuiOverlay.FOOD_LEVEL.type()) || overlay.equals(VanillaGuiOverlay.MOUNT_HEALTH.type());
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
