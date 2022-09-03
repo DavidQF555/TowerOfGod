@@ -53,6 +53,7 @@ public class Flash extends ShinsuTechniqueInstance {
             lightning.setPos(pos.x(), pos.y(), pos.z());
             lightning.setStart(new Vector3f(start));
             world.addFreshEntity(lightning);
+            user.teleportTo(pos.x(), pos.y(), pos.z());
         }
         super.onUse(world);
     }

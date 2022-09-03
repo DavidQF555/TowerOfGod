@@ -44,11 +44,11 @@ public class GuideScreen extends Screen {
 
     @Override
     protected void init() {
-        super.init(minecraft, width, height);
+        super.init();
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
-        addWidget(new ChangePageButton(BACK, -1, x, y + ySize - BUTTON_HEIGHT));
-        addWidget(new ChangePageButton(NEXT, 1, x + xSize - BUTTON_WIDTH, y + ySize - BUTTON_HEIGHT));
+        addRenderableWidget(new ChangePageButton(BACK, -1, x, y + ySize - BUTTON_HEIGHT));
+        addRenderableWidget(new ChangePageButton(NEXT, 1, x + xSize - BUTTON_WIDTH, y + ySize - BUTTON_HEIGHT));
     }
 
     @Override
