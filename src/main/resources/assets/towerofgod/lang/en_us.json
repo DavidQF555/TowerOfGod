@@ -52,6 +52,8 @@
   "item.towerofgod.diamond_spear": "Diamond Spear",
   "item.towerofgod.netherite_spear": "Netherite Spear",
   "item.towerofgod.suspendium_spear": "Suspendium Spear",
+  "item.towerofgod.regular_spawn_egg": "Level %s Regular Spawn Egg",
+  "item.towerofgod.ranker_spawn_egg": "Level %s Ranker Spawn Egg",
   "block.towerofgod.suspendium_ore": "Suspendium Ore",
   "block.towerofgod.suspendium_block": "Suspendium Block",
   "entity.towerofgod.lighthouse": "Lighthouse",

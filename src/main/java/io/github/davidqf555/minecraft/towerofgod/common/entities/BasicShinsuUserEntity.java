@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
@@ -41,6 +42,19 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     @Nullable
     @Override
     public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        if (dataTag == null) {
+            initializeShinsuLevel(random);
+        } else if (dataTag.contains(TowerOfGod.MOD_ID, Constants.NBT.TAG_COMPOUND)) {
+            CompoundNBT child = dataTag.getCompound(TowerOfGod.MOD_ID);
+            if (child.contains("Level", Constants.NBT.TAG_INT)) {
+                ShinsuStats stats = ShinsuStats.get(this);
+                stats.addLevel(child.getInt("Level") - stats.getLevel());
+            } else {
+                initializeShinsuLevel(random);
+            }
+        } else {
+            initializeShinsuLevel(random);
+        }
         initializeShinsuStats(worldIn);
         initializeWeapons();
         Group group = getGroup();

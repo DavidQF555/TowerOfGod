@@ -50,10 +50,14 @@ public interface IShinsuUser {
         return 1 + getLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (random.nextGaussian() * 0.25 + 1);
     }
 
-    default void initializeShinsuStats(IServerWorld world) {
-        Random random = world.getRandom();
+    default void initializeShinsuLevel(Random random) {
         ShinsuStats stats = getShinsuStats();
         stats.addLevel(getInitialShinsuLevel(random) - stats.getLevel());
+    }
+
+    default void initializeShinsuStats(IServerWorld world) {
+        ShinsuStats stats = getShinsuStats();
+        Random random = world.getRandom();
         setGroup(getInitialGroup(random));
         stats.addMaxShinsu(getInitialMaxShinsu(random) - stats.getMaxShinsu());
         stats.addMaxBaangs(getInitialMaxBaangs(random) - stats.getMaxBaangs());
