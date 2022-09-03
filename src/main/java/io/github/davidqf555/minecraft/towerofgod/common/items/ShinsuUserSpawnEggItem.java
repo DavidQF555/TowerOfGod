@@ -6,7 +6,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +24,7 @@ public class ShinsuUserSpawnEggItem extends ForgeSpawnEggItem {
 
     @Override
     public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> stacks) {
-        if (allowdedIn(tab)) {
+        if (allowedIn(tab)) {
             for (int level : levels) {
                 ItemStack stack = getDefaultInstance();
                 setLevel(stack, level);
@@ -36,7 +35,7 @@ public class ShinsuUserSpawnEggItem extends ForgeSpawnEggItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        return new TranslatableComponent(getDescriptionId(), getLevel(stack));
+        return Component.translatable(getDescriptionId(), getLevel(stack));
     }
 
     protected int getLevel(ItemStack stack) {
