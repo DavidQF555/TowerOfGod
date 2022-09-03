@@ -2,15 +2,15 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.BasicShinsuUserEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.function.Supplier;
 
@@ -24,7 +24,7 @@ public class ShinsuUserSpawnEggItem extends ForgeSpawnEggItem {
     }
 
     @Override
-    public void fillItemCategory(ItemGroup tab, NonNullList<ItemStack> stacks) {
+    public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> stacks) {
         if (allowdedIn(tab)) {
             for (int level : levels) {
                 ItemStack stack = getDefaultInstance();
@@ -35,13 +35,13 @@ public class ShinsuUserSpawnEggItem extends ForgeSpawnEggItem {
     }
 
     @Override
-    public ITextComponent getName(ItemStack stack) {
-        return new TranslationTextComponent(getDescriptionId(), getLevel(stack));
+    public Component getName(ItemStack stack) {
+        return new TranslatableComponent(getDescriptionId(), getLevel(stack));
     }
 
     protected int getLevel(ItemStack stack) {
-        CompoundNBT tag = stack.getOrCreateTagElement(TowerOfGod.MOD_ID);
-        return tag.contains("Level", Constants.NBT.TAG_INT) ? tag.getInt("Level") : 1;
+        CompoundTag tag = stack.getOrCreateTagElement(TowerOfGod.MOD_ID);
+        return tag.contains("Level", Tag.TAG_INT) ? tag.getInt("Level") : 1;
     }
 
     protected void setLevel(ItemStack stack, int level) {
