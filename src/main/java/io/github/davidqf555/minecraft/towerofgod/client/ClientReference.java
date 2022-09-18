@@ -16,10 +16,8 @@ import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ColorHelper;
-import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
@@ -79,10 +77,6 @@ public final class ClientReference {
 
     public static void openGuideScreen(ShinsuTechnique[] pages, int color) {
         Minecraft.getInstance().setScreen(new GuideScreen(pages, 221, 180, color));
-    }
-
-    public static void updateDimensions(RegistryKey<World> key) {
-        Minecraft.getInstance().player.connection.levels().add(key);
     }
 
 }
