@@ -27,6 +27,8 @@ public final class PacketRegistry {
             ClientOpenCombinationGUIPacket.register(index++);
             ServerOpenCombinationGUIPacket.register(index++);
             OpenGuideScreenPacket.register(index++);
+            ClientUpdateCastingPacket.register(index++);
+            ServerUpdateCastingPacket.register(index++);
         });
     }
 }

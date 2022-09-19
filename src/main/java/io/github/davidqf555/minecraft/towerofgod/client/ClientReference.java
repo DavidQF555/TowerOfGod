@@ -5,6 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.client.gui.GuideScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuCombinationGui;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.StatsMeterGui;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
@@ -14,12 +15,16 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
@@ -83,6 +88,37 @@ public final class ClientReference {
 
     public static void updateDimensions(RegistryKey<World> key) {
         Minecraft.getInstance().player.connection.levels().add(key);
+    }
+
+    public static void handleUpdateCastingPacket(int id, boolean casting) {
+        World world = Minecraft.getInstance().level;
+        if (world != null) {
+            Entity entity = world.getEntity(id);
+            if (entity instanceof LivingEntity) {
+                setCasting((LivingEntity) entity, casting);
+            }
+        }
+    }
+
+    public static boolean isCasting(LivingEntity entity) {
+        CompoundNBT data = entity.getPersistentData();
+        if (data.contains(TowerOfGod.MOD_ID, Constants.NBT.TAG_COMPOUND)) {
+            CompoundNBT child = data.getCompound(TowerOfGod.MOD_ID);
+            return child.contains("Casting", Constants.NBT.TAG_BYTE) && child.getBoolean("Casting");
+        }
+        return false;
+    }
+
+    public static void setCasting(LivingEntity entity, boolean casting) {
+        CompoundNBT data = entity.getPersistentData();
+        CompoundNBT child;
+        if (data.contains(TowerOfGod.MOD_ID, Constants.NBT.TAG_COMPOUND)) {
+            child = data.getCompound(TowerOfGod.MOD_ID);
+        } else {
+            child = new CompoundNBT();
+            data.put(TowerOfGod.MOD_ID, child);
+        }
+        child.putBoolean("Casting", casting);
     }
 
 }

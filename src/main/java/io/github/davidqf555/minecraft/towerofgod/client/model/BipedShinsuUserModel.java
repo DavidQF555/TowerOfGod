@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.client.model;
 
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.entity.MobEntity;
@@ -28,5 +29,9 @@ public class BipedShinsuUserModel<T extends MobEntity & IShinsuUser> extends Bip
             }
         }
         super.prepareMobModel(entityIn, limbSwing, limbSwingAmount, partialTick);
+        if (ClientReference.isCasting(entityIn)) {
+            CastingModelHelper.transformRightArm(rightArm);
+            CastingModelHelper.transformLeftArm(leftArm);
+        }
     }
 }
