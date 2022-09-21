@@ -6,11 +6,11 @@ import io.github.davidqf555.minecraft.towerofgod.client.model.CastingArmsModel;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.IEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.client.renderer.entity.model.BipedModel;
+import net.minecraft.client.renderer.entity.model.PlayerModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
-public class CastingLayerRenderer<T extends LivingEntity, M extends BipedModel<T>> extends LayerRenderer<T, M> {
+public class CastingLayerRenderer<T extends PlayerEntity, M extends PlayerModel<T>> extends LayerRenderer<T, M> {
 
     private final CastingArmsModel<T> model;
 

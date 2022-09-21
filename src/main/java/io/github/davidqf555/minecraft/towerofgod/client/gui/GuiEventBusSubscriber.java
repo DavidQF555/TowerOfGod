@@ -40,16 +40,14 @@ public final class GuiEventBusSubscriber {
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
                 if (ClientReference.combo == null) {
                     TowerOfGod.CHANNEL.sendToServer(new ClientOpenCombinationGUIPacket());
-                    ClientReference.setCasting(client.player, true);
-                    TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket());
+                    TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(true));
                 } else if (!client.options.hideGui && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
                     MainWindow window = client.getWindow();
                     ClientReference.combo.render(event.getMatrixStack(), (window.getGuiScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getGuiScaledHeight() - ClientReference.combo.getHeight()) / 2f - 50);
                 }
             } else {
                 ClientReference.combo = null;
-                ClientReference.setCasting(client.player, false);
-                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket());
+                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
             }
         }
     }
@@ -77,8 +75,7 @@ public final class GuiEventBusSubscriber {
             if (selected != null && !ClientReference.ERRORS.containsKey(selected)) {
                 TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
                 ClientReference.combo = null;
-                ClientReference.setCasting(Minecraft.getInstance().player, false);
-                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket());
+                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
             }
         }
     }

@@ -13,10 +13,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.LivingRenderer;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.renderer.entity.model.PlayerModel;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.Items;
@@ -78,7 +78,7 @@ public final class EventBusSubscriber {
             });
         }
 
-        private static <T extends LivingEntity, M extends BipedModel<T>> void addCastingLayer(LivingRenderer<T, M> renderer) {
+        private static <T extends PlayerEntity, M extends PlayerModel<T>> void addCastingLayer(LivingRenderer<T, M> renderer) {
             renderer.addLayer(new CastingLayerRenderer<>(renderer));
         }
 

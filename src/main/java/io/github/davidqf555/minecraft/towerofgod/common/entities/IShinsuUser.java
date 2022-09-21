@@ -174,6 +174,10 @@ public interface IShinsuUser {
 
     void setGroup(Group group);
 
+    boolean isCasting();
+
+    void setCasting(boolean casting);
+
     class CastShinsuGoal<T extends MobEntity & IShinsuUser> extends Goal {
 
         private final T entity;

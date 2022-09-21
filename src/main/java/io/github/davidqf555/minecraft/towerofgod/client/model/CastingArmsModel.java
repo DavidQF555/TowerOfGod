@@ -5,11 +5,11 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
 import javax.annotation.Nonnull;
 
-public class CastingArmsModel<T extends LivingEntity> extends EntityModel<T> {
+public class CastingArmsModel<T extends PlayerEntity> extends EntityModel<T> {
 
     private final ModelRenderer rightArm, leftArm;
 

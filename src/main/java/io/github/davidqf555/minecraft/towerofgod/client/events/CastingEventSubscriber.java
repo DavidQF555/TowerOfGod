@@ -1,41 +1,37 @@
 package io.github.davidqf555.minecraft.towerofgod.client.events;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.model.CastingModelHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateCastingPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
+import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class CastingEventSubscriber {
+
+    private static long prevGameTime = -1;
 
     private CastingEventSubscriber() {
     }
 
     @SubscribeEvent
-    public static void preRenderLivingEvent(RenderLivingEvent.Pre<PlayerEntity, BipedModel<PlayerEntity>> event) {
-        if (ClientReference.isCasting(event.getEntity())) {
-            BipedModel<PlayerEntity> model = event.getRenderer().getModel();
+    public static void preRenderPlayer(RenderPlayerEvent.Pre event) {
+        PlayerEntity entity = event.getPlayer();
+        if (ClientReference.isCasting(entity)) {
+            BipedModel<AbstractClientPlayerEntity> model = event.getRenderer().getModel();
             model.rightArm.visible = false;
             model.leftArm.visible = false;
-        }
-    }
-
-    @SubscribeEvent
-    public static void onStartTracking(PlayerEvent.StartTracking event) {
-        PlayerEntity player = event.getPlayer();
-        Entity target = event.getTarget();
-        if (player instanceof ServerPlayerEntity && target instanceof LivingEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateCastingPacket(target.getId(), ClientReference.isCasting((LivingEntity) target)));
+            long gameTime = entity.level.getGameTime();
+            if (gameTime != prevGameTime) {
+                CastingModelHelper.spawnParticles(entity, ShinsuAttribute.getParticles(ClientReference.getAttribute(entity)), 1);
+                prevGameTime = gameTime;
+            }
         }
     }
 

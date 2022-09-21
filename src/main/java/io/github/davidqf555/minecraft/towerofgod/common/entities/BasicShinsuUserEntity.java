@@ -34,6 +34,7 @@ import java.util.Optional;
 public abstract class BasicShinsuUserEntity extends CreatureEntity implements IShinsuUser, IGeared<BasicShinsuUserEntity>, IRangedAttackMob {
 
     private static final DataParameter<String> GROUP = EntityDataManager.defineId(BasicShinsuUserEntity.class, DataSerializers.STRING);
+    private static final DataParameter<Boolean> CASTING = EntityDataManager.defineId(BasicShinsuUserEntity.class, DataSerializers.BOOLEAN);
 
     public BasicShinsuUserEntity(EntityType<? extends BasicShinsuUserEntity> type, World worldIn) {
         super(type, worldIn);
@@ -72,6 +73,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     protected void defineSynchedData() {
         super.defineSynchedData();
         getEntityData().define(GROUP, "");
+        getEntityData().define(CASTING, false);
     }
 
     @Override
@@ -91,6 +93,9 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         if (nbt.contains("Group", Constants.NBT.TAG_STRING)) {
             setGroup(GroupRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Group"))));
         }
+        if (nbt.contains("Casting", Constants.NBT.TAG_BYTE)) {
+            setCasting(nbt.getBoolean("Casting"));
+        }
     }
 
     @Override
@@ -100,6 +105,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         if (group != null) {
             nbt.putString("Group", group.getRegistryName().toString());
         }
+        nbt.putBoolean("Casting", isCasting());
     }
 
     @Override
@@ -169,5 +175,14 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         return group != null && group.isPreferredWeapon(weapon);
     }
 
+    @Override
+    public boolean isCasting() {
+        return getEntityData().get(CASTING);
+    }
+
+    @Override
+    public void setCasting(boolean casting) {
+        getEntityData().set(CASTING, casting);
+    }
 
 }
