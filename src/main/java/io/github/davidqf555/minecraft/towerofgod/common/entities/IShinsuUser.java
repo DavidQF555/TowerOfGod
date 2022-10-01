@@ -4,16 +4,10 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.server.ServerWorld;
 
@@ -177,53 +171,5 @@ public interface IShinsuUser {
     boolean isCasting();
 
     void setCasting(boolean casting);
-
-    class CastShinsuGoal<T extends MobEntity & IShinsuUser> extends Goal {
-
-        private final T entity;
-        private ShinsuTechniqueInstance technique;
-        private LivingEntity target;
-
-        public CastShinsuGoal(T entity) {
-            this.entity = entity;
-            technique = null;
-            target = null;
-        }
-
-        @Override
-        public boolean canUse() {
-            target = entity.getTarget();
-            if (target == null || !target.isAlive()) {
-                return false;
-            }
-            List<ShinsuTechniqueInstance> tech = new ArrayList<>();
-            for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                Vector3d dir = entity.canSee(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookAngle();
-                technique.create(entity, target, dir).ifLeft(tech::add);
-            }
-            if (tech.isEmpty()) {
-                return false;
-            }
-            technique = tech.get(entity.getRandom().nextInt(tech.size()));
-            return true;
-        }
-
-        @Override
-        public void start() {
-            technique.getTechnique().cast(entity, technique);
-        }
-
-        @Override
-        public void stop() {
-            technique = null;
-            target = null;
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            return false;
-        }
-
-    }
 
 }
