@@ -3,13 +3,16 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -29,13 +32,15 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
     private final IRenderData icon;
     private final IRequirement[] requirements;
     private final List<Direction> combination;
+    private final MobUseCondition mobUseCondition;
 
-    public ShinsuTechnique(boolean indefinite, ShinsuTechnique.IFactory<?> factory, IRenderData icon, IRequirement[] requirements, List<Direction> combination) {
+    public ShinsuTechnique(boolean indefinite, ShinsuTechnique.IFactory<?> factory, IRenderData icon, IRequirement[] requirements, List<Direction> combination, MobUseCondition mobUseCondition) {
         this.indefinite = indefinite;
         this.factory = factory;
         this.icon = icon;
         this.requirements = requirements;
         this.combination = combination;
+        this.mobUseCondition = mobUseCondition;
     }
 
     @Nullable
@@ -159,6 +164,10 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
             stats.addTechnique(instance);
             instance.onUse((ServerWorld) user.level);
         }
+    }
+
+    public <T extends MobEntity & IShinsuUser> boolean shouldMobUse(T entity) {
+        return mobUseCondition.shouldUse(entity);
     }
 
     public interface IFactory<T extends ShinsuTechniqueInstance> {
