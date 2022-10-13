@@ -15,13 +15,13 @@ public final class CastingModelHelper {
     public static void transformRightArm(ModelRenderer rightArm) {
         rightArm.yRot = 0;
         rightArm.xRot = -60 * (float) Math.PI / 180;
-        rightArm.zRot = -20 * (float) Math.PI / 180;
+        rightArm.zRot = 0;
     }
 
     public static void transformLeftArm(ModelRenderer leftArm) {
         leftArm.yRot = 0;
         leftArm.xRot = -60 * (float) Math.PI / 180;
-        leftArm.zRot = 20 * (float) Math.PI / 180;
+        leftArm.zRot = 0;
     }
 
     public static Vector3d getParticleSpawnOffset(LivingEntity entity) {
