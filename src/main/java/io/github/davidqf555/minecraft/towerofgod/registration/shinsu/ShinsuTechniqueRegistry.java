@@ -9,6 +9,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ToggleableShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.GearCondition;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.HasTargetCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.TargetDistanceCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.*;
@@ -47,7 +48,7 @@ public final class ShinsuTechniqueRegistry {
     public static final RegistryObject<ShinsuTechnique> CHANNEL_LIGHTNING = register("channel_lightning", () -> new ShinsuTechnique(true, new ChannelLightning.Factory(), ShinsuIcons.LIGHTNING, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 3), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 5), new AttributeRequirement(ShinsuAttributeRegistry.LIGHTNING.get())}, ImmutableList.of(Direction.DOWN, Direction.UP), TargetDistanceCondition.above(8)));
     public static final RegistryObject<ShinsuTechnique> FLASH = register("flash", () -> new ShinsuTechnique(false, new Flash.Factory(), ShinsuIcons.FLASH, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 10), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 10), new AttributeRequirement(ShinsuAttributeRegistry.LIGHTNING.get())}, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT), TargetDistanceCondition.above(8)));
     public static final RegistryObject<ShinsuTechnique> BOOST = register("boost", () -> new ShinsuTechnique(false, new Boost.Factory(), ShinsuIcons.SHINSU, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 10), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 10), new AttributeRequirement(ShinsuAttributeRegistry.FIRE.get())}, ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT), TargetDistanceCondition.above(8)));
-    public static final RegistryObject<OverridingShinsuTechnique> FLAMETHROWER = register("flamethrower", () -> new OverridingShinsuTechnique(false, new Flamethrower.Factory(), ShinsuIcons.SHINSU, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 3), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 5), new AttributeRequirement(ShinsuAttributeRegistry.FIRE.get())}, ImmutableList.of(Direction.DOWN, Direction.UP), MobUseCondition.TRUE));
+    public static final RegistryObject<OverridingShinsuTechnique> FLAMETHROWER = register("flamethrower", () -> new OverridingShinsuTechnique(false, new Flamethrower.Factory(), ShinsuIcons.SHINSU, new IRequirement[]{new TypeLevelRequirement(ShinsuTechniqueType.CONTROL, 3), new TypeLevelRequirement(ShinsuTechniqueType.MANIFEST, 5), new AttributeRequirement(ShinsuAttributeRegistry.FIRE.get())}, ImmutableList.of(Direction.DOWN, Direction.UP), new HasTargetCondition(true)));
     private static IForgeRegistry<ShinsuTechnique> registry = null;
 
     private ShinsuTechniqueRegistry() {

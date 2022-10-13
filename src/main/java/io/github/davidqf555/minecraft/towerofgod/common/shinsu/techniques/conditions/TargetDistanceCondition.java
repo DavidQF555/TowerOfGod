@@ -3,12 +3,13 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.condi
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 
-public class TargetDistanceCondition implements MobUseCondition {
+public class TargetDistanceCondition extends HasTargetCondition {
 
     private final double min;
     private final double max;
 
     protected TargetDistanceCondition(double min, double max) {
+        super(true);
         this.min = min;
         this.max = max;
     }
@@ -27,8 +28,8 @@ public class TargetDistanceCondition implements MobUseCondition {
 
     @Override
     public boolean shouldUse(MobEntity entity) {
-        LivingEntity target = entity.getTarget();
-        if (target != null) {
+        if (super.shouldUse(entity)) {
+            LivingEntity target = entity.getTarget();
             double distSq = entity.distanceToSqr(target);
             return distSq >= min * min && (max <= 0 || distSq <= max * max);
         }
