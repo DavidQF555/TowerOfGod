@@ -21,6 +21,7 @@ import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -44,6 +45,14 @@ public final class CastingEventSubscriber {
                 CastingModelHelper.spawnParticles(entity, ShinsuAttribute.getParticles(ClientReference.getAttribute(entity)), 1);
                 prevGameTime = gameTime;
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        PlayerEntity player = Minecraft.getInstance().player;
+        if (player != null && ClientReference.isCasting(player)) {
+            CastingModelHelper.spawnParticles(player, ShinsuAttribute.getParticles(ClientReference.getAttribute(player)), 1);
         }
     }
 
