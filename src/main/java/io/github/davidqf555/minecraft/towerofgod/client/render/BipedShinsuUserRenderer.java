@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import net.minecraft.client.renderer.entity.BipedRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.layers.BipedArmorLayer;
+import net.minecraft.client.renderer.entity.layers.HeldItemLayer;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.util.ResourceLocation;
 
@@ -17,7 +18,9 @@ public class BipedShinsuUserRenderer<T extends MobEntity & IShinsuUser> extends 
 
     public BipedShinsuUserRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn, new BipedShinsuUserModel<>(0, 64, 64), 0.5f);
+        layers.removeIf(layer -> layer instanceof HeldItemLayer);
         addLayer(new BipedArmorLayer<>(this, new BipedShinsuUserModel<>(0.5f), new BipedShinsuUserModel<>(1)));
+        addLayer(new ConditionalHeldItemLayer<>(this, user -> !user.isCasting()));
     }
 
     @Nonnull

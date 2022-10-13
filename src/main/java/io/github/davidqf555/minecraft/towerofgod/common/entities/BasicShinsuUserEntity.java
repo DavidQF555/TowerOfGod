@@ -1,7 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.client.model.CastingModelHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
@@ -14,6 +16,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.particles.IParticleData;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -35,6 +38,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
 
     private static final DataParameter<String> GROUP = EntityDataManager.defineId(BasicShinsuUserEntity.class, DataSerializers.STRING);
     private static final DataParameter<Boolean> CASTING = EntityDataManager.defineId(BasicShinsuUserEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<IParticleData> ATTRIBUTE_PARTICLES = EntityDataManager.defineId(BasicShinsuUserEntity.class, DataSerializers.PARTICLE);
 
     public BasicShinsuUserEntity(EntityType<? extends BasicShinsuUserEntity> type, World worldIn) {
         super(type, worldIn);
@@ -48,7 +52,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         } else if (dataTag.contains(TowerOfGod.MOD_ID, Constants.NBT.TAG_COMPOUND)) {
             CompoundNBT child = dataTag.getCompound(TowerOfGod.MOD_ID);
             if (child.contains("Level", Constants.NBT.TAG_INT)) {
-                ShinsuStats stats = ShinsuStats.get(this);
+                ShinsuStats stats = getShinsuStats();
                 stats.addLevel(child.getInt("Level") - stats.getLevel());
             } else {
                 initializeShinsuLevel(random);
@@ -61,9 +65,9 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         Group group = getGroup();
         IFormattableTextComponent text;
         if (group != null) {
-            text = new TranslationTextComponent(getType().getDescriptionId() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).withStyle(group.getTextFormattingColor());
+            text = new TranslationTextComponent(getType().getDescriptionId() + ".group_name", group.getName(), getShinsuStats().getLevel()).withStyle(group.getTextFormattingColor());
         } else {
-            text = new TranslationTextComponent(getType().getDescriptionId() + ".name", ShinsuStats.get(this).getLevel());
+            text = new TranslationTextComponent(getType().getDescriptionId() + ".name", getShinsuStats().getLevel());
         }
         setCustomName(text);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
@@ -74,16 +78,29 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         super.defineSynchedData();
         getEntityData().define(GROUP, "");
         getEntityData().define(CASTING, false);
+        getEntityData().define(ATTRIBUTE_PARTICLES, ShinsuAttribute.getParticles(null));
+    }
+
+    public IParticleData getAttributeParticles() {
+        return getEntityData().get(ATTRIBUTE_PARTICLES);
+    }
+
+    public void setAttributeParticles(IParticleData particles) {
+        getEntityData().set(ATTRIBUTE_PARTICLES, particles);
     }
 
     @Override
     public void aiStep() {
         super.aiStep();
         heal(0.025f);
+        if (level.isClientSide() && isCasting()) {
+            CastingModelHelper.spawnParticles(this, getAttributeParticles());
+        }
     }
 
     @Override
     protected void customServerAiStep() {
+        setAttributeParticles(ShinsuAttribute.getParticles(getShinsuStats().getAttribute()));
         shinsuTick((ServerWorld) level);
     }
 
@@ -135,7 +152,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         double dX = target.getX() - getX();
         double dZ = target.getZ() - getZ();
         double dY = target.getY(0.3333333333333333) - arrow.getY() + MathHelper.sqrt(dX * dX + dZ * dZ) * 0.2;
-        ShinsuStats stats = ShinsuStats.get(this);
+        ShinsuStats stats = getShinsuStats();
         float velocity = 1.6f;
         float inaccuracy = (14 - level.getDifficulty().getId() * 4f) / stats.getLevel();
         if (arrow instanceof ShinsuArrowEntity) {
@@ -161,7 +178,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
 
     @Override
     public int getGearLevel() {
-        return ShinsuStats.get(this).getLevel();
+        return getShinsuStats().getLevel();
     }
 
     @Override

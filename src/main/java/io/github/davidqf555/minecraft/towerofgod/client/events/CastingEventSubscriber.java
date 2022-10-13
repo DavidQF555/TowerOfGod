@@ -42,7 +42,7 @@ public final class CastingEventSubscriber {
             model.leftArm.visible = false;
             long gameTime = entity.level.getGameTime();
             if (gameTime != prevGameTime) {
-                CastingModelHelper.spawnParticles(entity, ShinsuAttribute.getParticles(ClientReference.getAttribute(entity)), 1);
+                CastingModelHelper.spawnParticles(entity, ShinsuAttribute.getParticles(ClientReference.getAttribute(entity)));
                 prevGameTime = gameTime;
             }
         }
@@ -52,7 +52,7 @@ public final class CastingEventSubscriber {
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         PlayerEntity player = Minecraft.getInstance().player;
         if (player != null && ClientReference.isCasting(player)) {
-            CastingModelHelper.spawnParticles(player, ShinsuAttribute.getParticles(ClientReference.getAttribute(player)), 1);
+            CastingModelHelper.spawnParticles(player, ShinsuAttribute.getParticles(ClientReference.getAttribute(player)));
         }
     }
 

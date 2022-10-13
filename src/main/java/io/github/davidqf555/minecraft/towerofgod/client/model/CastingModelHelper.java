@@ -30,13 +30,18 @@ public final class CastingModelHelper {
     }
 
     public static double getParticleRadius(LivingEntity entity) {
-        return 0.1;
+        return (entity.getBbWidth() + entity.getBbHeight()) * 0.08 / 2;
     }
 
-    public static void spawnParticles(LivingEntity entity, IParticleData particle, int count) {
+    public static int getParticleCount(LivingEntity entity) {
+        return (int) Math.ceil(1000 * Math.pow(getParticleRadius(entity), 3));
+    }
+
+    public static void spawnParticles(LivingEntity entity, IParticleData particle) {
         double spread = getParticleRadius(entity);
         Random random = entity.getRandom();
         Vector3d start = entity.position().add(getParticleSpawnOffset(entity));
+        int count = getParticleCount(entity);
         for (int i = 0; i < count; i++) {
             Vector3d spawn = start.add(random.nextGaussian() * spread, random.nextGaussian() * spread, random.nextGaussian() * spread);
             entity.level.addParticle(particle, spawn.x(), spawn.y(), spawn.z(), 0, 0, 0);
