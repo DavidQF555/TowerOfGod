@@ -1,19 +1,19 @@
 package io.github.davidqf555.minecraft.towerofgod.client.model;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.player.PlayerEntity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 
-public class CastingArmsModel<T extends PlayerEntity> extends EntityModel<T> {
+public class CastingArmsModel<T extends Player> extends EntityModel<T> {
 
-    private final ModelRenderer rightArm, leftArm;
+    private final ModelPart rightArm, leftArm;
 
-    public CastingArmsModel(BipedModel<T> parent) {
+    public CastingArmsModel(HumanoidModel<T> parent) {
         rightArm = parent.rightArm;
         leftArm = parent.leftArm;
     }
@@ -27,7 +27,7 @@ public class CastingArmsModel<T extends PlayerEntity> extends EntityModel<T> {
     }
 
     @Override
-    public void renderToBuffer(@Nonnull MatrixStack matrixStack, @Nonnull IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(@Nonnull PoseStack matrixStack, @Nonnull VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         rightArm.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         leftArm.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }

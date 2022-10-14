@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions;
 
-import net.minecraft.entity.MobEntity;
+import net.minecraft.world.entity.Mob;
 
 public class CombinationCondition implements MobUseCondition {
 
@@ -11,7 +11,7 @@ public class CombinationCondition implements MobUseCondition {
     }
 
     @Override
-    public boolean shouldUse(MobEntity entity) {
+    public boolean shouldUse(Mob entity) {
         for (MobUseCondition condition : conditions) {
             if (!condition.shouldUse(entity)) {
                 return false;

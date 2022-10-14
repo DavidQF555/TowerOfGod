@@ -1,19 +1,20 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.ByteNBT;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class CastingData implements INBTSerializable<ByteNBT> {
+public class CastingData implements INBTSerializable<ByteTag> {
 
-    @CapabilityInject(CastingData.class)
-    public static Capability<CastingData> capability = null;
+    public static final Capability<CastingData> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
     private boolean casting;
 
-    public static CastingData get(PlayerEntity player) {
-        return player.getCapability(capability).orElseGet(CastingData::new);
+    public static CastingData get(Player player) {
+        return player.getCapability(CAPABILITY).orElseGet(CastingData::new);
     }
 
     public boolean isCasting() {
@@ -26,12 +27,12 @@ public class CastingData implements INBTSerializable<ByteNBT> {
 
 
     @Override
-    public ByteNBT serializeNBT() {
-        return ByteNBT.valueOf(isCasting());
+    public ByteTag serializeNBT() {
+        return ByteTag.valueOf(isCasting());
     }
 
     @Override
-    public void deserializeNBT(ByteNBT nbt) {
+    public void deserializeNBT(ByteTag nbt) {
         setCasting(nbt.getAsByte() != 0);
     }
 

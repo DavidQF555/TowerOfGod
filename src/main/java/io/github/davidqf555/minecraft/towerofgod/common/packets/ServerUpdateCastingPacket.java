@@ -2,9 +2,9 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -13,11 +13,11 @@ import java.util.function.Supplier;
 
 public class ServerUpdateCastingPacket {
 
-    private static final BiConsumer<ServerUpdateCastingPacket, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<ServerUpdateCastingPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.id);
         buffer.writeBoolean(message.casting);
     };
-    private static final Function<PacketBuffer, ServerUpdateCastingPacket> DECODER = buffer -> new ServerUpdateCastingPacket(buffer.readInt(), buffer.readBoolean());
+    private static final Function<FriendlyByteBuf, ServerUpdateCastingPacket> DECODER = buffer -> new ServerUpdateCastingPacket(buffer.readInt(), buffer.readBoolean());
     private static final BiConsumer<ServerUpdateCastingPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);

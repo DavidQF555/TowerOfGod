@@ -2,11 +2,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.CastingData;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -15,10 +15,10 @@ import java.util.function.Supplier;
 
 public class ClientUpdateCastingPacket {
 
-    private static final BiConsumer<ClientUpdateCastingPacket, PacketBuffer> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<ClientUpdateCastingPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeBoolean(message.casting);
     };
-    private static final Function<PacketBuffer, ClientUpdateCastingPacket> DECODER = buffer -> new ClientUpdateCastingPacket(buffer.readBoolean());
+    private static final Function<FriendlyByteBuf, ClientUpdateCastingPacket> DECODER = buffer -> new ClientUpdateCastingPacket(buffer.readBoolean());
     private static final BiConsumer<ClientUpdateCastingPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
@@ -35,7 +35,7 @@ public class ClientUpdateCastingPacket {
     }
 
     private void handle(NetworkEvent.Context context) {
-        ServerPlayerEntity player = context.getSender();
+        ServerPlayer player = context.getSender();
         context.enqueueWork(() -> {
             CastingData data = CastingData.get(player);
             data.setCasting(casting);

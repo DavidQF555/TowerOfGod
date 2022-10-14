@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions;
 
-import net.minecraft.entity.MobEntity;
+import net.minecraft.world.entity.Mob;
 
 public class HasTargetCondition implements MobUseCondition {
 
@@ -11,7 +11,7 @@ public class HasTargetCondition implements MobUseCondition {
     }
 
     @Override
-    public boolean shouldUse(MobEntity entity) {
+    public boolean shouldUse(Mob entity) {
         return entity.getTarget() == null && !has || entity.getTarget() != null && has;
     }
 

@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 
 public class TargetDistanceCondition extends HasTargetCondition {
 
@@ -27,7 +27,7 @@ public class TargetDistanceCondition extends HasTargetCondition {
     }
 
     @Override
-    public boolean shouldUse(MobEntity entity) {
+    public boolean shouldUse(Mob entity) {
         if (super.shouldUse(entity)) {
             LivingEntity target = entity.getTarget();
             double distSq = entity.distanceToSqr(target);

@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions;
 
-import net.minecraft.entity.MobEntity;
+import net.minecraft.world.entity.Mob;
 
 public interface MobUseCondition {
 
@@ -10,6 +10,6 @@ public interface MobUseCondition {
         return new CombinationCondition(conditions);
     }
 
-    boolean shouldUse(MobEntity entity);
+    boolean shouldUse(Mob entity);
 
 }

@@ -1,26 +1,26 @@
 package io.github.davidqf555.minecraft.towerofgod.client.events;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.model.CastingModelHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.PlayerRenderer;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputUpdateEvent;
+import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.TickEvent;
@@ -37,9 +37,9 @@ public final class CastingEventSubscriber {
 
     @SubscribeEvent
     public static void preRenderPlayer(RenderPlayerEvent.Pre event) {
-        PlayerEntity entity = event.getPlayer();
+        Player entity = event.getPlayer();
         if (ClientReference.isCasting(entity)) {
-            BipedModel<AbstractClientPlayerEntity> model = event.getRenderer().getModel();
+            HumanoidModel<AbstractClientPlayer> model = event.getRenderer().getModel();
             model.rightArm.visible = false;
             model.leftArm.visible = false;
             long gameTime = entity.level.getGameTime();
@@ -52,15 +52,15 @@ public final class CastingEventSubscriber {
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if (event.phase == TickEvent.Phase.END && player != null && ClientReference.isCasting(player)) {
             CastingModelHelper.spawnParticles(player, ShinsuAttribute.getParticles(ClientReference.getAttribute(player)));
         }
     }
 
     @SubscribeEvent
-    public static void onInputUpdate(InputUpdateEvent event) {
-        ClientPlayerEntity player = Minecraft.getInstance().player;
+    public static void onMovementInputUpdate(MovementInputUpdateEvent event) {
+        LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && ClientReference.isCasting(player)) {
             player.input.leftImpulse *= 0.2;
             player.input.forwardImpulse *= 0.2;
@@ -71,28 +71,28 @@ public final class CastingEventSubscriber {
     public static void onRenderHand(RenderHandEvent event) {
         Minecraft client = Minecraft.getInstance();
         if (ClientReference.isCasting(client.player)) {
-            for (HandSide side : HandSide.values()) {
-                renderPlayerArm(event.getMatrixStack(), event.getBuffers(), event.getLight(), event.getEquipProgress(), event.getSwingProgress(), side);
+            for (HumanoidArm side : HumanoidArm.values()) {
+                renderPlayerArm(event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), event.getEquipProgress(), event.getSwingProgress(), side);
             }
             event.setCanceled(true);
         }
     }
 
-    private static void renderPlayerArm(MatrixStack matrixStack, IRenderTypeBuffer buffer, int light, float equip, float swing, HandSide side) {
+    private static void renderPlayerArm(PoseStack matrixStack, MultiBufferSource buffer, int light, float equip, float swing, HumanoidArm side) {
         Minecraft client = Minecraft.getInstance();
-        float factor = side != HandSide.LEFT ? 1 : -1;
-        float sqrtSwing = MathHelper.sqrt(swing);
-        float f2 = -0.3f * MathHelper.sin(sqrtSwing * (float) Math.PI);
-        float f3 = 0.4f * MathHelper.sin(sqrtSwing * ((float) Math.PI * 2F));
-        float f4 = -0.4f * MathHelper.sin(swing * (float) Math.PI);
+        float factor = side != HumanoidArm.LEFT ? 1 : -1;
+        float sqrtSwing = Mth.sqrt(swing);
+        float f2 = -0.3f * Mth.sin(sqrtSwing * (float) Math.PI);
+        float f3 = 0.4f * Mth.sin(sqrtSwing * ((float) Math.PI * 2F));
+        float f4 = -0.4f * Mth.sin(swing * (float) Math.PI);
         matrixStack.pushPose();
         matrixStack.translate(factor * (f2 + 0.64000005F), f3 - 0.6F + equip * -0.6F, f4 + -0.71999997F);
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(factor * 45));
-        float f5 = MathHelper.sin(swing * swing * (float) Math.PI);
-        float f6 = MathHelper.sin(sqrtSwing * (float) Math.PI);
+        float f5 = Mth.sin(swing * swing * (float) Math.PI);
+        float f6 = Mth.sin(sqrtSwing * (float) Math.PI);
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(factor * f6 * 70));
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(factor * f5 * -20));
-        client.getTextureManager().bind(client.player.getSkinTextureLocation());
+        client.getTextureManager().bindForSetup(client.player.getSkinTextureLocation());
         matrixStack.translate(factor * -1, 3.6F, 3.5);
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(factor * 120));
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(200));
@@ -103,15 +103,15 @@ public final class CastingEventSubscriber {
     }
 
 
-    private static void renderHand(MatrixStack stack, IRenderTypeBuffer buffer, int light, AbstractClientPlayerEntity player, HandSide side) {
-        PlayerModel<AbstractClientPlayerEntity> model = ((PlayerRenderer) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player)).getModel();
+    private static void renderHand(PoseStack stack, MultiBufferSource buffer, int light, AbstractClientPlayer player, HumanoidArm side) {
+        PlayerModel<AbstractClientPlayer> model = ((PlayerRenderer) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player)).getModel();
         model.attackTime = 0.0F;
         model.crouching = false;
         model.swimAmount = 0.0F;
         model.setupAnim(player, 0, 0, 0, 0, 0);
-        ModelRenderer arm;
-        ModelRenderer sleeve;
-        if (side == HandSide.RIGHT) {
+        ModelPart arm;
+        ModelPart sleeve;
+        if (side == HumanoidArm.RIGHT) {
             arm = model.rightArm;
             sleeve = model.rightSleeve;
         } else {
