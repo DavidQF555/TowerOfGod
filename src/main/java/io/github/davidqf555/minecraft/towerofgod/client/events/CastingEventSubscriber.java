@@ -7,6 +7,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.PlayerRenderer;
@@ -19,6 +20,7 @@ import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.TickEvent;
@@ -51,8 +53,17 @@ public final class CastingEventSubscriber {
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         PlayerEntity player = Minecraft.getInstance().player;
-        if (player != null && ClientReference.isCasting(player)) {
+        if (event.phase == TickEvent.Phase.END && player != null && ClientReference.isCasting(player)) {
             CastingModelHelper.spawnParticles(player, ShinsuAttribute.getParticles(ClientReference.getAttribute(player)));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onInputUpdate(InputUpdateEvent event) {
+        ClientPlayerEntity player = Minecraft.getInstance().player;
+        if (player != null && ClientReference.isCasting(player)) {
+            player.input.leftImpulse *= 0.2;
+            player.input.forwardImpulse *= 0.2;
         }
     }
 
