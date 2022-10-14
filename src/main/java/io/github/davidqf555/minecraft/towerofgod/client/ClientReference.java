@@ -20,7 +20,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ColorHelper;
-import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
@@ -85,10 +84,6 @@ public final class ClientReference {
 
     public static void openGuideScreen(ShinsuTechnique[] pages, int color) {
         Minecraft.getInstance().setScreen(new GuideScreen(pages, 221, 180, color));
-    }
-
-    public static void updateDimensions(RegistryKey<World> key) {
-        Minecraft.getInstance().player.connection.levels().add(key);
     }
 
     public static void handleUpdateCastingPacket(int id, boolean casting) {

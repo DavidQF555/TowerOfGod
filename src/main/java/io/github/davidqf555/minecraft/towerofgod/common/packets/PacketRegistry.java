@@ -22,7 +22,6 @@ public final class PacketRegistry {
             ClientUpdateClientErrorPacket.register(index++);
             ServerUpdateClientErrorPacket.register(index++);
             ObserverChangeHighlightPacket.register(index++);
-            UpdateClientDimensionsPacket.register(index++);
             ClientOpenCombinationGUIPacket.register(index++);
             ServerOpenCombinationGUIPacket.register(index++);
             OpenGuideScreenPacket.register(index++);
