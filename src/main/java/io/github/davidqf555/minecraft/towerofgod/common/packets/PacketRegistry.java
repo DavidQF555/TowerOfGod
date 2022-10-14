@@ -21,12 +21,13 @@ public final class PacketRegistry {
             UpdateBaangsMeterPacket.register(index++);
             ClientUpdateClientErrorPacket.register(index++);
             ServerUpdateClientErrorPacket.register(index++);
-            UpdateClientAttributePacket.register(index++);
             ObserverChangeHighlightPacket.register(index++);
-            UpdateClientDimensionsPacket.register(index++);
             ClientOpenCombinationGUIPacket.register(index++);
             ServerOpenCombinationGUIPacket.register(index++);
             OpenGuideScreenPacket.register(index++);
+            ClientUpdateCastingPacket.register(index++);
+            ServerUpdateCastingPacket.register(index++);
+            ServerUpdateAttributePacket.register(index++);
         });
     }
 }

@@ -14,32 +14,36 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class UpdateClientAttributePacket {
+public class ServerUpdateAttributePacket {
 
-    private static final BiConsumer<UpdateClientAttributePacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
+    private static final BiConsumer<ServerUpdateAttributePacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
+        buffer.writeInt(message.id);
         buffer.writeBoolean(message.attribute == null);
         if (message.attribute != null) {
             buffer.writeResourceLocation(message.attribute.getRegistryName());
         }
     };
-    private static final Function<FriendlyByteBuf, UpdateClientAttributePacket> DECODER = buffer -> new UpdateClientAttributePacket(buffer.readBoolean() ? null : ShinsuAttributeRegistry.getRegistry().getValue(buffer.readResourceLocation()));
-    private static final BiConsumer<UpdateClientAttributePacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final Function<FriendlyByteBuf, ServerUpdateAttributePacket> DECODER = buffer -> new ServerUpdateAttributePacket(buffer.readInt(), buffer.readBoolean() ? null : ShinsuAttributeRegistry.getRegistry().getValue(buffer.readResourceLocation()));
+    private static final BiConsumer<ServerUpdateAttributePacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
 
+    private final int id;
     private final ShinsuAttribute attribute;
 
-    public UpdateClientAttributePacket(@Nullable ShinsuAttribute attribute) {
+    public ServerUpdateAttributePacket(int id, @Nullable ShinsuAttribute attribute) {
+        this.id = id;
         this.attribute = attribute;
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, UpdateClientAttributePacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        TowerOfGod.CHANNEL.registerMessage(index, ServerUpdateAttributePacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     private void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> ClientReference.attribute = attribute);
+        context.enqueueWork(() -> ClientReference.handleUpdateAttributePacket(id, attribute));
         context.setPacketHandled(true);
     }
+
 }

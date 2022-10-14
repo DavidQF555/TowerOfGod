@@ -26,4 +26,13 @@ public class BipedShinsuUserModel<T extends Mob & IShinsuUser> extends HumanoidM
         }
         super.prepareMobModel(entityIn, limbSwing, limbSwingAmount, partialTick);
     }
+
+    @Override
+    public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        super.setupAnim(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        if (entityIn.isCasting()) {
+            CastingModelHelper.transformRightArm(rightArm);
+            CastingModelHelper.transformLeftArm(leftArm);
+        }
+    }
 }
