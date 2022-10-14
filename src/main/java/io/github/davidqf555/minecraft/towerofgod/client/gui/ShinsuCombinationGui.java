@@ -11,6 +11,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientOpenCombinationGUIPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateCastingPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateClientErrorPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
@@ -56,6 +57,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
                 if (!enabled) {
                     TowerOfGod.CHANNEL.sendToServer(new ClientOpenCombinationGUIPacket());
+                    TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(true));
                     prevYaw = client.player.yHeadRot;
                     prevPitch = client.player.getXRot();
                     enabled = true;
@@ -73,7 +75,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                     float iconX = centerX - ICON_WIDTH / 2f;
                     float iconY = centerY - ICON_HEIGHT / 2f;
                     boolean hasError = ClientReference.ERRORS.containsKey(selected);
-                    int color = hasError ? 0xFFFF0000 : ShinsuAttribute.getColor(ClientReference.attribute);
+                    int color = hasError ? 0xFFFF0000 : ShinsuAttribute.getColor(ClientReference.getAttribute(client.player));
                     BACKGROUND.render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, color));
                     if (hasError) {
                         Component error = ClientReference.ERRORS.get(selected);
@@ -87,6 +89,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                 if (selected != null) {
                     TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
                 }
+                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
                 reset();
             }
         }
@@ -171,7 +174,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                 }
             }
         }
-        markers.add(new Marker(headX, headY, Marker.Type.ARROW, direction));
+        markers.add(new Marker(headX, headY, ShinsuAttribute.getColor(ClientReference.getAttribute(Minecraft.getInstance().player)), Marker.Type.ARROW, direction));
         List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
         if (!combination.isEmpty()) {
             for (ShinsuTechnique technique : unlocked) {
@@ -195,14 +198,15 @@ public class ShinsuCombinationGui implements IGuiOverlay {
 
         private static final int WIDTH = 20, HEIGHT = 20;
         private final Direction direction;
-        private final int x, y;
+        private final int x, y, color;
         private float offset;
         private Type type;
 
-        private Marker(int x, int y, Type type, Direction direction) {
+        private Marker(int x, int y, int color, Type type, Direction direction) {
             this.direction = direction;
             this.x = x;
             this.y = y;
+            this.color = color;
             this.type = type;
         }
 
@@ -213,7 +217,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
             matrixStack.translate(centerX, centerY, 0);
             matrixStack.mulPose(Vector3f.ZP.rotationDegrees(direction.getAngle() + offset + 180));
             matrixStack.translate(-centerX, -centerY, 0);
-            type.texture.render(new RenderContext(matrixStack, x, y, z, WIDTH, HEIGHT, ShinsuAttribute.getColor(ClientReference.attribute)));
+            type.texture.render(new RenderContext(matrixStack, x, y, z, WIDTH, HEIGHT, color));
             matrixStack.popPose();
         }
 

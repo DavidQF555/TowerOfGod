@@ -14,10 +14,13 @@ import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
@@ -66,6 +69,11 @@ public final class EventBusSubscriber {
         }
 
         @SubscribeEvent
+        public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
+            Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap().values().stream().map(renderer -> (LivingEntityRenderer<Player, HumanoidModel<Player>>) renderer).forEach(ModBus::addCastingLayer);
+        }
+
+        @SubscribeEvent
         public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
             event.registerLayerDefinition(LighthouseRenderer.LOCATION, LighthouseModel::createLayer);
             event.registerLayerDefinition(ObserverRenderer.LOCATION, ObserverModel::createLayer);
@@ -94,6 +102,10 @@ public final class EventBusSubscriber {
                     ItemProperties.register(spear.get(), SpearItem.THROWING, ItemProperties.getProperty(Items.TRIDENT, new ResourceLocation("throwing")));
                 }
             });
+        }
+
+        private static <T extends Player, M extends HumanoidModel<T>> void addCastingLayer(LivingEntityRenderer<T, M> renderer) {
+            renderer.addLayer(new CastingLayerRenderer<>(renderer));
         }
 
         @SubscribeEvent

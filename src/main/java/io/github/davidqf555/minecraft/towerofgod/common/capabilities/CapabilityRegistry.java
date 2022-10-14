@@ -15,6 +15,7 @@ public final class CapabilityRegistry {
     public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
         event.register(ShinsuStats.class);
         event.register(PredictedShinsuQuality.class);
+        event.register(CastingData.class);
     }
 
 }

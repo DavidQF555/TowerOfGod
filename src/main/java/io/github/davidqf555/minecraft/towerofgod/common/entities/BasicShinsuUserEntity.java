@@ -1,11 +1,14 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.client.model.CastingModelHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -35,6 +38,8 @@ import java.util.Optional;
 public abstract class BasicShinsuUserEntity extends PathfinderMob implements IShinsuUser, IGeared<BasicShinsuUserEntity>, RangedAttackMob {
 
     private static final EntityDataAccessor<String> GROUP = SynchedEntityData.defineId(BasicShinsuUserEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Boolean> CASTING = SynchedEntityData.defineId(BasicShinsuUserEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<ParticleOptions> ATTRIBUTE_PARTICLES = SynchedEntityData.defineId(BasicShinsuUserEntity.class, EntityDataSerializers.PARTICLE);
 
     public BasicShinsuUserEntity(EntityType<? extends BasicShinsuUserEntity> type, Level worldIn) {
         super(type, worldIn);
@@ -48,7 +53,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         } else if (dataTag.contains(TowerOfGod.MOD_ID, Tag.TAG_COMPOUND)) {
             CompoundTag child = dataTag.getCompound(TowerOfGod.MOD_ID);
             if (child.contains("Level", Tag.TAG_INT)) {
-                ShinsuStats stats = ShinsuStats.get(this);
+                ShinsuStats stats = getShinsuStats();
                 stats.addLevel(child.getInt("Level") - stats.getLevel());
             } else {
                 initializeShinsuLevel(random);
@@ -61,9 +66,9 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         Group group = getGroup();
         MutableComponent text;
         if (group != null) {
-            text = Component.translatable(getType().getDescriptionId() + ".group_name", group.getName(), ShinsuStats.get(this).getLevel()).withStyle(group.getTextFormattingColor());
+            text = Component.translatable(getType().getDescriptionId() + ".group_name", group.getName(), getShinsuStats().getLevel()).withStyle(group.getTextFormattingColor());
         } else {
-            text = Component.translatable(getType().getDescriptionId() + ".name", ShinsuStats.get(this).getLevel());
+            text = Component.translatable(getType().getDescriptionId() + ".name", getShinsuStats().getLevel());
         }
         setCustomName(text);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
@@ -73,16 +78,30 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
     protected void defineSynchedData() {
         super.defineSynchedData();
         getEntityData().define(GROUP, "");
+        getEntityData().define(CASTING, false);
+        getEntityData().define(ATTRIBUTE_PARTICLES, ShinsuAttribute.getParticles(null));
+    }
+
+    public ParticleOptions getAttributeParticles() {
+        return getEntityData().get(ATTRIBUTE_PARTICLES);
+    }
+
+    public void setAttributeParticles(ParticleOptions particles) {
+        getEntityData().set(ATTRIBUTE_PARTICLES, particles);
     }
 
     @Override
     public void aiStep() {
         super.aiStep();
         heal(0.025f);
+        if (level.isClientSide() && isCasting()) {
+            CastingModelHelper.spawnParticles(this, getAttributeParticles());
+        }
     }
 
     @Override
     protected void customServerAiStep() {
+        setAttributeParticles(ShinsuAttribute.getParticles(getShinsuStats().getAttribute()));
         shinsuTick((ServerLevel) level);
     }
 
@@ -91,6 +110,9 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         super.readAdditionalSaveData(nbt);
         if (nbt.contains("Group", Tag.TAG_STRING)) {
             setGroup(GroupRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Group"))));
+        }
+        if (nbt.contains("Casting", Tag.TAG_BYTE)) {
+            setCasting(nbt.getBoolean("Casting"));
         }
     }
 
@@ -101,6 +123,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         if (group != null) {
             nbt.putString("Group", group.getId().toString());
         }
+        nbt.putBoolean("Casting", isCasting());
     }
 
     @Override
@@ -130,7 +153,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         double dX = target.getX() - getX();
         double dZ = target.getZ() - getZ();
         double dY = target.getY(0.3333333333333333) - arrow.getY() + Mth.sqrt((float) (dX * dX + dZ * dZ)) * 0.2;
-        ShinsuStats stats = ShinsuStats.get(this);
+        ShinsuStats stats = getShinsuStats();
         float velocity = 1.6f;
         float inaccuracy = (14 - level.getDifficulty().getId() * 4f) / stats.getLevel();
         if (arrow instanceof ShinsuArrowEntity) {
@@ -156,7 +179,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
 
     @Override
     public int getGearLevel() {
-        return ShinsuStats.get(this).getLevel();
+        return getShinsuStats().getLevel();
     }
 
     @Override
@@ -170,5 +193,14 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         return group != null && group.isPreferredWeapon(weapon);
     }
 
+    @Override
+    public boolean isCasting() {
+        return getEntityData().get(CASTING);
+    }
+
+    @Override
+    public void setCasting(boolean casting) {
+        getEntityData().set(CASTING, casting);
+    }
 
 }

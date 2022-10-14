@@ -7,6 +7,7 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
 
@@ -18,7 +19,9 @@ public class BipedShinsuUserRenderer<T extends Mob & IShinsuUser> extends Humano
 
     public BipedShinsuUserRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new BipedShinsuUserModel<>(renderManagerIn.bakeLayer(ModelLayers.ZOMBIE)), 0.5f);
+        layers.removeIf(layer -> layer instanceof ItemInHandLayer);
         addLayer(new HumanoidArmorLayer<>(this, new BipedShinsuUserModel<>(renderManagerIn.bakeLayer(ModelLayers.ZOMBIE_INNER_ARMOR)), new BipedShinsuUserModel<>(renderManagerIn.bakeLayer(ModelLayers.ZOMBIE_OUTER_ARMOR))));
+        addLayer(new ConditionalHeldItemLayer<>(this, user -> !user.isCasting()));
     }
 
     @Nonnull

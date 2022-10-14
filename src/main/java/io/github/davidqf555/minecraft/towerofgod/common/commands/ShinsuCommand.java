@@ -6,8 +6,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
@@ -196,7 +196,7 @@ public final class ShinsuCommand {
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setAttribute(attribute);
             if (entity instanceof ServerPlayer) {
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateClientAttributePacket(attribute));
+                TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ServerUpdateAttributePacket(entity.getId(), attribute));
             }
             source.sendSuccess(Component.translatable(ATTRIBUTE, entity.getDisplayName(), attribute.getName()), true);
         }
@@ -216,7 +216,7 @@ public final class ShinsuCommand {
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setAttribute(null);
             if (entity instanceof ServerPlayer) {
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateClientAttributePacket(null));
+                TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ServerUpdateAttributePacket(entity.getId(), null));
             }
             source.sendSuccess(Component.translatable(REMOVE_ATTRIBUTE, entity.getDisplayName()), true);
         }

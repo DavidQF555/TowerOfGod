@@ -4,19 +4,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -174,52 +168,8 @@ public interface IShinsuUser {
 
     void setGroup(Group group);
 
-    class CastShinsuGoal<T extends Mob & IShinsuUser> extends Goal {
+    boolean isCasting();
 
-        private final T entity;
-        private ShinsuTechniqueInstance technique;
-        private LivingEntity target;
-
-        public CastShinsuGoal(T entity) {
-            this.entity = entity;
-            technique = null;
-            target = null;
-        }
-
-        @Override
-        public boolean canUse() {
-            target = entity.getTarget();
-            if (target == null || !target.isAlive()) {
-                return false;
-            }
-            List<ShinsuTechniqueInstance> tech = new ArrayList<>();
-            for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                Vec3 dir = entity.hasLineOfSight(target) ? target.getEyePosition(1).subtract(entity.getEyePosition(1)).normalize() : entity.getLookAngle();
-                technique.create(entity, target, dir).ifLeft(tech::add);
-            }
-            if (tech.isEmpty()) {
-                return false;
-            }
-            technique = tech.get(entity.getRandom().nextInt(tech.size()));
-            return true;
-        }
-
-        @Override
-        public void start() {
-            technique.getTechnique().cast(entity, technique);
-        }
-
-        @Override
-        public void stop() {
-            technique = null;
-            target = null;
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            return false;
-        }
-
-    }
+    void setCasting(boolean casting);
 
 }
