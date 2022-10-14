@@ -21,7 +21,7 @@ public class BipedShinsuUserRenderer<T extends Mob & IShinsuUser> extends Humano
         super(renderManagerIn, new BipedShinsuUserModel<>(renderManagerIn.bakeLayer(ModelLayers.ZOMBIE)), 0.5f);
         layers.removeIf(layer -> layer instanceof ItemInHandLayer);
         addLayer(new HumanoidArmorLayer<>(this, new BipedShinsuUserModel<>(renderManagerIn.bakeLayer(ModelLayers.ZOMBIE_INNER_ARMOR)), new BipedShinsuUserModel<>(renderManagerIn.bakeLayer(ModelLayers.ZOMBIE_OUTER_ARMOR))));
-        addLayer(new ConditionalHeldItemLayer<>(this, user -> !user.isCasting()));
+        addLayer(new ConditionalHeldItemLayer<>(this, renderManagerIn.getItemInHandRenderer(), user -> !user.isCasting()));
     }
 
     @Nonnull

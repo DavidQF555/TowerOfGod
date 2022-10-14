@@ -145,7 +145,7 @@ public final class ClientReference {
         if (attribute == null) {
             child.remove("Attribute");
         } else {
-            child.putString("Attribute", attribute.getRegistryName().toString());
+            child.putString("Attribute", attribute.getId().toString());
         }
     }
 }

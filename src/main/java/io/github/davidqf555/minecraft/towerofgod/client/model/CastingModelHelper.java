@@ -2,10 +2,9 @@ package io.github.davidqf555.minecraft.towerofgod.client.model;
 
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Random;
 
 public final class CastingModelHelper {
 
@@ -39,7 +38,7 @@ public final class CastingModelHelper {
 
     public static void spawnParticles(LivingEntity entity, ParticleOptions particle) {
         double spread = getParticleRadius(entity);
-        Random random = entity.getRandom();
+        RandomSource random = entity.getRandom();
         Vec3 start = entity.position().add(getParticleSpawnOffset(entity));
         int count = getParticleCount(entity);
         for (int i = 0; i < count; i++) {

@@ -37,7 +37,7 @@ public final class CastingEventSubscriber {
 
     @SubscribeEvent
     public static void preRenderPlayer(RenderPlayerEvent.Pre event) {
-        Player entity = event.getPlayer();
+        Player entity = event.getEntity();
         if (ClientReference.isCasting(entity)) {
             HumanoidModel<AbstractClientPlayer> model = event.getRenderer().getModel();
             model.rightArm.visible = false;

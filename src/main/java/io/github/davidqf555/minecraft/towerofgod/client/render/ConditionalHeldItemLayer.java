@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
@@ -14,8 +15,8 @@ public class ConditionalHeldItemLayer<T extends LivingEntity, M extends EntityMo
 
     private final Predicate<T> condition;
 
-    public ConditionalHeldItemLayer(RenderLayerParent<T, M> renderer, Predicate<T> condition) {
-        super(renderer);
+    public ConditionalHeldItemLayer(RenderLayerParent<T, M> parent, ItemInHandRenderer renderer, Predicate<T> condition) {
+        super(parent, renderer);
         this.condition = condition;
     }
 
