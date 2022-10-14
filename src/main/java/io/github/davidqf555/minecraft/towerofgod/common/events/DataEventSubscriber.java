@@ -1,12 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.events;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.CastingData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PredictedShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.SimpleCapabilityProvider;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,6 +23,7 @@ public final class DataEventSubscriber {
 
     private static final ResourceLocation SHINSU_STATS = new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_stats");
     private static final ResourceLocation PREDICTED_QUALITY = new ResourceLocation(TowerOfGod.MOD_ID, "predicted_quality");
+    private static final ResourceLocation CASTING = new ResourceLocation(TowerOfGod.MOD_ID, "casting");
 
     private DataEventSubscriber() {
     }
@@ -33,6 +34,7 @@ public final class DataEventSubscriber {
         if (entity instanceof PlayerEntity) {
             event.addCapability(SHINSU_STATS, new SimpleCapabilityProvider<>(ShinsuStats.capability));
             event.addCapability(PREDICTED_QUALITY, new SimpleCapabilityProvider<>(PredictedShinsuQuality.capability));
+            event.addCapability(CASTING, new SimpleCapabilityProvider<>(CastingData.capability));
         } else if (entity instanceof IShinsuUser) {
             event.addCapability(SHINSU_STATS, new SimpleCapabilityProvider<>(ShinsuStats.capability));
         }
@@ -42,7 +44,6 @@ public final class DataEventSubscriber {
     public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Entity entity = event.getEntity();
         ShinsuStats stats = ShinsuStats.get(entity);
-        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateClientAttributePacket(stats.getAttribute()));
         TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
         TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
     }

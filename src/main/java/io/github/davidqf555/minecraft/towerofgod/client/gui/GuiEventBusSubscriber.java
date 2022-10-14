@@ -5,6 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientOpenCombinationGUIPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateCastingPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -39,12 +40,14 @@ public final class GuiEventBusSubscriber {
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
                 if (ClientReference.combo == null) {
                     TowerOfGod.CHANNEL.sendToServer(new ClientOpenCombinationGUIPacket());
+                    TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(true));
                 } else if (!client.options.hideGui && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
                     MainWindow window = client.getWindow();
                     ClientReference.combo.render(event.getMatrixStack(), (window.getGuiScaledWidth() - ClientReference.combo.getWidth()) / 2f, (window.getGuiScaledHeight() - ClientReference.combo.getHeight()) / 2f - 50);
                 }
             } else {
                 ClientReference.combo = null;
+                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
             }
         }
     }
@@ -72,6 +75,7 @@ public final class GuiEventBusSubscriber {
             if (selected != null && !ClientReference.ERRORS.containsKey(selected)) {
                 TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
                 ClientReference.combo = null;
+                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
             }
         }
     }

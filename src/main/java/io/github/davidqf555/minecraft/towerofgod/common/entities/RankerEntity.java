@@ -41,7 +41,7 @@ public class RankerEntity extends BasicShinsuUserEntity {
         super.registerGoals();
         goalSelector.addGoal(0, new SwimGoal(this));
         goalSelector.addGoal(1, new SwapWeaponToMainHandGoal<>(this, 5));
-        goalSelector.addGoal(2, new CastShinsuGoal<>(this));
+        goalSelector.addGoal(2, new CastShinsuGoal<>(this, 50));
         goalSelector.addGoal(3, new RangedMainHandAttackGoal<>(this, 1, 12, 15));
         goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.5, true));
         goalSelector.addGoal(5, new LookAtGoal(this, PlayerEntity.class, 8));

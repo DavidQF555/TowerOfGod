@@ -16,6 +16,7 @@ public final class CapabilityRegistry {
     public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
         CapabilityManager.INSTANCE.register(ShinsuStats.class, new NBTCapabilityStorage<>(), ShinsuStats::new);
         CapabilityManager.INSTANCE.register(PredictedShinsuQuality.class, new NBTCapabilityStorage<>(), PredictedShinsuQuality::new);
+        CapabilityManager.INSTANCE.register(CastingData.class, new NBTCapabilityStorage<>(), CastingData::new);
     }
 
 }

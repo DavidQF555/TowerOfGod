@@ -4,7 +4,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PredictedShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateClientAttributePacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
@@ -59,7 +59,7 @@ public class ClickerItem extends Item {
                 entity.setShape(shape);
                 CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
                 serverPlayer.awardStat(Stats.ITEM_USED.get(this));
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new UpdateClientAttributePacket(attribute));
+                TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> serverPlayer), new ServerUpdateAttributePacket(serverPlayer.getId(), attribute));
             }
             worldIn.addFreshEntity(entity);
             return ActionResult.sidedSuccess(item, playerIn.level.isClientSide());

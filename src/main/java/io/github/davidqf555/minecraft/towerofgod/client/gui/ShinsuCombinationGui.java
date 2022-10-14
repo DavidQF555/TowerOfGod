@@ -9,7 +9,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateClientErrorPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -39,12 +38,12 @@ public class ShinsuCombinationGui extends AbstractGui {
     private ShinsuTechnique selected;
     private int headX, headY, minX, maxX, minY, maxY;
 
-    public ShinsuCombinationGui(Set<ShinsuTechnique> unlocked, float yaw, float pitch) {
+    public ShinsuCombinationGui(Set<ShinsuTechnique> unlocked, int color, float yaw, float pitch) {
         this.unlocked = unlocked;
         markers = new ArrayList<>();
         prevYaw = yaw;
         prevPitch = pitch;
-        color = ShinsuAttribute.getColor(ClientReference.attribute);
+        this.color = color;
         reset();
     }
 
@@ -141,7 +140,7 @@ public class ShinsuCombinationGui extends AbstractGui {
                 }
             }
         }
-        markers.add(new Marker(headX, headY, Marker.Type.ARROW, direction));
+        markers.add(new Marker(headX, headY, color, Marker.Type.ARROW, direction));
         List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
         if (!combination.isEmpty()) {
             for (ShinsuTechnique technique : unlocked) {
@@ -170,14 +169,15 @@ public class ShinsuCombinationGui extends AbstractGui {
 
         private static final int WIDTH = 20, HEIGHT = 20;
         private final Direction direction;
-        private final int x, y;
+        private final int x, y, color;
         private float offset;
         private Type type;
 
-        private Marker(int x, int y, Type type, Direction direction) {
+        private Marker(int x, int y, int color, Type type, Direction direction) {
             this.direction = direction;
             this.x = x;
             this.y = y;
+            this.color = color;
             this.type = type;
         }
 
@@ -188,7 +188,7 @@ public class ShinsuCombinationGui extends AbstractGui {
             matrixStack.translate(centerX, centerY, 0);
             matrixStack.mulPose(Vector3f.ZP.rotationDegrees(direction.getAngle() + offset + 180));
             matrixStack.translate(-centerX, -centerY, 0);
-            type.texture.render(new RenderContext(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, ShinsuAttribute.getColor(ClientReference.attribute)));
+            type.texture.render(new RenderContext(matrixStack, x, y, getBlitOffset(), WIDTH, HEIGHT, color));
             matrixStack.popPose();
         }
 

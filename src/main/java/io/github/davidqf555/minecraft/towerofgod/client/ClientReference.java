@@ -5,21 +5,29 @@ import io.github.davidqf555.minecraft.towerofgod.client.gui.GuideScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuCombinationGui;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.StatsMeterGui;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ColorHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +38,6 @@ public final class ClientReference {
     public static StatsMeterGui shinsu = null;
     public static StatsMeterGui baangs = null;
     public static ShinsuCombinationGui combo = null;
-    public static ShinsuAttribute attribute = null;
 
     private ClientReference() {
     }
@@ -72,11 +79,77 @@ public final class ClientReference {
 
     public static void openCombinationGUI(Set<ShinsuTechnique> unlocked) {
         PlayerEntity player = Minecraft.getInstance().player;
-        ClientReference.combo = new ShinsuCombinationGui(unlocked, player.yHeadRot, player.getViewXRot(1));
+        ClientReference.combo = new ShinsuCombinationGui(unlocked, ShinsuAttribute.getColor(ClientReference.getAttribute(player)), player.yHeadRot, player.getViewXRot(1));
     }
 
     public static void openGuideScreen(ShinsuTechnique[] pages, int color) {
         Minecraft.getInstance().setScreen(new GuideScreen(pages, 221, 180, color));
     }
 
+    public static void handleUpdateCastingPacket(int id, boolean casting) {
+        World world = Minecraft.getInstance().level;
+        if (world != null) {
+            Entity entity = world.getEntity(id);
+            if (entity instanceof PlayerEntity) {
+                setCasting((PlayerEntity) entity, casting);
+            }
+        }
+    }
+
+    public static void handleUpdateAttributePacket(int id, @Nullable ShinsuAttribute attribute) {
+        World world = Minecraft.getInstance().level;
+        if (world != null) {
+            Entity entity = world.getEntity(id);
+            if (entity instanceof PlayerEntity) {
+                setAttribute((PlayerEntity) entity, attribute);
+            }
+        }
+    }
+
+    public static boolean isCasting(PlayerEntity entity) {
+        CompoundNBT data = entity.getPersistentData();
+        if (data.contains(TowerOfGod.MOD_ID, Constants.NBT.TAG_COMPOUND)) {
+            CompoundNBT child = data.getCompound(TowerOfGod.MOD_ID);
+            return child.contains("Casting", Constants.NBT.TAG_BYTE) && child.getBoolean("Casting");
+        }
+        return false;
+    }
+
+    public static void setCasting(PlayerEntity entity, boolean casting) {
+        CompoundNBT data = entity.getPersistentData();
+        CompoundNBT child;
+        if (data.contains(TowerOfGod.MOD_ID, Constants.NBT.TAG_COMPOUND)) {
+            child = data.getCompound(TowerOfGod.MOD_ID);
+        } else {
+            child = new CompoundNBT();
+            data.put(TowerOfGod.MOD_ID, child);
+        }
+        child.putBoolean("Casting", casting);
+    }
+
+    @Nullable
+    public static ShinsuAttribute getAttribute(PlayerEntity entity) {
+        CompoundNBT data = entity.getPersistentData();
+        if (data.contains(TowerOfGod.MOD_ID, Constants.NBT.TAG_COMPOUND)) {
+            CompoundNBT child = data.getCompound(TowerOfGod.MOD_ID);
+            return child.contains("Attribute", Constants.NBT.TAG_STRING) ? ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(child.getString("Attribute"))) : null;
+        }
+        return null;
+    }
+
+    public static void setAttribute(PlayerEntity entity, @Nullable ShinsuAttribute attribute) {
+        CompoundNBT data = entity.getPersistentData();
+        CompoundNBT child;
+        if (data.contains(TowerOfGod.MOD_ID, Constants.NBT.TAG_COMPOUND)) {
+            child = data.getCompound(TowerOfGod.MOD_ID);
+        } else {
+            child = new CompoundNBT();
+            data.put(TowerOfGod.MOD_ID, child);
+        }
+        if (attribute == null) {
+            child.remove("Attribute");
+        } else {
+            child.putString("Attribute", attribute.getRegistryName().toString());
+        }
+    }
 }
