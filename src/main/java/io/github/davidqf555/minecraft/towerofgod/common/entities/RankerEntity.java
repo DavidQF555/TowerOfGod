@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -95,7 +94,7 @@ public class RankerEntity extends BasicShinsuUserEntity {
 
     @Override
     protected int getExperienceReward(PlayerEntity player) {
-        return ShinsuStats.get(this).getLevel() - random.nextInt(3) + 7;
+        return getLevel() - random.nextInt(3) + 7;
     }
 
     @Override

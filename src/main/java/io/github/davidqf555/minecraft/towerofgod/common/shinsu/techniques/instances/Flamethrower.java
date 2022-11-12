@@ -1,9 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -103,9 +101,7 @@ public class Flamethrower extends ShinsuTechniqueInstance {
 
         @Override
         public Either<Flamethrower, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            int control = ShinsuStats.get(user).getData(ShinsuTechniqueType.CONTROL).getLevel();
-            int manifest = ShinsuStats.get(user).getData(ShinsuTechniqueType.MANIFEST).getLevel();
-            return Either.left(new Flamethrower(user, 60, control * 2 + 30, Math.min(manifest / 5 + 1, 10), Math.min(0.25 + control / 10.0, 3)));
+            return Either.left(new Flamethrower(user, 60, 60, 7, 1));
         }
 
         @Override

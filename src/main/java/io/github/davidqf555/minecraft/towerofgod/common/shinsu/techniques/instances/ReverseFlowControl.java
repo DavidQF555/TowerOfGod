@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
@@ -104,8 +103,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
 
         @Override
         public Either<ReverseFlowControl, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DISRUPTION).getLevel();
-            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 20 + level * 10, level)) : Either.right(Messages.getRequiresTarget(RANGE));
+            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 40, 2)) : Either.right(Messages.getRequiresTarget(RANGE));
         }
 
         @Override

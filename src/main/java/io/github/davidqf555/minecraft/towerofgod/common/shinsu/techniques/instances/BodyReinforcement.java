@@ -3,7 +3,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
@@ -90,8 +89,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
 
         @Override
         public Either<BodyReinforcement, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.CONTROL).getLevel();
-            return Either.left(new BodyReinforcement(user, 200 + level * 100, level));
+            return Either.left(new BodyReinforcement(user, 500, 4));
         }
 
         @Override

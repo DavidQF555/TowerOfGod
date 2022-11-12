@@ -5,13 +5,11 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
@@ -25,7 +23,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.server.command.EnumArgument;
 
 import java.util.Collection;
 
@@ -34,12 +31,10 @@ public final class ShinsuCommand {
     private static final TranslationTextComponent ZERO = new TranslationTextComponent("commands." + TowerOfGod.MOD_ID + ".shinsu.zero");
     private static final String REMOVE_SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_shape";
     private static final String REMOVE_ATTRIBUTE = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_attribute";
-    private static final String LEVEL = "commands." + TowerOfGod.MOD_ID + ".shinsu.level";
     private static final String SHINSU = "commands." + TowerOfGod.MOD_ID + ".shinsu.shinsu";
     private static final String BAANGS = "commands." + TowerOfGod.MOD_ID + ".shinsu.baangs";
     private static final String RESISTANCE = "commands." + TowerOfGod.MOD_ID + ".shinsu.resistance";
     private static final String TENSION = "commands." + TowerOfGod.MOD_ID + ".shinsu.tension";
-    private static final String TECHNIQUE_TYPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.technique";
     private static final String ATTRIBUTE = "commands." + TowerOfGod.MOD_ID + ".shinsu.attribute";
     private static final String SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.shape";
     private static final String INSTANCES = "commands." + TowerOfGod.MOD_ID + ".shinsu.instances";
@@ -52,11 +47,6 @@ public final class ShinsuCommand {
         dispatcher.register(Commands.literal("shinsu")
                 .requires(source -> source.hasPermission(2))
                 .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.literal("level")
-                                .then(Commands.argument("value", IntegerArgumentType.integer())
-                                        .executes(context -> changeLevel(context.getSource(), EntityArgument.getEntities(context, "targets"), IntegerArgumentType.getInteger(context, "value")))
-                                )
-                        )
                         .then(Commands.literal("shinsu")
                                 .then(Commands.argument("value", IntegerArgumentType.integer())
                                         .executes(context -> changeShinsu(context.getSource(), EntityArgument.getEntities(context, "targets"), IntegerArgumentType.getInteger(context, "value")))
@@ -99,27 +89,11 @@ public final class ShinsuCommand {
                                         .executes(context -> removeShape(context.getSource(), EntityArgument.getEntities(context, "targets")))
                                 )
                         )
-                        .then(Commands.literal("technique")
-                                .then(Commands.argument("type", EnumArgument.enumArgument(ShinsuTechniqueType.class))
-                                        .executes(context -> changeTechniqueTypeLevel(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("type", ShinsuTechniqueType.class)))
-                                        .then(Commands.argument("value", IntegerArgumentType.integer())
-                                                .executes(context -> changeTechniqueTypeLevel(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("type", ShinsuTechniqueType.class), IntegerArgumentType.getInteger(context, "value")))
-                                        )
-                                )
-                        )
                         .then(Commands.literal("instances")
                                 .executes(context -> printInstances(context.getSource(), EntityArgument.getEntities(context, "targets")))
                         )
                 )
         );
-    }
-
-    private static int changeLevel(CommandSource source, Collection<? extends Entity> entities, int change) {
-        for (Entity entity : entities) {
-            ShinsuStats.get(entity).addLevel(change);
-            source.sendSuccess(new TranslationTextComponent(LEVEL, entity.getDisplayName(), change), true);
-        }
-        return entities.size();
     }
 
     private static int changeShinsu(CommandSource source, Collection<? extends Entity> entities, int change) {
@@ -172,20 +146,6 @@ public final class ShinsuCommand {
         for (Entity entity : entities) {
             ShinsuStats.get(entity).multiplyBaseTension(factor);
             source.sendSuccess(new TranslationTextComponent(TENSION, entity.getDisplayName(), factor), true);
-        }
-        return entities.size();
-    }
-
-    private static int changeTechniqueTypeLevel(CommandSource source, Collection<? extends Entity> entities, ShinsuTechniqueType type) {
-        return changeTechniqueTypeLevel(source, entities, type, 1);
-    }
-
-    private static int changeTechniqueTypeLevel(CommandSource source, Collection<? extends Entity> entities, ShinsuTechniqueType type, int change) {
-        for (Entity entity : entities) {
-            ShinsuStats stats = ShinsuStats.get(entity);
-            ShinsuTypeData d = stats.getData(type);
-            d.setLevel(d.getLevel() + change);
-            source.sendSuccess(new TranslationTextComponent(TECHNIQUE_TYPE, entity.getDisplayName(), type.getText(), change), true);
         }
         return entities.size();
     }

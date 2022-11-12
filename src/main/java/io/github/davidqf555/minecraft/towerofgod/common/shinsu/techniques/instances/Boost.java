@@ -1,9 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -77,8 +75,7 @@ public class Boost extends ShinsuTechniqueInstance {
 
         @Override
         public Either<Boost, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.CONTROL).getLevel();
-            return Either.left(new Boost(user, dir.scale(Math.min(1 + level / 5, 5))));
+            return Either.left(new Boost(user, dir.scale(Math.min(2, 5))));
         }
 
         @Override

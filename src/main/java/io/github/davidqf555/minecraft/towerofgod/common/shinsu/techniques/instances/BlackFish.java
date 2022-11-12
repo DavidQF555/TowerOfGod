@@ -1,9 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
@@ -88,8 +86,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
 
         @Override
         public Either<BlackFish, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.CONTROL).getLevel();
-            return Either.left(new BlackFish(user, level * 40 + 100, level));
+            return Either.left(new BlackFish(user, 300, 5));
         }
 
         @Override

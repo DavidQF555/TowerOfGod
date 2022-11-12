@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.item.Item;
 import net.minecraft.util.ColorHelper;
 import net.minecraft.util.ResourceLocation;
@@ -22,20 +21,18 @@ public class Group extends ForgeRegistryEntry<Group> {
     private final BossInfo.Color bossColor;
     private final Supplier<ShinsuAttribute[]> attributes;
     private final Supplier<ShinsuShape[]> shapes;
-    private final Supplier<ShinsuTechniqueType[]> types;
     private final Predicate<Item> weapons;
     private final double resistance;
     private final double tension;
     private final double shinsu;
     private final double baangs;
 
-    public Group(int color, Supplier<ShinsuAttribute[]> attributes, Supplier<ShinsuShape[]> shapes, Supplier<ShinsuTechniqueType[]> types, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
+    public Group(int color, Supplier<ShinsuAttribute[]> attributes, Supplier<ShinsuShape[]> shapes, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
         this.color = color;
         bossColor = getBossInfoColor(color);
         format = getTextFormattingColor(color);
         this.attributes = attributes;
         this.shapes = shapes;
-        this.types = types;
         this.weapons = weapons;
         this.resistance = resistance;
         this.tension = tension;
@@ -105,10 +102,6 @@ public class Group extends ForgeRegistryEntry<Group> {
 
     public ShinsuShape[] getShapes() {
         return shapes.get();
-    }
-
-    public ShinsuTechniqueType[] getPreferredTechniqueTypes() {
-        return types.get();
     }
 
     public boolean isPreferredWeapon(Item item) {
