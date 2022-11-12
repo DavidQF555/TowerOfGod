@@ -55,6 +55,7 @@ public final class ShinsuTechniqueRegistry {
     public static final RegistryObject<ShinsuTechnique> GROW_TREE = register("grow_tree", () -> new ShinsuTechnique(false, new GrowTree.Factory(), ShinsuIcons.SHINSU, new IRequirement[]{new AttributeRequirement(ShinsuAttributeRegistry.PLANT.get())}, ImmutableList.of(Direction.DOWN, Direction.UP), new HasTargetCondition(true)));
     public static final RegistryObject<ShinsuTechnique> THROW_ROCK = register("throw_rock", () -> new ShinsuTechnique(false, new ThrowRock.Factory(), ShinsuIcons.SHINSU, new IRequirement[]{new AttributeRequirement(ShinsuAttributeRegistry.STONE.get())}, ImmutableList.of(Direction.DOWN, Direction.UP), new HasTargetCondition(true)));
     public static final RegistryObject<OverridingShinsuTechnique> THUNDERSTORM = register("thunderstorm", () -> new OverridingShinsuTechnique(false, new Thunderstorm.Factory(), ShinsuIcons.SHINSU, new IRequirement[]{new AttributeRequirement(ShinsuAttributeRegistry.LIGHTNING.get())}, ImmutableList.of(Direction.DOWN, Direction.LEFT, Direction.UP), new HasTargetCondition(true)));
+    public static final RegistryObject<OverridingShinsuTechnique> FOREST = register("forest", () -> new OverridingShinsuTechnique(false, new Forest.Factory(), ShinsuIcons.SHINSU, new IRequirement[]{new AttributeRequirement(ShinsuAttributeRegistry.PLANT.get())}, ImmutableList.of(Direction.DOWN, Direction.LEFT, Direction.UP), new HasTargetCondition(true)));
 
     private static IForgeRegistry<ShinsuTechnique> registry = null;
 
