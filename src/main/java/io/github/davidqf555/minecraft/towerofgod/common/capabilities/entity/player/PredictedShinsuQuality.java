@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
+package io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player;
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;

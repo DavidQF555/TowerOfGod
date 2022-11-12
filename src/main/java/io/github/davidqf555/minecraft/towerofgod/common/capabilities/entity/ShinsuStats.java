@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
+package io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;

@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.events;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.CastingData;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PredictedShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.SimpleCapabilityProvider;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.CastingData;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PredictedShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;

@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;

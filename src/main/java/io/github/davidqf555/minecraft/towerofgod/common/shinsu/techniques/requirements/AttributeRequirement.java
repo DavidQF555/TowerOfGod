@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.entity.LivingEntity;

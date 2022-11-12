@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;

@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.events;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateCastingPacket;
 import net.minecraft.entity.Entity;
