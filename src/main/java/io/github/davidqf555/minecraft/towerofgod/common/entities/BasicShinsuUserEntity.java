@@ -2,7 +2,9 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.client.model.CastingModelHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
@@ -61,7 +63,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         } else {
             shinsuLevel = getInitialLevel(random);
         }
-        initializeShinsuStats(worldIn);
+        initialize(worldIn);
         initializeWeapons();
         Group group = getGroup();
         IFormattableTextComponent text;
@@ -132,7 +134,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
 
     @Override
     protected void customServerAiStep() {
-        setAttributeParticles(ShinsuAttribute.getParticles(getShinsuStats().getAttribute()));
+        setAttributeParticles(ShinsuAttribute.getParticles(getShinsuQualityData().getAttribute()));
         shinsuTick((ServerWorld) level);
     }
 
@@ -160,6 +162,16 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     @Override
     public ShinsuStats getShinsuStats() {
         return ShinsuStats.get(this);
+    }
+
+    @Override
+    public ShinsuQualityData getShinsuQualityData() {
+        return ShinsuQualityData.get(this);
+    }
+
+    @Override
+    public ShinsuTechniqueData getShinsuTechniqueData() {
+        return ShinsuTechniqueData.get(this);
     }
 
     @Nullable

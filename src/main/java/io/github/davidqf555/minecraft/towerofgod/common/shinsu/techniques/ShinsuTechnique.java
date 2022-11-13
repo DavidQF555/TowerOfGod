@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
 
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
@@ -117,8 +118,7 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
     }
 
     public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-        ShinsuStats stats = ShinsuStats.get(user);
-        int cooldown = stats.getCooldown(this);
+        int cooldown = ShinsuTechniqueData.get(user).getCooldown(this);
         if (!isUnlocked(user)) {
             return Either.right(Messages.LOCKED);
         } else if (cooldown > 0) {
@@ -130,9 +130,9 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
             ShinsuTechniqueInstance instance = op.get();
             int netShinsuUse = getNetShinsuUse(user, instance);
             int netBaangsUse = getNetBaangsUse(user, instance);
-            if (stats.getBaangs() < netBaangsUse) {
+            if (ShinsuStats.getBaangs(user) < netBaangsUse) {
                 return Either.right(Messages.getRequiresBaangs(netBaangsUse));
-            } else if (stats.getShinsu() < netShinsuUse) {
+            } else if (ShinsuStats.getShinsu(user) < netShinsuUse) {
                 return Either.right(Messages.getRequiresShinsu(netShinsuUse));
             }
             return Either.left(instance);
@@ -150,7 +150,7 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
 
     public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
         if (user.level instanceof ServerWorld) {
-            ShinsuStats stats = ShinsuStats.get(user);
+            ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
             if (stats.getCooldown(this) <= 0) {
                 create(user, target, dir).ifLeft(instance -> cast(user, instance));
             }
@@ -159,7 +159,7 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
 
     public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
         if (user.level instanceof ServerWorld) {
-            ShinsuStats stats = ShinsuStats.get(user);
+            ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
             stats.setCooldown(this, instance.getCooldown());
             stats.addTechnique(instance);
             instance.onUse((ServerWorld) user.level);

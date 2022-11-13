@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
@@ -47,7 +47,7 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
     }
 
     private Optional<ShinsuTechniqueInstance> getExistingInstance(LivingEntity entity) {
-        for (ShinsuTechniqueInstance inst : ShinsuStats.get(entity).getTechniques()) {
+        for (ShinsuTechniqueInstance inst : ShinsuTechniqueData.get(entity).getTechniques()) {
             if (equals(inst.getTechnique())) {
                 return Optional.of(inst);
             }

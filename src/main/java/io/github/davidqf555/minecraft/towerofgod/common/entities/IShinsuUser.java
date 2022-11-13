@@ -1,6 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
@@ -17,6 +19,10 @@ import java.util.Random;
 public interface IShinsuUser {
 
     ShinsuStats getShinsuStats();
+
+    ShinsuQualityData getShinsuQualityData();
+
+    ShinsuTechniqueData getShinsuTechniqueData();
 
     int getLevel();
 
@@ -40,20 +46,30 @@ public interface IShinsuUser {
         return 1 + getLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (random.nextGaussian() * 0.25 + 1);
     }
 
-    default void initializeShinsuStats(IServerWorld world) {
+    default void initializeStats(IServerWorld world) {
         ShinsuStats stats = getShinsuStats();
         Random random = world.getRandom();
+        stats.setMaxShinsu(getInitialMaxShinsu(random));
+        stats.setMaxBaangs(getInitialMaxBaangs(random));
+        stats.setResistance(getInitialResistance(random));
+        stats.setTension(getInitialTension(random));
+    }
+
+    default void initializeQuality(IServerWorld world) {
+        ShinsuQualityData stats = getShinsuQualityData();
+        stats.setAttribute(getInitialAttribute(world.getRandom()));
+        stats.setShape(getInitialShape(world.getRandom()));
+    }
+
+    default void initialize(IServerWorld world) {
+        Random random = world.getRandom();
         setGroup(getInitialGroup(random));
-        stats.addMaxShinsu(getInitialMaxShinsu(random) - stats.getMaxShinsu());
-        stats.addMaxBaangs(getInitialMaxBaangs(random) - stats.getMaxBaangs());
-        stats.multiplyBaseResistance(getInitialResistance(random) / stats.getRawResistance());
-        stats.multiplyBaseTension(getInitialTension(random) / stats.getRawTension());
-        stats.setAttribute(getInitialAttribute(random));
-        stats.setShape(getInitialShape(random));
+        initializeStats(world);
+        initializeQuality(world);
     }
 
     default void shinsuTick(ServerWorld world) {
-        getShinsuStats().tick(world);
+        getShinsuTechniqueData().tick(world);
     }
 
     default double getPreferredAttributeChance() {

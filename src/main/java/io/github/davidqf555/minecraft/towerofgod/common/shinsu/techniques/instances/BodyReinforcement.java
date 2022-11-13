@@ -43,7 +43,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
         Entity e = getUser(world);
         if (e instanceof LivingEntity) {
             LivingEntity user = (LivingEntity) e;
-            int amp = (int) (level * ShinsuStats.get(user).getRawTension());
+            int amp = (int) (level * ShinsuStats.get(user).getTension());
             user.addEffect(new EffectInstance(EffectRegistry.BODY_REINFORCEMENT.get(), 2, amp - 1, false, true, true));
         }
         super.tick(world);

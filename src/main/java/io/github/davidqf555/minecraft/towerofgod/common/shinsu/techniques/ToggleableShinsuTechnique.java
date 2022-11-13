@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
@@ -51,7 +51,7 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
     }
 
     private Optional<ShinsuTechniqueInstance> getExistingInstance(LivingEntity entity) {
-        for (ShinsuTechniqueInstance inst : ShinsuStats.get(entity).getTechniques()) {
+        for (ShinsuTechniqueInstance inst : ShinsuTechniqueData.get(entity).getTechniques()) {
             if (equals(inst.getTechnique())) {
                 return Optional.of(inst);
             }

@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
@@ -117,7 +117,7 @@ public class Manifest extends ShinsuTechniqueInstance {
 
         @Override
         public Either<Manifest, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            ShinsuStats stats = ShinsuStats.get(user);
+            ShinsuQualityData stats = ShinsuQualityData.get(user);
             return Either.left(new Manifest(user, stats.getShape(), stats.getAttribute()));
         }
 

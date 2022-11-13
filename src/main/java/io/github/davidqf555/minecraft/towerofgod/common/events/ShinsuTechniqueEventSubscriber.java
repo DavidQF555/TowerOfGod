@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.events;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
@@ -10,15 +10,15 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public final class ShinsuStatsEventSubscriber {
+public final class ShinsuTechniqueEventSubscriber {
 
-    private ShinsuStatsEventSubscriber() {
+    private ShinsuTechniqueEventSubscriber() {
     }
 
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START) {
-            ShinsuStats.get(event.player).tick((ServerWorld) event.player.level);
+            ShinsuTechniqueData.get(event.player).tick((ServerWorld) event.player.level);
         }
     }
 

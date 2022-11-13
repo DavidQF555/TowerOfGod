@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
@@ -32,7 +33,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     @Nullable
     public static ShinsuTechniqueInstance get(Entity user, UUID id) {
-        ShinsuStats stats = ShinsuStats.get(user);
+        ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
         for (ShinsuTechniqueInstance instance : stats.getTechniques()) {
             if (instance.id.equals(id)) {
                 return instance;
@@ -79,7 +80,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         onEnd(world);
         Entity user = getUser(world);
         if (user != null) {
-            ShinsuStats stats = ShinsuStats.get(user);
+            ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
             stats.removeTechnique(this);
             updateMeters(world);
         }
@@ -95,8 +96,8 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         Entity user = getUser(world);
         if (user instanceof ServerPlayerEntity) {
             ShinsuStats stats = ShinsuStats.get(user);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(user), stats.getMaxShinsu()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateBaangsMeterPacket(ShinsuStats.getBaangs(user), stats.getMaxBaangs()));
         }
     }
 
