@@ -1,19 +1,16 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
-import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -64,6 +61,11 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return obtainable;
     }
 
+    //TODO implement into PlayerTechniqueData
+    public boolean isUnlocked(PlayerEntity player) {
+        return true;
+    }
+
     public boolean matches(List<Direction> combination) {
         if (combination.size() == this.combination.size()) {
             for (int i = 0; i < combination.size(); i++) {
@@ -92,15 +94,6 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return factory;
     }
 
-    public boolean isUnlocked(LivingEntity user) {
-        for (IRequirement requirement : getRequirements()) {
-            if (!requirement.isUnlocked(user)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public IRequirement[] getRequirements() {
         return requirements;
     }
@@ -118,56 +111,40 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
     }
 
     public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-        int cooldown = ShinsuTechniqueData.get(user).getCooldown(this);
-        if (!isUnlocked(user)) {
-            return Either.right(Messages.LOCKED);
-        } else if (cooldown > 0) {
-            return Either.right(Messages.getOnCooldown(cooldown / 20.0));
-        }
         Either<? extends ShinsuTechniqueInstance, ITextComponent> either = getFactory().create(user, target, dir);
         Optional<? extends ShinsuTechniqueInstance> op = either.left();
         if (op.isPresent()) {
             ShinsuTechniqueInstance instance = op.get();
-            int netShinsuUse = getNetShinsuUse(user, instance);
-            int netBaangsUse = getNetBaangsUse(user, instance);
-            if (ShinsuStats.getBaangs(user) < netBaangsUse) {
-                return Either.right(Messages.getRequiresBaangs(netBaangsUse));
-            } else if (ShinsuStats.getShinsu(user) < netShinsuUse) {
-                return Either.right(Messages.getRequiresShinsu(netShinsuUse));
+            ShinsuTechniqueData data = ShinsuTechniqueData.get(user);
+            Optional<ITextComponent> error = data.getCastError(user, instance);
+            if (error.isPresent()) {
+                return Either.right(error.get());
             }
-            return Either.left(instance);
         }
         return either;
     }
 
-    protected int getNetShinsuUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public int getNetShinsuUse(LivingEntity user, ShinsuTechniqueInstance instance) {
         return instance.getShinsuUse();
     }
 
-    protected int getNetBaangsUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public int getNetBaangsUse(LivingEntity user, ShinsuTechniqueInstance instance) {
         return instance.getBaangsUse();
     }
 
     public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-        if (user.level instanceof ServerWorld) {
-            ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
-            if (stats.getCooldown(this) <= 0) {
-                create(user, target, dir).ifLeft(instance -> cast(user, instance));
-            }
-        }
+        create(user, target, dir).ifLeft(instance -> cast(user, instance));
     }
 
     public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
-        if (user.level instanceof ServerWorld) {
-            ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
-            stats.setCooldown(this, instance.getCooldown());
-            stats.addTechnique(instance);
-            instance.onUse((ServerWorld) user.level);
-        }
+        ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
+        stats.addTechnique(instance);
+        stats.onCast(user, instance);
+        instance.onUse((ServerWorld) user.level);
     }
 
-    public <T extends MobEntity & IShinsuUser> boolean shouldMobUse(T entity) {
-        return mobUseCondition.shouldUse(entity);
+    public MobUseCondition getMobUseCondition() {
+        return mobUseCondition;
     }
 
     public interface IFactory<T extends ShinsuTechniqueInstance> {

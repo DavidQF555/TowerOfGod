@@ -19,7 +19,7 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    protected int getNetShinsuUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public int getNetShinsuUse(LivingEntity user, ShinsuTechniqueInstance instance) {
         int def = super.getNetShinsuUse(user, instance);
         Optional<ShinsuTechniqueInstance> inst = getExistingInstance(user);
         if (inst.isPresent()) {
@@ -29,7 +29,7 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    protected int getNetBaangsUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public int getNetBaangsUse(LivingEntity user, ShinsuTechniqueInstance instance) {
         int def = super.getNetBaangsUse(user, instance);
         Optional<ShinsuTechniqueInstance> inst = getExistingInstance(user);
         if (inst.isPresent()) {
@@ -40,9 +40,7 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
 
     @Override
     public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
-        if (user.level instanceof ServerWorld) {
-            getExistingInstance(user).ifPresent(inst -> inst.remove((ServerWorld) user.level));
-        }
+        getExistingInstance(user).ifPresent(inst -> inst.remove((ServerWorld) user.level));
         super.cast(user, instance);
     }
 

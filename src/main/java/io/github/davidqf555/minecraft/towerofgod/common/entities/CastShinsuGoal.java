@@ -53,7 +53,7 @@ public class CastShinsuGoal<T extends MobEntity & IShinsuUser> extends Goal {
     }
 
     private Optional<? extends ShinsuTechniqueInstance> create(ShinsuTechnique technique) {
-        return technique.shouldMobUse(entity) ? technique.create(entity, entity.getTarget(), entity.getLookAngle()).left() : Optional.empty();
+        return technique.create(entity, entity.getTarget(), entity.getLookAngle()).left();
     }
 
     @Override

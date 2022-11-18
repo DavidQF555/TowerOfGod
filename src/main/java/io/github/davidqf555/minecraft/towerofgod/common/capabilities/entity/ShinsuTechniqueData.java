@@ -1,13 +1,16 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity;
 
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -15,9 +18,8 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class ShinsuTechniqueData implements INBTSerializable<CompoundNBT> {
 
@@ -25,18 +27,23 @@ public class ShinsuTechniqueData implements INBTSerializable<CompoundNBT> {
     @CapabilityInject(ShinsuTechniqueData.class)
     public static Capability<ShinsuTechniqueData> capability = null;
     private final List<ShinsuTechniqueInstance> technique = new ArrayList<>();
-    private final Map<ShinsuTechnique, Integer> cooldowns = new HashMap<>();
 
     public static ShinsuTechniqueData get(Entity entity) {
         return entity.getCapability(capability).orElseGet(ShinsuTechniqueData::new);
     }
 
-    public void setCooldown(ShinsuTechnique technique, int cooldown) {
-        cooldowns.put(technique, cooldown);
+    public Optional<ITextComponent> getCastError(LivingEntity user, ShinsuTechniqueInstance instance) {
+        int netShinsuUse = instance.getTechnique().getNetShinsuUse(user, instance);
+        int netBaangsUse = instance.getTechnique().getNetBaangsUse(user, instance);
+        if (ShinsuStats.getBaangs(user) < netBaangsUse) {
+            return Optional.of(Messages.getRequiresBaangs(netBaangsUse));
+        } else if (ShinsuStats.getShinsu(user) < netShinsuUse) {
+            return Optional.of(Messages.getRequiresShinsu(netShinsuUse));
+        }
+        return Optional.empty();
     }
 
-    public int getCooldown(ShinsuTechnique technique) {
-        return cooldowns.getOrDefault(technique, 0);
+    public void onCast(LivingEntity user, ShinsuTechniqueInstance instance) {
     }
 
     public List<ShinsuTechniqueInstance> getTechniques() {
@@ -75,12 +82,6 @@ public class ShinsuTechniqueData implements INBTSerializable<CompoundNBT> {
                 technique.remove(world);
             }
         }
-        for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-            int cooldown = getCooldown(technique);
-            if (cooldown > 0) {
-                setCooldown(technique, cooldown - 1);
-            }
-        }
     }
 
     @Override
@@ -91,9 +92,6 @@ public class ShinsuTechniqueData implements INBTSerializable<CompoundNBT> {
             instances.add(instance.serializeNBT());
         }
         tag.put("Techniques", instances);
-        CompoundNBT cooldowns = new CompoundNBT();
-        this.cooldowns.forEach((technique, cooldown) -> cooldowns.putInt(technique.getRegistryName().toString(), cooldown));
-        tag.put("Cooldowns", cooldowns);
         return tag;
     }
 
@@ -106,12 +104,6 @@ public class ShinsuTechniqueData implements INBTSerializable<CompoundNBT> {
                 ShinsuTechniqueInstance tech = type.getFactory().blankCreate();
                 tech.deserializeNBT((CompoundNBT) data);
                 addTechnique(tech);
-            }
-        }
-        if (nbt.contains("Cooldowns", Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT data = nbt.getCompound("Cooldowns");
-            for (String key : data.getAllKeys()) {
-                setCooldown(ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(key)), data.getInt(key));
             }
         }
     }
