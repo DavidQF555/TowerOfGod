@@ -6,7 +6,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.nbt.CompoundNBT;
@@ -26,7 +25,7 @@ public class Flash extends ShinsuTechniqueInstance {
     private static final double RANGE = 64;
     private Vector3d direction;
 
-    public Flash(LivingEntity user, Vector3d direction) {
+    public Flash(Entity user, Vector3d direction) {
         super(user);
         this.direction = direction;
     }
@@ -97,7 +96,7 @@ public class Flash extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<Flash> {
 
         @Override
-        public Either<Flash, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Flash, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new Flash(user, dir));
         }
 

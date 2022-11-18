@@ -170,7 +170,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     }
 
     @Override
-    public ShinsuTechniqueData getShinsuTechniqueData() {
+    public ShinsuTechniqueData<BasicShinsuUserEntity> getShinsuTechniqueData() {
         return ShinsuTechniqueData.get(this);
     }
 

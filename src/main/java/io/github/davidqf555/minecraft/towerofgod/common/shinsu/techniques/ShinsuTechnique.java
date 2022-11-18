@@ -9,8 +9,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instan
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -61,11 +59,6 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return obtainable;
     }
 
-    //TODO implement into PlayerTechniqueData
-    public boolean isUnlocked(PlayerEntity player) {
-        return true;
-    }
-
     public boolean matches(List<Direction> combination) {
         if (combination.size() == this.combination.size()) {
             for (int i = 0; i < combination.size(); i++) {
@@ -110,12 +103,12 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return icon;
     }
 
-    public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+    public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
         Either<? extends ShinsuTechniqueInstance, ITextComponent> either = getFactory().create(user, target, dir);
         Optional<? extends ShinsuTechniqueInstance> op = either.left();
         if (op.isPresent()) {
             ShinsuTechniqueInstance instance = op.get();
-            ShinsuTechniqueData data = ShinsuTechniqueData.get(user);
+            ShinsuTechniqueData<Entity> data = ShinsuTechniqueData.get(user);
             Optional<ITextComponent> error = data.getCastError(user, instance);
             if (error.isPresent()) {
                 return Either.right(error.get());
@@ -124,20 +117,20 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return either;
     }
 
-    public int getNetShinsuUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public int getNetShinsuUse(Entity user, ShinsuTechniqueInstance instance) {
         return instance.getShinsuUse();
     }
 
-    public int getNetBaangsUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public int getNetBaangsUse(Entity user, ShinsuTechniqueInstance instance) {
         return instance.getBaangsUse();
     }
 
-    public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+    public void cast(Entity user, @Nullable Entity target, Vector3d dir) {
         create(user, target, dir).ifLeft(instance -> cast(user, instance));
     }
 
-    public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
-        ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
+    public void cast(Entity user, ShinsuTechniqueInstance instance) {
+        ShinsuTechniqueData<Entity> stats = ShinsuTechniqueData.get(user);
         stats.addTechnique(instance);
         stats.onCast(user, instance);
         instance.onUse((ServerWorld) user.level);
@@ -149,7 +142,7 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
 
     public interface IFactory<T extends ShinsuTechniqueInstance> {
 
-        Either<T, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir);
+        Either<T, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir);
 
         T blankCreate();
 

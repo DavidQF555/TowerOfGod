@@ -6,7 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    public int getNetShinsuUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public int getNetShinsuUse(Entity user, ShinsuTechniqueInstance instance) {
         int def = super.getNetShinsuUse(user, instance);
         Optional<ShinsuTechniqueInstance> inst = getExistingInstance(user);
         if (inst.isPresent()) {
@@ -29,7 +29,7 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    public int getNetBaangsUse(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public int getNetBaangsUse(Entity user, ShinsuTechniqueInstance instance) {
         int def = super.getNetBaangsUse(user, instance);
         Optional<ShinsuTechniqueInstance> inst = getExistingInstance(user);
         if (inst.isPresent()) {
@@ -39,12 +39,12 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    public void cast(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public void cast(Entity user, ShinsuTechniqueInstance instance) {
         getExistingInstance(user).ifPresent(inst -> inst.remove((ServerWorld) user.level));
         super.cast(user, instance);
     }
 
-    private Optional<ShinsuTechniqueInstance> getExistingInstance(LivingEntity entity) {
+    private Optional<ShinsuTechniqueInstance> getExistingInstance(Entity entity) {
         for (ShinsuTechniqueInstance inst : ShinsuTechniqueData.get(entity).getTechniques()) {
             if (equals(inst.getTechnique())) {
                 return Optional.of(inst);

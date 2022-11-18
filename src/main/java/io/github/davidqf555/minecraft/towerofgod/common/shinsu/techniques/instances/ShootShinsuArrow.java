@@ -9,7 +9,6 @@ import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -26,7 +25,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     private float velocity;
     private UUID arrow;
 
-    public ShootShinsuArrow(LivingEntity user, Vector3d direction) {
+    public ShootShinsuArrow(Entity user, Vector3d direction) {
         super(user);
         this.direction = direction;
         arrow = null;
@@ -119,7 +118,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<ShootShinsuArrow> {
 
         @Override
-        public Either<ShootShinsuArrow, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<ShootShinsuArrow, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new ShootShinsuArrow(user, dir));
         }
 

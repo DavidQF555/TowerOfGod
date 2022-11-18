@@ -27,7 +27,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
     private int duration, level;
     private UUID target;
 
-    public ReverseFlowControl(LivingEntity user, UUID target, int duration, int level) {
+    public ReverseFlowControl(Entity user, UUID target, int duration, int level) {
         super(user);
         this.target = target;
         this.duration = duration;
@@ -102,7 +102,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<ReverseFlowControl> {
 
         @Override
-        public Either<ReverseFlowControl, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<ReverseFlowControl, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 40, 2)) : Either.right(Messages.getRequiresTarget(RANGE));
         }
 

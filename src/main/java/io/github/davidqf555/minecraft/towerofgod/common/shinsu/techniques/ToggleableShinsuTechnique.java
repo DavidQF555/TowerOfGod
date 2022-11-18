@@ -8,7 +8,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.condit
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
@@ -24,7 +23,7 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+    public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
         if (getExistingInstance(user).isPresent()) {
             return Either.left(getFactory().blankCreate());
         }
@@ -32,7 +31,7 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    public void cast(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+    public void cast(Entity user, @Nullable Entity target, Vector3d dir) {
         Optional<ShinsuTechniqueInstance> used = getExistingInstance(user);
         if (used.isPresent()) {
             used.get().remove((ServerWorld) user.level);
@@ -41,7 +40,7 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
         super.cast(user, target, dir);
     }
 
-    private Optional<ShinsuTechniqueInstance> getExistingInstance(LivingEntity entity) {
+    private Optional<ShinsuTechniqueInstance> getExistingInstance(Entity entity) {
         for (ShinsuTechniqueInstance inst : ShinsuTechniqueData.get(entity).getTechniques()) {
             if (equals(inst.getTechnique())) {
                 return Optional.of(inst);

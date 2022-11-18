@@ -9,7 +9,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -29,7 +28,7 @@ public class MoveDevices extends BasicCommandTechnique {
     private double distance;
     private float speed;
 
-    public MoveDevices(LivingEntity user, Vector3d direction, double distance, float speed) {
+    public MoveDevices(Entity user, Vector3d direction, double distance, float speed) {
         super(user);
         this.direction = direction;
         this.distance = distance;
@@ -91,7 +90,7 @@ public class MoveDevices extends BasicCommandTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<MoveDevices> {
 
         @Override
-        public Either<MoveDevices, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<MoveDevices, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             MoveDevices technique = new MoveDevices(user, dir, 64, 1);
             return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
         }

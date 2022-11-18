@@ -9,7 +9,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -24,7 +23,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
     private int duration;
     private double range;
 
-    public LighthouseFlowControl(LivingEntity user, int duration, double range) {
+    public LighthouseFlowControl(Entity user, int duration, double range) {
         super(user);
         this.duration = duration;
         this.range = range;
@@ -84,7 +83,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<LighthouseFlowControl> {
 
         @Override
-        public Either<LighthouseFlowControl, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<LighthouseFlowControl, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             LighthouseFlowControl technique = new LighthouseFlowControl(user, 60, 3);
             return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
         }

@@ -22,7 +22,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
 
     private int duration, level;
 
-    public BodyReinforcement(LivingEntity user, int duration, int level) {
+    public BodyReinforcement(Entity user, int duration, int level) {
         super(user);
         this.duration = duration;
         this.level = level;
@@ -88,7 +88,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<BodyReinforcement> {
 
         @Override
-        public Either<BodyReinforcement, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<BodyReinforcement, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new BodyReinforcement(user, 500, 4));
         }
 

@@ -7,7 +7,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMete
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
@@ -25,7 +24,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     private UUID user;
     private int ticks;
 
-    public ShinsuTechniqueInstance(LivingEntity user) {
+    public ShinsuTechniqueInstance(Entity user) {
         id = MathHelper.createInsecureUUID();
         this.user = user == null ? null : user.getUUID();
         ticks = 0;
@@ -33,7 +32,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     @Nullable
     public static ShinsuTechniqueInstance get(Entity user, UUID id) {
-        ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
+        ShinsuTechniqueData<?> stats = ShinsuTechniqueData.get(user);
         for (ShinsuTechniqueInstance instance : stats.getTechniques()) {
             if (instance.id.equals(id)) {
                 return instance;
@@ -80,7 +79,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         onEnd(world);
         Entity user = getUser(world);
         if (user != null) {
-            ShinsuTechniqueData stats = ShinsuTechniqueData.get(user);
+            ShinsuTechniqueData<?> stats = ShinsuTechniqueData.get(user);
             stats.removeTechnique(this);
             updateMeters(world);
         }

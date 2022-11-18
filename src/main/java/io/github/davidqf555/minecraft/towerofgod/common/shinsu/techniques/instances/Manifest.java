@@ -11,7 +11,6 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShape
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -32,7 +31,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     private ShinsuShape shape;
     private ShinsuAttribute attribute;
 
-    public Manifest(LivingEntity user, ShinsuShape shape, @Nullable ShinsuAttribute attribute) {
+    public Manifest(Entity user, ShinsuShape shape, @Nullable ShinsuAttribute attribute) {
         super(user);
         this.shape = shape;
         this.attribute = attribute;
@@ -116,7 +115,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<Manifest> {
 
         @Override
-        public Either<Manifest, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Manifest, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             ShinsuQualityData stats = ShinsuQualityData.get(user);
             return Either.left(new Manifest(user, stats.getShape(), stats.getAttribute()));
         }

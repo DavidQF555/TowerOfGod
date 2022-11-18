@@ -3,7 +3,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -22,7 +21,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
 
     private final List<UUID> devices;
 
-    public BasicCommandTechnique(LivingEntity user) {
+    public BasicCommandTechnique(Entity user) {
         super(user);
         devices = user == null ? new ArrayList<>() : ((ServerWorld) user.level).getEntities()
                 .filter(entity -> entity instanceof FlyingDevice)

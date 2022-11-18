@@ -9,7 +9,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -23,7 +22,7 @@ public class FollowOwner extends BasicCommandTechnique {
 
     private float speed;
 
-    public FollowOwner(LivingEntity user, float speed) {
+    public FollowOwner(Entity user, float speed) {
         super(user);
         this.speed = speed;
     }
@@ -68,7 +67,7 @@ public class FollowOwner extends BasicCommandTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<FollowOwner> {
 
         @Override
-        public Either<FollowOwner, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<FollowOwner, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             FollowOwner technique = new FollowOwner(user, 1);
             return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
         }

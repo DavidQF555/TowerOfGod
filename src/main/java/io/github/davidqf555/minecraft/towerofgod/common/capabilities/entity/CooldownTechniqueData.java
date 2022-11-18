@@ -4,7 +4,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class CooldownTechniqueData extends ShinsuTechniqueData {
+public class CooldownTechniqueData<T extends Entity> extends ShinsuTechniqueData<T> {
 
     private final Map<ShinsuTechnique, Integer> cooldowns = new HashMap<>();
 
@@ -28,7 +28,7 @@ public class CooldownTechniqueData extends ShinsuTechniqueData {
     }
 
     @Override
-    public Optional<ITextComponent> getCastError(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public Optional<ITextComponent> getCastError(T user, ShinsuTechniqueInstance instance) {
         int cooldown = getCooldown(instance.getTechnique());
         if (cooldown > 0) {
             return Optional.of(Messages.getOnCooldown(cooldown / 20.0));
@@ -37,7 +37,7 @@ public class CooldownTechniqueData extends ShinsuTechniqueData {
     }
 
     @Override
-    public void onCast(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public void onCast(T user, ShinsuTechniqueInstance instance) {
         setCooldown(instance.getTechnique(), instance.getCooldown());
         super.onCast(user, instance);
     }

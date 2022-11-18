@@ -5,7 +5,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.vector.Vector3d;
@@ -22,7 +21,7 @@ public class Flamethrower extends ShinsuTechniqueInstance {
     private float spread;
     private double magnitude;
 
-    public Flamethrower(LivingEntity user, int duration, float spread, int count, double magnitude) {
+    public Flamethrower(Entity user, int duration, float spread, int count, double magnitude) {
         super(user);
         this.duration = duration;
         this.spread = spread;
@@ -100,7 +99,7 @@ public class Flamethrower extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<Flamethrower> {
 
         @Override
-        public Either<Flamethrower, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Flamethrower, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new Flamethrower(user, 60, 60, 7, 1));
         }
 

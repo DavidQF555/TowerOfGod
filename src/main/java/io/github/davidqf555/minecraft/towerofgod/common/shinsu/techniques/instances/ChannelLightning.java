@@ -6,7 +6,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.nbt.CompoundNBT;
@@ -27,7 +26,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
     private Vector3d direction;
     private float damage;
 
-    public ChannelLightning(LivingEntity user, Vector3d direction, float damage) {
+    public ChannelLightning(Entity user, Vector3d direction, float damage) {
         super(user);
         this.direction = direction;
         this.damage = damage;
@@ -102,7 +101,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<ChannelLightning> {
 
         @Override
-        public Either<ChannelLightning, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<ChannelLightning, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new ChannelLightning(user, dir, 3));
         }
 

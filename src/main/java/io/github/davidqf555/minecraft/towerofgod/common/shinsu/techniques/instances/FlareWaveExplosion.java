@@ -29,7 +29,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
     private int amp;
     private UUID target;
 
-    public FlareWaveExplosion(LivingEntity user, UUID target, float damage, int amp) {
+    public FlareWaveExplosion(Entity user, UUID target, float damage, int amp) {
         super(user);
         this.target = target;
         this.damage = damage;
@@ -95,7 +95,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<FlareWaveExplosion> {
 
         @Override
-        public Either<FlareWaveExplosion, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<FlareWaveExplosion, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, target.getUUID(), 5, 2)) : Either.right(Messages.getRequiresTarget(RANGE));
         }
 

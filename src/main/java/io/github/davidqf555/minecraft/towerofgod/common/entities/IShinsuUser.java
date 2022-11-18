@@ -22,7 +22,7 @@ public interface IShinsuUser {
 
     ShinsuQualityData getShinsuQualityData();
 
-    ShinsuTechniqueData getShinsuTechniqueData();
+    ShinsuTechniqueData<?> getShinsuTechniqueData();
 
     int getLevel();
 

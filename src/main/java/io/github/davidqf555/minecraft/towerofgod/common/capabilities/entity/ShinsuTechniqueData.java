@@ -1,19 +1,19 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity;
 
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -21,18 +21,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ShinsuTechniqueData implements INBTSerializable<CompoundNBT> {
+public class ShinsuTechniqueData<T extends Entity> implements INBTSerializable<CompoundNBT> {
 
     public static final double CAST_TARGET_RANGE = 32;
-    @CapabilityInject(ShinsuTechniqueData.class)
-    public static Capability<ShinsuTechniqueData> capability = null;
     private final List<ShinsuTechniqueInstance> technique = new ArrayList<>();
 
-    public static ShinsuTechniqueData get(Entity entity) {
-        return entity.getCapability(capability).orElseGet(ShinsuTechniqueData::new);
+    public static <T extends Entity> ShinsuTechniqueData<T> get(T entity) {
+        if (entity instanceof PlayerEntity) {
+            return (ShinsuTechniqueData<T>) PlayerTechniqueData.get((PlayerEntity) entity);
+        } else if (entity instanceof MobEntity) {
+            return (ShinsuTechniqueData<T>) MobTechniqueData.get((MobEntity) entity);
+        }
+        return new ShinsuTechniqueData<>();
     }
 
-    public Optional<ITextComponent> getCastError(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public Optional<ITextComponent> getCastError(T user, ShinsuTechniqueInstance instance) {
         int netShinsuUse = instance.getTechnique().getNetShinsuUse(user, instance);
         int netBaangsUse = instance.getTechnique().getNetBaangsUse(user, instance);
         if (ShinsuStats.getBaangs(user) < netBaangsUse) {
@@ -43,7 +46,7 @@ public class ShinsuTechniqueData implements INBTSerializable<CompoundNBT> {
         return Optional.empty();
     }
 
-    public void onCast(LivingEntity user, ShinsuTechniqueInstance instance) {
+    public void onCast(T user, ShinsuTechniqueInstance instance) {
     }
 
     public List<ShinsuTechniqueInstance> getTechniques() {

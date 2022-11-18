@@ -21,7 +21,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
 
     private int duration, light;
 
-    public BlackFish(LivingEntity user, int duration, int light) {
+    public BlackFish(Entity user, int duration, int light) {
         super(user);
         this.duration = duration;
         this.light = light;
@@ -85,7 +85,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<BlackFish> {
 
         @Override
-        public Either<BlackFish, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<BlackFish, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new BlackFish(user, 300, 5));
         }
 

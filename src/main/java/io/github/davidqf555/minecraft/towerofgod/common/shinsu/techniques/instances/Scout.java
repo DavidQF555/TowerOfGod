@@ -9,7 +9,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.*;
@@ -28,7 +27,7 @@ public class Scout extends BasicCommandTechnique {
     private int radius;
     private float speed;
 
-    public Scout(LivingEntity user, Vector3d direction, double range, int radius, float speed) {
+    public Scout(Entity user, Vector3d direction, double range, int radius, float speed) {
         super(user);
         this.direction = direction;
         this.range = range;
@@ -107,7 +106,7 @@ public class Scout extends BasicCommandTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<Scout> {
 
         @Override
-        public Either<Scout, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Scout, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             Scout technique = new Scout(user, dir, 8, 12, 1);
             return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
         }
