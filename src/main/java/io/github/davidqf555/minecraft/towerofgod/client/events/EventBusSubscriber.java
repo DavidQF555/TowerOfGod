@@ -65,6 +65,7 @@ public final class EventBusSubscriber {
             RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.RANKER.get(), BipedShinsuUserRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SPEAR.get(), SpearRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), DirectionalLightningRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.MENTOR.get(), BipedShinsuUserRenderer::new);
             KeyBindingsList.register();
             event.enqueueWork(() -> {
                 ScreenManager.register(ContainerRegistry.LIGHTHOUSE.get(), LighthouseScreen::new);

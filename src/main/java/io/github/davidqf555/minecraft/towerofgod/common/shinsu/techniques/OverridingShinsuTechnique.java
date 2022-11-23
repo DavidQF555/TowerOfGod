@@ -2,20 +2,19 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.server.ServerWorld;
 
-import java.util.List;
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class OverridingShinsuTechnique extends ShinsuTechnique {
 
-    public OverridingShinsuTechnique(boolean indefinite, IFactory<?> factory, IRenderData icon, IRequirement[] requirements, List<Direction> combination, MobUseCondition mobUseCondition) {
-        super(indefinite, factory, icon, requirements, combination, mobUseCondition);
+    public OverridingShinsuTechnique(boolean indefinite, IFactory<?> factory, IRenderData icon, IRequirement[] requirements, @Nullable UsageData usage, MobUseCondition mobUseCondition) {
+        super(indefinite, factory, icon, requirements, usage, mobUseCondition);
     }
 
     @Override

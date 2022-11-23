@@ -34,10 +34,14 @@ public class CastShinsuGoal<T extends MobEntity & IShinsuUser> extends Goal {
             if (possible.isEmpty()) {
                 return false;
             }
-            selected = possible.get(entity.getRandom().nextInt(possible.size()));
+            selected = selectTechnique(possible);
             return true;
         }
         return false;
+    }
+
+    protected ShinsuTechnique selectTechnique(List<ShinsuTechnique> possible) {
+        return possible.get(entity.getRandom().nextInt(possible.size()));
     }
 
     @Override

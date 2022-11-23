@@ -76,6 +76,7 @@ public interface IShinsuUser {
         return 0.75;
     }
 
+    @Nullable
     default ShinsuAttribute getInitialAttribute(Random random) {
         ShinsuAttribute[] pref = getPreferredQualities();
         if (pref.length > 0 && random.nextDouble() < getPreferredAttributeChance()) {

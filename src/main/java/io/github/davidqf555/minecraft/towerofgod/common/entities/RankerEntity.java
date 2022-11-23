@@ -21,7 +21,7 @@ public class RankerEntity extends BasicShinsuUserEntity {
 
     private final ServerBossInfo info;
 
-    public RankerEntity(EntityType<RankerEntity> type, World world) {
+    public RankerEntity(EntityType<? extends RankerEntity> type, World world) {
         super(type, world);
         info = new ServerBossInfo(getDisplayName(), BossInfo.Color.WHITE, BossInfo.Overlay.PROGRESS);
         info.setVisible(false);
