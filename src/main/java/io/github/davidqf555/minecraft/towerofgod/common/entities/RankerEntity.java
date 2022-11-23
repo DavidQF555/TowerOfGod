@@ -85,12 +85,12 @@ public class RankerEntity extends BasicShinsuUserEntity {
 
     @Override
     public int getMaxInitialLevel() {
-        return 60;
+        return 100;
     }
 
     @Override
     public int getMinInitialLevel() {
-        return 100;
+        return 60;
     }
 
     @Override
