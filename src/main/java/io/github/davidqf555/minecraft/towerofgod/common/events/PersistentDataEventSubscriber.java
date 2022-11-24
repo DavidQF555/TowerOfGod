@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.events;
 
-import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.CastingData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateCastingPacket;
@@ -25,7 +25,7 @@ public final class PersistentDataEventSubscriber {
         Entity target = event.getTarget();
         if (player instanceof ServerPlayerEntity && target instanceof PlayerEntity) {
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateAttributePacket(target.getId(), ShinsuStats.get(target).getAttribute()));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateCastingPacket(target.getId(), ClientReference.isCasting((PlayerEntity) target)));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateCastingPacket(target.getId(), CastingData.get((PlayerEntity) target).isCasting()));
         }
     }
 
