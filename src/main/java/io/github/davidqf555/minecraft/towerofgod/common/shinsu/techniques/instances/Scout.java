@@ -51,11 +51,6 @@ public class Scout extends BasicCommandTechnique {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1 + getDevices().size() / 3;
-    }
-
-    @Override
     protected DeviceCommand createCommand(FlyingDevice entity, ServerWorld world) {
         Entity user = getUser(world);
         Vector3d eye = user.getEyePosition(1);

@@ -135,10 +135,6 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         return instance.getShinsuUse();
     }
 
-    public int getNetBaangsUse(Entity user, ShinsuTechniqueInstance instance) {
-        return instance.getBaangsUse();
-    }
-
     public void cast(Entity user, @Nullable Entity target, Vector3d dir) {
         create(user, target, dir).ifLeft(instance -> cast(user, instance));
     }

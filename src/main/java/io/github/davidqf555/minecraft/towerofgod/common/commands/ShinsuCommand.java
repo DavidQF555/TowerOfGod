@@ -8,7 +8,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
@@ -34,7 +33,6 @@ public final class ShinsuCommand {
     private static final String REMOVE_SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_shape";
     private static final String REMOVE_ATTRIBUTE = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_attribute";
     private static final String SHINSU = "commands." + TowerOfGod.MOD_ID + ".shinsu.shinsu";
-    private static final String BAANGS = "commands." + TowerOfGod.MOD_ID + ".shinsu.baangs";
     private static final String RESISTANCE = "commands." + TowerOfGod.MOD_ID + ".shinsu.resistance";
     private static final String TENSION = "commands." + TowerOfGod.MOD_ID + ".shinsu.tension";
     private static final String ATTRIBUTE = "commands." + TowerOfGod.MOD_ID + ".shinsu.attribute";
@@ -52,11 +50,6 @@ public final class ShinsuCommand {
                         .then(Commands.literal("shinsu")
                                 .then(Commands.argument("value", IntegerArgumentType.integer(0))
                                         .executes(context -> setMaxShinsu(context.getSource(), EntityArgument.getEntities(context, "targets"), IntegerArgumentType.getInteger(context, "value")))
-                                )
-                        )
-                        .then(Commands.literal("baangs")
-                                .then(Commands.argument("value", IntegerArgumentType.integer(0))
-                                        .executes(context -> setMaxBaangs(context.getSource(), EntityArgument.getEntities(context, "targets"), IntegerArgumentType.getInteger(context, "value")))
                                 )
                         )
                         .then(Commands.literal("resistance")
@@ -106,18 +99,6 @@ public final class ShinsuCommand {
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(entity), stats.getMaxShinsu()));
             }
             source.sendSuccess(new TranslationTextComponent(SHINSU, entity.getDisplayName(), shinsu), true);
-        }
-        return entities.size();
-    }
-
-    private static int setMaxBaangs(CommandSource source, Collection<? extends Entity> entities, int baangs) {
-        for (Entity entity : entities) {
-            ShinsuStats stats = ShinsuStats.get(entity);
-            stats.setMaxBaangs(baangs);
-            if (entity instanceof ServerPlayerEntity) {
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateBaangsMeterPacket(ShinsuStats.getBaangs(entity), stats.getMaxBaangs()));
-            }
-            source.sendSuccess(new TranslationTextComponent(BAANGS, entity.getDisplayName(), baangs), true);
         }
         return entities.size();
     }

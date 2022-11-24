@@ -66,11 +66,6 @@ public class Manifest extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
-    @Override
     public void tick(ServerWorld world) {
         boolean contains = false;
         IItemHandler inventory = getUser(world).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);

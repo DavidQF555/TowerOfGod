@@ -60,11 +60,6 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
-    @Override
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
         if (nbt.contains("Level", Constants.NBT.TAG_INT)) {

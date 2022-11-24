@@ -31,11 +31,6 @@ public interface IShinsuUser {
         return 10 + (int) (getLevel() * (group == null ? 1 : group.getShinsu()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
     }
 
-    default int getInitialMaxBaangs(Random random) {
-        Group group = getGroup();
-        return 1 + (int) (0.05 * getLevel() * (group == null ? 1 : group.getBaangs()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
-    }
-
     default double getInitialResistance(Random random) {
         Group group = getGroup();
         return 1 + getLevel() * 0.025 * (group == null ? 1 : group.getResistance()) * (random.nextGaussian() * 0.25 + 1);
@@ -50,7 +45,6 @@ public interface IShinsuUser {
         ShinsuStats stats = getShinsuStats();
         Random random = world.getRandom();
         stats.setMaxShinsu(getInitialMaxShinsu(random));
-        stats.setMaxBaangs(getInitialMaxBaangs(random));
         stats.setResistance(getInitialResistance(random));
         stats.setTension(getInitialTension(random));
     }

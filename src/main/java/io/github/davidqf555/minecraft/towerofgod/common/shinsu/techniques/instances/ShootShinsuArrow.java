@@ -74,11 +74,6 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
-    @Override
     public void tick(ServerWorld world) {
         if (arrow == null || world.getEntity(arrow) == null) {
             remove(world);

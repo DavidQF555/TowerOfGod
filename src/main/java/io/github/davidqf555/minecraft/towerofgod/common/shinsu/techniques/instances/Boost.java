@@ -44,11 +44,6 @@ public class Boost extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
-    @Override
     public int getCooldown() {
         return 100;
     }

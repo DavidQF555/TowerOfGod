@@ -57,11 +57,6 @@ public class BlackFish extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
-    @Override
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
         if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {

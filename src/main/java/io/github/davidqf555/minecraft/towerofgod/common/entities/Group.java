@@ -25,9 +25,8 @@ public class Group extends ForgeRegistryEntry<Group> {
     private final double resistance;
     private final double tension;
     private final double shinsu;
-    private final double baangs;
 
-    public Group(int color, Supplier<ShinsuAttribute[]> attributes, Supplier<ShinsuShape[]> shapes, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
+    public Group(int color, Supplier<ShinsuAttribute[]> attributes, Supplier<ShinsuShape[]> shapes, Predicate<Item> weapons, double resistance, double tension, double shinsu) {
         this.color = color;
         bossColor = getBossInfoColor(color);
         format = getTextFormattingColor(color);
@@ -37,7 +36,6 @@ public class Group extends ForgeRegistryEntry<Group> {
         this.resistance = resistance;
         this.tension = tension;
         this.shinsu = shinsu;
-        this.baangs = baangs;
     }
 
     private static BossInfo.Color getBossInfoColor(int color) {
@@ -118,10 +116,6 @@ public class Group extends ForgeRegistryEntry<Group> {
 
     public double getShinsu() {
         return shinsu;
-    }
-
-    public double getBaangs() {
-        return baangs;
     }
 
     public TranslationTextComponent getName() {

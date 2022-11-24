@@ -3,7 +3,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.entity.Entity;
@@ -73,8 +72,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     public abstract int getShinsuUse();
 
-    public abstract int getBaangsUse();
-
     public void remove(ServerWorld world) {
         onEnd(world);
         Entity user = getUser(world);
@@ -96,7 +93,6 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         if (user instanceof ServerPlayerEntity) {
             ShinsuStats stats = ShinsuStats.get(user);
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(user), stats.getMaxShinsu()));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateBaangsMeterPacket(ShinsuStats.getBaangs(user), stats.getMaxBaangs()));
         }
     }
 

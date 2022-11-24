@@ -38,11 +38,6 @@ public class FollowOwner extends BasicCommandTechnique {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1 + getDevices().size() / 3;
-    }
-
-    @Override
     protected DeviceCommand createCommand(FlyingDevice entity, ServerWorld world) {
         return new FollowOwnerCommand(entity, getID(), speed);
     }

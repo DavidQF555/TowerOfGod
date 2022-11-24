@@ -45,11 +45,6 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1 + getDevices().size() / 2;
-    }
-
-    @Override
     protected DeviceCommand createCommand(FlyingDevice entity, ServerWorld world) {
         return new LighthouseFlowControlCommand(entity, getID(), range, getDuration());
     }

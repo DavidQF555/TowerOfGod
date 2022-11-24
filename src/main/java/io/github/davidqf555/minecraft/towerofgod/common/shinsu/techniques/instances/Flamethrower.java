@@ -65,11 +65,6 @@ public class Flamethrower extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
-    @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT tag = super.serializeNBT();
         tag.putInt("Duration", duration);

@@ -13,7 +13,7 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     public static Capability<ShinsuStats> capability = null;
     private double resistance = 1;
     private double tension = 1;
-    private int shinsu, baangs;
+    private int shinsu;
 
     public static ShinsuStats get(Entity entity) {
         return entity.getCapability(capability).orElseGet(ShinsuStats::new);
@@ -21,10 +21,6 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
 
     public static int getShinsu(Entity entity) {
         return get(entity).getMaxShinsu() - ShinsuTechniqueData.get(entity).getShinsuUsage();
-    }
-
-    public static int getBaangs(Entity entity) {
-        return get(entity).getMaxBaangs() - ShinsuTechniqueData.get(entity).getBaangsUsage();
     }
 
     public static double getNetResistance(Entity user, Entity target) {
@@ -39,14 +35,6 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
 
     public void setMaxShinsu(int shinsu) {
         this.shinsu = shinsu;
-    }
-
-    public int getMaxBaangs() {
-        return baangs;
-    }
-
-    public void setMaxBaangs(int baangs) {
-        this.baangs = baangs;
     }
 
     public double getResistance() {
@@ -71,7 +59,6 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         tag.putDouble("Resistance", getResistance());
         tag.putDouble("Tension", getTension());
         tag.putInt("Shinsu", getMaxShinsu());
-        tag.putInt("Baangs", getMaxBaangs());
         return tag;
     }
 
@@ -85,9 +72,6 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
         }
         if (nbt.contains("Shinsu", Constants.NBT.TAG_INT)) {
             setMaxShinsu(nbt.getInt("Shinsu"));
-        }
-        if (nbt.contains("Baangs", Constants.NBT.TAG_INT)) {
-            setMaxBaangs(nbt.getInt("Baangs"));
         }
     }
 

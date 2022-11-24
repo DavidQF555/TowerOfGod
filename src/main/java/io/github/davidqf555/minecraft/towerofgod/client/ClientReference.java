@@ -36,7 +36,6 @@ public final class ClientReference {
 
     public static final Map<ShinsuTechnique, ITextComponent> ERRORS = new HashMap<>();
     public static StatsMeterGui shinsu = null;
-    public static StatsMeterGui baangs = null;
     public static ShinsuCombinationGui combo = null;
 
     private ClientReference() {

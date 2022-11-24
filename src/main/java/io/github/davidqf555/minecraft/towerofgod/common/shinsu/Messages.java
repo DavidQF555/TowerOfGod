@@ -23,10 +23,6 @@ public final class Messages {
         return new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_shinsu", requirement);
     }
 
-    public static ITextComponent getRequiresBaangs(int requirement) {
-        return new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_baangs", requirement);
-    }
-
     public static TranslationTextComponent getRequiresTarget(double range) {
         return new TranslationTextComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_target", range);
     }

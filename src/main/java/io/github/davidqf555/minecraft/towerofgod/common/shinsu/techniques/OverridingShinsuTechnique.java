@@ -28,16 +28,6 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
     }
 
     @Override
-    public int getNetBaangsUse(Entity user, ShinsuTechniqueInstance instance) {
-        int def = super.getNetBaangsUse(user, instance);
-        Optional<ShinsuTechniqueInstance> inst = getExistingInstance(user);
-        if (inst.isPresent()) {
-            def -= inst.get().getBaangsUse();
-        }
-        return def;
-    }
-
-    @Override
     public void cast(Entity user, ShinsuTechniqueInstance instance) {
         getExistingInstance(user).ifPresent(inst -> inst.remove((ServerWorld) user.level));
         super.cast(user, instance);

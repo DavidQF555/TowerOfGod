@@ -37,10 +37,7 @@ public class ShinsuTechniqueData<T extends Entity> implements INBTSerializable<C
 
     public Optional<ITextComponent> getCastError(T user, ShinsuTechniqueInstance instance) {
         int netShinsuUse = instance.getTechnique().getNetShinsuUse(user, instance);
-        int netBaangsUse = instance.getTechnique().getNetBaangsUse(user, instance);
-        if (ShinsuStats.getBaangs(user) < netBaangsUse) {
-            return Optional.of(Messages.getRequiresBaangs(netBaangsUse));
-        } else if (ShinsuStats.getShinsu(user) < netShinsuUse) {
+        if (ShinsuStats.getShinsu(user) < netShinsuUse) {
             return Optional.of(Messages.getRequiresShinsu(netShinsuUse));
         }
         return Optional.empty();
@@ -67,14 +64,6 @@ public class ShinsuTechniqueData<T extends Entity> implements INBTSerializable<C
             shinsu += technique.getShinsuUse();
         }
         return shinsu;
-    }
-
-    public int getBaangsUsage() {
-        int baangs = 0;
-        for (ShinsuTechniqueInstance technique : getTechniques()) {
-            baangs += technique.getBaangsUse();
-        }
-        return baangs;
     }
 
     public void tick(ServerWorld world) {
