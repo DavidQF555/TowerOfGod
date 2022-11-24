@@ -70,8 +70,7 @@ public class MentorEntity extends RankerEntity {
         super.die(source);
         if (!level.isClientSide()) {
             LivingEntity credit = getKillCredit();
-            if (credit instanceof PlayerEntity) {
-                PlayerTechniqueData.get((PlayerEntity) credit).unlock(technique);
+            if (credit instanceof PlayerEntity && PlayerTechniqueData.get((PlayerEntity) credit).unlock(technique)) {
                 credit.sendMessage(new TranslationTextComponent(DEATH, technique.getText()), getUUID());
             }
         }

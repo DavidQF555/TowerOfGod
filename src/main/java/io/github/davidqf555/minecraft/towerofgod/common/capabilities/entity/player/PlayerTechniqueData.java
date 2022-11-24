@@ -35,8 +35,15 @@ public class PlayerTechniqueData extends RequirementTechniqueData<PlayerEntity> 
         return getUnlocked().contains(technique) && super.isUnlocked(user, technique);
     }
 
-    public void unlock(ShinsuTechnique technique) {
-        unlocked.add(technique);
+    public boolean unlock(ShinsuTechnique technique) {
+        if (technique.isObtainable()) {
+            return unlocked.add(technique);
+        }
+        return false;
+    }
+
+    public boolean lock(ShinsuTechnique technique) {
+        return unlocked.remove(technique);
     }
 
     @Override
