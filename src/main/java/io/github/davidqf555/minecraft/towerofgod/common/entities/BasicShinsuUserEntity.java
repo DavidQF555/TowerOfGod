@@ -42,7 +42,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
     private static final DataParameter<String> GROUP = EntityDataManager.defineId(BasicShinsuUserEntity.class, DataSerializers.STRING);
     private static final DataParameter<Boolean> CASTING = EntityDataManager.defineId(BasicShinsuUserEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<IParticleData> ATTRIBUTE_PARTICLES = EntityDataManager.defineId(BasicShinsuUserEntity.class, DataSerializers.PARTICLE);
-    private int shinsuLevel;
+    private int shinsuLevel = 1;
 
     public BasicShinsuUserEntity(EntityType<? extends BasicShinsuUserEntity> type, World worldIn) {
         super(type, worldIn);
@@ -147,6 +147,9 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         if (nbt.contains("Casting", Constants.NBT.TAG_BYTE)) {
             setCasting(nbt.getBoolean("Casting"));
         }
+        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
+            shinsuLevel = nbt.getInt("Level");
+        }
     }
 
     @Override
@@ -157,6 +160,7 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
             nbt.putString("Group", group.getRegistryName().toString());
         }
         nbt.putBoolean("Casting", isCasting());
+        nbt.putInt("Level", shinsuLevel);
     }
 
     @Override
