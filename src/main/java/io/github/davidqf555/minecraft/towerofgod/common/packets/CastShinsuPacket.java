@@ -45,10 +45,13 @@ public class CastShinsuPacket {
     private void handle(NetworkEvent.Context context) {
         ServerPlayerEntity player = context.getSender();
         context.enqueueWork(() -> {
-            Vector3d eye = player.getEyePosition(1);
-            EntityRayTraceResult result = ProjectileHelper.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuTechniqueData.CAST_TARGET_RANGE)), AxisAlignedBB.ofSize(ShinsuTechniqueData.CAST_TARGET_RANGE, ShinsuTechniqueData.CAST_TARGET_RANGE, ShinsuTechniqueData.CAST_TARGET_RANGE).move(eye), null);
-            technique.cast(player, result == null ? null : result.getEntity(), player.getLookAngle());
-        });
+                    if (technique.isObtainable()) {
+                        Vector3d eye = player.getEyePosition(1);
+                        EntityRayTraceResult result = ProjectileHelper.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuTechniqueData.CAST_TARGET_RANGE)), AxisAlignedBB.ofSize(ShinsuTechniqueData.CAST_TARGET_RANGE, ShinsuTechniqueData.CAST_TARGET_RANGE, ShinsuTechniqueData.CAST_TARGET_RANGE).move(eye), null);
+                        technique.cast(player, result == null ? null : result.getEntity(), player.getLookAngle());
+                    }
+                }
+        );
         context.setPacketHandled(true);
     }
 

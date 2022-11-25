@@ -15,7 +15,7 @@ public class RequirementTechniqueData<T extends Entity> extends CooldownTechniqu
 
     @Override
     public Optional<ITextComponent> getCastError(T user, ShinsuTechniqueInstance instance) {
-        if (!isUnlocked(user, instance.getTechnique())) {
+        if (instance.getTechnique().isObtainable() && !isUnlocked(user, instance.getTechnique())) {
             return Optional.of(Messages.LOCKED);
         }
         return super.getCastError(user, instance);
