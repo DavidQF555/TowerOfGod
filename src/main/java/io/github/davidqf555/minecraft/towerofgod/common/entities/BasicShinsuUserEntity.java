@@ -5,12 +5,14 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.*;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.item.*;
@@ -19,6 +21,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.IParticleData;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -30,6 +33,7 @@ import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -99,6 +103,24 @@ public abstract class BasicShinsuUserEntity extends CreatureEntity implements IS
         if (level.isClientSide() && isCasting()) {
             CastingModelHelper.spawnParticles(this, getAttributeParticles());
         }
+    }
+
+    @Override
+    public void die(DamageSource source) {
+        if (!level.isClientSide()) {
+            LivingEntity credit = getKillCredit();
+            if (credit != null) {
+                ShinsuStats killed = getShinsuStats();
+                ShinsuStats stats = ShinsuStats.get(credit);
+                stats.setMaxShinsu(stats.getMaxShinsu() + 1 + Math.max(0, killed.getMaxShinsu() - stats.getMaxShinsu()) / 10);
+                stats.setTension(stats.getTension() * (1 + Math.max(0, killed.getTension() - stats.getTension()) / 5));
+                stats.setResistance(stats.getResistance() * (1 + Math.max(0, killed.getResistance() - stats.getResistance()) / 5));
+                if (credit instanceof ServerPlayerEntity) {
+                    TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) credit), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(credit), stats.getMaxShinsu()));
+                }
+            }
+        }
+        super.die(source);
     }
 
     @Override
