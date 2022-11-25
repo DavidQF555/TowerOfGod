@@ -48,7 +48,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return getDuration() + 40;
+        return 400;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
 
         @Override
         public Either<BlackFish, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new BlackFish(user, 300, 5));
+            return Either.left(new BlackFish(user, 2400, 7));
         }
 
         @Override

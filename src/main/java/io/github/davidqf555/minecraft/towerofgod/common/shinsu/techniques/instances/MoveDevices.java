@@ -42,7 +42,12 @@ public class MoveDevices extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 2;
+        return getDevices().size() * 10;
+    }
+
+    @Override
+    public int getCooldown() {
+        return 20;
     }
 
     @Override

@@ -68,12 +68,12 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return 40;
+        return 200;
     }
 
     @Override
     public int getShinsuUse() {
-        return 10;
+        return 15;
     }
 
     @Override

@@ -62,12 +62,12 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return getDuration() + 500;
+        return 600;
     }
 
     @Override
     public int getShinsuUse() {
-        return 5 + level * 5;
+        return 30;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
 
         @Override
         public Either<ReverseFlowControl, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 40, 2)) : Either.right(Messages.getRequiresTarget(RANGE));
+            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 60, 2)) : Either.right(Messages.getRequiresTarget(RANGE));
         }
 
         @Override

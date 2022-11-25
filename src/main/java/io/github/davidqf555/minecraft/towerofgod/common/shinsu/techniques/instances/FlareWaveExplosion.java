@@ -55,12 +55,12 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return 200;
+        return 400;
     }
 
     @Override
     public int getShinsuUse() {
-        return amp * 3 + 7;
+        return 25;
     }
 
     @Override

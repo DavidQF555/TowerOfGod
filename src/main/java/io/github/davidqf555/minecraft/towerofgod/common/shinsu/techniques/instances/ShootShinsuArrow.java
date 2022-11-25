@@ -70,7 +70,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 3;
+        return 5;
     }
 
     @Override

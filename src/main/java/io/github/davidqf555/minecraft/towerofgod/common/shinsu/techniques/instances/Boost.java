@@ -40,12 +40,12 @@ public class Boost extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 15;
+        return 20;
     }
 
     @Override
     public int getCooldown() {
-        return 100;
+        return 600;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Boost extends ShinsuTechniqueInstance {
 
         @Override
         public Either<Boost, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new Boost(user, dir.scale(Math.min(2, 5))));
+            return Either.left(new Boost(user, dir.scale(4)));
         }
 
         @Override

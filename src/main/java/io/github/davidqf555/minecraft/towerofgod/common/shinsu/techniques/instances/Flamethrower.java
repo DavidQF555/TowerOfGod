@@ -61,7 +61,12 @@ public class Flamethrower extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 15;
+        return 50;
+    }
+
+    @Override
+    public int getCooldown() {
+        return 900;
     }
 
     @Override
@@ -95,7 +100,7 @@ public class Flamethrower extends ShinsuTechniqueInstance {
 
         @Override
         public Either<Flamethrower, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new Flamethrower(user, 60, 60, 7, 1));
+            return Either.left(new Flamethrower(user, 40, 45, 5, 0.75));
         }
 
         @Override

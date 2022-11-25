@@ -34,7 +34,7 @@ public class FollowOwner extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 3;
+        return getDevices().size() * 10;
     }
 
     @Override

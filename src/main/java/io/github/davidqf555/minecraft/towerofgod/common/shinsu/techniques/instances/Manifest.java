@@ -62,7 +62,7 @@ public class Manifest extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 10;
+        return 15;
     }
 
     @Override

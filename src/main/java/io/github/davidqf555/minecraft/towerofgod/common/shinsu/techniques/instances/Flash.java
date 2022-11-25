@@ -32,7 +32,7 @@ public class Flash extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return 200;
+        return 900;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class Flash extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 15;
+        return 20;
     }
 
     @Override

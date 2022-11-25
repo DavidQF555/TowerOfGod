@@ -34,7 +34,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return 160;
+        return 200;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 10;
+        return 25;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
 
         @Override
         public Either<ChannelLightning, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new ChannelLightning(user, dir, 3));
+            return Either.left(new ChannelLightning(user, dir, 4));
         }
 
         @Override

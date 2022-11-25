@@ -41,7 +41,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 10;
+        return getDevices().size() * 25;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
 
     @Override
     public int getCooldown() {
-        return getDuration() + 200;
+        return 600;
     }
 
     @Override

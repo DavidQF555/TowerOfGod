@@ -8,6 +8,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.server.ServerWorld;
 
@@ -28,17 +29,17 @@ public interface IShinsuUser {
 
     default int getInitialMaxShinsu(Random random) {
         Group group = getGroup();
-        return 10 + (int) (getLevel() * (group == null ? 1 : group.getShinsu()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
+        return MathHelper.ceil(10 * Math.pow(Math.pow(50, 1.0 / 99), getLevel() - 1) * (group == null ? 1 : group.getShinsu()) * (0.8 + random.nextDouble() * 0.4));
     }
 
     default double getInitialResistance(Random random) {
         Group group = getGroup();
-        return 1 + getLevel() * 0.025 * (group == null ? 1 : group.getResistance()) * (random.nextGaussian() * 0.25 + 1);
+        return Math.pow(Math.pow(10, 1.0 / 99), getLevel() - 1) * (group == null ? 1 : group.getResistance()) * (0.8 + random.nextDouble() * 0.4);
     }
 
     default double getInitialTension(Random random) {
         Group group = getGroup();
-        return 1 + getLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (random.nextGaussian() * 0.25 + 1);
+        return Math.pow(Math.pow(10, 1.0 / 99), getLevel() - 1) * (group == null ? 1 : group.getTension()) * (0.8 + random.nextDouble() * 0.4);
     }
 
     default void initializeStats(IServerWorld world) {
@@ -72,13 +73,15 @@ public interface IShinsuUser {
 
     @Nullable
     default ShinsuAttribute getInitialAttribute(Random random) {
+        int level = getLevel();
         ShinsuAttribute[] pref = getPreferredQualities();
         if (pref.length > 0 && random.nextDouble() < getPreferredAttributeChance()) {
             return pref[random.nextInt(pref.length)];
-        } else {
-            List<ShinsuAttribute> attributes = new ArrayList<>(ShinsuAttributeRegistry.getRegistry().getValues());
-            return attributes.get(random.nextInt(attributes.size()));
+        } else if (level >= 30 && random.nextDouble() < Math.pow(Math.pow(2, 1.0 / 31), level - 29) - 1) {
+            ShinsuAttribute[] attributes = ShinsuAttributeRegistry.getRegistry().getValues().toArray(new ShinsuAttribute[0]);
+            return attributes[random.nextInt(attributes.length)];
         }
+        return null;
     }
 
     default double getPreferredShapeChance() {
@@ -87,13 +90,15 @@ public interface IShinsuUser {
 
     @Nullable
     default ShinsuShape getInitialShape(Random random) {
+        int level = getLevel();
         ShinsuShape[] pref = getPreferredShapes();
         if (pref.length > 0 && random.nextDouble() < getPreferredShapeChance()) {
             return pref[random.nextInt(pref.length)];
-        } else {
+        } else if (level >= 30 && random.nextDouble() < Math.pow(Math.pow(2, 1.0 / 31), level - 29) - 1) {
             ShinsuShape[] shapes = ShinsuShapeRegistry.getRegistry().getValues().toArray(new ShinsuShape[0]);
             return shapes[random.nextInt(shapes.length)];
         }
+        return null;
     }
 
     default ShinsuAttribute[] getPreferredQualities() {

@@ -89,7 +89,7 @@ public class RankerEntity extends BasicShinsuUserEntity {
 
     @Override
     public int getMinInitialLevel() {
-        return 60;
+        return 76;
     }
 
     @Override

@@ -47,7 +47,12 @@ public class Scout extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 5;
+        return getDevices().size() * 10;
+    }
+
+    @Override
+    public int getCooldown() {
+        return 300;
     }
 
     @Override

@@ -51,12 +51,12 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return getDuration() + 150;
+        return 200;
     }
 
     @Override
     public int getShinsuUse() {
-        return level + 3;
+        return 15;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
 
         @Override
         public Either<BodyReinforcement, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new BodyReinforcement(user, 500, 4));
+            return Either.left(new BodyReinforcement(user, 2400, 5));
         }
 
         @Override
