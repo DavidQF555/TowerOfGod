@@ -5,6 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.Stop;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.vector.Vector3d;
@@ -23,7 +24,7 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
     @Override
     public Either<? extends ShinsuTechniqueInstance, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
         if (getExistingInstance(user).isPresent()) {
-            return Either.left(getFactory().blankCreate());
+            return Either.left(new Stop(user, this));
         }
         return super.create(user, target, dir);
     }
