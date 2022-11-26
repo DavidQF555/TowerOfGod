@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.condit
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.world.server.ServerWorld;
 
 import javax.annotation.Nullable;
@@ -41,4 +42,10 @@ public class OverridingShinsuTechnique extends ShinsuTechnique {
         }
         return Optional.empty();
     }
+
+    @Override
+    public boolean shouldMobUse(MobEntity mob) {
+        return super.shouldMobUse(mob) && !getExistingInstance(mob).isPresent();
+    }
+
 }

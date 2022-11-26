@@ -29,7 +29,9 @@ public class CastShinsuGoal<T extends MobEntity & IShinsuUser> extends Goal {
         if (--time <= 0) {
             List<ShinsuTechnique> possible = new ArrayList<>();
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                create(technique).ifPresent(inst -> possible.add(technique));
+                if (technique.shouldMobUse(entity)) {
+                    create(technique).ifPresent(inst -> possible.add(technique));
+                }
             }
             if (possible.isEmpty()) {
                 return false;

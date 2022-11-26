@@ -16,6 +16,7 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttri
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -64,6 +65,10 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
             }
         }
         return obtainable;
+    }
+
+    public boolean shouldMobUse(MobEntity mob) {
+        return mobUseCondition.shouldUse(mob);
     }
 
     public boolean matches(List<Direction> combination) {
@@ -144,10 +149,6 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         stats.addTechnique(instance);
         stats.onCast(user, instance);
         instance.onUse((ServerWorld) user.level);
-    }
-
-    public MobUseCondition getMobUseCondition() {
-        return mobUseCondition;
     }
 
     public interface IFactory<T extends ShinsuTechniqueInstance> {

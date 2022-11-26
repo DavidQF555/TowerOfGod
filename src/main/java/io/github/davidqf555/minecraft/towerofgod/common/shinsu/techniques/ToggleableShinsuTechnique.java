@@ -8,6 +8,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instan
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.Stop;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
@@ -46,6 +47,11 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public boolean shouldMobUse(MobEntity mob) {
+        return super.shouldMobUse(mob) && !getExistingInstance(mob).isPresent();
     }
 
 }
