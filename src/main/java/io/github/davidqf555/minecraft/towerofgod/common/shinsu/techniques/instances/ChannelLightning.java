@@ -1,14 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.nbt.CompoundNBT;
@@ -27,17 +25,15 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
 
     private static final double RANGE = 64;
     private Vector3d direction;
-    private float damage;
 
-    public ChannelLightning(LivingEntity user, Vector3d direction, float damage) {
+    public ChannelLightning(Entity user, Vector3d direction) {
         super(user);
         this.direction = direction;
-        this.damage = damage;
     }
 
     @Override
     public int getCooldown() {
-        return 160;
+        return 200;
     }
 
     @Override
@@ -57,7 +53,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
             if (user instanceof ServerPlayerEntity) {
                 lightning.setCause((ServerPlayerEntity) user);
             }
-            lightning.setDamage(damage);
+            lightning.setDamage(ShinsuStats.getShinsu(user) * 2);
             lightning.setPos(pos.x(), pos.y(), pos.z());
             lightning.setStart(new Vector3f(start));
             world.addFreshEntity(lightning);
@@ -72,12 +68,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 10;
-    }
-
-    @Override
-    public int getBaangsUse() {
-        return 1;
+        return 25;
     }
 
     @Override
@@ -85,9 +76,6 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
         super.deserializeNBT(nbt);
         if (nbt.contains("X", Constants.NBT.TAG_DOUBLE) && nbt.contains("Y", Constants.NBT.TAG_DOUBLE) && nbt.contains("Z", Constants.NBT.TAG_DOUBLE)) {
             direction = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
-        }
-        if (nbt.contains("Damage", Constants.NBT.TAG_FLOAT)) {
-            damage = nbt.getFloat("Damage");
         }
     }
 
@@ -97,21 +85,19 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
         nbt.putDouble("X", direction.x());
         nbt.putDouble("Y", direction.y());
         nbt.putDouble("Z", direction.z());
-        nbt.putFloat("Damage", damage);
         return nbt;
     }
 
     public static class Factory implements ShinsuTechnique.IFactory<ChannelLightning> {
 
         @Override
-        public Either<ChannelLightning, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.CONTROL).getLevel();
-            return Either.left(new ChannelLightning(user, dir, level - 4));
+        public Either<ChannelLightning, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new ChannelLightning(user, dir));
         }
 
         @Override
         public ChannelLightning blankCreate() {
-            return new ChannelLightning(null, Vector3d.ZERO, 0);
+            return new ChannelLightning(null, Vector3d.ZERO);
         }
 
     }

@@ -1,12 +1,11 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateBaangsMeterPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
@@ -24,7 +23,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
     private UUID user;
     private int ticks;
 
-    public ShinsuTechniqueInstance(LivingEntity user) {
+    public ShinsuTechniqueInstance(Entity user) {
         id = MathHelper.createInsecureUUID();
         this.user = user == null ? null : user.getUUID();
         ticks = 0;
@@ -32,7 +31,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     @Nullable
     public static ShinsuTechniqueInstance get(Entity user, UUID id) {
-        ShinsuStats stats = ShinsuStats.get(user);
+        ShinsuTechniqueData<?> stats = ShinsuTechniqueData.get(user);
         for (ShinsuTechniqueInstance instance : stats.getTechniques()) {
             if (instance.id.equals(id)) {
                 return instance;
@@ -73,13 +72,11 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
 
     public abstract int getShinsuUse();
 
-    public abstract int getBaangsUse();
-
     public void remove(ServerWorld world) {
         onEnd(world);
         Entity user = getUser(world);
         if (user != null) {
-            ShinsuStats stats = ShinsuStats.get(user);
+            ShinsuTechniqueData<?> stats = ShinsuTechniqueData.get(user);
             stats.removeTechnique(this);
             updateMeters(world);
         }
@@ -95,8 +92,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         Entity user = getUser(world);
         if (user instanceof ServerPlayerEntity) {
             ShinsuStats stats = ShinsuStats.get(user);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateShinsuMeterPacket(stats.getShinsu(), stats.getMaxShinsu()));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateBaangsMeterPacket(stats.getBaangs(), stats.getMaxBaangs()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) user), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(user), stats.getMaxShinsu()));
         }
     }
 

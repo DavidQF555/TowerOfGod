@@ -34,7 +34,6 @@ public final class GuiEventBusSubscriber {
                     event.getMatrixStack().translate(0, -10, 0);
                 } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
                     ClientReference.shinsu.render(event.getMatrixStack());
-                    ClientReference.baangs.render(event.getMatrixStack());
                 }
             }
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
@@ -65,7 +64,7 @@ public final class GuiEventBusSubscriber {
     }
 
     private static boolean renderBars() {
-        return ClientReference.shinsu != null && ClientReference.baangs != null && (ClientReference.shinsu.getMax() > 0 || ClientReference.baangs.getMax() > 0);
+        return ClientReference.shinsu != null && ClientReference.shinsu.getMax() > 0;
     }
 
     @SubscribeEvent
@@ -116,13 +115,11 @@ public final class GuiEventBusSubscriber {
         @SubscribeEvent
         public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
             ClientReference.shinsu = null;
-            ClientReference.baangs = null;
             ClientReference.combo = null;
         }
 
         private static void initializeMeters() {
-            ClientReference.shinsu = new StatsMeterGui(0, 0, 85, 5, 0, 0, 200);
-            ClientReference.baangs = new StatsMeterGui(0, 0, 85, 5, 0, 0, 20);
+            ClientReference.shinsu = new StatsMeterGui(0, 0, 182, 5, 0, 0, 200);
             setMeterPositions();
         }
 
@@ -133,10 +130,6 @@ public final class GuiEventBusSubscriber {
             if (ClientReference.shinsu != null) {
                 ClientReference.shinsu.setX(width / 2 - 91);
                 ClientReference.shinsu.setY(y);
-            }
-            if (ClientReference.baangs != null) {
-                ClientReference.baangs.setX(width / 2 + 6);
-                ClientReference.baangs.setY(y);
             }
         }
     }

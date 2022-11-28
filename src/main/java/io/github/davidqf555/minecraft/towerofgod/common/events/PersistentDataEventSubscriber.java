@@ -1,8 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.events;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.CastingData;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.CastingData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateCastingPacket;
 import net.minecraft.entity.Entity;
@@ -24,7 +24,7 @@ public final class PersistentDataEventSubscriber {
         PlayerEntity player = event.getPlayer();
         Entity target = event.getTarget();
         if (player instanceof ServerPlayerEntity && target instanceof PlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateAttributePacket(target.getId(), ShinsuStats.get(target).getAttribute()));
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateAttributePacket(target.getId(), ShinsuQualityData.get(target).getAttribute()));
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateCastingPacket(target.getId(), CastingData.get((PlayerEntity) target).isCasting()));
         }
     }
@@ -32,7 +32,7 @@ public final class PersistentDataEventSubscriber {
     @SubscribeEvent
     public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         PlayerEntity player = event.getPlayer();
-        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateAttributePacket(player.getId(), ShinsuStats.get(player).getAttribute()));
+        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateAttributePacket(player.getId(), ShinsuQualityData.get(player).getAttribute()));
     }
 
 }
