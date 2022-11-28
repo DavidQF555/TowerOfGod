@@ -20,12 +20,11 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 public class BodyReinforcement extends ShinsuTechniqueInstance {
 
-    private int duration, level;
+    private int duration;
 
-    public BodyReinforcement(Entity user, int duration, int level) {
+    public BodyReinforcement(Entity user, int duration) {
         super(user);
         this.duration = duration;
-        this.level = level;
     }
 
     @Override
@@ -40,11 +39,11 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
 
     @Override
     public void tick(ServerWorld world) {
-        Entity e = getUser(world);
-        if (e instanceof LivingEntity) {
-            LivingEntity user = (LivingEntity) e;
-            int amp = (int) (level * ShinsuStats.get(user).getTension());
-            user.addEffect(new EffectInstance(EffectRegistry.BODY_REINFORCEMENT.get(), 2, amp - 1, false, true, true));
+        Entity user = getUser(world);
+        if (user instanceof LivingEntity) {
+            ShinsuStats stats = ShinsuStats.get(user);
+            int amp = (int) (stats.getTension() * stats.getResistance()) / 2;
+            ((LivingEntity) user).addEffect(new EffectInstance(EffectRegistry.BODY_REINFORCEMENT.get(), 2, amp, false, true, true));
         }
         super.tick(world);
     }
@@ -62,9 +61,6 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
-            level = nbt.getInt("Level");
-        }
         if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
             duration = nbt.getInt("Duration");
         }
@@ -73,7 +69,6 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
-        nbt.putInt("Level", level);
         nbt.putInt("Duration", getDuration());
         return nbt;
     }
@@ -84,12 +79,12 @@ public class BodyReinforcement extends ShinsuTechniqueInstance {
 
         @Override
         public Either<BodyReinforcement, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new BodyReinforcement(user, 2400, 5));
+            return Either.left(new BodyReinforcement(user, 2400));
         }
 
         @Override
         public BodyReinforcement blankCreate() {
-            return new BodyReinforcement(null, 0, 0);
+            return new BodyReinforcement(null, 0);
         }
 
     }

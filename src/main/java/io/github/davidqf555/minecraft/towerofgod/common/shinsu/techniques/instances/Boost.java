@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
@@ -28,6 +29,7 @@ public class Boost extends ShinsuTechniqueInstance {
         Entity user = getUser(world);
         float width = user.getBbWidth() / 2;
         world.sendParticles(ParticleTypes.FLAME, user.getX(), user.getY(), user.getZ(), PARTICLES, width, user.getBbHeight() * 0.25, width, 0);
+        Vector3d dir = this.dir.scale(ShinsuStats.get(user).getTension() * 2);
         user.push(dir.x(), dir.y(), dir.z());
         user.hurtMarked = true;
         super.onUse(world);
@@ -69,7 +71,7 @@ public class Boost extends ShinsuTechniqueInstance {
 
         @Override
         public Either<Boost, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new Boost(user, dir.scale(4)));
+            return Either.left(new Boost(user, dir));
         }
 
         @Override

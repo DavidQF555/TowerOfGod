@@ -26,13 +26,11 @@ public class MoveDevices extends BasicCommandTechnique {
 
     private Vector3d direction;
     private double distance;
-    private float speed;
 
-    public MoveDevices(Entity user, Vector3d direction, double distance, float speed) {
+    public MoveDevices(Entity user, Vector3d direction, double distance) {
         super(user);
         this.direction = direction;
         this.distance = distance;
-        this.speed = speed;
     }
 
     @Override
@@ -57,7 +55,7 @@ public class MoveDevices extends BasicCommandTechnique {
         Vector3d end = eye.add(direction.scale(distance));
         EntityRayTraceResult trace = ProjectileHelper.getEntityHitResult(world, user, eye, end, AxisAlignedBB.ofSize(distance * 2, distance * 2, distance * 2).move(eye), null);
         Vector3d target = trace == null ? world.clip(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity)).getLocation() : trace.getLocation();
-        return new MoveCommand(entity, getID(), target, speed);
+        return new MoveCommand(entity, getID(), target, 1);
     }
 
     @Override
@@ -65,9 +63,6 @@ public class MoveDevices extends BasicCommandTechnique {
         super.deserializeNBT(nbt);
         if (nbt.contains("X", Constants.NBT.TAG_DOUBLE) && nbt.contains("Y", Constants.NBT.TAG_DOUBLE) && nbt.contains("Z", Constants.NBT.TAG_DOUBLE)) {
             direction = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
-        }
-        if (nbt.contains("Speed", Constants.NBT.TAG_FLOAT)) {
-            speed = nbt.getFloat("Speed");
         }
         if (nbt.contains("Distance", Constants.NBT.TAG_DOUBLE)) {
             distance = nbt.getDouble("Distance");
@@ -80,7 +75,6 @@ public class MoveDevices extends BasicCommandTechnique {
         nbt.putDouble("X", direction.x());
         nbt.putDouble("Y", direction.y());
         nbt.putDouble("Z", direction.z());
-        nbt.putFloat("Speed", speed);
         nbt.putDouble("Distance", distance);
         return nbt;
     }
@@ -91,13 +85,13 @@ public class MoveDevices extends BasicCommandTechnique {
 
         @Override
         public Either<MoveDevices, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            MoveDevices technique = new MoveDevices(user, dir, 64, 1);
+            MoveDevices technique = new MoveDevices(user, dir, 64);
             return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
         }
 
         @Override
         public MoveDevices blankCreate() {
-            return new MoveDevices(null, Vector3d.ZERO, 0, 1);
+            return new MoveDevices(null, Vector3d.ZERO, 0);
         }
 
     }

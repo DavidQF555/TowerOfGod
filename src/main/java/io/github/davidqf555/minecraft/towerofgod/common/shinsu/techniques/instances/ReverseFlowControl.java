@@ -24,14 +24,13 @@ import java.util.UUID;
 public class ReverseFlowControl extends ShinsuTechniqueInstance {
 
     private static final double RANGE = 3;
-    private int duration, level;
+    private int duration;
     private UUID target;
 
-    public ReverseFlowControl(Entity user, UUID target, int duration, int level) {
+    public ReverseFlowControl(Entity user, UUID target, int duration) {
         super(user);
         this.target = target;
         this.duration = duration;
-        this.level = level;
     }
 
     @Override
@@ -54,8 +53,7 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
                 return;
             }
             double resistance = ShinsuStats.getNetResistance(user, target);
-            int amp = (int) (resistance * level);
-            ((LivingEntity) target).addEffect(new EffectInstance(EffectRegistry.REVERSE_FLOW.get(), 2, amp - 1));
+            ((LivingEntity) target).addEffect(new EffectInstance(EffectRegistry.REVERSE_FLOW.get(), 2, (int) (resistance * 2)));
         }
         super.tick(world);
     }
@@ -79,9 +77,6 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
         if (nbt.contains("Duration", Constants.NBT.TAG_INT)) {
             duration = nbt.getInt("Duration");
         }
-        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
-            level = nbt.getInt("Level");
-        }
     }
 
     @Override
@@ -89,7 +84,6 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
         CompoundNBT nbt = super.serializeNBT();
         nbt.putUUID("Target", target);
         nbt.putInt("Duration", getDuration());
-        nbt.putInt("Level", level);
         return nbt;
     }
 
@@ -98,12 +92,12 @@ public class ReverseFlowControl extends ShinsuTechniqueInstance {
 
         @Override
         public Either<ReverseFlowControl, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 60, 2)) : Either.right(Messages.getRequiresTarget(RANGE));
+            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 60)) : Either.right(Messages.getRequiresTarget(RANGE));
         }
 
         @Override
         public ReverseFlowControl blankCreate() {
-            return new ReverseFlowControl(null, null, 0, 0);
+            return new ReverseFlowControl(null, null, 0);
         }
 
     }

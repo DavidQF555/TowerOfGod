@@ -25,15 +25,11 @@ import java.util.UUID;
 public class FlareWaveExplosion extends ShinsuTechniqueInstance {
 
     private static final double RANGE = 1;
-    private float damage;
-    private int amp;
     private UUID target;
 
-    public FlareWaveExplosion(Entity user, UUID target, float damage, int amp) {
+    public FlareWaveExplosion(Entity user, UUID target) {
         super(user);
         this.target = target;
-        this.damage = damage;
-        this.amp = amp;
     }
 
     @Override
@@ -47,9 +43,9 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
         Entity t = world.getEntity(target);
         if (user != null && t instanceof LivingEntity && user.distanceToSqr(t) <= RANGE * RANGE) {
             LivingEntity target = (LivingEntity) t;
-            double resistance = ShinsuStats.getNetResistance(user, target);
-            target.hurt(DamageSource.MAGIC, damage / (float) resistance);
-            target.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, (int) (60 / resistance), amp - 1, false, false, false));
+            float damage = (float) (5 / ShinsuStats.getNetResistance(user, target));
+            target.hurt(DamageSource.MAGIC, damage);
+            target.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, (int) (damage * 20), (int) (damage / 2), false, false, false));
         }
     }
 
@@ -69,20 +65,12 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
         if (nbt.contains("Target", Constants.NBT.TAG_INT_ARRAY)) {
             target = nbt.getUUID("Target");
         }
-        if (nbt.contains("Damage", Constants.NBT.TAG_FLOAT)) {
-            damage = nbt.getFloat("Damage");
-        }
-        if (nbt.contains("Amplification", Constants.NBT.TAG_INT)) {
-            amp = nbt.getInt("Amplification");
-        }
     }
 
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
         nbt.putUUID("Target", target);
-        nbt.putFloat("Damage", damage);
-        nbt.putInt("Amplification", amp);
         return nbt;
     }
 
@@ -91,12 +79,12 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
 
         @Override
         public Either<FlareWaveExplosion, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, target.getUUID(), 5, 2)) : Either.right(Messages.getRequiresTarget(RANGE));
+            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, target.getUUID())) : Either.right(Messages.getRequiresTarget(RANGE));
         }
 
         @Override
         public FlareWaveExplosion blankCreate() {
-            return new FlareWaveExplosion(null, null, 0, 0);
+            return new FlareWaveExplosion(null, null);
         }
 
     }

@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
@@ -24,12 +25,10 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
 
     private static final double RANGE = 64;
     private Vector3d direction;
-    private float damage;
 
-    public ChannelLightning(Entity user, Vector3d direction, float damage) {
+    public ChannelLightning(Entity user, Vector3d direction) {
         super(user);
         this.direction = direction;
-        this.damage = damage;
     }
 
     @Override
@@ -54,7 +53,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
             if (user instanceof ServerPlayerEntity) {
                 lightning.setCause((ServerPlayerEntity) user);
             }
-            lightning.setDamage(damage);
+            lightning.setDamage(ShinsuStats.getShinsu(user) * 2);
             lightning.setPos(pos.x(), pos.y(), pos.z());
             lightning.setStart(new Vector3f(start));
             world.addFreshEntity(lightning);
@@ -78,9 +77,6 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
         if (nbt.contains("X", Constants.NBT.TAG_DOUBLE) && nbt.contains("Y", Constants.NBT.TAG_DOUBLE) && nbt.contains("Z", Constants.NBT.TAG_DOUBLE)) {
             direction = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
         }
-        if (nbt.contains("Damage", Constants.NBT.TAG_FLOAT)) {
-            damage = nbt.getFloat("Damage");
-        }
     }
 
     @Override
@@ -89,7 +85,6 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
         nbt.putDouble("X", direction.x());
         nbt.putDouble("Y", direction.y());
         nbt.putDouble("Z", direction.z());
-        nbt.putFloat("Damage", damage);
         return nbt;
     }
 
@@ -97,12 +92,12 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
 
         @Override
         public Either<ChannelLightning, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new ChannelLightning(user, dir, 4));
+            return Either.left(new ChannelLightning(user, dir));
         }
 
         @Override
         public ChannelLightning blankCreate() {
-            return new ChannelLightning(null, Vector3d.ZERO, 0);
+            return new ChannelLightning(null, Vector3d.ZERO);
         }
 
     }
