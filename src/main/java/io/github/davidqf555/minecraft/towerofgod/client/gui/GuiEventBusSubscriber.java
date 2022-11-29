@@ -28,13 +28,9 @@ public final class GuiEventBusSubscriber {
     @SubscribeEvent
     public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
         Minecraft client = Minecraft.getInstance();
-        if (usingValid(client)) {
-            if (renderBars() && !client.options.hideGui && !client.player.isCreative()) {
-                if (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT) {
-                    event.getMatrixStack().translate(0, -10, 0);
-                } else if (event.getType() == RenderGameOverlayEvent.ElementType.EXPERIENCE || event.getType() == RenderGameOverlayEvent.ElementType.JUMPBAR) {
-                    ClientReference.shinsu.render(event.getMatrixStack());
-                }
+        if (client.player != null && !client.player.isSpectator()) {
+            if (ClientReference.shinsu != null && ClientReference.shinsu.getMax() > 0 && !client.options.hideGui && !client.player.isCreative() && event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
+                ClientReference.shinsu.render(event.getMatrixStack());
             }
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
                 if (ClientReference.combo == null) {
@@ -49,22 +45,6 @@ public final class GuiEventBusSubscriber {
                 TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
             }
         }
-    }
-
-    @SubscribeEvent
-    public static void postRenderGameOverlay(RenderGameOverlayEvent.Post event) {
-        Minecraft client = Minecraft.getInstance();
-        if (usingValid(client) && renderBars() && !client.options.hideGui && !client.player.isCreative() && (event.getType() == RenderGameOverlayEvent.ElementType.HEALTH || event.getType() == RenderGameOverlayEvent.ElementType.FOOD || event.getType() == RenderGameOverlayEvent.ElementType.ARMOR || event.getType() == RenderGameOverlayEvent.ElementType.AIR || event.getType() == RenderGameOverlayEvent.ElementType.HEALTHMOUNT)) {
-            event.getMatrixStack().translate(0, 10, 0);
-        }
-    }
-
-    private static boolean usingValid(Minecraft client) {
-        return client.player != null && !client.player.isSpectator();
-    }
-
-    private static boolean renderBars() {
-        return ClientReference.shinsu != null && ClientReference.shinsu.getMax() > 0;
     }
 
     @SubscribeEvent
@@ -119,17 +99,17 @@ public final class GuiEventBusSubscriber {
         }
 
         private static void initializeMeters() {
-            ClientReference.shinsu = new StatsMeterGui(0, 0, 182, 5, 0, 0, 200);
+            ClientReference.shinsu = new ShinsuMeterGui(0, 0, 7, 90, 0, 0, 100);
             setMeterPositions();
         }
 
         private static void setMeterPositions() {
-            MainWindow window = Minecraft.getInstance().getWindow();
-            int width = window.getGuiScaledWidth();
-            int y = window.getGuiScaledHeight() - 36;
             if (ClientReference.shinsu != null) {
-                ClientReference.shinsu.setX(width / 2 - 91);
-                ClientReference.shinsu.setY(y);
+                MainWindow window = Minecraft.getInstance().getWindow();
+                int width = window.getGuiScaledWidth();
+                int height = window.getGuiScaledHeight();
+                ClientReference.shinsu.setX(width - 9);
+                ClientReference.shinsu.setY(height / 2 - 45);
             }
         }
     }
