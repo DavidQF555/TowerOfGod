@@ -1,0 +1,21 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    "xxx",
+    "xyx",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "item": "potion",
+      "nbt": "{Potion:\"water\"}"
+    },
+    "y": {
+      "item": "book"
+    }
+  },
+  "result": {
+    "item": "towerofgod:shinsu_guide",
+    "count": 1
+  }
+}

@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
+package io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.ByteNBT;

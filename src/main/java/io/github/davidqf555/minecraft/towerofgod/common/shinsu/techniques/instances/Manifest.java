@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
@@ -11,7 +11,6 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShape
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -32,7 +31,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     private ShinsuShape shape;
     private ShinsuAttribute attribute;
 
-    public Manifest(LivingEntity user, ShinsuShape shape, @Nullable ShinsuAttribute attribute) {
+    public Manifest(Entity user, ShinsuShape shape, @Nullable ShinsuAttribute attribute) {
         super(user);
         this.shape = shape;
         this.attribute = attribute;
@@ -63,12 +62,7 @@ public class Manifest extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 10;
-    }
-
-    @Override
-    public int getBaangsUse() {
-        return 1;
+        return 15;
     }
 
     @Override
@@ -116,8 +110,8 @@ public class Manifest extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<Manifest> {
 
         @Override
-        public Either<Manifest, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            ShinsuStats stats = ShinsuStats.get(user);
+        public Either<Manifest, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+            ShinsuQualityData stats = ShinsuQualityData.get(user);
             return Either.left(new Manifest(user, stats.getShape(), stats.getAttribute()));
         }
 

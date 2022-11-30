@@ -1,17 +1,14 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ScoutCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.*;
@@ -30,7 +27,7 @@ public class Scout extends BasicCommandTechnique {
     private int radius;
     private float speed;
 
-    public Scout(LivingEntity user, Vector3d direction, double range, int radius, float speed) {
+    public Scout(Entity user, Vector3d direction, double range, int radius, float speed) {
         super(user);
         this.direction = direction;
         this.range = range;
@@ -50,12 +47,12 @@ public class Scout extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 5;
+        return getDevices().size() * 10;
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1 + getDevices().size() / 3;
+    public int getCooldown() {
+        return 300;
     }
 
     @Override
@@ -109,9 +106,8 @@ public class Scout extends BasicCommandTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<Scout> {
 
         @Override
-        public Either<Scout, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DEVICE_CONTROL).getLevel();
-            Scout technique = new Scout(user, dir, 4 + level * 4, 8 + level * 4, 1 + level / 20f);
+        public Either<Scout, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+            Scout technique = new Scout(user, dir, 8, 12, 1);
             return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
         }
 
