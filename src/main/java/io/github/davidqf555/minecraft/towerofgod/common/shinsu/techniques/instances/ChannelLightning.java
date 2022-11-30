@@ -53,7 +53,7 @@ public class ChannelLightning extends ShinsuTechniqueInstance {
             if (user instanceof ServerPlayerEntity) {
                 lightning.setCause((ServerPlayerEntity) user);
             }
-            lightning.setDamage(ShinsuStats.getShinsu(user) * 2);
+            lightning.setDamage((float) (ShinsuStats.get(user).getTension() * 2));
             lightning.setPos(pos.x(), pos.y(), pos.z());
             lightning.setStart(new Vector3f(start));
             world.addFreshEntity(lightning);
