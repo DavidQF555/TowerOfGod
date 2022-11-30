@@ -16,12 +16,11 @@ import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @MethodsReturnNonnullByDefault
 public class DeviceDyeRecipe extends CustomRecipe {
 
-    private static final List<Item> COLORABLE = ItemRegistry.COLORED_DEVICE_ITEMS.stream().map(RegistryObject::get).collect(Collectors.toList());
+    private static final List<? extends Item> COLORABLE = ItemRegistry.COLORED_DEVICE_ITEMS.stream().map(RegistryObject::get).toList();
 
     public DeviceDyeRecipe(ResourceLocation idIn) {
         super(idIn);

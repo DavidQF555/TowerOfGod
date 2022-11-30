@@ -1,10 +1,13 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenGuideScreenPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -18,36 +21,36 @@ import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class GuideItem extends Item {
 
-    private final Supplier<ShinsuTechnique[]> pages;
+    private static final Component EMPTY = Component.translatable(Util.makeDescriptionId("item", new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_guide")) + ".empty").withStyle(ChatFormatting.RED);
+    private static final Component LORE = Component.translatable(Util.makeDescriptionId("item", new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_guide")) + ".lore").withStyle(ChatFormatting.DARK_AQUA);
     private final int color;
 
-    public GuideItem(Supplier<ShinsuTechnique[]> pages, int color, Properties properties) {
+    public GuideItem(int color, Properties properties) {
         super(properties.stacksTo(1));
-        this.pages = pages;
         this.color = color;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.add(Component.translatable("book.byAuthor", getAuthor()).withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> lines, TooltipFlag flag) {
+        lines.add(LORE);
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack item = playerIn.getItemInHand(handIn);
         if (playerIn instanceof ServerPlayer) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerIn), new OpenGuideScreenPacket(pages.get(), color));
+            ShinsuTechnique[] pages = PlayerTechniqueData.get(playerIn).getUnlocked().toArray(new ShinsuTechnique[0]);
+            if (pages.length > 0) {
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerIn), new OpenGuideScreenPacket(pages, color));
+                playerIn.awardStat(Stats.ITEM_USED.get(this));
+            } else {
+                playerIn.sendSystemMessage(EMPTY);
+            }
         }
-        playerIn.awardStat(Stats.ITEM_USED.get(this));
         return InteractionResultHolder.sidedSuccess(item, worldIn.isClientSide());
-    }
-
-    protected Component getAuthor() {
-        return Component.translatable(getDescriptionId() + ".author");
     }
 
 }

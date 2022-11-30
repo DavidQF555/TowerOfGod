@@ -1,14 +1,15 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuTypeData;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
 
@@ -20,85 +21,67 @@ public interface IShinsuUser {
 
     ShinsuStats getShinsuStats();
 
-    default int getShinsuLevel() {
-        return getShinsuStats().getLevel();
-    }
+    ShinsuQualityData getShinsuQualityData();
+
+    ShinsuTechniqueData<?> getShinsuTechniqueData();
+
+    int getShinsuLevel();
 
     default int getInitialMaxShinsu(RandomSource random) {
         Group group = getGroup();
-        return 10 + (int) (getShinsuLevel() * (group == null ? 1 : group.getShinsu()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
-    }
-
-    default int getInitialMaxBaangs(RandomSource random) {
-        Group group = getGroup();
-        return 1 + (int) (0.05 * getShinsuLevel() * (group == null ? 1 : group.getBaangs()) * (random.nextGaussian() * 0.25 + 1) + 0.5);
+        return Mth.ceil(10 * Math.pow(Math.pow(50, 1.0 / 99), getShinsuLevel() - 1) * (group == null ? 1 : group.getShinsu()) * (0.8 + random.nextDouble() * 0.4));
     }
 
     default double getInitialResistance(RandomSource random) {
         Group group = getGroup();
-        return 1 + getShinsuLevel() * 0.025 * (group == null ? 1 : group.getResistance()) * (random.nextGaussian() * 0.25 + 1);
+        return Math.pow(Math.pow(10, 1.0 / 99), getShinsuLevel() - 1) * (group == null ? 1 : group.getResistance()) * (0.8 + random.nextDouble() * 0.4);
     }
 
     default double getInitialTension(RandomSource random) {
         Group group = getGroup();
-        return 1 + getShinsuLevel() * 0.025 * (group == null ? 1 : group.getTension()) * (random.nextGaussian() * 0.25 + 1);
+        return Math.pow(Math.pow(10, 1.0 / 99), getShinsuLevel() - 1) * (group == null ? 1 : group.getTension()) * (0.8 + random.nextDouble() * 0.4);
     }
 
-    default void initializeShinsuLevel(RandomSource random) {
-        ShinsuStats stats = getShinsuStats();
-        stats.addLevel(getInitialShinsuLevel(random) - stats.getLevel());
-    }
-
-    default void initializeShinsuStats(ServerLevelAccessor world) {
+    default void initializeStats(ServerLevelAccessor world) {
         ShinsuStats stats = getShinsuStats();
         RandomSource random = world.getRandom();
+        stats.setMaxShinsu(getInitialMaxShinsu(random));
+        stats.setResistance(getInitialResistance(random));
+        stats.setTension(getInitialTension(random));
+    }
+
+    default void initializeQuality(ServerLevelAccessor world) {
+        ShinsuQualityData stats = getShinsuQualityData();
+        stats.setAttribute(getInitialAttribute(world.getRandom()));
+        stats.setShape(getInitialShape(world.getRandom()));
+    }
+
+    default void initialize(ServerLevelAccessor world) {
+        RandomSource random = world.getRandom();
         setGroup(getInitialGroup(random));
-        stats.addMaxShinsu(getInitialMaxShinsu(random) - stats.getMaxShinsu());
-        stats.addMaxBaangs(getInitialMaxBaangs(random) - stats.getMaxBaangs());
-        stats.multiplyBaseResistance(getInitialResistance(random) / stats.getRawResistance());
-        stats.multiplyBaseTension(getInitialTension(random) / stats.getRawTension());
-        for (ShinsuTechniqueType type : getInitialTechniqueTypes(random)) {
-            ShinsuTypeData data = stats.getData(type);
-            data.setLevel(data.getLevel() + 1);
-        }
-        stats.setAttribute(getInitialAttribute(random));
-        stats.setShape(getInitialShape(random));
-    }
-
-    default double getPreferredTechniqueTypeChance() {
-        return 0.75;
-    }
-
-    default ShinsuTechniqueType[] getInitialTechniqueTypes(RandomSource random) {
-        ShinsuTechniqueType[] all = ShinsuTechniqueType.values();
-        ShinsuTechniqueType[] preferred = getPreferredTechniqueTypes();
-        ShinsuTechniqueType[] types = new ShinsuTechniqueType[getInitialTechniqueTypesTotalLevel(random)];
-        for (int i = 0; i < types.length; i++) {
-            types[i] = preferred.length > 0 && random.nextDouble() < getPreferredTechniqueTypeChance() ? preferred[random.nextInt(preferred.length)] : all[random.nextInt(all.length)];
-        }
-        return types;
-    }
-
-    default int getInitialTechniqueTypesTotalLevel(RandomSource random) {
-        return 1 + (int) (getShinsuLevel() * (random.nextGaussian() * 0.25 + 1) + 0.5);
+        initializeStats(world);
+        initializeQuality(world);
     }
 
     default void shinsuTick(ServerLevel world) {
-        getShinsuStats().tick(world);
+        getShinsuTechniqueData().tick(world);
     }
 
     default double getPreferredAttributeChance() {
         return 0.75;
     }
 
+    @Nullable
     default ShinsuAttribute getInitialAttribute(RandomSource random) {
+        int level = getShinsuLevel();
         ShinsuAttribute[] pref = getPreferredQualities();
         if (pref.length > 0 && random.nextDouble() < getPreferredAttributeChance()) {
             return pref[random.nextInt(pref.length)];
-        } else {
-            List<ShinsuAttribute> attributes = new ArrayList<>(ShinsuAttributeRegistry.getRegistry().getValues());
-            return attributes.get(random.nextInt(attributes.size()));
+        } else if (level >= 30 && random.nextDouble() < Math.pow(Math.pow(2, 1.0 / 31), level - 29) - 1) {
+            ShinsuAttribute[] attributes = ShinsuAttributeRegistry.getRegistry().getValues().toArray(new ShinsuAttribute[0]);
+            return attributes[random.nextInt(attributes.length)];
         }
+        return null;
     }
 
     default double getPreferredShapeChance() {
@@ -107,18 +90,15 @@ public interface IShinsuUser {
 
     @Nullable
     default ShinsuShape getInitialShape(RandomSource random) {
+        int level = getShinsuLevel();
         ShinsuShape[] pref = getPreferredShapes();
         if (pref.length > 0 && random.nextDouble() < getPreferredShapeChance()) {
             return pref[random.nextInt(pref.length)];
-        } else {
+        } else if (level >= 30 && random.nextDouble() < Math.pow(Math.pow(2, 1.0 / 31), level - 29) - 1) {
             ShinsuShape[] shapes = ShinsuShapeRegistry.getRegistry().getValues().toArray(new ShinsuShape[0]);
             return shapes[random.nextInt(shapes.length)];
         }
-    }
-
-    default ShinsuTechniqueType[] getPreferredTechniqueTypes() {
-        Group group = getGroup();
-        return group == null ? new ShinsuTechniqueType[0] : group.getPreferredTechniqueTypes();
+        return null;
     }
 
     default ShinsuAttribute[] getPreferredQualities() {
@@ -136,32 +116,6 @@ public interface IShinsuUser {
         List<Group> groups = new ArrayList<>(GroupRegistry.getRegistry().getValues());
         return groups.get(random.nextInt(groups.size()));
     }
-
-    default int getInitialShinsuLevel(RandomSource rand) {
-        int min = getMinInitialLevel();
-        int total = getMaxInitialLevel() - min;
-        double current = 0;
-        double random = rand.nextDouble();
-        double rate = 0.8;
-        double choose = 1;
-        double success = 1;
-        double fail = Math.pow(1 - rate, total - 1);
-        for (int i = 0; i < total; i++) {
-            double chance = choose * success * fail;
-            current += chance;
-            if (random < current) {
-                return i + min;
-            }
-            choose *= (total - i - 1.0) / (i + 1);
-            success *= rate;
-            fail /= 1 - rate;
-        }
-        return total;
-    }
-
-    int getMinInitialLevel();
-
-    int getMaxInitialLevel();
 
     @Nullable
     Group getGroup();

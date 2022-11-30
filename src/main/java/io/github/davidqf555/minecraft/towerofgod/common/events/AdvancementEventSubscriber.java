@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.events;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PredictedShinsuQuality;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PredictedShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.advancements.Advancement;
@@ -40,9 +40,7 @@ public final class AdvancementEventSubscriber {
     }
 
     private static void revokeAdvancement(ServerPlayer player, Advancement advancement) {
-        advancement.getCriteria().keySet().forEach(criterion -> {
-            player.getAdvancements().revoke(advancement, criterion);
-        });
+        advancement.getCriteria().keySet().forEach(criterion -> player.getAdvancements().revoke(advancement, criterion));
     }
 
 }

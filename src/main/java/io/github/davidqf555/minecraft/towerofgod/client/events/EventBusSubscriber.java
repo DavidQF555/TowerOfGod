@@ -66,6 +66,7 @@ public final class EventBusSubscriber {
             event.registerEntityRenderer(EntityRegistry.RANKER.get(), BipedShinsuUserRenderer::new);
             event.registerEntityRenderer(EntityRegistry.SPEAR.get(), SpearRenderer::new);
             event.registerEntityRenderer(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), DirectionalLightningRenderer::new);
+            event.registerEntityRenderer(EntityRegistry.MENTOR.get(), BipedShinsuUserRenderer::new);
         }
 
         @SubscribeEvent
@@ -88,8 +89,7 @@ public final class EventBusSubscriber {
         @SubscribeEvent
         public static void onRegisterGuiOverlays(RegisterGuiOverlaysEvent event) {
             event.registerAboveAll("combination", ClientReference.COMBO);
-            event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), "shinsu", ClientReference.SHINSU);
-            event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), "baangs", ClientReference.BAANGS);
+            event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "shinsu", ClientReference.SHINSU);
         }
 
         @SubscribeEvent

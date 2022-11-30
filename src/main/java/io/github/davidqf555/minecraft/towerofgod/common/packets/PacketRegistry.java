@@ -18,7 +18,6 @@ public final class PacketRegistry {
         event.enqueueWork(() -> {
             CastShinsuPacket.register(index++);
             UpdateShinsuMeterPacket.register(index++);
-            UpdateBaangsMeterPacket.register(index++);
             ClientUpdateClientErrorPacket.register(index++);
             ServerUpdateClientErrorPacket.register(index++);
             ObserverChangeHighlightPacket.register(index++);

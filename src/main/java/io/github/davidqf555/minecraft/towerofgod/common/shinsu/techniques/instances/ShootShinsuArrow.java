@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
@@ -13,7 +13,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -26,7 +25,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     private float velocity;
     private UUID arrow;
 
-    public ShootShinsuArrow(LivingEntity user, Vec3 direction) {
+    public ShootShinsuArrow(Entity user, Vec3 direction) {
         super(user);
         this.direction = direction;
         arrow = null;
@@ -52,7 +51,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
         if (user != null) {
             ShinsuArrowEntity arrow = EntityRegistry.SHINSU_ARROW.get().create(world);
             if (arrow != null) {
-                ShinsuAttribute attribute = ShinsuStats.get(user).getAttribute();
+                ShinsuAttribute attribute = ShinsuQualityData.get(user).getAttribute();
                 arrow.setAttribute(attribute);
                 arrow.setTechnique(getID());
                 float speed = velocity * 3;
@@ -71,12 +70,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 3;
-    }
-
-    @Override
-    public int getBaangsUse() {
-        return 1;
+        return 5;
     }
 
     @Override
@@ -119,7 +113,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<ShootShinsuArrow> {
 
         @Override
-        public Either<ShootShinsuArrow, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
+        public Either<ShootShinsuArrow, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
             return Either.left(new ShootShinsuArrow(user, dir));
         }
 

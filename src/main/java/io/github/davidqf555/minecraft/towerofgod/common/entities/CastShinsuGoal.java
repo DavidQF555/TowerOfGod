@@ -29,15 +29,21 @@ public class CastShinsuGoal<T extends Mob & IShinsuUser> extends Goal {
         if (--time <= 0) {
             List<ShinsuTechnique> possible = new ArrayList<>();
             for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                create(technique).ifPresent(inst -> possible.add(technique));
+                if (technique.shouldMobUse(entity)) {
+                    create(technique).ifPresent(inst -> possible.add(technique));
+                }
             }
             if (possible.isEmpty()) {
                 return false;
             }
-            selected = possible.get(entity.getRandom().nextInt(possible.size()));
+            selected = selectTechnique(possible);
             return true;
         }
         return false;
+    }
+
+    protected ShinsuTechnique selectTechnique(List<ShinsuTechnique> possible) {
+        return possible.get(entity.getRandom().nextInt(possible.size()));
     }
 
     @Override
@@ -53,7 +59,7 @@ public class CastShinsuGoal<T extends Mob & IShinsuUser> extends Goal {
     }
 
     private Optional<? extends ShinsuTechniqueInstance> create(ShinsuTechnique technique) {
-        return technique.shouldMobUse(entity) ? technique.create(entity, entity.getTarget(), entity.getLookAngle()).left() : Optional.empty();
+        return technique.create(entity, entity.getTarget(), entity.getLookAngle()).left();
     }
 
     @Override

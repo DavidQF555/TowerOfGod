@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.capabilities;
+package io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity;
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
@@ -7,7 +7,7 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShape
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
@@ -15,24 +15,15 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
-public class PredictedShinsuQuality implements INBTSerializable<CompoundTag> {
+public class ShinsuQualityData implements INBTSerializable<CompoundTag> {
 
-    public static final Capability<PredictedShinsuQuality> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    public static final Capability<ShinsuQualityData> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
     });
-    private ShinsuShape shape;
     private ShinsuAttribute attribute;
+    private ShinsuShape shape;
 
-    public static PredictedShinsuQuality get(Player player) {
-        return player.getCapability(CAPABILITY).orElseGet(PredictedShinsuQuality::new);
-    }
-
-    @Nullable
-    public ShinsuShape getShape() {
-        return shape;
-    }
-
-    public void setShape(@Nullable ShinsuShape shape) {
-        this.shape = shape;
+    public static ShinsuQualityData get(Entity entity) {
+        return entity.getCapability(CAPABILITY).orElseGet(ShinsuQualityData::new);
     }
 
     @Nullable
@@ -44,27 +35,36 @@ public class PredictedShinsuQuality implements INBTSerializable<CompoundTag> {
         this.attribute = attribute;
     }
 
+    @Nullable
+    public ShinsuShape getShape() {
+        return shape;
+    }
+
+    public void setShape(@Nullable ShinsuShape shape) {
+        this.shape = shape;
+    }
+
     @Override
     public CompoundTag serializeNBT() {
-        CompoundTag nbt = new CompoundTag();
-        ShinsuShape shape = getShape();
-        if (shape != null) {
-            nbt.putString("Shape", shape.getId().toString());
-        }
+        CompoundTag tag = new CompoundTag();
         ShinsuAttribute attribute = getAttribute();
         if (attribute != null) {
-            nbt.putString("Attribute", attribute.getId().toString());
+            tag.putString("Attribute", attribute.getRegistryName().toString());
         }
-        return nbt;
+        ShinsuShape shape = getShape();
+        if (shape != null) {
+            tag.putString("Shape", shape.getRegistryName().toString());
+        }
+        return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        if (nbt.contains("Shape", Tag.TAG_STRING)) {
-            setShape(ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape"))));
-        }
         if (nbt.contains("Attribute", Tag.TAG_STRING)) {
             setAttribute(ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute"))));
+        }
+        if (nbt.contains("Shape", Tag.TAG_STRING)) {
+            setShape(ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape"))));
         }
     }
 

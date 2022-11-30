@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.network.FriendlyByteBuf;
@@ -20,9 +20,7 @@ import java.util.function.Supplier;
 
 public class CastShinsuPacket {
 
-    private static final BiConsumer<CastShinsuPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
-        buffer.writeResourceLocation(message.technique.getId());
-    };
+    private static final BiConsumer<CastShinsuPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> buffer.writeResourceLocation(message.technique.getId());
     private static final Function<FriendlyByteBuf, CastShinsuPacket> DECODER = buffer -> {
         ShinsuTechnique technique = ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation());
         return new CastShinsuPacket(technique);
@@ -45,10 +43,13 @@ public class CastShinsuPacket {
     private void handle(NetworkEvent.Context context) {
         ServerPlayer player = context.getSender();
         context.enqueueWork(() -> {
-            Vec3 eye = player.getEyePosition(1);
-            EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuStats.ENTITY_RANGE)), AABB.ofSize(eye, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE), entity -> true);
-            technique.cast(player, result == null ? null : result.getEntity(), player.getLookAngle());
-        });
+                    if (technique.isObtainable()) {
+                        Vec3 eye = player.getEyePosition(1);
+                        EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuTechniqueData.CAST_TARGET_RANGE)), AABB.ofSize(eye, ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2), null);
+                        technique.cast(player, result == null ? null : result.getEntity(), player.getLookAngle());
+                    }
+                }
+        );
         context.setPacketHandled(true);
     }
 

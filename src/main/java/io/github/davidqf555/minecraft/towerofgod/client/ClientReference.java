@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.GuideScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuCombinationGui;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.StatsMeterGui;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuMeterGui;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
@@ -32,8 +32,7 @@ import java.util.Set;
 public final class ClientReference {
 
     public static final Map<ShinsuTechnique, Component> ERRORS = new HashMap<>();
-    public static final StatsMeterGui SHINSU = new StatsMeterGui(-91, 0, 0, 200);
-    public static final StatsMeterGui BAANGS = new StatsMeterGui(6, 0, 0, 20);
+    public static final ShinsuMeterGui SHINSU = new ShinsuMeterGui(200);
     public static final ShinsuCombinationGui COMBO = new ShinsuCombinationGui();
 
     private ClientReference() {

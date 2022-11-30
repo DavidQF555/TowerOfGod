@@ -8,7 +8,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.WrappedGoal;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
 
     private final List<UUID> devices;
 
-    public BasicCommandTechnique(LivingEntity user) {
+    public BasicCommandTechnique(Entity user) {
         super(user);
         devices = new ArrayList<>();
         if (user != null) {

@@ -10,6 +10,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -34,6 +35,7 @@ public final class EntityRegistry {
     public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", RankerEntity::new, MobCategory.CREATURE, 0.6f, 1.8f);
     public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", SpearEntity::new, MobCategory.MISC, 0.5f, 0.5f);
     public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", DirectionalLightningBoltEntity::new, MobCategory.MISC, 1, 1);
+    public static final RegistryObject<EntityType<MentorEntity>> MENTOR = register("mentor", MentorEntity::new, MobCategory.CREATURE, 0.6f, 1.8f);
 
     private EntityRegistry() {
     }
@@ -52,14 +54,16 @@ public final class EntityRegistry {
         event.put(OBSERVER.get(), ObserverEntity.setAttributes().build());
         event.put(REGULAR.get(), RegularEntity.setAttributes().build());
         event.put(RANKER.get(), RankerEntity.setAttributes().build());
+        event.put(MENTOR.get(), MentorEntity.setAttributes().build());
     }
 
 
     @SubscribeEvent
     public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            SpawnPlacements.register(EntityRegistry.REGULAR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RegularEntity.class, new AABB(pos).inflate(64)).size() < 10);
-            SpawnPlacements.register(EntityRegistry.RANKER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AABB(pos).inflate(64)).size() < 1);
+            SpawnPlacements.register(EntityRegistry.REGULAR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RegularEntity.class, AABB.ofSize(Vec3.atCenterOf(pos), 128, 128, 128)).size() < 10);
+            SpawnPlacements.register(EntityRegistry.RANKER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, AABB.ofSize(Vec3.atCenterOf(pos), 128, 128, 128)).size() < 1);
+            SpawnPlacements.register(EntityRegistry.MENTOR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, AABB.ofSize(Vec3.atCenterOf(pos), 128, 128, 128)).size() < 1);
         });
     }
 

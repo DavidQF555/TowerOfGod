@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "towerofgod:item/fire_control_guide"
+    "layer0": "towerofgod:item/shinsu_guide"
   }
 }

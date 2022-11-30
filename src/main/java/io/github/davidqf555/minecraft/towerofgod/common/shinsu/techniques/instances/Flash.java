@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -27,14 +26,14 @@ public class Flash extends ShinsuTechniqueInstance {
     private static final double RANGE = 64;
     private Vec3 direction;
 
-    public Flash(LivingEntity user, Vec3 direction) {
+    public Flash(Entity user, Vec3 direction) {
         super(user);
         this.direction = direction;
     }
 
     @Override
     public int getCooldown() {
-        return 200;
+        return 900;
     }
 
     @Override
@@ -65,12 +64,7 @@ public class Flash extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 15;
-    }
-
-    @Override
-    public int getBaangsUse() {
-        return 1;
+        return 20;
     }
 
     @Override
@@ -93,7 +87,7 @@ public class Flash extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<Flash> {
 
         @Override
-        public Either<Flash, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
+        public Either<Flash, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
             return Either.left(new Flash(user, dir));
         }
 

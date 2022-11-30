@@ -2,8 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.PredictedShinsuQuality;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PredictedShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
@@ -48,11 +48,10 @@ public class ClickerItem extends Item {
             if (!playerIn.isCreative()) {
                 item.setCount(item.getCount() - 1);
             }
-            if (playerIn instanceof ServerPlayer) {
-                ServerPlayer serverPlayer = (ServerPlayer) playerIn;
+            if (playerIn instanceof ServerPlayer serverPlayer) {
                 ShinsuAttribute attribute = getAttribute(serverPlayer);
                 ShinsuShape shape = getShape(serverPlayer);
-                ShinsuStats stats = ShinsuStats.get(serverPlayer);
+                ShinsuQualityData stats = ShinsuQualityData.get(serverPlayer);
                 stats.setAttribute(attribute);
                 stats.setShape(shape);
                 entity.setAttribute(attribute);

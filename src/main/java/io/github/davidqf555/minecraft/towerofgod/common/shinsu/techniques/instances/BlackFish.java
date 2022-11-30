@@ -2,9 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -23,7 +21,7 @@ public class BlackFish extends ShinsuTechniqueInstance {
 
     private int duration, light;
 
-    public BlackFish(LivingEntity user, int duration, int light) {
+    public BlackFish(Entity user, int duration, int light) {
         super(user);
         this.duration = duration;
         this.light = light;
@@ -50,17 +48,12 @@ public class BlackFish extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return getDuration() + 40;
+        return 400;
     }
 
     @Override
     public int getShinsuUse() {
         return 10;
-    }
-
-    @Override
-    public int getBaangsUse() {
-        return 1;
     }
 
     @Override
@@ -87,9 +80,8 @@ public class BlackFish extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<BlackFish> {
 
         @Override
-        public Either<BlackFish, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.CONTROL).getLevel();
-            return Either.left(new BlackFish(user, level * 40 + 100, level));
+        public Either<BlackFish, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
+            return Either.left(new BlackFish(user, 2400, 7));
         }
 
         @Override

@@ -37,14 +37,9 @@ public interface IGeared<T extends LivingEntity> {
         double total = base;
         for (AttributeModifier modifier : item.getAttributeModifiers(slot).get(attribute)) {
             switch (modifier.getOperation()) {
-                case ADDITION:
-                    total += modifier.getAmount();
-                    break;
-                case MULTIPLY_BASE:
-                    total += modifier.getAmount() * base;
-                    break;
-                case MULTIPLY_TOTAL:
-                    total *= modifier.getAmount() + 1;
+                case ADDITION -> total += modifier.getAmount();
+                case MULTIPLY_BASE -> total += modifier.getAmount() * base;
+                case MULTIPLY_TOTAL -> total *= modifier.getAmount() + 1;
             }
         }
         return total;
