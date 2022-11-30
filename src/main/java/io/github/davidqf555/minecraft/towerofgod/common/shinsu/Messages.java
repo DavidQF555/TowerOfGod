@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
@@ -22,14 +21,6 @@ public final class Messages {
 
     public static Component getRequiresShinsu(int requirement) {
         return new TranslatableComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_shinsu", requirement);
-    }
-
-    public static Component getRequiresBaangs(int requirement) {
-        return new TranslatableComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_baangs", requirement);
-    }
-
-    public static Component getRequiresLevel(ShinsuTechniqueType type, int requirement) {
-        return new TranslatableComponent("technique." + TowerOfGod.MOD_ID + ".error.requires_level", requirement, type.getText());
     }
 
     public static TranslatableComponent getRequiresTarget(double range) {

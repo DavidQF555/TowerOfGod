@@ -71,6 +71,7 @@ public final class EventBusSubscriber {
             event.registerEntityRenderer(EntityRegistry.RANKER.get(), BipedShinsuUserRenderer::new);
             event.registerEntityRenderer(EntityRegistry.SPEAR.get(), SpearRenderer::new);
             event.registerEntityRenderer(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), DirectionalLightningRenderer::new);
+            event.registerEntityRenderer(EntityRegistry.MENTOR.get(), BipedShinsuUserRenderer::new);
         }
 
         @SubscribeEvent
@@ -94,8 +95,7 @@ public final class EventBusSubscriber {
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
             KeyBindingsList.register();
             OverlayRegistry.registerOverlayTop(new ResourceLocation(TowerOfGod.MOD_ID, "combination").toString(), ClientReference.COMBO);
-            OverlayRegistry.registerOverlayAbove(ForgeIngameGui.PLAYER_HEALTH_ELEMENT, new ResourceLocation(TowerOfGod.MOD_ID, "shinsu").toString(), ClientReference.SHINSU);
-            OverlayRegistry.registerOverlayAbove(ForgeIngameGui.PLAYER_HEALTH_ELEMENT, new ResourceLocation(TowerOfGod.MOD_ID, "baangs").toString(), ClientReference.BAANGS);
+            OverlayRegistry.registerOverlayAbove(ForgeIngameGui.EXPERIENCE_BAR_ELEMENT, new ResourceLocation(TowerOfGod.MOD_ID, "shinsu").toString(), ClientReference.SHINSU);
             event.enqueueWork(() -> {
                 MenuScreens.register(ContainerRegistry.LIGHTHOUSE.get(), LighthouseScreen::new);
                 ItemProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemProperties.getProperty(Items.BOW, new ResourceLocation("pull")));

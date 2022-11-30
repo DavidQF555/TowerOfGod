@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -8,7 +9,6 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -32,12 +32,7 @@ public class ClientOpenCombinationGUIPacket {
     private void handle(NetworkEvent.Context context) {
         ServerPlayer player = context.getSender();
         context.enqueueWork(() -> {
-            Set<ShinsuTechnique> unlocked = new HashSet<>();
-            for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                if (technique.isUnlocked(player)) {
-                    unlocked.add(technique);
-                }
-            }
+            Set<ShinsuTechnique> unlocked = PlayerTechniqueData.get(player).getUnlockedTechniques(player);
             TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ServerOpenCombinationGUIPacket(unlocked));
         });
         context.setPacketHandled(true);

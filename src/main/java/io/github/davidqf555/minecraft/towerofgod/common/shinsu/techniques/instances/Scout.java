@@ -2,13 +2,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.ScoutCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -16,7 +14,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -34,7 +31,7 @@ public class Scout extends BasicCommandTechnique {
     private int radius;
     private float speed;
 
-    public Scout(LivingEntity user, Vec3 direction, double range, int radius, float speed) {
+    public Scout(Entity user, Vec3 direction, double range, int radius, float speed) {
         super(user);
         this.direction = direction;
         this.range = range;
@@ -54,12 +51,12 @@ public class Scout extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 5;
+        return getDevices().size() * 10;
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1 + getDevices().size() / 3;
+    public int getCooldown() {
+        return 300;
     }
 
     @Override
@@ -113,9 +110,8 @@ public class Scout extends BasicCommandTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<Scout> {
 
         @Override
-        public Either<Scout, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DEVICE_CONTROL).getLevel();
-            Scout technique = new Scout(user, dir, 4 + level * 4, 8 + level * 4, 1 + level / 20f);
+        public Either<Scout, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
+            Scout technique = new Scout(user, dir, 8, 12, 1);
             return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
         }
 

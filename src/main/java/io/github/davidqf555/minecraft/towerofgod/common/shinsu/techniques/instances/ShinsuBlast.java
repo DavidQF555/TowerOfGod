@@ -24,7 +24,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
     private UUID blast;
     private Vec3 direction;
 
-    public ShinsuBlast(LivingEntity user, Vec3 direction) {
+    public ShinsuBlast(Entity user, Vec3 direction) {
         super(user);
         this.direction = direction;
         blast = null;
@@ -68,17 +68,12 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
 
     @Override
     public int getCooldown() {
-        return 40;
+        return 200;
     }
 
     @Override
     public int getShinsuUse() {
-        return 10;
-    }
-
-    @Override
-    public int getBaangsUse() {
-        return 1;
+        return 15;
     }
 
     @Override
@@ -109,7 +104,7 @@ public class ShinsuBlast extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<ShinsuBlast> {
 
         @Override
-        public Either<ShinsuBlast, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
+        public Either<ShinsuBlast, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
             return Either.left(new ShinsuBlast(user, dir));
         }
 

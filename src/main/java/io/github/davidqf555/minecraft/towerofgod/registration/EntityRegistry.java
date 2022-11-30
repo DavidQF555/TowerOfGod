@@ -38,6 +38,7 @@ public final class EntityRegistry {
     public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", RankerEntity::new, MobCategory.CREATURE, 0.6f, 1.8f);
     public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", SpearEntity::new, MobCategory.MISC, 0.5f, 0.5f);
     public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", DirectionalLightningBoltEntity::new, MobCategory.MISC, 1, 1);
+    public static final RegistryObject<EntityType<MentorEntity>> MENTOR = register("mentor", MentorEntity::new, MobCategory.CREATURE, 0.6f, 1.8f);
 
     private EntityRegistry() {
     }
@@ -56,6 +57,7 @@ public final class EntityRegistry {
         event.put(OBSERVER.get(), ObserverEntity.setAttributes().build());
         event.put(REGULAR.get(), RegularEntity.setAttributes().build());
         event.put(RANKER.get(), RankerEntity.setAttributes().build());
+        event.put(MENTOR.get(), MentorEntity.setAttributes().build());
     }
 
 
@@ -64,6 +66,7 @@ public final class EntityRegistry {
         event.enqueueWork(() -> {
             SpawnPlacements.register(EntityRegistry.REGULAR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RegularEntity.class, new AABB(pos).inflate(64)).size() < 10);
             SpawnPlacements.register(EntityRegistry.RANKER.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AABB(pos).inflate(64)).size() < 1);
+            SpawnPlacements.register(EntityRegistry.MENTOR.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AABB(pos).inflate(64)).size() < 1);
         });
     }
 
@@ -74,8 +77,9 @@ public final class EntityRegistry {
         public static void onBiomeLoading(BiomeLoadingEvent event) {
             if (event.getCategory() != Biome.BiomeCategory.OCEAN && event.getCategory() != Biome.BiomeCategory.RIVER) {
                 MobSpawnSettingsBuilder builder = event.getSpawns();
-                builder.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityRegistry.REGULAR.get(), 3, 1, 1));
-                builder.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityRegistry.RANKER.get(), 1, 1, 1));
+                builder.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityRegistry.REGULAR.get(), 4, 1, 1));
+                builder.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityRegistry.RANKER.get(), 2, 1, 1));
+                builder.addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityRegistry.MENTOR.get(), 1, 1, 1));
             }
         }
 

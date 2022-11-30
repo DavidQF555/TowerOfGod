@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.network.FriendlyByteBuf;
@@ -45,10 +45,13 @@ public class CastShinsuPacket {
     private void handle(NetworkEvent.Context context) {
         ServerPlayer player = context.getSender();
         context.enqueueWork(() -> {
-            Vec3 eye = player.getEyePosition(1);
-            EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuStats.ENTITY_RANGE)), AABB.ofSize(eye, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE, ShinsuStats.ENTITY_RANGE), entity -> true);
-            technique.cast(player, result == null ? null : result.getEntity(), player.getLookAngle());
-        });
+                    if (technique.isObtainable()) {
+                        Vec3 eye = player.getEyePosition(1);
+                        EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuTechniqueData.CAST_TARGET_RANGE)), AABB.ofSize(eye, ShinsuTechniqueData.CAST_TARGET_RANGE, ShinsuTechniqueData.CAST_TARGET_RANGE, ShinsuTechniqueData.CAST_TARGET_RANGE), null);
+                        technique.cast(player, result == null ? null : result.getEntity(), player.getLookAngle());
+                    }
+                }
+        );
         context.setPacketHandled(true);
     }
 

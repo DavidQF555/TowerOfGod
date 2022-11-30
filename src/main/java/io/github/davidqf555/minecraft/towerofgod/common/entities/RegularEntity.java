@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.world.RegularTeamsSavedData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -88,12 +87,12 @@ public class RegularEntity extends BasicShinsuUserEntity {
 
     @Override
     public int getMaxInitialLevel() {
-        return 50;
+        return 75;
     }
 
     @Override
     protected int getExperienceReward(Player player) {
-        return ShinsuStats.get(this).getLevel() - random.nextInt(3) + 7;
+        return getShinsuLevel() - random.nextInt(3) + 7;
     }
 
     @Nullable

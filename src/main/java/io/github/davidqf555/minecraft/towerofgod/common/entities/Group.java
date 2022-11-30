@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -22,25 +21,21 @@ public class Group extends ForgeRegistryEntry<Group> {
     private final BossEvent.BossBarColor bossColor;
     private final Supplier<ShinsuAttribute[]> attributes;
     private final Supplier<ShinsuShape[]> shapes;
-    private final Supplier<ShinsuTechniqueType[]> types;
     private final Predicate<Item> weapons;
     private final double resistance;
     private final double tension;
     private final double shinsu;
-    private final double baangs;
 
-    public Group(int color, Supplier<ShinsuAttribute[]> attributes, Supplier<ShinsuShape[]> shapes, Supplier<ShinsuTechniqueType[]> types, Predicate<Item> weapons, double resistance, double tension, double shinsu, double baangs) {
+    public Group(int color, Supplier<ShinsuAttribute[]> attributes, Supplier<ShinsuShape[]> shapes, Predicate<Item> weapons, double resistance, double tension, double shinsu) {
         this.color = color;
         bossColor = getBossInfoColor(color);
         format = getTextFormattingColor(color);
         this.attributes = attributes;
         this.shapes = shapes;
-        this.types = types;
         this.weapons = weapons;
         this.resistance = resistance;
         this.tension = tension;
         this.shinsu = shinsu;
-        this.baangs = baangs;
     }
 
     private static BossEvent.BossBarColor getBossInfoColor(int color) {
@@ -107,10 +102,6 @@ public class Group extends ForgeRegistryEntry<Group> {
         return shapes.get();
     }
 
-    public ShinsuTechniqueType[] getPreferredTechniqueTypes() {
-        return types.get();
-    }
-
     public boolean isPreferredWeapon(Item item) {
         return weapons.test(item);
     }
@@ -125,10 +116,6 @@ public class Group extends ForgeRegistryEntry<Group> {
 
     public double getShinsu() {
         return shinsu;
-    }
-
-    public double getBaangs() {
-        return baangs;
     }
 
     public TranslatableComponent getName() {

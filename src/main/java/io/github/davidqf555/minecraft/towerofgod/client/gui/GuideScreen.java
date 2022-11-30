@@ -18,7 +18,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 
 import java.util.List;
 
@@ -34,6 +33,7 @@ public class GuideScreen extends Screen {
     private static final int BUTTON_WIDTH = 18, BUTTON_HEIGHT = 10, ARROW_WIDTH = 10, ARROW_HEIGHT = 10, DIF = 10;
     private final ShinsuTechnique[] pages;
     private final int xSize, ySize, color;
+    private ChangePageButton next, back;
     private int page;
 
     public GuideScreen(ShinsuTechnique[] pages, int xSize, int ySize, int color) {
@@ -49,8 +49,11 @@ public class GuideScreen extends Screen {
         super.init();
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
-        addRenderableWidget(new ChangePageButton(BACK, -1, x, y + ySize - BUTTON_HEIGHT));
-        addRenderableWidget(new ChangePageButton(NEXT, 1, x + xSize - BUTTON_WIDTH, y + ySize - BUTTON_HEIGHT));
+        next = new ChangePageButton(NEXT, 1, x + xSize - BUTTON_WIDTH - 15, y + ySize - BUTTON_HEIGHT - 12);
+        back = new ChangePageButton(BACK, -1, x + 15, y + ySize - BUTTON_HEIGHT - 12);
+        addRenderableWidget(back);
+        addRenderableWidget(next);
+        setPage(0);
     }
 
     @Override
@@ -124,6 +127,12 @@ public class GuideScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    private void setPage(int page) {
+        this.page = page;
+        next.visible = page != pages.length - 1;
+        back.visible = page != 0;
+    }
+
     @Override
     public boolean isPauseScreen() {
         return false;
@@ -142,7 +151,7 @@ public class GuideScreen extends Screen {
 
         @Override
         public void onPress() {
-            page = Mth.clamp(page + change, 0, pages.length - 1);
+            setPage(page + change);
         }
 
         @Override
@@ -156,6 +165,7 @@ public class GuideScreen extends Screen {
         public void updateNarration(NarrationElementOutput output) {
             defaultButtonNarrationText(output);
         }
+
     }
 
 }

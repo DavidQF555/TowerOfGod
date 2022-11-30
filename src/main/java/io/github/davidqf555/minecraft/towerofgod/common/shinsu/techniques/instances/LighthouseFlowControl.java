@@ -2,20 +2,17 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseFlowControlCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -26,7 +23,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
     private int duration;
     private double range;
 
-    public LighthouseFlowControl(LivingEntity user, int duration, double range) {
+    public LighthouseFlowControl(Entity user, int duration, double range) {
         super(user);
         this.duration = duration;
         this.range = range;
@@ -44,12 +41,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
 
     @Override
     public int getShinsuUse() {
-        return getDevices().size() * 10;
-    }
-
-    @Override
-    public int getBaangsUse() {
-        return 1 + getDevices().size() / 2;
+        return getDevices().size() * 25;
     }
 
     @Override
@@ -59,7 +51,7 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
 
     @Override
     public int getCooldown() {
-        return getDuration() + 200;
+        return 600;
     }
 
     @Override
@@ -86,9 +78,8 @@ public class LighthouseFlowControl extends BasicCommandTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<LighthouseFlowControl> {
 
         @Override
-        public Either<LighthouseFlowControl, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.DEVICE_CONTROL).getLevel();
-            LighthouseFlowControl technique = new LighthouseFlowControl(user, 40 + level * 20, 3 + level);
+        public Either<LighthouseFlowControl, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
+            LighthouseFlowControl technique = new LighthouseFlowControl(user, 60, 3);
             return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
         }
 

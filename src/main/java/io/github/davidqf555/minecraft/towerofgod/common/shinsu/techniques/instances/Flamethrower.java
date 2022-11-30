@@ -1,9 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -11,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.phys.Vec3;
 
@@ -20,15 +18,14 @@ import java.util.Random;
 
 public class Flamethrower extends ShinsuTechniqueInstance {
 
-    private int duration, count;
+    private int duration;
     private float spread;
     private double magnitude;
 
-    public Flamethrower(LivingEntity user, int duration, float spread, int count, double magnitude) {
+    public Flamethrower(Entity user, int duration, float spread, double magnitude) {
         super(user);
         this.duration = duration;
         this.spread = spread;
-        this.count = count;
         this.magnitude = magnitude;
     }
 
@@ -37,6 +34,7 @@ public class Flamethrower extends ShinsuTechniqueInstance {
         Entity user = getUser(world);
         Random rand = world.getRandom();
         Vec3 center = user.getLookAngle();
+        int count = (int) (ShinsuStats.get(user).getTension() * 2) + 1;
         for (int i = 0; i < count; i++) {
             SmallFireball fire = EntityType.SMALL_FIREBALL.create(world);
             if (fire != null) {
@@ -64,19 +62,18 @@ public class Flamethrower extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 15;
+        return 50;
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1;
+    public int getCooldown() {
+        return 900;
     }
 
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag = super.serializeNBT();
         tag.putInt("Duration", duration);
-        tag.putInt("Count", count);
         tag.putFloat("Spread", spread);
         tag.putDouble("Magnitude", magnitude);
         return tag;
@@ -87,9 +84,6 @@ public class Flamethrower extends ShinsuTechniqueInstance {
         super.deserializeNBT(nbt);
         if (nbt.contains("Duration", Tag.TAG_INT)) {
             duration = nbt.getInt("Duration");
-        }
-        if (nbt.contains("Count", Tag.TAG_INT)) {
-            count = nbt.getInt("Count");
         }
         if (nbt.contains("Spread", Tag.TAG_FLOAT)) {
             spread = nbt.getFloat("Spread");
@@ -102,15 +96,13 @@ public class Flamethrower extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<Flamethrower> {
 
         @Override
-        public Either<Flamethrower, Component> create(LivingEntity user, @Nullable Entity target, Vec3 dir) {
-            int control = ShinsuStats.get(user).getData(ShinsuTechniqueType.CONTROL).getLevel();
-            int manifest = ShinsuStats.get(user).getData(ShinsuTechniqueType.MANIFEST).getLevel();
-            return Either.left(new Flamethrower(user, 60, control * 2 + 30, Math.min(manifest / 5 + 1, 10), Math.min(0.25 + control / 10.0, 3)));
+        public Either<Flamethrower, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
+            return Either.left(new Flamethrower(user, 40, 45, 0.75));
         }
 
         @Override
         public Flamethrower blankCreate() {
-            return new Flamethrower(null, 0, 0, 0, 0);
+            return new Flamethrower(null, 0, 0, 0);
         }
     }
 }

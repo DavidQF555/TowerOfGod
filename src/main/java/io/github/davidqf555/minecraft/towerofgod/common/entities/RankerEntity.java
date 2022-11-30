@@ -1,6 +1,5 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
@@ -23,7 +22,7 @@ public class RankerEntity extends BasicShinsuUserEntity {
 
     private final ServerBossEvent info;
 
-    public RankerEntity(EntityType<RankerEntity> type, Level world) {
+    public RankerEntity(EntityType<? extends RankerEntity> type, Level world) {
         super(type, world);
         info = new ServerBossEvent(getDisplayName(), BossEvent.BossBarColor.WHITE, BossEvent.BossBarOverlay.PROGRESS);
         info.setVisible(false);
@@ -91,12 +90,12 @@ public class RankerEntity extends BasicShinsuUserEntity {
 
     @Override
     public int getMinInitialLevel() {
-        return 60;
+        return 76;
     }
 
     @Override
     protected int getExperienceReward(Player player) {
-        return ShinsuStats.get(this).getLevel() - random.nextInt(3) + 7;
+        return getShinsuLevel() - random.nextInt(3) + 7;
     }
 
     @Override
