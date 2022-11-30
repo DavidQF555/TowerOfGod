@@ -14,9 +14,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -43,9 +40,6 @@ public final class ShinsuCommand {
     private static final String SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.shape";
     private static final String INSTANCES = "commands." + TowerOfGod.MOD_ID + ".shinsu.instances";
     private static final String INSTANCES_TITLE = "commands." + TowerOfGod.MOD_ID + ".shinsu.instances.entity";
-    private static final String UNKNOWN_ATTRIBUTE = "commands." + TowerOfGod.MOD_ID + ".shinsu.unknown_attribute";
-    private static final String UNKNOWN_SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.unknown_shape";
-    private static final String UNKNOWN_TECHNIQUE = "commands." + TowerOfGod.MOD_ID + ".shinsu.unknown_technique";
 
     private ShinsuCommand() {
     }
@@ -71,19 +65,19 @@ public final class ShinsuCommand {
                         )
                         .then(Commands.literal("technique")
                                 .then(Commands.literal("unlock")
-                                        .then(Commands.argument("technique", new ForgeRegistryArgument<>(ShinsuTechniqueRegistry.getRegistry(), UNKNOWN_TECHNIQUE))
+                                        .then(Commands.argument("technique", new ShinsuTechniqueArgumentType())
                                                 .executes(context -> unlockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ShinsuTechnique.class)))
                                         )
                                 )
                                 .then(Commands.literal("lock")
-                                        .then(Commands.argument("technique", new ForgeRegistryArgument<>(ShinsuTechniqueRegistry.getRegistry(), UNKNOWN_TECHNIQUE))
+                                        .then(Commands.argument("technique", new ShinsuTechniqueArgumentType())
                                                 .executes(context -> lockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ShinsuTechnique.class)))
                                         )
                                 )
                         )
                         .then(Commands.literal("attribute")
                                 .then(Commands.literal("set")
-                                        .then(Commands.argument("value", new ForgeRegistryArgument<>(ShinsuAttributeRegistry.getRegistry(), UNKNOWN_ATTRIBUTE))
+                                        .then(Commands.argument("value", new ShinsuAttributeArgumentType())
                                                 .executes(context -> changeAttribute(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("value", ShinsuAttribute.class)))
                                         )
                                 )
@@ -93,7 +87,7 @@ public final class ShinsuCommand {
                         )
                         .then(Commands.literal("shape")
                                 .then(Commands.literal("set")
-                                        .then(Commands.argument("value", new ForgeRegistryArgument<>(ShinsuShapeRegistry.getRegistry(), UNKNOWN_SHAPE))
+                                        .then(Commands.argument("value", new ShinsuShapeArgumentType())
                                                 .executes(context -> changeShape(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("value", ShinsuShape.class)))
                                         )
                                 )

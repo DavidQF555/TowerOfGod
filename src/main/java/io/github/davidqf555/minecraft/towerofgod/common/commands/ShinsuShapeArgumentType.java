@@ -7,36 +7,32 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.concurrent.CompletableFuture;
 
-public class ForgeRegistryArgument<T> implements ArgumentType<T> {
+public class ShinsuShapeArgumentType implements ArgumentType<ShinsuShape> {
 
-    private final IForgeRegistry<T> registry;
-    private final DynamicCommandExceptionType error;
-
-    public ForgeRegistryArgument(IForgeRegistry<T> registry, String error) {
-        this.registry = registry;
-        this.error = new DynamicCommandExceptionType(loc -> Component.translatable(error, loc));
-    }
+    private final DynamicCommandExceptionType exception = new DynamicCommandExceptionType(loc -> Component.translatable("commands." + TowerOfGod.MOD_ID + ".shinsu.unknown_shape", loc));
 
     @Override
-    public T parse(StringReader reader) throws CommandSyntaxException {
+    public ShinsuShape parse(StringReader reader) throws CommandSyntaxException {
         ResourceLocation loc = ResourceLocation.read(reader);
-        T technique = registry.getValue(loc);
-        if (technique == null) {
-            throw error.create(loc);
+        ShinsuShape shape = ShinsuShapeRegistry.getRegistry().getValue(loc);
+        if (shape == null) {
+            throw exception.create(loc);
         }
-        return technique;
+        return shape;
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return SharedSuggestionProvider.suggestResource(registry.getKeys(), builder);
+        return SharedSuggestionProvider.suggestResource(ShinsuShapeRegistry.getRegistry().getKeys(), builder);
     }
 
 }

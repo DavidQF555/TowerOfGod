@@ -57,5 +57,6 @@ public class TowerOfGod {
         ShinsuAttributeRegistry.QUALITIES.register(bus);
         ShinsuTechniqueRegistry.TECHNIQUES.register(bus);
         GroupRegistry.GROUPS.register(bus);
+        ArgumentTypeRegistry.INFO.register(bus);
     }
 }
