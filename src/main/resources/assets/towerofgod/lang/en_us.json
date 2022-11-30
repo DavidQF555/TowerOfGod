@@ -33,6 +33,8 @@
   "item.towerofgod.shinsu_sword": "Shinsu Sword",
   "item.towerofgod.shinsu_hoe": "Shinsu Hoe",
   "item.towerofgod.shinsu_guide": "Control of Shinsu",
+  "item.towerofgod.shinsu_guide.empty": "You have not learned any Shinsu techniques! Defeat mentors to unlock them.",
+  "item.towerofgod.shinsu_guide.lore": "A book that describes all unlocked Shinsu techniques",
   "item.towerofgod.shinsu_bow": "Shinsu Bow",
   "item.towerofgod.wooden_spear": "Wooden Spear",
   "item.towerofgod.stone_spear": "Stone Spear",
