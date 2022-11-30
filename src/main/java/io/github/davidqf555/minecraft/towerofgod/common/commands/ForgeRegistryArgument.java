@@ -7,9 +7,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -22,7 +22,7 @@ public class ForgeRegistryArgument<T extends IForgeRegistryEntry<T>> implements 
 
     public ForgeRegistryArgument(IForgeRegistry<T> registry, String error) {
         this.registry = registry;
-        this.error = new DynamicCommandExceptionType(loc -> new TranslationTextComponent(error, loc));
+        this.error = new DynamicCommandExceptionType(loc -> new TranslatableComponent(error, loc));
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ForgeRegistryArgument<T extends IForgeRegistryEntry<T>> implements 
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return ISuggestionProvider.suggestResource(registry.getKeys(), builder);
+        return SharedSuggestionProvider.suggestResource(registry.getKeys(), builder);
     }
 
 }

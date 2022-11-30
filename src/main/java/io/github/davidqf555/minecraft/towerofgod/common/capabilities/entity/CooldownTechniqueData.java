@@ -4,12 +4,12 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class CooldownTechniqueData<T extends Entity> extends ShinsuTechniqueData
     }
 
     @Override
-    public Optional<ITextComponent> getCastError(T user, ShinsuTechniqueInstance instance) {
+    public Optional<Component> getCastError(T user, ShinsuTechniqueInstance instance) {
         int cooldown = getCooldown(instance.getTechnique());
         if (cooldown > 0) {
             return Optional.of(Messages.getOnCooldown(cooldown / 20.0));
@@ -43,7 +43,7 @@ public class CooldownTechniqueData<T extends Entity> extends ShinsuTechniqueData
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
         super.tick(world);
         for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
             int cooldown = getCooldown(technique);
@@ -54,19 +54,19 @@ public class CooldownTechniqueData<T extends Entity> extends ShinsuTechniqueData
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = super.serializeNBT();
-        CompoundNBT cooldowns = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = super.serializeNBT();
+        CompoundTag cooldowns = new CompoundTag();
         this.cooldowns.forEach((technique, cooldown) -> cooldowns.putInt(technique.getRegistryName().toString(), cooldown));
         tag.put("Cooldowns", cooldowns);
         return tag;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Cooldowns", Constants.NBT.TAG_COMPOUND)) {
-            CompoundNBT data = nbt.getCompound("Cooldowns");
+        if (nbt.contains("Cooldowns", Tag.TAG_COMPOUND)) {
+            CompoundTag data = nbt.getCompound("Cooldowns");
             for (String key : data.getAllKeys()) {
                 setCooldown(ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(key)), data.getInt(key));
             }

@@ -3,27 +3,22 @@ package io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.pla
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.RequirementTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class PlayerTechniqueData extends RequirementTechniqueData<PlayerEntity> {
+public class PlayerTechniqueData extends RequirementTechniqueData<Player> {
 
-    @CapabilityInject(PlayerTechniqueData.class)
-    public static Capability<PlayerTechniqueData> capability = null;
     private final Set<ShinsuTechnique> unlocked = new HashSet<>();
 
-    public static PlayerTechniqueData get(PlayerEntity player) {
-        return player.getCapability(capability).orElseGet(PlayerTechniqueData::new);
+    public static PlayerTechniqueData get(Player player) {
+        return player.getCapability(CAPABILITY).<PlayerTechniqueData>cast().orElseGet(PlayerTechniqueData::new);
     }
 
     public Set<ShinsuTechnique> getUnlocked() {
@@ -31,7 +26,7 @@ public class PlayerTechniqueData extends RequirementTechniqueData<PlayerEntity> 
     }
 
     @Override
-    public boolean isUnlocked(PlayerEntity user, ShinsuTechnique technique) {
+    public boolean isUnlocked(Player user, ShinsuTechnique technique) {
         return getUnlocked().contains(technique) && super.isUnlocked(user, technique);
     }
 
@@ -47,21 +42,21 @@ public class PlayerTechniqueData extends RequirementTechniqueData<PlayerEntity> 
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = super.serializeNBT();
-        ListNBT unlocked = new ListNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = super.serializeNBT();
+        ListTag unlocked = new ListTag();
         getUnlocked().forEach(technique -> {
-            unlocked.add(StringNBT.valueOf(technique.getRegistryName().toString()));
+            unlocked.add(StringTag.valueOf(technique.getRegistryName().toString()));
         });
         tag.put("Unlocked", unlocked);
         return tag;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Unlocked", Constants.NBT.TAG_LIST)) {
-            for (INBT tag : nbt.getList("Unlocked", Constants.NBT.TAG_STRING)) {
+        if (nbt.contains("Unlocked", Tag.TAG_LIST)) {
+            for (Tag tag : nbt.getList("Unlocked", Tag.TAG_STRING)) {
                 unlock(ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(tag.getAsString())));
             }
         }

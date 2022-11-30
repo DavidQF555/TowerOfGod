@@ -68,7 +68,7 @@ public class RegularTeamsSavedData extends SavedData {
                 Entity entity = world.getEntity(id);
                 if (entity instanceof RegularEntity) {
                     entities.add((RegularEntity) entity);
-                    int level = ((RegularEntity) entity).getLevel();
+                    int level = ((RegularEntity) entity).getShinsuLevel();
                     if (level > maxLevel) {
                         max = (RegularEntity) entity;
                         maxLevel = level;

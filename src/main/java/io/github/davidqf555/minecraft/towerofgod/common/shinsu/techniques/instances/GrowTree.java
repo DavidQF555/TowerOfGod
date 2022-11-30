@@ -3,43 +3,42 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.TreeFeature;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class GrowTree extends RayTraceTechnique {
 
-    public GrowTree(Entity user, Vector3d direction, double range) {
+    public GrowTree(Entity user, Vec3 direction, double range) {
         super(user, direction, range, true);
     }
 
     @Override
-    public void doEffect(ServerWorld world, RayTraceResult result) {
+    public void doEffect(ServerLevel world, HitResult result) {
         BlockPos pos;
         switch (result.getType()) {
             case BLOCK:
-                pos = ((BlockRayTraceResult) result).getBlockPos().above();
+                pos = ((BlockHitResult) result).getBlockPos().above();
                 break;
             case ENTITY:
-                pos = ((EntityRayTraceResult) result).getEntity().blockPosition();
+                pos = ((EntityHitResult) result).getEntity().blockPosition();
                 break;
             default:
                 return;
         }
-        List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature instanceof TreeFeature).collect(Collectors.toList());
+        List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
         if (!trees.isEmpty()) {
             Random random = world.getRandom();
             ConfiguredFeature<?, ?> tree = trees.get(random.nextInt(trees.size()));
@@ -67,13 +66,13 @@ public class GrowTree extends RayTraceTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<GrowTree> {
 
         @Override
-        public Either<GrowTree, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+        public Either<GrowTree, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
             return Either.left(new GrowTree(user, dir, 64));
         }
 
         @Override
         public GrowTree blankCreate() {
-            return new GrowTree(null, Vector3d.ZERO, 0);
+            return new GrowTree(null, Vec3.ZERO, 0);
         }
     }
 }

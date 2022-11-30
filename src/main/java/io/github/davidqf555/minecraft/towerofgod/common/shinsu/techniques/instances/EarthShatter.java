@@ -3,13 +3,13 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.FallingBlockEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -21,7 +21,7 @@ public class EarthShatter extends GroundTechniqueInstance {
     }
 
     @Override
-    public void doEffect(ServerWorld world, Vector3d pos) {
+    public void doEffect(ServerLevel world, Vec3 pos) {
         Random random = world.getRandom();
         int horizontalRadius = 3;
         int yRadius = 5;
@@ -31,7 +31,7 @@ public class EarthShatter extends GroundTechniqueInstance {
                     BlockPos effect = new BlockPos(pos).offset(dX, dY, dZ);
                     BlockState state = world.getBlockState(effect);
                     if (!world.isEmptyBlock(effect) && state.getDestroySpeed(world, effect) > 0) {
-                        FallingBlockEntity block = new FallingBlockEntity(world, effect.getX() + 0.5, effect.getY(), effect.getZ() + 0.5, state);
+                        FallingBlockEntity block = FallingBlockEntity.fall(world, effect, state);
                         block.dropItem = false;
                         block.setDeltaMovement(random.nextGaussian() * 0.25, random.nextDouble(), random.nextGaussian() * 0.25);
                         world.addFreshEntity(block);
@@ -64,7 +64,7 @@ public class EarthShatter extends GroundTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<EarthShatter> {
 
         @Override
-        public Either<EarthShatter, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+        public Either<EarthShatter, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
             return Either.left(new EarthShatter(user, dir.x(), dir.z()));
         }
 

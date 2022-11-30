@@ -3,12 +3,12 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.effect.LightningBoltEntity;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -24,8 +24,8 @@ public class Thunderstorm extends AreaTechnique {
     }
 
     @Override
-    protected void doEffect(ServerWorld world, Vector3d pos) {
-        LightningBoltEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
+    protected void doEffect(ServerLevel world, Vec3 pos) {
+        LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(world);
         if (lightning != null) {
             lightning.setPos(pos.x(), pos.y() + 0.5, pos.z());
             world.addFreshEntity(lightning);
@@ -50,7 +50,7 @@ public class Thunderstorm extends AreaTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<Thunderstorm> {
 
         @Override
-        public Either<Thunderstorm, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Thunderstorm, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
             return Either.left(new Thunderstorm(user, 4, 16));
         }
 

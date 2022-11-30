@@ -3,12 +3,12 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -24,8 +24,8 @@ public class FireExplosion extends GroundTechniqueInstance {
     }
 
     @Override
-    public void doEffect(ServerWorld world, Vector3d pos) {
-        world.explode(getUser(world), pos.x(), pos.y(), pos.z(), 2, true, Explosion.Mode.NONE);
+    public void doEffect(ServerLevel world, Vec3 pos) {
+        world.explode(getUser(world), pos.x(), pos.y(), pos.z(), 2, true, Explosion.BlockInteraction.NONE);
         world.sendParticles(ParticleTypes.FLAME, pos.x(), pos.y(), pos.z(), 100, 2, 2, 2, 0.2);
     }
 
@@ -47,7 +47,7 @@ public class FireExplosion extends GroundTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<FireExplosion> {
 
         @Override
-        public Either<FireExplosion, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+        public Either<FireExplosion, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
             return Either.left(new FireExplosion(user, dir.x(), dir.z()));
         }
 

@@ -1,12 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class GroundTechniqueInstance extends ShinsuTechniqueInstance {
 
@@ -15,10 +15,10 @@ public abstract class GroundTechniqueInstance extends ShinsuTechniqueInstance {
 
     public GroundTechniqueInstance(Entity user, double dX, double dZ, double speed, int period, int maxYDif) {
         super(user);
-        Vector3d start = user == null ? Vector3d.ZERO : user.position();
+        Vec3 start = user == null ? Vec3.ZERO : user.position();
         this.startX = start.x();
         this.startZ = start.z();
-        double length = MathHelper.sqrt(dX * dX + dZ * dZ);
+        double length = Mth.sqrt((float) (dX * dX + dZ * dZ));
         this.dX = dX / length;
         this.dZ = dZ / length;
         this.speed = speed;
@@ -27,10 +27,10 @@ public abstract class GroundTechniqueInstance extends ShinsuTechniqueInstance {
         prevY = (int) start.y();
     }
 
-    public abstract void doEffect(ServerWorld world, Vector3d pos);
+    public abstract void doEffect(ServerLevel world, Vec3 pos);
 
     @Override
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
         if (getTicks() % period == 0) {
             int count = getTicks() / period;
             double x = startX + dX * speed * (count + 1);
@@ -45,7 +45,7 @@ public abstract class GroundTechniqueInstance extends ShinsuTechniqueInstance {
             if (pos == null) {
                 remove(world);
             } else {
-                doEffect(world, new Vector3d(x, pos.getY(), z));
+                doEffect(world, new Vec3(x, pos.getY(), z));
                 prevY = pos.getY();
             }
         }
@@ -53,8 +53,8 @@ public abstract class GroundTechniqueInstance extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = super.serializeNBT();
         tag.putDouble("Speed", speed);
         tag.putDouble("StartX", startX);
         tag.putDouble("StartZ", startZ);
@@ -67,30 +67,30 @@ public abstract class GroundTechniqueInstance extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Speed", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("Speed", Tag.TAG_DOUBLE)) {
             speed = nbt.getDouble("Speed");
         }
-        if (nbt.contains("StartX", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("StartX", Tag.TAG_DOUBLE)) {
             startX = nbt.getDouble("StartX");
         }
-        if (nbt.contains("StartZ", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("StartZ", Tag.TAG_DOUBLE)) {
             startZ = nbt.getDouble("StartZ");
         }
-        if (nbt.contains("DX", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("DX", Tag.TAG_DOUBLE)) {
             dX = nbt.getDouble("DX");
         }
-        if (nbt.contains("DZ", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("DZ", Tag.TAG_DOUBLE)) {
             dZ = nbt.getDouble("DZ");
         }
-        if (nbt.contains("Period", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Period", Tag.TAG_INT)) {
             period = nbt.getInt("Period");
         }
-        if (nbt.contains("MaxYDif", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("MaxYDif", Tag.TAG_INT)) {
             maxYDif = nbt.getInt("MaxYDif");
         }
-        if (nbt.contains("PrevY", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("PrevY", Tag.TAG_INT)) {
             prevY = nbt.getInt("PrevY");
         }
     }

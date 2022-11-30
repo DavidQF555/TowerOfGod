@@ -1,22 +1,23 @@
 package io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class ShinsuStats implements INBTSerializable<CompoundNBT> {
+public class ShinsuStats implements INBTSerializable<CompoundTag> {
 
-    @CapabilityInject(ShinsuStats.class)
-    public static Capability<ShinsuStats> capability = null;
+    public static final Capability<ShinsuStats> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+    });
     private double resistance = 1;
     private double tension = 1;
     private int shinsu;
 
     public static ShinsuStats get(Entity entity) {
-        return entity.getCapability(capability).orElseGet(ShinsuStats::new);
+        return entity.getCapability(CAPABILITY).orElseGet(ShinsuStats::new);
     }
 
     public static int getShinsu(Entity entity) {
@@ -54,8 +55,8 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = new CompoundTag();
         tag.putDouble("Resistance", getResistance());
         tag.putDouble("Tension", getTension());
         tag.putInt("Shinsu", getMaxShinsu());
@@ -63,14 +64,14 @@ public class ShinsuStats implements INBTSerializable<CompoundNBT> {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        if (nbt.contains("Resistance", Constants.NBT.TAG_DOUBLE)) {
+    public void deserializeNBT(CompoundTag nbt) {
+        if (nbt.contains("Resistance", Tag.TAG_DOUBLE)) {
             setResistance(nbt.getDouble("Resistance"));
         }
-        if (nbt.contains("Tension", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("Tension", Tag.TAG_DOUBLE)) {
             setTension(nbt.getDouble("Tension"));
         }
-        if (nbt.contains("Shinsu", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Shinsu", Tag.TAG_INT)) {
             setMaxShinsu(nbt.getInt("Shinsu"));
         }
     }

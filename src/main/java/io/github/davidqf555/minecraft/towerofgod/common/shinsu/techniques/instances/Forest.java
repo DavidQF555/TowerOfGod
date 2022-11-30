@@ -3,19 +3,18 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.TreeFeature;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.TreeFeature;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class Forest extends AreaTechnique {
 
@@ -29,8 +28,8 @@ public class Forest extends AreaTechnique {
     }
 
     @Override
-    protected void doEffect(ServerWorld world, Vector3d pos) {
-        List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature instanceof TreeFeature).collect(Collectors.toList());
+    protected void doEffect(ServerLevel world, Vec3 pos) {
+        List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
         if (!trees.isEmpty()) {
             BlockPos block = new BlockPos(pos).above();
             Random random = world.getRandom();
@@ -59,7 +58,7 @@ public class Forest extends AreaTechnique {
     public static class Factory implements ShinsuTechnique.IFactory<Forest> {
 
         @Override
-        public Either<Forest, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Forest, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
             return Either.left(new Forest(user, 4, 32));
         }
 

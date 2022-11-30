@@ -1,12 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 import java.util.Random;
@@ -26,14 +26,14 @@ public abstract class AreaTechnique extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
         if (world.getGameTime() % period == 0) {
             Entity user = getUser(world);
             Random rand = world.getRandom();
             for (int i = 0; i < TRIES; i++) {
                 float degree = rand.nextFloat() * (float) Math.PI * 2;
-                double x = user.getX() + MathHelper.cos(degree) * (minRadius + rand.nextDouble() * (radius - minRadius));
-                double z = user.getZ() + MathHelper.sin(degree) * (minRadius + rand.nextDouble() * (radius - minRadius));
+                double x = user.getX() + Mth.cos(degree) * (minRadius + rand.nextDouble() * (radius - minRadius));
+                double z = user.getZ() + Mth.sin(degree) * (minRadius + rand.nextDouble() * (radius - minRadius));
                 Optional<Integer> y = Optional.empty();
                 for (int dY = -maxY; dY <= maxY; dY++) {
                     BlockPos test = new BlockPos(x, user.getY() + dY, z);
@@ -42,7 +42,7 @@ public abstract class AreaTechnique extends ShinsuTechniqueInstance {
                     }
                 }
                 if (y.isPresent()) {
-                    doEffect(world, new Vector3d(x, y.get() + 0.5, z));
+                    doEffect(world, new Vec3(x, y.get() + 0.5, z));
                     break;
                 }
             }
@@ -50,11 +50,11 @@ public abstract class AreaTechnique extends ShinsuTechniqueInstance {
         super.tick(world);
     }
 
-    protected abstract void doEffect(ServerWorld world, Vector3d pos);
+    protected abstract void doEffect(ServerLevel world, Vec3 pos);
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = super.serializeNBT();
         tag.putDouble("MinRadius", minRadius);
         tag.putDouble("Radius", radius);
         tag.putInt("MaxY", maxY);
@@ -63,18 +63,18 @@ public abstract class AreaTechnique extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("MinRadius", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("MinRadius", Tag.TAG_DOUBLE)) {
             minRadius = nbt.getDouble("MinRadius");
         }
-        if (nbt.contains("Radius", Constants.NBT.TAG_DOUBLE)) {
+        if (nbt.contains("Radius", Tag.TAG_DOUBLE)) {
             radius = nbt.getDouble("Radius");
         }
-        if (nbt.contains("MaxY", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("MaxY", Tag.TAG_INT)) {
             maxY = nbt.getInt("MaxY");
         }
-        if (nbt.contains("Period", Constants.NBT.TAG_INT)) {
+        if (nbt.contains("Period", Tag.TAG_INT)) {
             period = nbt.getInt("Period");
         }
     }
