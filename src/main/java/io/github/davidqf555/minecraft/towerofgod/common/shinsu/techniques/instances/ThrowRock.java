@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.block.Blocks;
@@ -18,12 +19,10 @@ import javax.annotation.Nullable;
 public class ThrowRock extends ShinsuTechniqueInstance {
 
     private Vector3d direction;
-    private double velocity;
 
-    public ThrowRock(Entity user, Vector3d direction, double velocity) {
+    public ThrowRock(Entity user, Vector3d direction) {
         super(user);
         this.direction = direction.normalize();
-        this.velocity = velocity;
     }
 
     @Override
@@ -36,7 +35,7 @@ public class ThrowRock extends ShinsuTechniqueInstance {
                 world.setBlockAndUpdate(blockPos, Blocks.STONE.defaultBlockState());
             }
             FallingBlockEntity block = new FallingBlockEntity(world, pos.x(), pos.y(), pos.z(), Blocks.STONE.defaultBlockState());
-            block.setDeltaMovement(user.getDeltaMovement().add(direction.scale(velocity)));
+            block.setDeltaMovement(user.getDeltaMovement().add(direction.scale(ShinsuStats.get(user).getTension() + 1)));
             block.setHurtsEntities(true);
             block.dropItem = false;
             world.addFreshEntity(block);
@@ -62,7 +61,6 @@ public class ThrowRock extends ShinsuTechniqueInstance {
     @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
-        nbt.putDouble("Velocity", velocity);
         nbt.putDouble("X", direction.x());
         nbt.putDouble("Y", direction.y());
         nbt.putDouble("Z", direction.z());
@@ -72,9 +70,6 @@ public class ThrowRock extends ShinsuTechniqueInstance {
     @Override
     public void deserializeNBT(CompoundNBT nbt) {
         super.deserializeNBT(nbt);
-        if (nbt.contains("Velocity", Constants.NBT.TAG_DOUBLE)) {
-            velocity = nbt.getDouble("Velocity");
-        }
         if (nbt.contains("X", Constants.NBT.TAG_DOUBLE) && nbt.contains("Y", Constants.NBT.TAG_DOUBLE) && nbt.contains("Z", Constants.NBT.TAG_DOUBLE)) {
             direction = new Vector3d(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
         }
@@ -84,12 +79,12 @@ public class ThrowRock extends ShinsuTechniqueInstance {
 
         @Override
         public Either<ThrowRock, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new ThrowRock(user, dir, 2));
+            return Either.left(new ThrowRock(user, dir));
         }
 
         @Override
         public ThrowRock blankCreate() {
-            return new ThrowRock(null, Vector3d.ZERO, 0);
+            return new ThrowRock(null, Vector3d.ZERO);
         }
 
     }
