@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenGuideScreenPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.client.util.ITooltipFlag;
@@ -11,6 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -18,37 +21,40 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class GuideItem extends Item {
 
-    private final Supplier<ShinsuTechnique[]> pages;
+    private static final ITextComponent EMPTY = new TranslationTextComponent(Util.makeDescriptionId("item", new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_guide")) + ".empty").withStyle(TextFormatting.RED);
+    private static final ITextComponent LORE = new TranslationTextComponent(Util.makeDescriptionId("item", new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_guide")) + ".lore").withStyle(TextFormatting.DARK_AQUA);
     private final int color;
 
-    public GuideItem(Supplier<ShinsuTechnique[]> pages, int color, Properties properties) {
+    public GuideItem(int color, Properties properties) {
         super(properties.stacksTo(1));
-        this.pages = pages;
         this.color = color;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new TranslationTextComponent("book.byAuthor", getAuthor()).withStyle(TextFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> lines, ITooltipFlag flag) {
+        lines.add(LORE);
     }
 
     @Override
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack item = playerIn.getItemInHand(handIn);
         if (playerIn instanceof ServerPlayerEntity) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new OpenGuideScreenPacket(pages.get(), color));
+            ShinsuTechnique[] pages = PlayerTechniqueData.get(playerIn).getUnlocked().toArray(new ShinsuTechnique[0]);
+            if (pages.length > 0) {
+                Arrays.sort(pages, Comparator.comparing(technique -> technique.getText().getKey()));
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) playerIn), new OpenGuideScreenPacket(pages, color));
+                playerIn.awardStat(Stats.ITEM_USED.get(this));
+            } else {
+                playerIn.sendMessage(EMPTY, Util.NIL_UUID);
+            }
         }
-        playerIn.awardStat(Stats.ITEM_USED.get(this));
         return ActionResult.sidedSuccess(item, worldIn.isClientSide());
-    }
-
-    protected ITextComponent getAuthor() {
-        return new TranslationTextComponent(getDescriptionId() + ".author");
     }
 
 }

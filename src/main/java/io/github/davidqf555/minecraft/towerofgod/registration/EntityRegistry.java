@@ -38,6 +38,7 @@ public final class EntityRegistry {
     public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", RankerEntity::new, EntityClassification.CREATURE, 0.6f, 1.8f);
     public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", SpearEntity::new, EntityClassification.MISC, 0.5f, 0.5f);
     public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", DirectionalLightningBoltEntity::new, EntityClassification.MISC, 1, 1);
+    public static final RegistryObject<EntityType<MentorEntity>> MENTOR = register("mentor", MentorEntity::new, EntityClassification.CREATURE, 0.6f, 1.8f);
 
     private EntityRegistry() {
     }
@@ -56,6 +57,7 @@ public final class EntityRegistry {
         event.put(OBSERVER.get(), ObserverEntity.setAttributes().build());
         event.put(REGULAR.get(), RegularEntity.setAttributes().build());
         event.put(RANKER.get(), RankerEntity.setAttributes().build());
+        event.put(MENTOR.get(), MentorEntity.setAttributes().build());
     }
 
 
@@ -64,6 +66,7 @@ public final class EntityRegistry {
         event.enqueueWork(() -> {
             EntitySpawnPlacementRegistry.register(EntityRegistry.REGULAR.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RegularEntity.class, new AxisAlignedBB(pos).inflate(64)).size() < 10);
             EntitySpawnPlacementRegistry.register(EntityRegistry.RANKER.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AxisAlignedBB(pos).inflate(64)).size() < 1);
+            EntitySpawnPlacementRegistry.register(EntityRegistry.MENTOR.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AxisAlignedBB(pos).inflate(64)).size() < 1);
         });
     }
 
@@ -74,8 +77,9 @@ public final class EntityRegistry {
         public static void onBiomeLoading(BiomeLoadingEvent event) {
             if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
                 MobSpawnInfoBuilder builder = event.getSpawns();
-                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.REGULAR.get(), 3, 1, 1));
-                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.RANKER.get(), 1, 1, 1));
+                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.REGULAR.get(), 4, 1, 1));
+                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.RANKER.get(), 2, 1, 1));
+                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.MENTOR.get(), 1, 1, 1));
             }
         }
 

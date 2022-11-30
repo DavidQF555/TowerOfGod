@@ -1,12 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.vector.Vector3d;
@@ -21,7 +19,7 @@ public class Boost extends ShinsuTechniqueInstance {
     private static final int PARTICLES = 25;
     private Vector3d dir;
 
-    public Boost(LivingEntity user, Vector3d dir) {
+    public Boost(Entity user, Vector3d dir) {
         super(user);
         this.dir = dir;
     }
@@ -31,6 +29,7 @@ public class Boost extends ShinsuTechniqueInstance {
         Entity user = getUser(world);
         float width = user.getBbWidth() / 2;
         world.sendParticles(ParticleTypes.FLAME, user.getX(), user.getY(), user.getZ(), PARTICLES, width, user.getBbHeight() * 0.25, width, 0);
+        Vector3d dir = this.dir.scale(ShinsuStats.get(user).getTension() * 2);
         user.push(dir.x(), dir.y(), dir.z());
         user.hurtMarked = true;
         super.onUse(world);
@@ -43,17 +42,12 @@ public class Boost extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 15;
-    }
-
-    @Override
-    public int getBaangsUse() {
-        return 1;
+        return 20;
     }
 
     @Override
     public int getCooldown() {
-        return 100;
+        return 600;
     }
 
     @Override
@@ -76,9 +70,8 @@ public class Boost extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<Boost> {
 
         @Override
-        public Either<Boost, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.CONTROL).getLevel();
-            return Either.left(new Boost(user, dir.scale(Math.min(1 + level / 5, 5))));
+        public Either<Boost, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new Boost(user, dir));
         }
 
         @Override
