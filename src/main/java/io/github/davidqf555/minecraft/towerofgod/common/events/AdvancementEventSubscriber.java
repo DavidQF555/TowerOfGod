@@ -40,9 +40,7 @@ public final class AdvancementEventSubscriber {
     }
 
     private static void revokeAdvancement(ServerPlayerEntity player, Advancement advancement) {
-        advancement.getCriteria().keySet().forEach(criterion -> {
-            player.getAdvancements().revoke(advancement, criterion);
-        });
+        advancement.getCriteria().keySet().forEach(criterion -> player.getAdvancements().revoke(advancement, criterion));
     }
 
 }

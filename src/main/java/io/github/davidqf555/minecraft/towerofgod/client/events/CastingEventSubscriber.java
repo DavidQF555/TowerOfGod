@@ -86,7 +86,7 @@ public final class CastingEventSubscriber {
         float f3 = 0.4f * MathHelper.sin(sqrtSwing * ((float) Math.PI * 2F));
         float f4 = -0.4f * MathHelper.sin(swing * (float) Math.PI);
         matrixStack.pushPose();
-        matrixStack.translate(factor * (f2 + 0.64000005F), f3 - 0.6F + equip * -0.6F, f4 + -0.71999997F);
+        matrixStack.translate(factor * (f2 + 0.64000005F), f3 - 0.6F + equip * -0.6F, f4 - 0.71999997F);
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(factor * 45));
         float f5 = MathHelper.sin(swing * swing * (float) Math.PI);
         float f6 = MathHelper.sin(sqrtSwing * (float) Math.PI);
