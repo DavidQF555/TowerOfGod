@@ -77,8 +77,8 @@ public final class EntityRegistry {
         public static void onBiomeLoading(BiomeLoadingEvent event) {
             if (event.getCategory() != Biome.Category.OCEAN && event.getCategory() != Biome.Category.RIVER) {
                 MobSpawnInfoBuilder builder = event.getSpawns();
-                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.REGULAR.get(), 3, 1, 1));
-                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.RANKER.get(), 1, 1, 1));
+                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.REGULAR.get(), 4, 1, 1));
+                builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.RANKER.get(), 2, 1, 1));
                 builder.addSpawn(EntityClassification.MONSTER, new MobSpawnInfo.Spawners(EntityRegistry.MENTOR.get(), 1, 1, 1));
             }
         }
