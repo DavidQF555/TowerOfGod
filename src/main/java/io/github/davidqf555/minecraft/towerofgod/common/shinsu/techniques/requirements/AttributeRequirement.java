@@ -18,7 +18,7 @@ public class AttributeRequirement implements IRequirement {
 
     @Override
     public boolean isUnlocked(Entity user) {
-        return ShinsuQualityData.get(user).getAttribute() == attribute;
+        return ShinsuQualityData.get(user).getAttribute() == attribute.get();
     }
 
     @Override

@@ -37,7 +37,7 @@ public abstract class AreaTechnique extends ShinsuTechniqueInstance {
                 Optional<Integer> y = Optional.empty();
                 for (int dY = -maxY; dY <= maxY; dY++) {
                     BlockPos test = new BlockPos(x, user.getY() + dY, z);
-                    if (world.getBlockState(test).isCollisionShapeFullBlock(world, test) && world.getBlockState(test.above()).getCollisionShape(world, test.above()).isEmpty() && (!y.isPresent() || Math.abs(dY) < Math.abs(user.getY() - y.get()))) {
+                    if (world.getBlockState(test).isCollisionShapeFullBlock(world, test) && world.getBlockState(test.above()).getCollisionShape(world, test.above()).isEmpty() && (y.isEmpty() || Math.abs(dY) < Math.abs(user.getY() - y.get()))) {
                         y = Optional.of(test.getY());
                     }
                 }

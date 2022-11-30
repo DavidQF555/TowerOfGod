@@ -51,7 +51,7 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
 
     @Override
     public boolean shouldMobUse(Mob mob) {
-        return super.shouldMobUse(mob) && !getExistingInstance(mob).isPresent();
+        return super.shouldMobUse(mob) && getExistingInstance(mob).isEmpty();
     }
 
 }

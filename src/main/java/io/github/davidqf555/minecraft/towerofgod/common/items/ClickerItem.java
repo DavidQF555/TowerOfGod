@@ -48,8 +48,7 @@ public class ClickerItem extends Item {
             if (!playerIn.isCreative()) {
                 item.setCount(item.getCount() - 1);
             }
-            if (playerIn instanceof ServerPlayer) {
-                ServerPlayer serverPlayer = (ServerPlayer) playerIn;
+            if (playerIn instanceof ServerPlayer serverPlayer) {
                 ShinsuAttribute attribute = getAttribute(serverPlayer);
                 ShinsuShape shape = getShape(serverPlayer);
                 ShinsuQualityData stats = ShinsuQualityData.get(serverPlayer);

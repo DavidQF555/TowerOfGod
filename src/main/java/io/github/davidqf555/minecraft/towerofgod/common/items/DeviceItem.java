@@ -48,8 +48,7 @@ public class DeviceItem extends Item {
                 if (!playerIn.isCreative()) {
                     item.setCount(item.getCount() - 1);
                 }
-                if (playerIn instanceof ServerPlayer) {
-                    ServerPlayer serverPlayer = (ServerPlayer) playerIn;
+                if (playerIn instanceof ServerPlayer serverPlayer) {
                     CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
                     serverPlayer.awardStat(Stats.ITEM_USED.get(this));
                 }

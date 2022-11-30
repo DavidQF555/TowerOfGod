@@ -41,8 +41,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
     public void onUse(ServerLevel world) {
         Entity user = getUser(world);
         Entity t = world.getEntity(target);
-        if (user != null && t instanceof LivingEntity && user.distanceToSqr(t) <= RANGE * RANGE) {
-            LivingEntity target = (LivingEntity) t;
+        if (user != null && t instanceof LivingEntity target && user.distanceToSqr(t) <= RANGE * RANGE) {
             float damage = (float) (5 / ShinsuStats.getNetResistance(user, target));
             target.hurt(DamageSource.MAGIC, damage);
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (damage * 20), (int) (damage / 2), false, false, false));
