@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -23,9 +22,7 @@ import java.util.stream.Collectors;
 
 public class GrowTree extends RayTraceTechnique {
 
-    private static final double RANGE = 64;
-
-    public GrowTree(LivingEntity user, Vector3d direction, double range) {
+    public GrowTree(Entity user, Vector3d direction, double range) {
         super(user, direction, range, true);
     }
 
@@ -62,16 +59,11 @@ public class GrowTree extends RayTraceTechnique {
         return 10;
     }
 
-    @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
     public static class Factory implements ShinsuTechnique.IFactory<GrowTree> {
 
         @Override
-        public Either<GrowTree, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            return Either.left(new GrowTree(user, dir, RANGE));
+        public Either<GrowTree, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new GrowTree(user, dir, 64));
         }
 
         @Override

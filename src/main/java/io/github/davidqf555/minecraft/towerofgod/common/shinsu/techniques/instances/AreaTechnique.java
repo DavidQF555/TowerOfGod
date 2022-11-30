@@ -1,7 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -18,7 +17,7 @@ public abstract class AreaTechnique extends ShinsuTechniqueInstance {
     private double minRadius, radius;
     private int maxY, period;
 
-    public AreaTechnique(LivingEntity user, double minRadius, double radius, int maxY, int period) {
+    public AreaTechnique(Entity user, double minRadius, double radius, int maxY, int period) {
         super(user);
         this.minRadius = minRadius;
         this.radius = radius;

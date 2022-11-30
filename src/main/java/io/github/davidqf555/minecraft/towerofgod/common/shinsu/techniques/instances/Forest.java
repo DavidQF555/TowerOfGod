@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class Forest extends AreaTechnique {
 
-    public Forest(LivingEntity user, double minRadius, double radius) {
+    public Forest(Entity user, double minRadius, double radius) {
         super(user, minRadius, radius, 20, 5);
     }
 
@@ -52,15 +51,10 @@ public class Forest extends AreaTechnique {
         return 20;
     }
 
-    @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
     public static class Factory implements ShinsuTechnique.IFactory<Forest> {
 
         @Override
-        public Either<Forest, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Forest, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new Forest(user, 4, 32));
         }
 

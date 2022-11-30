@@ -1,7 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -18,7 +17,7 @@ public abstract class RayTraceTechnique extends ShinsuTechniqueInstance {
     private Vector3d direction;
     private double range;
 
-    public RayTraceTechnique(LivingEntity user, Vector3d direction, double range, boolean entityCollision) {
+    public RayTraceTechnique(Entity user, Vector3d direction, double range, boolean entityCollision) {
         super(user);
         this.direction = direction;
         this.range = range;

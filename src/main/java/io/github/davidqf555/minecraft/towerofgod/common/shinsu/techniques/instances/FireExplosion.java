@@ -1,29 +1,21 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
 public class FireExplosion extends GroundTechniqueInstance {
 
-    private int level;
-
-    public FireExplosion(LivingEntity user, double dX, double dZ, int level) {
+    public FireExplosion(Entity user, double dX, double dZ) {
         super(user, dX, dZ, 3, 1, 8);
-        this.level = level;
     }
 
     @Override
@@ -44,40 +36,19 @@ public class FireExplosion extends GroundTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return level * 5;
-    }
-
-    @Override
-    public int getBaangsUse() {
-        return 1 + level / 5;
-    }
-
-    @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
-        nbt.putInt("Level", level);
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Level", Constants.NBT.TAG_INT)) {
-            level = nbt.getInt("Level");
-        }
+        return 50;
     }
 
     public static class Factory implements ShinsuTechnique.IFactory<FireExplosion> {
 
         @Override
-        public Either<FireExplosion, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
-            int level = ShinsuStats.get(user).getData(ShinsuTechniqueType.CONTROL).getLevel();
-            return Either.left(new FireExplosion(user, dir.x(), dir.z(), level));
+        public Either<FireExplosion, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
+            return Either.left(new FireExplosion(user, dir.x(), dir.z()));
         }
 
         @Override
         public FireExplosion blankCreate() {
-            return new FireExplosion(null, 1, 0, 0);
+            return new FireExplosion(null, 1, 0);
         }
 
     }

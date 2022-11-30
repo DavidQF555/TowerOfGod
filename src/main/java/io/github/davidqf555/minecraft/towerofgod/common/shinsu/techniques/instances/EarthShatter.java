@@ -5,7 +5,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -17,7 +16,7 @@ import java.util.Random;
 
 public class EarthShatter extends GroundTechniqueInstance {
 
-    public EarthShatter(LivingEntity user, double dX, double dZ) {
+    public EarthShatter(Entity user, double dX, double dZ) {
         super(user, dX, dZ, 4, 1, 4);
     }
 
@@ -57,15 +56,10 @@ public class EarthShatter extends GroundTechniqueInstance {
         return 20;
     }
 
-    @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
     public static class Factory implements ShinsuTechnique.IFactory<EarthShatter> {
 
         @Override
-        public Either<EarthShatter, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<EarthShatter, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new EarthShatter(user, dir.x(), dir.z()));
         }
 

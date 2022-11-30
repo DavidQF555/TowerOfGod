@@ -5,7 +5,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.FallingBlockEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +20,7 @@ public class ThrowRock extends ShinsuTechniqueInstance {
     private Vector3d direction;
     private double velocity;
 
-    public ThrowRock(LivingEntity user, Vector3d direction, double velocity) {
+    public ThrowRock(Entity user, Vector3d direction, double velocity) {
         super(user);
         this.direction = direction.normalize();
         this.velocity = velocity;
@@ -56,11 +55,6 @@ public class ThrowRock extends ShinsuTechniqueInstance {
     }
 
     @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
-    @Override
     public CompoundNBT serializeNBT() {
         CompoundNBT nbt = super.serializeNBT();
         nbt.putDouble("Velocity", velocity);
@@ -84,7 +78,7 @@ public class ThrowRock extends ShinsuTechniqueInstance {
     public static class Factory implements ShinsuTechnique.IFactory<ThrowRock> {
 
         @Override
-        public Either<ThrowRock, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<ThrowRock, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new ThrowRock(user, dir, 2));
         }
 

@@ -1,6 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -13,7 +13,7 @@ public abstract class GroundTechniqueInstance extends ShinsuTechniqueInstance {
     private double startX, startZ, dX, dZ, speed;
     private int period, maxYDif, prevY;
 
-    public GroundTechniqueInstance(LivingEntity user, double dX, double dZ, double speed, int period, int maxYDif) {
+    public GroundTechniqueInstance(Entity user, double dX, double dZ, double speed, int period, int maxYDif) {
         super(user);
         Vector3d start = user == null ? Vector3d.ZERO : user.position();
         this.startX = start.x();

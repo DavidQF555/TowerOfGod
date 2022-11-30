@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.registry.Registry;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class TreeWall extends GroundTechniqueInstance {
 
-    public TreeWall(LivingEntity user, double dX, double dZ) {
+    public TreeWall(Entity user, double dX, double dZ) {
         super(user, dX, dZ, 1.5, 1, 8);
     }
 
@@ -60,15 +59,10 @@ public class TreeWall extends GroundTechniqueInstance {
         return 20;
     }
 
-    @Override
-    public int getBaangsUse() {
-        return 2;
-    }
-
     public static class Factory implements ShinsuTechnique.IFactory<TreeWall> {
 
         @Override
-        public Either<TreeWall, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<TreeWall, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new TreeWall(user, dir.x(), dir.z()));
         }
 

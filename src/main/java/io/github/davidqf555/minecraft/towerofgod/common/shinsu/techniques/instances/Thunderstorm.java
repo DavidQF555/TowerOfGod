@@ -5,7 +5,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -15,7 +14,7 @@ import javax.annotation.Nullable;
 
 public class Thunderstorm extends AreaTechnique {
 
-    public Thunderstorm(LivingEntity user, double minRadius, double radius) {
+    public Thunderstorm(Entity user, double minRadius, double radius) {
         super(user, minRadius, radius, 16, 2);
     }
 
@@ -43,15 +42,10 @@ public class Thunderstorm extends AreaTechnique {
         return 20;
     }
 
-    @Override
-    public int getBaangsUse() {
-        return 1;
-    }
-
     public static class Factory implements ShinsuTechnique.IFactory<Thunderstorm> {
 
         @Override
-        public Either<Thunderstorm, ITextComponent> create(LivingEntity user, @Nullable Entity target, Vector3d dir) {
+        public Either<Thunderstorm, ITextComponent> create(Entity user, @Nullable Entity target, Vector3d dir) {
             return Either.left(new Thunderstorm(user, 4, 16));
         }
 
