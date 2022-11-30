@@ -5,11 +5,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
-import java.util.Random;
 
 public abstract class AreaTechnique extends ShinsuTechniqueInstance {
 
@@ -29,7 +29,7 @@ public abstract class AreaTechnique extends ShinsuTechniqueInstance {
     public void tick(ServerLevel world) {
         if (world.getGameTime() % period == 0) {
             Entity user = getUser(world);
-            Random rand = world.getRandom();
+            RandomSource rand = world.getRandom();
             for (int i = 0; i < TRIES; i++) {
                 float degree = rand.nextFloat() * (float) Math.PI * 2;
                 double x = user.getX() + Mth.cos(degree) * (minRadius + rand.nextDouble() * (radius - minRadius));

@@ -49,11 +49,11 @@ public class ShinsuQualityData implements INBTSerializable<CompoundTag> {
         CompoundTag tag = new CompoundTag();
         ShinsuAttribute attribute = getAttribute();
         if (attribute != null) {
-            tag.putString("Attribute", attribute.getRegistryName().toString());
+            tag.putString("Attribute", attribute.getId().toString());
         }
         ShinsuShape shape = getShape();
         if (shape != null) {
-            tag.putString("Shape", shape.getRegistryName().toString());
+            tag.putString("Shape", shape.getId().toString());
         }
         return tag;
     }

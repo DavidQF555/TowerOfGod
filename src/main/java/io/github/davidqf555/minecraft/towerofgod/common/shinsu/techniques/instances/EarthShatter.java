@@ -6,13 +6,13 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechn
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class EarthShatter extends GroundTechniqueInstance {
 
@@ -22,7 +22,7 @@ public class EarthShatter extends GroundTechniqueInstance {
 
     @Override
     public void doEffect(ServerLevel world, Vec3 pos) {
-        Random random = world.getRandom();
+        RandomSource random = world.getRandom();
         int horizontalRadius = 3;
         int yRadius = 5;
         for (int dY = -yRadius; dY <= 1; dY++) {

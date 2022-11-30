@@ -9,8 +9,9 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechn
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -24,7 +25,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public class MentorEntity extends RankerEntity {
 
@@ -72,28 +72,28 @@ public class MentorEntity extends RankerEntity {
         if (!level.isClientSide()) {
             LivingEntity credit = getKillCredit();
             if (credit instanceof Player && PlayerTechniqueData.get((Player) credit).unlock(technique)) {
-                credit.sendMessage(new TranslatableComponent(DEATH, technique.getText()), getUUID());
+                credit.sendSystemMessage(Component.translatable(DEATH, technique.getText()));
             }
         }
     }
 
     @Nullable
     @Override
-    public Group getInitialGroup(Random random) {
+    public Group getInitialGroup(RandomSource random) {
         List<Group> groups = technique.getUsageData().getMentorGroups();
         return groups.isEmpty() ? null : groups.get(random.nextInt(groups.size()));
     }
 
     @Nullable
     @Override
-    public ShinsuAttribute getInitialAttribute(Random random) {
+    public ShinsuAttribute getInitialAttribute(RandomSource random) {
         List<ShinsuAttribute> attributes = technique.getUsageData().getMentorAttributes();
         return attributes.isEmpty() ? null : attributes.get(random.nextInt(attributes.size()));
     }
 
     @Nullable
     @Override
-    public ShinsuShape getInitialShape(Random random) {
+    public ShinsuShape getInitialShape(RandomSource random) {
         List<ShinsuShape> shapes = technique.getUsageData().getMentorShapes();
         return shapes.isEmpty() ? null : shapes.get(random.nextInt(shapes.size()));
     }
@@ -101,7 +101,7 @@ public class MentorEntity extends RankerEntity {
     @Override
     public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        nbt.putString("Technique", technique.getRegistryName().toString());
+        nbt.putString("Technique", technique.getId().toString());
     }
 
     @Override

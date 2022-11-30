@@ -7,7 +7,6 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechn
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -48,7 +47,7 @@ public class Stop extends ShinsuTechniqueInstance {
     public CompoundTag serializeNBT() {
         CompoundTag tag = super.serializeNBT();
         if (target != null) {
-            tag.putString("Stop", target.getRegistryName().toString());
+            tag.putString("Stop", target.getId().toString());
         }
         return tag;
     }
@@ -65,7 +64,7 @@ public class Stop extends ShinsuTechniqueInstance {
 
         @Override
         public Either<Stop, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return Either.right(TextComponent.EMPTY);
+            return Either.right(Component.empty());
         }
 
         @Override

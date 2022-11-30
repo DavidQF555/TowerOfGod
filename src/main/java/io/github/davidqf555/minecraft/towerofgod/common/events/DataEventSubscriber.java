@@ -54,7 +54,7 @@ public final class DataEventSubscriber {
 
     @SubscribeEvent
     public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        LivingEntity entity = event.getEntityLiving();
+        LivingEntity entity = event.getEntity();
         ShinsuStats stats = ShinsuStats.get(entity);
         TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(entity), stats.getMaxShinsu()));
     }

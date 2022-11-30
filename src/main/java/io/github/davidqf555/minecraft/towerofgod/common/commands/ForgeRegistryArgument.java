@@ -8,21 +8,20 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.concurrent.CompletableFuture;
 
-public class ForgeRegistryArgument<T extends IForgeRegistryEntry<T>> implements ArgumentType<T> {
+public class ForgeRegistryArgument<T> implements ArgumentType<T> {
 
     private final IForgeRegistry<T> registry;
     private final DynamicCommandExceptionType error;
 
     public ForgeRegistryArgument(IForgeRegistry<T> registry, String error) {
         this.registry = registry;
-        this.error = new DynamicCommandExceptionType(loc -> new TranslatableComponent(error, loc));
+        this.error = new DynamicCommandExceptionType(loc -> Component.translatable(error, loc));
     }
 
     @Override

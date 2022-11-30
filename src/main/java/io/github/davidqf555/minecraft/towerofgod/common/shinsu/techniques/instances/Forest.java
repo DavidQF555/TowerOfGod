@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
@@ -14,7 +15,6 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public class Forest extends AreaTechnique {
 
@@ -32,7 +32,7 @@ public class Forest extends AreaTechnique {
         List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
         if (!trees.isEmpty()) {
             BlockPos block = new BlockPos(pos).above();
-            Random random = world.getRandom();
+            RandomSource random = world.getRandom();
             ConfiguredFeature<?, ?> tree = trees.get(random.nextInt(trees.size()));
             if (TreeFeature.validTreePos(world, block)) {
                 tree.place(world, world.getChunkSource().getGenerator(), random, block);

@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
@@ -14,7 +15,6 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public class TreeWall extends GroundTechniqueInstance {
 
@@ -26,7 +26,7 @@ public class TreeWall extends GroundTechniqueInstance {
     public void doEffect(ServerLevel world, Vec3 pos) {
         List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
         if (!trees.isEmpty()) {
-            Random random = world.getRandom();
+            RandomSource random = world.getRandom();
             int horizontalRadius = 3;
             int yRadius = 5;
             for (int dY = -yRadius; dY < yRadius; dY++) {

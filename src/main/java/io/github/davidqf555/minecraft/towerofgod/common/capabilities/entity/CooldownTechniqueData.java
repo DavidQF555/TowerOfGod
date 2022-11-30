@@ -57,7 +57,7 @@ public class CooldownTechniqueData<T extends Entity> extends ShinsuTechniqueData
     public CompoundTag serializeNBT() {
         CompoundTag tag = super.serializeNBT();
         CompoundTag cooldowns = new CompoundTag();
-        this.cooldowns.forEach((technique, cooldown) -> cooldowns.putInt(technique.getRegistryName().toString(), cooldown));
+        this.cooldowns.forEach((technique, cooldown) -> cooldowns.putInt(technique.getId().toString(), cooldown));
         tag.put("Cooldowns", cooldowns);
         return tag;
     }

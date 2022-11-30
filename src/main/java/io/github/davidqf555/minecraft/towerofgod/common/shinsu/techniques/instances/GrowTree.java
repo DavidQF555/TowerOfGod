@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
@@ -17,7 +18,6 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public class GrowTree extends RayTraceTechnique {
 
@@ -40,7 +40,7 @@ public class GrowTree extends RayTraceTechnique {
         }
         List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
         if (!trees.isEmpty()) {
-            Random random = world.getRandom();
+            RandomSource random = world.getRandom();
             ConfiguredFeature<?, ?> tree = trees.get(random.nextInt(trees.size()));
             if (TreeFeature.validTreePos(world, pos)) {
                 tree.place(world, world.getChunkSource().getGenerator(), random, pos);

@@ -3,7 +3,7 @@
   "biomes": "#is_overworld",
   "spawners": {
     "type": "towerofgod:regular",
-    "weight": 3,
+    "weight": 4,
     "minCount": 1,
     "maxCount": 1
   }
