@@ -7,7 +7,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -52,7 +52,7 @@ public class SwapWeaponToMainHandGoal<T extends Mob> extends Goal {
 
     @Override
     public void start() {
-        IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+        IItemHandler inventory = entity.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
         ItemStack hand = inventory.extractItem(MAIN_HAND, inventory.getSlotLimit(MAIN_HAND), false);
         ItemStack swap = inventory.extractItem(this.swap, inventory.getSlotLimit(this.swap), false);
         inventory.insertItem(this.swap, hand, false);
@@ -64,7 +64,7 @@ public class SwapWeaponToMainHandGoal<T extends Mob> extends Goal {
         ItemStack held = entity.getMainHandItem();
         double maxDamage = IGeared.getAttribute(Attributes.ATTACK_DAMAGE, entity, held, EquipmentSlot.MAINHAND);
         double maxSpeed = IGeared.getAttribute(Attributes.ATTACK_SPEED, entity, held, EquipmentSlot.MAINHAND);
-        IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+        IItemHandler inventory = entity.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (inventory.isItemValid(MAIN_HAND, stack) && inventory.isItemValid(i, held)) {
@@ -82,7 +82,7 @@ public class SwapWeaponToMainHandGoal<T extends Mob> extends Goal {
 
     private int getBestShootableItemSlot() {
         ItemStack held = entity.getMainHandItem();
-        IItemHandler inventory = entity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+        IItemHandler inventory = entity.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (!stack.isEmpty() && inventory.isItemValid(MAIN_HAND, stack) && inventory.isItemValid(i, held) && stack.getItem() instanceof ProjectileWeaponItem) {

@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -41,7 +41,7 @@ public class ShinsuHoe extends HoeItem {
                 UUID id = nbt.getUUID("Technique");
                 ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
                 if (technique == null) {
-                    IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+                    IItemHandler inventory = entityIn.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
                     if (inventory.getSlots() > itemSlot) {
                         inventory.extractItem(itemSlot, stack.getCount(), false);
                     }

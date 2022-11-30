@@ -18,7 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -48,7 +48,7 @@ public class Manifest extends ShinsuTechniqueInstance {
         ItemStack item = shape.getItem();
         item.getOrCreateTagElement(TowerOfGod.MOD_ID).putUUID("Technique", getID());
         ShinsuAttribute.setAttribute(item, attribute);
-        IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+        IItemHandler inventory = user.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
         for (int i = 0; i < inventory.getSlots(); i++) {
             if (inventory.isItemValid(i, item)) {
                 item = inventory.insertItem(i, item, false);
@@ -68,7 +68,7 @@ public class Manifest extends ShinsuTechniqueInstance {
     @Override
     public void tick(ServerLevel world) {
         boolean contains = false;
-        IItemHandler inventory = getUser(world).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+        IItemHandler inventory = getUser(world).getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
         UUID id = getID();
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack slot = inventory.getStackInSlot(i);
