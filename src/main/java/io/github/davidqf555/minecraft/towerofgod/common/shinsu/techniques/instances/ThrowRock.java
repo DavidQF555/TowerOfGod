@@ -51,7 +51,12 @@ public class ThrowRock extends ShinsuTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 10;
+        return 15;
+    }
+
+    @Override
+    public int getCooldown() {
+        return 200;
     }
 
     @Override

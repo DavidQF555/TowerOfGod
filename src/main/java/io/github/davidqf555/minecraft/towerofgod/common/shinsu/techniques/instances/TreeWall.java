@@ -56,7 +56,12 @@ public class TreeWall extends GroundTechniqueInstance {
 
     @Override
     public int getShinsuUse() {
-        return 20;
+        return 70;
+    }
+
+    @Override
+    public int getCooldown() {
+        return 2400;
     }
 
     public static class Factory implements ShinsuTechnique.IFactory<TreeWall> {

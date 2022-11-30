@@ -56,7 +56,12 @@ public class GrowTree extends RayTraceTechnique {
 
     @Override
     public int getShinsuUse() {
-        return 10;
+        return 20;
+    }
+
+    @Override
+    public int getCooldown() {
+        return 400;
     }
 
     public static class Factory implements ShinsuTechnique.IFactory<GrowTree> {

@@ -48,7 +48,12 @@ public class Forest extends AreaTechnique {
 
     @Override
     public int getShinsuUse() {
-        return 20;
+        return 60;
+    }
+
+    @Override
+    public int getCooldown() {
+        return 2000;
     }
 
     public static class Factory implements ShinsuTechnique.IFactory<Forest> {
