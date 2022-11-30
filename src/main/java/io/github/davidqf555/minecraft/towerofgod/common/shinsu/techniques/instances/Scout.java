@@ -65,7 +65,7 @@ public class Scout extends BasicCommandTechnique {
         Vec3 eye = user.getEyePosition(1);
         Vec3 end = eye.add(direction.scale(range));
         BlockPos target;
-        EntityHitResult trace = ProjectileUtil.getEntityHitResult(world, user, eye, end, AABB.ofSize(eye, range, range, range), e -> true);
+        EntityHitResult trace = ProjectileUtil.getEntityHitResult(world, user, eye, end, AABB.ofSize(eye, range * 2, range * 2, range * 2), e -> true);
         if (trace == null) {
             BlockHitResult result = world.clip(new ClipContext(eye, end, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
             target = result.getBlockPos().relative(result.getDirection());

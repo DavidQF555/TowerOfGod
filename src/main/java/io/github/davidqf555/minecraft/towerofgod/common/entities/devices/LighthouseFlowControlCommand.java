@@ -42,7 +42,7 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
         FlyingDevice device = getEntity();
         Entity owner = device.getOwner();
         targets.clear();
-        targets.addAll(device.level.getEntitiesOfClass(LivingEntity.class, AABB.ofSize(device.position(), range, range, range), EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity.distanceToSqr(device) <= range * range && !device.isAlliedTo(entity))));
+        targets.addAll(device.level.getEntitiesOfClass(LivingEntity.class, AABB.ofSize(device.position(), range * 2, range * 2, range * 2), EntitySelector.NO_CREATIVE_OR_SPECTATOR.and(entity -> entity.distanceToSqr(device) <= range * range && !device.isAlliedTo(entity))));
         MobEffect effect = EffectRegistry.REVERSE_FLOW.get();
         for (LivingEntity entity : targets) {
             double resistance = ShinsuStats.getNetResistance(owner, entity);
@@ -65,7 +65,7 @@ public class LighthouseFlowControlCommand extends DeviceCommand {
     }
 
     private int getAffectingLighthouses(LivingEntity entity) {
-        return entity.level.getEntitiesOfClass(LighthouseEntity.class, AABB.ofSize(entity.position(), range, range, range), target -> target.distanceToSqr(entity) <= range * range && target.goalSelector.getRunningGoals().map(WrappedGoal::getGoal).filter(goal -> goal instanceof LighthouseFlowControlCommand).map(goal -> (LighthouseFlowControlCommand) goal).anyMatch(command -> command.targets.contains(entity))).size();
+        return entity.level.getEntitiesOfClass(LighthouseEntity.class, AABB.ofSize(entity.position(), range * 2, range * 2, range * 2), target -> target.distanceToSqr(entity) <= range * range && target.goalSelector.getRunningGoals().map(WrappedGoal::getGoal).filter(goal -> goal instanceof LighthouseFlowControlCommand).map(goal -> (LighthouseFlowControlCommand) goal).anyMatch(command -> command.targets.contains(entity))).size();
     }
 
     @Override
