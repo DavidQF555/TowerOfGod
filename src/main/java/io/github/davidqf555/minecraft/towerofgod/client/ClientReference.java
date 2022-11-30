@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.GuideScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuCombinationGui;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.StatsMeterGui;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuMeterGui;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
@@ -35,7 +35,7 @@ import java.util.Set;
 public final class ClientReference {
 
     public static final Map<ShinsuTechnique, ITextComponent> ERRORS = new HashMap<>();
-    public static StatsMeterGui shinsu = null;
+    public static ShinsuMeterGui shinsu = null;
     public static ShinsuCombinationGui combo = null;
 
     private ClientReference() {
