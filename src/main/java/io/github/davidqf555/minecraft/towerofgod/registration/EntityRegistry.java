@@ -64,9 +64,9 @@ public final class EntityRegistry {
     @SubscribeEvent
     public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            EntitySpawnPlacementRegistry.register(EntityRegistry.REGULAR.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RegularEntity.class, new AxisAlignedBB(pos).inflate(64)).size() < 10);
-            EntitySpawnPlacementRegistry.register(EntityRegistry.RANKER.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AxisAlignedBB(pos).inflate(64)).size() < 1);
-            EntitySpawnPlacementRegistry.register(EntityRegistry.MENTOR.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, new AxisAlignedBB(pos).inflate(64)).size() < 1);
+            EntitySpawnPlacementRegistry.register(EntityRegistry.REGULAR.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RegularEntity.class, AxisAlignedBB.ofSize(128, 128, 128).move(pos)).size() < 10);
+            EntitySpawnPlacementRegistry.register(EntityRegistry.RANKER.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, AxisAlignedBB.ofSize(128, 128, 128).move(pos)).size() < 1);
+            EntitySpawnPlacementRegistry.register(EntityRegistry.MENTOR.get(), EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, rand) -> world.getEntitiesOfClass(RankerEntity.class, AxisAlignedBB.ofSize(128, 128, 128).move(pos)).size() < 1);
         });
     }
 

@@ -47,7 +47,7 @@ public class CastShinsuPacket {
         context.enqueueWork(() -> {
                     if (technique.isObtainable()) {
                         Vector3d eye = player.getEyePosition(1);
-                        EntityRayTraceResult result = ProjectileHelper.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuTechniqueData.CAST_TARGET_RANGE)), AxisAlignedBB.ofSize(ShinsuTechniqueData.CAST_TARGET_RANGE, ShinsuTechniqueData.CAST_TARGET_RANGE, ShinsuTechniqueData.CAST_TARGET_RANGE).move(eye), null);
+                        EntityRayTraceResult result = ProjectileHelper.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuTechniqueData.CAST_TARGET_RANGE)), AxisAlignedBB.ofSize(ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2).move(eye), null);
                         technique.cast(player, result == null ? null : result.getEntity(), player.getLookAngle());
                     }
                 }

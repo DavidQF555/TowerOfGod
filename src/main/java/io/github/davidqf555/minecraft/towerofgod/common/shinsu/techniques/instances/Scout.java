@@ -61,7 +61,7 @@ public class Scout extends BasicCommandTechnique {
         Vector3d eye = user.getEyePosition(1);
         Vector3d end = eye.add(direction.scale(range));
         BlockPos target;
-        EntityRayTraceResult trace = ProjectileHelper.getEntityHitResult(world, user, eye, end, AxisAlignedBB.ofSize(range, range, range).move(eye), null);
+        EntityRayTraceResult trace = ProjectileHelper.getEntityHitResult(world, user, eye, end, AxisAlignedBB.ofSize(range * 2, range * 2, range * 2).move(eye), null);
         if (trace == null) {
             BlockRayTraceResult result = world.clip(new RayTraceContext(eye, end, RayTraceContext.BlockMode.VISUAL, RayTraceContext.FluidMode.NONE, entity));
             target = result.getBlockPos().relative(result.getDirection());

@@ -198,7 +198,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
             RegularTeamsSavedData.RegularTeam team = entity.getRegularTeam();
             if (team != null) {
                 List<UUID> members = team.getMembers();
-                AxisAlignedBB bounds = AxisAlignedBB.ofSize(range, range, range).move(entity.position());
+                AxisAlignedBB bounds = AxisAlignedBB.ofSize(range * 2, range * 2, range * 2).move(entity.position());
                 List<RegularEntity> nearby = entity.level.getEntitiesOfClass(RegularEntity.class, bounds, EntityPredicates.NO_SPECTATORS.and(reg -> reg.distanceToSqr(entity) <= range * range));
                 UUID id = entity.getUUID();
                 for (RegularEntity near : nearby) {
@@ -240,7 +240,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
             LivingEntity revenge = mob.getLastHurtByMob();
             if (revenge != null) {
                 double range = this.getFollowDistance();
-                AxisAlignedBB bounds = AxisAlignedBB.ofSize(range, 10, range).move(mob.position());
+                AxisAlignedBB bounds = AxisAlignedBB.ofSize(range * 2, 10, range * 2).move(mob.position());
                 List<RegularEntity> nearby = mob.level.getLoadedEntitiesOfClass(RegularEntity.class, bounds);
                 for (RegularEntity near : nearby) {
                     if (!mob.equals(near) && near.getTarget() == null && near.isAlliedTo(mob) && !near.isAlliedTo(revenge)) {
