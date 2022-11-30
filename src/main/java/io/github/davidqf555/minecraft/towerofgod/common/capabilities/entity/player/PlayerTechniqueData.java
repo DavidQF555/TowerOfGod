@@ -45,9 +45,7 @@ public class PlayerTechniqueData extends RequirementTechniqueData<Player> {
     public CompoundTag serializeNBT() {
         CompoundTag tag = super.serializeNBT();
         ListTag unlocked = new ListTag();
-        getUnlocked().forEach(technique -> {
-            unlocked.add(StringTag.valueOf(technique.getRegistryName().toString()));
-        });
+        getUnlocked().forEach(technique -> unlocked.add(StringTag.valueOf(technique.getRegistryName().toString())));
         tag.put("Unlocked", unlocked);
         return tag;
     }

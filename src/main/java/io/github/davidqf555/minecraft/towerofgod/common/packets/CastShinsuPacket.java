@@ -20,9 +20,7 @@ import java.util.function.Supplier;
 
 public class CastShinsuPacket {
 
-    private static final BiConsumer<CastShinsuPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
-        buffer.writeResourceLocation(message.technique.getRegistryName());
-    };
+    private static final BiConsumer<CastShinsuPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> buffer.writeResourceLocation(message.technique.getRegistryName());
     private static final Function<FriendlyByteBuf, CastShinsuPacket> DECODER = buffer -> {
         ShinsuTechnique technique = ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation());
         return new CastShinsuPacket(technique);

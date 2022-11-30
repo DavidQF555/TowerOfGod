@@ -15,9 +15,7 @@ import java.util.function.Supplier;
 
 public class ClientUpdateCastingPacket {
 
-    private static final BiConsumer<ClientUpdateCastingPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
-        buffer.writeBoolean(message.casting);
-    };
+    private static final BiConsumer<ClientUpdateCastingPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> buffer.writeBoolean(message.casting);
     private static final Function<FriendlyByteBuf, ClientUpdateCastingPacket> DECODER = buffer -> new ClientUpdateCastingPacket(buffer.readBoolean());
     private static final BiConsumer<ClientUpdateCastingPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
