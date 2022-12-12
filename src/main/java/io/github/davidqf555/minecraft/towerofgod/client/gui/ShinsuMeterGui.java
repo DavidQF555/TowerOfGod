@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
@@ -46,7 +46,7 @@ public class ShinsuMeterGui implements IGuiOverlay {
             int centerY = y + height / 2;
             matrixStack.pushPose();
             matrixStack.translate(centerX, centerY, 0);
-            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(90));
+            matrixStack.mulPose(Axis.ZP.rotationDegrees(90));
             matrixStack.translate(-centerX, -centerY, 0);
             int drawX = x - (height - width) / 2;
             int drawY = y - (width - height) / 2;

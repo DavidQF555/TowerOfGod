@@ -19,7 +19,7 @@ public final class DataGenRegistry {
             gen.addProvider(true, new DataGenItemModelProvider(gen, event.getExistingFileHelper()));
         }
         if (event.includeServer()) {
-            gen.addProvider(true, new DataGenRecipeProvider(gen));
+            gen.addProvider(true, new DataGenRecipeProvider(gen.getPackOutput()));
         }
     }
 }

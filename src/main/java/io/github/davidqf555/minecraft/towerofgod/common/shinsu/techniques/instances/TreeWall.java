@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Either;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -24,7 +24,7 @@ public class TreeWall extends GroundTechniqueInstance {
 
     @Override
     public void doEffect(ServerLevel world, Vec3 pos) {
-        List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
+        List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
         if (!trees.isEmpty()) {
             RandomSource random = world.getRandom();
             int horizontalRadius = 3;

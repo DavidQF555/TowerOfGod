@@ -2,9 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
@@ -16,6 +14,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,14 +38,14 @@ public class ShinsuArrowRenderer extends EntityRenderer<ShinsuArrowEntity> {
         int blue = FastColor.ARGB32.blue(hex);
         int alpha = FastColor.ARGB32.alpha(hex);
         matrixStackIn.pushPose();
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90.0F));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90.0F));
+        matrixStackIn.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
         float shake = entityIn.shakeTime - partialTicks;
         if (shake > 0) {
             float shakeRotation = -Mth.sin(shake * 3) * shake;
-            matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(shakeRotation));
+            matrixStackIn.mulPose(Axis.ZP.rotationDegrees(shakeRotation));
         }
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(45));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(45));
         matrixStackIn.scale(0.05625F, 0.05625F, 0.05625F);
         matrixStackIn.translate(-4, 0, 0);
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityCutout(this.getTextureLocation(entityIn)));
@@ -61,7 +61,7 @@ public class ShinsuArrowRenderer extends EntityRenderer<ShinsuArrowEntity> {
         drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -7, -2, 2, 0.15625F, 0.3125F, 1, 0, 0, packedLightIn);
         drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -7, -2, -2, 0.0F, 0.3125F, 1, 0, 0, packedLightIn);
         for (int i = 0; i < 4; i++) {
-            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
+            matrixStackIn.mulPose(Axis.XP.rotationDegrees(90));
             drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, packedLightIn);
             drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, packedLightIn);
             drawColoredVertex(matrix4f, matrix3f, ivertexbuilder, red, green, blue, alpha, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, packedLightIn);

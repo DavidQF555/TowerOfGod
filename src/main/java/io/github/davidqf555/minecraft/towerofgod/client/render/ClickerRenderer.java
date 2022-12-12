@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ClickerEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.client.Minecraft;
@@ -28,7 +28,7 @@ public class ClickerRenderer extends EntityRenderer<ClickerEntity> {
         ItemStack item = entityIn.getShape().getItem();
         ShinsuAttribute.setAttribute(item, entityIn.getAttribute());
         matrixStackIn.pushPose();
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(entityIn.getYRot()));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(entityIn.getYRot()));
         matrixStackIn.translate(0, 0.25, 0);
         Minecraft.getInstance().getItemRenderer().renderStatic(item, ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, packedLightIn, OverlayTexture.NO_OVERLAY, matrixStackIn, bufferIn, entityIn.getId());
         matrixStackIn.popPose();

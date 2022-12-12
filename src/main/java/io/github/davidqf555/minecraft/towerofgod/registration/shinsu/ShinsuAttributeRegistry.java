@@ -53,7 +53,7 @@ public final class ShinsuAttributeRegistry {
         }
         return null;
     }), DropsFilter.NONE));
-    public static final RegistryObject<ShinsuAttribute> STONE = register("stone", () -> new ShinsuAttribute(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()), DamageSource.FALLING_BLOCK, 0.8, 1.5, 0xFF999999, (user, clip) -> {
+    public static final RegistryObject<ShinsuAttribute> STONE = register("stone", () -> new ShinsuAttribute(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()), DamageSource.IN_WALL, 0.8, 1.5, 0xFF999999, (user, clip) -> {
     }, new DestroyBlockAttributeEffect((world, pos) -> {
         float hardness = world.getBlockState(pos).getDestroySpeed(world, pos);
         return hardness >= 0 && hardness <= Blocks.STONE.defaultBlockState().getDestroySpeed(world, pos);

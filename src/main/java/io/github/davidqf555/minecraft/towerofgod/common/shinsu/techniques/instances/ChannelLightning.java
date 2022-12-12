@@ -1,7 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
@@ -13,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +38,7 @@ public class ChannelLightning extends RayTraceTechnique {
             lightning.setDamage((float) (ShinsuStats.get(user).getTension() * 2));
             Vec3 pos = result.getLocation();
             lightning.setPos(pos.x(), pos.y(), pos.z());
-            lightning.setStart(new Vector3f(user.getEyePosition(1)));
+            lightning.setStart(new Vector3f((float) user.getX(), (float) user.getEyeY(), (float) user.getZ()));
             world.addFreshEntity(lightning);
         }
     }

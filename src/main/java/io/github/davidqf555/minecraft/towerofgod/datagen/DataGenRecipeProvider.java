@@ -7,11 +7,8 @@ import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.UpgradeRecipeBuilder;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.recipes.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.tags.TagKey;
@@ -26,23 +23,23 @@ import java.util.function.Consumer;
 
 public class DataGenRecipeProvider extends RecipeProvider {
 
-    public DataGenRecipeProvider(DataGenerator generator) {
+    public DataGenRecipeProvider(PackOutput generator) {
         super(generator);
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
         for (RegistryObject<NeedleItem> registry : ItemRegistry.NEEDLE_ITEMS) {
             NeedleItem item = registry.get();
             Tier tier = item.getTier();
             Ingredient material = tier.getRepairIngredient();
             if (tier.equals(Tiers.NETHERITE)) {
-                UpgradeRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_NEEDLE.get()), material, item)
+                UpgradeRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_NEEDLE.get()), material, RecipeCategory.COMBAT, item)
                         .unlocks("has_material", inventoryTrigger(getPredicates(material)))
                         .save(consumer, registry.getId());
 
             } else {
-                ShapedRecipeBuilder.shaped(item)
+                ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, item)
                         .pattern("x  ")
                         .pattern(" x ")
                         .pattern("  y")
@@ -57,12 +54,12 @@ public class DataGenRecipeProvider extends RecipeProvider {
             Tier tier = item.getTier();
             Ingredient material = tier.getRepairIngredient();
             if (tier.equals(Tiers.NETHERITE)) {
-                UpgradeRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_HOOK.get()), material, item)
+                UpgradeRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_HOOK.get()), material, RecipeCategory.COMBAT, item)
                         .unlocks("has_material", inventoryTrigger(getPredicates(material)))
                         .save(consumer, registry.getId());
 
             } else {
-                ShapedRecipeBuilder.shaped(item)
+                ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, item)
                         .pattern("xxx")
                         .pattern("x x")
                         .pattern("x  ")
@@ -76,12 +73,12 @@ public class DataGenRecipeProvider extends RecipeProvider {
             Tier tier = item.getTier();
             Ingredient material = tier.getRepairIngredient();
             if (tier.equals(Tiers.NETHERITE)) {
-                UpgradeRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_SPEAR.get()), material, item)
+                UpgradeRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_SPEAR.get()), material, RecipeCategory.COMBAT, item)
                         .unlocks("has_material", inventoryTrigger(getPredicates(material)))
                         .save(consumer, registry.getId());
 
             } else {
-                ShapedRecipeBuilder.shaped(item)
+                ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, item)
                         .pattern(" xx")
                         .pattern(" yx")
                         .pattern("y  ")

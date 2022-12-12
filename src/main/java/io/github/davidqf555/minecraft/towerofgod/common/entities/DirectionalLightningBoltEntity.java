@@ -1,9 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import com.mojang.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -11,7 +9,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 public class DirectionalLightningBoltEntity extends LightningBolt {
 
@@ -36,7 +35,7 @@ public class DirectionalLightningBoltEntity extends LightningBolt {
         return new Vector3f(manager.get(X), manager.get(Y), manager.get(Z));
     }
 
-    public void setStart(Vector3f pos) {
+    public void setStart(Vector3fc pos) {
         SynchedEntityData manager = getEntityData();
         manager.set(X, pos.x());
         manager.set(Y, pos.y());
@@ -56,11 +55,6 @@ public class DirectionalLightningBoltEntity extends LightningBolt {
         compound.putFloat("X", start.x());
         compound.putFloat("Y", start.y());
         compound.putFloat("Z", start.z());
-    }
-
-    @Override
-    public Packet<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override

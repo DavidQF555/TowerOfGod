@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client.events;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.model.CastingModelHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
@@ -87,16 +87,16 @@ public final class CastingEventSubscriber {
         float f4 = -0.4f * Mth.sin(swing * (float) Math.PI);
         matrixStack.pushPose();
         matrixStack.translate(factor * (f2 + 0.64000005F), f3 - 0.6F + equip * -0.6F, f4 - 0.71999997F);
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(factor * 45));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(factor * 45));
         float f5 = Mth.sin(swing * swing * (float) Math.PI);
         float f6 = Mth.sin(sqrtSwing * (float) Math.PI);
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(factor * f6 * 70));
-        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(factor * f5 * -20));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(factor * f6 * 70));
+        matrixStack.mulPose(Axis.ZP.rotationDegrees(factor * f5 * -20));
         client.getTextureManager().bindForSetup(client.player.getSkinTextureLocation());
         matrixStack.translate(factor * -1, 3.6F, 3.5);
-        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(factor * 120));
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(200));
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(factor * -135));
+        matrixStack.mulPose(Axis.ZP.rotationDegrees(factor * 120));
+        matrixStack.mulPose(Axis.XP.rotationDegrees(200));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(factor * -135));
         matrixStack.translate(factor * 5.6F, 0, 0);
         renderHand(matrixStack, buffer, light, client.player, side);
         matrixStack.popPose();
