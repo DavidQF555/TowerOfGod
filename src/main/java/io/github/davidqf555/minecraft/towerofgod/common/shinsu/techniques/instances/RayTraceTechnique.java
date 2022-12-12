@@ -30,7 +30,7 @@ public abstract class RayTraceTechnique extends ShinsuTechniqueInstance {
         Vec3 start = new Vec3(user.getX(), user.getEyeY(), user.getZ());
         Vec3 end = start.add(direction.scale(range));
         if (entityCollision) {
-            EntityHitResult entity = ProjectileUtil.getEntityHitResult(world, null, start, end, AABB.ofSize(start, range * 2, range * 2, range * 2), null);
+            EntityHitResult entity = ProjectileUtil.getEntityHitResult(world, null, start, end, AABB.ofSize(start, range * 2, range * 2, range * 2), e -> true);
             if (entity != null) {
                 doEffect(world, entity);
                 doEntityEffect(world, entity);
