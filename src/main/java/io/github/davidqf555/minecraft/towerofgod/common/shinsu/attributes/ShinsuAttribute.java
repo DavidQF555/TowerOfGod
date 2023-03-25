@@ -16,16 +16,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 public class ShinsuAttribute {
 
     private final ParticleOptions particleType;
-    private final DamageSource source;
+    private final Function<Level, DamageSource> source;
     private final double speed;
     private final double damage;
     private final int color;
@@ -34,7 +36,7 @@ public class ShinsuAttribute {
     private final DropsFilter dropsFilter;
     private ResourceLocation id;
 
-    public ShinsuAttribute(ParticleOptions particleType, DamageSource source, double speed, double damage, int color, ShinsuAttributeEffect<EntityHitResult> entityEffect, ShinsuAttributeEffect<BlockHitResult> blockEffect, DropsFilter dropsFilter) {
+    public ShinsuAttribute(ParticleOptions particleType, Function<Level, DamageSource> source, double speed, double damage, int color, ShinsuAttributeEffect<EntityHitResult> entityEffect, ShinsuAttributeEffect<BlockHitResult> blockEffect, DropsFilter dropsFilter) {
         this.particleType = particleType;
         this.source = source;
         this.speed = speed;
@@ -53,8 +55,8 @@ public class ShinsuAttribute {
         return attribute == null ? ParticleTypes.DRIPPING_WATER : attribute.getParticleType();
     }
 
-    public static DamageSource getDamageSource(@Nullable ShinsuAttribute attribute) {
-        return attribute == null ? DamageSource.DROWN : attribute.getSource();
+    public static DamageSource getDamageSource(Level world, @Nullable ShinsuAttribute attribute) {
+        return attribute == null ? world.damageSources().drown() : attribute.getSource(world);
     }
 
     public static void setAttribute(ItemStack item, @Nullable ShinsuAttribute attribute) {
@@ -89,8 +91,8 @@ public class ShinsuAttribute {
         return particleType;
     }
 
-    protected DamageSource getSource() {
-        return source;
+    protected DamageSource getSource(Level world) {
+        return source.apply(world);
     }
 
     public double getSpeed() {

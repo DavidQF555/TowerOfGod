@@ -29,10 +29,11 @@ public class TreeWall extends GroundTechniqueInstance {
             RandomSource random = world.getRandom();
             int horizontalRadius = 3;
             int yRadius = 5;
+            BlockPos base = new BlockPos((int) pos.x(), (int) pos.y(), (int) pos.z());
             for (int dY = -yRadius; dY < yRadius; dY++) {
                 for (int dX = -horizontalRadius; dX < horizontalRadius; dX++) {
                     for (int dZ = -horizontalRadius; dZ < horizontalRadius; dZ++) {
-                        BlockPos effect = new BlockPos(pos).offset(dX, dY, dZ);
+                        BlockPos effect = base.offset(dX, dY, dZ);
                         if (TreeFeature.validTreePos(world, effect)) {
                             ConfiguredFeature<?, ?> tree = trees.get(random.nextInt(trees.size()));
                             tree.place(world, world.getChunkSource().getGenerator(), random, effect);

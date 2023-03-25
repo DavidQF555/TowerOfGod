@@ -5,6 +5,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.function.BiFunction;
 
@@ -20,7 +21,8 @@ public class PlaceSphereAttributeEffect<T extends HitResult> implements ShinsuAt
 
     @Override
     public void apply(Entity user, T clip) {
-        BlockPos hitPos = new BlockPos(clip.getLocation());
+        Vec3 position = clip.getLocation();
+        BlockPos hitPos = new BlockPos((int) position.x(), (int) position.y(), (int) position.z());
         for (int y = -radius; y <= radius; y++) {
             double xRadius = Math.sqrt(radius * radius - y * y);
             int xRounded = (int) xRadius;

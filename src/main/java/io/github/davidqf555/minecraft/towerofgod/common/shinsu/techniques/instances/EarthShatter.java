@@ -28,7 +28,7 @@ public class EarthShatter extends GroundTechniqueInstance {
         for (int dY = -yRadius; dY <= 1; dY++) {
             for (int dX = -horizontalRadius; dX < horizontalRadius; dX++) {
                 for (int dZ = -horizontalRadius; dZ < horizontalRadius; dZ++) {
-                    BlockPos effect = new BlockPos(pos).offset(dX, dY, dZ);
+                    BlockPos effect = new BlockPos((int) pos.x(), (int) pos.y(), (int) pos.z()).offset(dX, dY, dZ);
                     BlockState state = world.getBlockState(effect);
                     if (!world.isEmptyBlock(effect) && state.getDestroySpeed(world, effect) > 0) {
                         FallingBlockEntity block = FallingBlockEntity.fall(world, effect, state);

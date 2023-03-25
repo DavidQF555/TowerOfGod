@@ -11,7 +11,6 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
@@ -33,9 +32,9 @@ public final class ShinsuAttributeRegistry {
 
     public static final DeferredRegister<ShinsuAttribute> QUALITIES = DeferredRegister.create(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_attributes"), TowerOfGod.MOD_ID);
 
-    public static final RegistryObject<ShinsuAttribute> LIGHTNING = register("lightning", () -> new ShinsuAttribute(ParticleTypes.INSTANT_EFFECT, DamageSource.LIGHTNING_BOLT, 1.5, 1, 0xFFfbff85, ShinsuAttributeEffect.combination(ImmutableList.of(new FireEntityAttributeEffect(3), new PotionAttributeEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 3, true, false, false)))), new SummonAttributeEffect<>(EntityType.LIGHTNING_BOLT::create), DropsFilter.NONE));
-    public static final RegistryObject<ShinsuAttribute> FIRE = register("fire", () -> new ShinsuAttribute(ParticleTypes.FLAME, DamageSource.ON_FIRE, 1, 1, 0xFFff8119, new FireEntityAttributeEffect(7), new PlaceBlockAttributeEffect(BaseFireBlock::getState), SmeltDropsFilter.INSTANCE));
-    public static final RegistryObject<ShinsuAttribute> ICE = register("ice", () -> new ShinsuAttribute(ParticleTypes.POOF, DamageSource.MAGIC, 1, 1, 0xFFa8fbff, new PotionAttributeEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2, true, false, false)), new PlaceSphereAttributeEffect<>(5, (world, pos) -> {
+    public static final RegistryObject<ShinsuAttribute> LIGHTNING = register("lightning", () -> new ShinsuAttribute(ParticleTypes.INSTANT_EFFECT, level -> level.damageSources().lightningBolt(), 1.5, 1, 0xFFfbff85, ShinsuAttributeEffect.combination(ImmutableList.of(new FireEntityAttributeEffect(3), new PotionAttributeEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 3, true, false, false)))), new SummonAttributeEffect<>(EntityType.LIGHTNING_BOLT::create), DropsFilter.NONE));
+    public static final RegistryObject<ShinsuAttribute> FIRE = register("fire", () -> new ShinsuAttribute(ParticleTypes.FLAME, level -> level.damageSources().onFire(), 1, 1, 0xFFff8119, new FireEntityAttributeEffect(7), new PlaceBlockAttributeEffect(BaseFireBlock::getState), SmeltDropsFilter.INSTANCE));
+    public static final RegistryObject<ShinsuAttribute> ICE = register("ice", () -> new ShinsuAttribute(ParticleTypes.POOF, level -> level.damageSources().magic(), 1, 1, 0xFFa8fbff, new PotionAttributeEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2, true, false, false)), new PlaceSphereAttributeEffect<>(5, (world, pos) -> {
         BlockState state = world.getBlockState(pos);
         if (state.getFluidState().is(FluidTags.WATER)) {
             return Blocks.ICE.defaultBlockState();
@@ -53,16 +52,16 @@ public final class ShinsuAttributeRegistry {
         }
         return null;
     }), DropsFilter.NONE));
-    public static final RegistryObject<ShinsuAttribute> STONE = register("stone", () -> new ShinsuAttribute(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()), DamageSource.IN_WALL, 0.8, 1.5, 0xFF999999, (user, clip) -> {
+    public static final RegistryObject<ShinsuAttribute> STONE = register("stone", () -> new ShinsuAttribute(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()), level -> level.damageSources().inWall(), 0.8, 1.5, 0xFF999999, (user, clip) -> {
     }, new DestroyBlockAttributeEffect((world, pos) -> {
         float hardness = world.getBlockState(pos).getDestroySpeed(world, pos);
         return hardness >= 0 && hardness <= Blocks.STONE.defaultBlockState().getDestroySpeed(world, pos);
     }), DropsFilter.NONE));
-    public static final RegistryObject<ShinsuAttribute> WIND = register("wind", () -> new ShinsuAttribute(ParticleTypes.AMBIENT_ENTITY_EFFECT, DamageSource.CRAMMING, 1.4, 1, 0xAAabffac, new KnockbackAttributeEffect(1), new PushAttributeEffect<>(5, dist -> 3 / (dist + 1)), DropsFilter.NONE));
-    public static final RegistryObject<ShinsuAttribute> CRYSTAL = register("crystal", () -> new ShinsuAttribute(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GLASS.defaultBlockState()), DamageSource.MAGIC, 0.9, 2, 0xFFf7f7f7, (user, clip) -> {
+    public static final RegistryObject<ShinsuAttribute> WIND = register("wind", () -> new ShinsuAttribute(ParticleTypes.AMBIENT_ENTITY_EFFECT, level -> level.damageSources().cramming(), 1.4, 1, 0xAAabffac, new KnockbackAttributeEffect(1), new PushAttributeEffect<>(5, dist -> 3 / (dist + 1)), DropsFilter.NONE));
+    public static final RegistryObject<ShinsuAttribute> CRYSTAL = register("crystal", () -> new ShinsuAttribute(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GLASS.defaultBlockState()), level -> level.damageSources().magic(), 0.9, 2, 0xFFf7f7f7, (user, clip) -> {
     }, (entity, clip) -> {
     }, DropsFilter.NONE));
-    public static final RegistryObject<ShinsuAttribute> PLANT = register("plant", () -> new ShinsuAttribute(ParticleTypes.COMPOSTER, DamageSource.CACTUS, 1, 1, 0xFF03ff2d, new PotionAttributeEffect(new MobEffectInstance(MobEffects.POISON, 140, 2, true, false, false)), GrowthAttributeEffect.INSTANCE, new FactorDropsFilter(stack -> stack.is(Tags.Items.CROPS) ? 2.0 : 1.0)));
+    public static final RegistryObject<ShinsuAttribute> PLANT = register("plant", () -> new ShinsuAttribute(ParticleTypes.COMPOSTER, level -> level.damageSources().cactus(), 1, 1, 0xFF03ff2d, new PotionAttributeEffect(new MobEffectInstance(MobEffects.POISON, 140, 2, true, false, false)), GrowthAttributeEffect.INSTANCE, new FactorDropsFilter(stack -> stack.is(Tags.Items.CROPS) ? 2.0 : 1.0)));
 
     private static Supplier<IForgeRegistry<ShinsuAttribute>> registry = null;
 

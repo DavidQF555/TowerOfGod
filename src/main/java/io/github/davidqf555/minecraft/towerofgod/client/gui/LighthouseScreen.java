@@ -38,10 +38,9 @@ public class LighthouseScreen extends AbstractContainerScreen<LighthouseEntity.L
     public void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-        int offset = getBlitOffset();
-        INVENTORY.render(new RenderContext(matrixStack, x, y + 72, offset, imageWidth, 94, 0xFFFFFFFF));
+        INVENTORY.render(new RenderContext(matrixStack, x, y + 72, 0, imageWidth, 94, 0xFFFFFFFF));
         int hex = menu.lighthouse.getColor().getTextColor();
-        LIGHTHOUSE.render(new RenderContext(matrixStack, x, y, offset, imageWidth, 71, FastColor.ARGB32.color(255, FastColor.ARGB32.red(hex), FastColor.ARGB32.green(hex), FastColor.ARGB32.blue(hex))));
+        LIGHTHOUSE.render(new RenderContext(matrixStack, x, y, 0, imageWidth, 71, FastColor.ARGB32.color(255, FastColor.ARGB32.red(hex), FastColor.ARGB32.green(hex), FastColor.ARGB32.blue(hex))));
     }
 
     @Override

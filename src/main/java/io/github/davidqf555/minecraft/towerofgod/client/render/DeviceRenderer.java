@@ -28,7 +28,7 @@ public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityMod
 
     @Override
     public void render(T entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        if (MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<>(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn))) {
+        if (MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Pre<>(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn))) {
             return;
         }
         matrixStackIn.pushPose();
@@ -47,8 +47,8 @@ public abstract class DeviceRenderer<T extends FlyingDevice, M extends EntityMod
         float limbSwingAmount = 0;
         float limbSwing = 0;
         if (!model.riding && entityIn.isAlive()) {
-            limbSwingAmount = Mth.lerp(partialTicks, entityIn.animationSpeedOld, entityIn.animationSpeed);
-            limbSwing = entityIn.animationPosition - entityIn.animationSpeed * (1 - partialTicks);
+            limbSwingAmount = entityIn.walkAnimation.speed(partialTicks);
+            limbSwing = entityIn.walkAnimation.position(partialTicks);
             if (limbSwingAmount > 1) {
                 limbSwingAmount = 1;
             }

@@ -31,7 +31,7 @@ public class Forest extends AreaTechnique {
     protected void doEffect(ServerLevel world, Vec3 pos) {
         List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
         if (!trees.isEmpty()) {
-            BlockPos block = new BlockPos(pos).above();
+            BlockPos block = new BlockPos((int) pos.x(), (int) pos.y(), (int) pos.z()).above();
             RandomSource random = world.getRandom();
             ConfiguredFeature<?, ?> tree = trees.get(random.nextInt(trees.size()));
             if (TreeFeature.validTreePos(world, block)) {

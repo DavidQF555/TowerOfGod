@@ -34,7 +34,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
             Tier tier = item.getTier();
             Ingredient material = tier.getRepairIngredient();
             if (tier.equals(Tiers.NETHERITE)) {
-                UpgradeRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_NEEDLE.get()), material, RecipeCategory.COMBAT, item)
+                SmithingTransformRecipeBuilder.smithing(Ingredient.EMPTY, Ingredient.of(ItemRegistry.DIAMOND_NEEDLE.get()), material, RecipeCategory.COMBAT, item)
                         .unlocks("has_material", inventoryTrigger(getPredicates(material)))
                         .save(consumer, registry.getId());
 
@@ -54,7 +54,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
             Tier tier = item.getTier();
             Ingredient material = tier.getRepairIngredient();
             if (tier.equals(Tiers.NETHERITE)) {
-                UpgradeRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_HOOK.get()), material, RecipeCategory.COMBAT, item)
+                SmithingTransformRecipeBuilder.smithing(Ingredient.EMPTY, Ingredient.of(ItemRegistry.DIAMOND_HOOK.get()), material, RecipeCategory.COMBAT, item)
                         .unlocks("has_material", inventoryTrigger(getPredicates(material)))
                         .save(consumer, registry.getId());
 
@@ -73,7 +73,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
             Tier tier = item.getTier();
             Ingredient material = tier.getRepairIngredient();
             if (tier.equals(Tiers.NETHERITE)) {
-                UpgradeRecipeBuilder.smithing(Ingredient.of(ItemRegistry.DIAMOND_SPEAR.get()), material, RecipeCategory.COMBAT, item)
+                SmithingTransformRecipeBuilder.smithing(Ingredient.EMPTY, Ingredient.of(ItemRegistry.DIAMOND_SPEAR.get()), material, RecipeCategory.COMBAT, item)
                         .unlocks("has_material", inventoryTrigger(getPredicates(material)))
                         .save(consumer, registry.getId());
 

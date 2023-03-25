@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -11,8 +12,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -23,9 +22,9 @@ import java.util.stream.Collectors;
 
 public interface IGeared<T extends LivingEntity> {
 
-    static Set<Item> getAllCraftableItems(Level world, Predicate<Item> filter) {
+    static Set<Item> getAllCraftableItems(ServerLevel world, Predicate<Item> filter) {
         return world.getRecipeManager().getRecipes().stream()
-                .map(Recipe::getResultItem)
+                .map(recipe -> recipe.getResultItem(world.getServer().registryAccess()))
                 .map(ItemStack::getItem)
                 .filter(filter)
                 .collect(Collectors.toSet());
@@ -82,7 +81,7 @@ public interface IGeared<T extends LivingEntity> {
         int index = slot.getIndex();
         double base = entity.getAttributeBaseValue(Attributes.ARMOR);
         Predicate<Item> condition = item -> inventory.isItemValid(index, item.getDefaultInstance()) && getAttribute(Attributes.ARMOR, entity, item.getDefaultInstance(), slot) > base;
-        List<Item> armors = new ArrayList<>(getAllCraftableItems(entity.level, condition));
+        List<Item> armors = new ArrayList<>(getAllCraftableItems((ServerLevel) entity.level, condition));
         armors.add(Items.AIR);
         Map<Item, Double> chances = getInitialItemChances(armors, (item1, item2) -> {
             double dif = getAttribute(Attributes.ARMOR, entity, item1.getDefaultInstance(), slot) - getAttribute(Attributes.ARMOR, entity, item2.getDefaultInstance(), slot);
@@ -108,7 +107,7 @@ public interface IGeared<T extends LivingEntity> {
         int index = EquipmentSlot.MAINHAND.getIndex();
         double base = entity.getAttributeBaseValue(Attributes.ATTACK_DAMAGE);
         Predicate<Item> filter = item -> inventory.isItemValid(index, item.getDefaultInstance()) && getAttribute(Attributes.ATTACK_DAMAGE, entity, item.getDefaultInstance(), EquipmentSlot.MAINHAND) > base;
-        List<Item> weapons = new ArrayList<>(getAllCraftableItems(entity.level, filter));
+        List<Item> weapons = new ArrayList<>(getAllCraftableItems((ServerLevel) entity.level, filter));
         weapons.add(Items.AIR);
         List<Item> preferred = weapons.stream().filter(this::isWeaponPreferred).collect(Collectors.toList());
         RandomSource random = entity.getRandom();

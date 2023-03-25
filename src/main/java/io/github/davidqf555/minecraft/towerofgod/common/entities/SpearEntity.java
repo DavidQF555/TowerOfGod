@@ -81,7 +81,7 @@ public class SpearEntity extends AbstractArrow {
             damage += EnchantmentHelper.getDamageBonus(stack, ((LivingEntity) target).getMobType());
         }
         Entity shooter = getOwner();
-        DamageSource source = DamageSource.trident(this, shooter == null ? this : shooter);
+        DamageSource source = getLevel().damageSources().trident(this, shooter == null ? this : shooter);
         if (target.hurt(source, (float) damage)) {
             if (target.getType() == EntityType.ENDERMAN) {
                 return;

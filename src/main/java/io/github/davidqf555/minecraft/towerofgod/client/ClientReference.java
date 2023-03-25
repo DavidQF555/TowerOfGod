@@ -70,7 +70,7 @@ public final class ClientReference {
     }
 
     public static void renderItemStackData(ItemStackRenderData data, RenderContext context) {
-        Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(data.get(), (int) context.getX(), (int) context.getY());
+        Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(context.getPoseStack(), data.get(), (int) context.getX(), (int) context.getY());
     }
 
     public static void openCombinationGUI(Set<ShinsuTechnique> unlocked) {

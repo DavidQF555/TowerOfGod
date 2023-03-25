@@ -6,9 +6,9 @@ import io.github.davidqf555.minecraft.towerofgod.client.model.SpearModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class SpearItemStackRenderer extends BlockEntityWithoutLevelRenderer {
@@ -26,7 +26,7 @@ public class SpearItemStackRenderer extends BlockEntityWithoutLevelRenderer {
     }
 
     @Override
-    public void renderByItem(ItemStack stack, ItemTransforms.TransformType transforms, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
+    public void renderByItem(ItemStack stack, ItemDisplayContext transforms, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
         matrixStack.pushPose();
         matrixStack.scale(1, -1, -1);
         VertexConsumer builder = ItemRenderer.getFoilBufferDirect(buffer, spear.renderType(spear.getTextureLocation(stack.getItem())), false, stack.hasFoil());

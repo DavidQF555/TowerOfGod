@@ -37,7 +37,7 @@ public abstract class GroundTechniqueInstance extends ShinsuTechniqueInstance {
             double z = startZ + dZ * speed * (count + 1);
             BlockPos pos = null;
             for (int dY = -maxYDif; dY < maxYDif; dY++) {
-                BlockPos test = new BlockPos(x, prevY + dY, z);
+                BlockPos test = new BlockPos((int) x, prevY + dY, (int) z);
                 if (world.getBlockState(test).isCollisionShapeFullBlock(world, test) && world.getBlockState(test.above()).getCollisionShape(world, test.above()).isEmpty() && (pos == null || Math.abs(dY) < Math.abs(prevY - pos.getY()))) {
                     pos = test;
                 }

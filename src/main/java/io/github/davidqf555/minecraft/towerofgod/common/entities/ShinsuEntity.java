@@ -68,7 +68,7 @@ public class ShinsuEntity extends AbstractHurtingProjectile {
             if (shooter != null) {
                 damage *= ShinsuStats.getNetResistance(shooter, target);
             }
-            target.hurt(ShinsuAttribute.getDamageSource(null), damage);
+            target.hurt(ShinsuAttribute.getDamageSource(level, null), damage);
         }
         remove(RemovalReason.DISCARDED);
     }

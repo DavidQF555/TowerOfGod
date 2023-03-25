@@ -30,7 +30,7 @@ public class ThrowRock extends ShinsuTechniqueInstance {
         Entity user = getUser(world);
         if (user != null) {
             Vec3 pos = user.getEyePosition(1).add(0, -0.5, 0).add(direction);
-            BlockPos blockPos = new BlockPos(pos);
+            BlockPos blockPos = new BlockPos((int) pos.x(), (int) pos.y(), (int) pos.z());
             if (world.isEmptyBlock(blockPos)) {
                 world.setBlockAndUpdate(blockPos, Blocks.STONE.defaultBlockState());
             }

@@ -66,22 +66,21 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                 int y = (screenHeight - getHeight()) / 2 - 50;
                 if (selected == null) {
                     for (Marker marker : markers) {
-                        marker.render(matrixStack, x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT, gui.getBlitOffset());
+                        marker.render(matrixStack, x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT, 0);
                     }
                 } else {
                     float centerX = x + getWidth() / 2f;
                     float centerY = y + getHeight() / 2f;
-                    int z = gui.getBlitOffset();
                     float iconX = centerX - ICON_WIDTH / 2f;
                     float iconY = centerY - ICON_HEIGHT / 2f;
                     boolean hasError = ClientReference.ERRORS.containsKey(selected);
                     int color = hasError ? 0xFFFF0000 : ShinsuAttribute.getColor(ClientReference.getAttribute(client.player));
-                    BACKGROUND.render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, color));
+                    BACKGROUND.render(new RenderContext(matrixStack, iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, color));
                     if (hasError) {
                         Component error = ClientReference.ERRORS.get(selected);
                         client.font.drawShadow(matrixStack, error, centerX - client.font.width(error) / 2f, centerY + ICON_HEIGHT / 2f + client.font.lineHeight + 2, color);
                     }
-                    selected.getIcon().render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
+                    selected.getIcon().render(new RenderContext(matrixStack, iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
                     Component text = selected.getText().withStyle(ChatFormatting.BOLD);
                     client.font.drawShadow(matrixStack, text, centerX - client.font.width(text) / 2f, centerY + ICON_HEIGHT / 2f + 1, color);
                 }

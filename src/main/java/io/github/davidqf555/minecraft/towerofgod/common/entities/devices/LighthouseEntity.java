@@ -125,7 +125,7 @@ public class LighthouseEntity extends FlyingDevice implements MenuProvider {
     @Override
     public void tick() {
         super.tick();
-        BlockPos pos = new BlockPos(position());
+        BlockPos pos = blockPosition();
         if (!pos.equals(light)) {
             removeLight(light);
             light = null;
