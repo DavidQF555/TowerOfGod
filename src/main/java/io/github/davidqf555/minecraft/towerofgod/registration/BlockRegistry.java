@@ -5,9 +5,8 @@ import io.github.davidqf555.minecraft.towerofgod.common.blocks.LevitationBlock;
 import io.github.davidqf555.minecraft.towerofgod.common.blocks.TemporaryBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.OreBlock;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -18,8 +17,8 @@ public final class BlockRegistry {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, TowerOfGod.MOD_ID);
 
-    public static final RegistryObject<OreBlock> SUSPENDIUM_ORE = register("suspendium_ore", () -> new OreBlock(Block.Properties.of(Material.STONE).strength(5f, 5f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)));
-    public static final RegistryObject<LevitationBlock> SUSPENDIUM_BLOCK = register("suspendium_block", () -> new LevitationBlock(Block.Properties.of(Material.STONE).strength(3f, 3f).sound(SoundType.STONE).harvestLevel(1).harvestTool(ToolType.PICKAXE)));
+    public static final RegistryObject<OreBlock> SUSPENDIUM_ORE = register("suspendium_ore", () -> new OreBlock(Block.Properties.of(Material.STONE).strength(3f, 3f).requiresCorrectToolForDrops()));
+    public static final RegistryObject<LevitationBlock> SUSPENDIUM_BLOCK = register("suspendium_block", () -> new LevitationBlock(Block.Properties.of(Material.STONE, MaterialColor.COLOR_BLUE).strength(5f, 6f).requiresCorrectToolForDrops()));
     public static final RegistryObject<TemporaryBlock> LIGHT = register("light", () -> new TemporaryBlock(Block.Properties.of(Material.AIR).noCollission().noDrops().air().lightLevel(state -> 15)));
 
     private BlockRegistry() {
