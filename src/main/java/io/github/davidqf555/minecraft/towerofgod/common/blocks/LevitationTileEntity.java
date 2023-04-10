@@ -19,7 +19,7 @@ public class LevitationTileEntity extends BlockEntity {
     private static final int PERIOD = 60;
 
     public LevitationTileEntity(BlockPos pos, BlockState state) {
-        super(TileEntityRegistry.SUSPENDIUM.get(), pos, state);
+        super(TileEntityRegistry.LEVITATION.get(), pos, state);
     }
 
     public static void tick(Level world, BlockPos pos, BlockState state, LevitationTileEntity te) {
