@@ -27,7 +27,7 @@ public class LevitationBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        return createTickerHelper(type, TileEntityRegistry.SUSPENDIUM.get(), LevitationTileEntity::tick);
+        return createTickerHelper(type, TileEntityRegistry.LEVITATION.get(), LevitationTileEntity::tick);
     }
 
     @Override
