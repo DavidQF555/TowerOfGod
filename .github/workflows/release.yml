@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Generate file path
         id: file
-        run: echo "::set-output name=file_path::./build/libs/towerofgod-$(echo ${{github.event.release.tag_name}} | cut -dv -f2).jar"
+        run: echo "file_path=./build/libs/towerofgod-$(echo ${{github.event.release.tag_name}} | cut -dv -f2).jar" >> $GITHUB_OUTPUT
 
   build:
     name: Build and cache

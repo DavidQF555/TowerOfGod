@@ -48,9 +48,13 @@ public final class ObserverEventBusSubscriber {
                 }
             }
             if (included) {
-                entity.setGlowingTag(stillGlowing);
+                setGlowing(entity, stillGlowing);
             }
         }
+    }
+
+    private static void setGlowing(LivingEntity entity, boolean glowing) {
+        entity.setSharedFlag(6, glowing || entity.hasGlowingTag());
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
