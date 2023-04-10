@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.registration;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.blocks.SuspendiumTileEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.blocks.LevitationTileEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -22,6 +22,6 @@ public final class TileEntityRegistry {
         return TYPES.register(name, () -> BlockEntityType.Builder.of(supplier, valid.get()).build(null));
     }
 
-    public static final RegistryObject<BlockEntityType<SuspendiumTileEntity>> SUSPENDIUM = register("suspendium", SuspendiumTileEntity::new, () -> new Block[]{BlockRegistry.SUSPENDIUM_BLOCK.get()});
+    public static final RegistryObject<BlockEntityType<LevitationTileEntity>> SUSPENDIUM = register("suspendium", LevitationTileEntity::new, () -> new Block[]{BlockRegistry.SUSPENDIUM_BLOCK.get()});
 
 }
