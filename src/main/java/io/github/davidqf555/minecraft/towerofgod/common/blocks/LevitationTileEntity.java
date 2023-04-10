@@ -18,7 +18,7 @@ public class LevitationTileEntity extends TileEntity implements ITickableTileEnt
     private static final int PERIOD = 60;
 
     public LevitationTileEntity() {
-        super(TileEntityRegistry.SUSPENDIUM.get());
+        super(TileEntityRegistry.LEVITATION.get());
     }
 
     @Override

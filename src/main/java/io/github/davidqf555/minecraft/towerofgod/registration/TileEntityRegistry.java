@@ -22,6 +22,6 @@ public final class TileEntityRegistry {
         return TYPES.register(name, () -> TileEntityType.Builder.of(supplier, valid.get()).build(null));
     }
 
-    public static final RegistryObject<TileEntityType<LevitationTileEntity>> SUSPENDIUM = register("suspendium", LevitationTileEntity::new, () -> new Block[]{BlockRegistry.SUSPENDIUM_BLOCK.get()});
+    public static final RegistryObject<TileEntityType<LevitationTileEntity>> LEVITATION = register("suspendium", LevitationTileEntity::new, () -> new Block[]{BlockRegistry.SUSPENDIUM_BLOCK.get()});
 
 }
