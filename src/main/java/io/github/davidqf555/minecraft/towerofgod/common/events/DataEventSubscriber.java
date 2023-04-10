@@ -63,11 +63,13 @@ public final class DataEventSubscriber {
     public static void onClonePlayerEvent(PlayerEvent.Clone event) {
         if (event.isWasDeath()) {
             ServerPlayer original = (ServerPlayer) event.getOriginal();
+            original.reviveCaps();
             ServerPlayer resp = (ServerPlayer) event.getPlayer();
             ShinsuStats.get(resp).deserializeNBT(ShinsuStats.get(original).serializeNBT());
             ShinsuTechniqueData.get(resp).deserializeNBT(ShinsuTechniqueData.get(original).serializeNBT());
             ShinsuQualityData.get(resp).deserializeNBT(ShinsuQualityData.get(original).serializeNBT());
             PredictedShinsuQuality.get(resp).deserializeNBT(PredictedShinsuQuality.get(original).serializeNBT());
+            original.invalidateCaps();
         }
     }
 
