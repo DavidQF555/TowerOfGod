@@ -11,13 +11,13 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class SuspendiumTileEntity extends TileEntity implements ITickableTileEntity {
+public class LevitationTileEntity extends TileEntity implements ITickableTileEntity {
 
     private static final int RADIUS = 4;
     private static final int LEVEL = 2;
     private static final int PERIOD = 60;
 
-    public SuspendiumTileEntity() {
+    public LevitationTileEntity() {
         super(TileEntityRegistry.SUSPENDIUM.get());
     }
 
