@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -27,6 +28,7 @@ public class ShinsuSpearEntity extends SpearEntity {
 
     public ShinsuSpearEntity(EntityType<ShinsuSpearEntity> type, World world) {
         super(type, world);
+        setStack(ItemRegistry.SHINSU_SPEAR.get().getDefaultInstance());
     }
 
     @Override
@@ -73,10 +75,6 @@ public class ShinsuSpearEntity extends SpearEntity {
         pickup = PickupStatus.DISALLOWED;
     }
 
-    public void setTechnique(UUID technique) {
-        this.technique = technique;
-    }
-
     @Nullable
     public ShinsuTechniqueInstance getTechnique() {
         Entity shooter = getOwner();
@@ -84,6 +82,10 @@ public class ShinsuSpearEntity extends SpearEntity {
             return ShinsuTechniqueInstance.get(shooter, technique);
         }
         return null;
+    }
+
+    public void setTechnique(UUID technique) {
+        this.technique = technique;
     }
 
     @Override
