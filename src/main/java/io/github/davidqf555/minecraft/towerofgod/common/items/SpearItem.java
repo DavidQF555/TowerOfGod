@@ -10,10 +10,7 @@ import net.minecraft.enchantment.IVanishable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
-import net.minecraft.item.UseAction;
+import net.minecraft.item.*;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -50,31 +47,37 @@ public class SpearItem extends ToolItem implements IVanishable {
     @Override
     public void releaseUsing(ItemStack stack, World worldIn, LivingEntity entity, int timeLeft) {
         if (entity instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) entity;
             int duration = getUseDuration(stack) - timeLeft;
-            if (duration >= 10) {
-                if (!worldIn.isClientSide()) {
-                    stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(entity.getUsedItemHand()));
-                    AbstractArrowEntity proj = createProjectile(worldIn, stack);
-                    proj.setOwner(player);
-                    proj.shootFromRotation(player, player.xRot, player.yRot, 0, 2.5f, 1);
-                    proj.setPos(player.getX(), player.getEyeY(), player.getZ());
-                    if (player.abilities.instabuild) {
-                        proj.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
-                    }
-                    worldIn.addFreshEntity(proj);
-                    worldIn.playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundCategory.PLAYERS, 1, 1);
-                    if (!player.abilities.instabuild) {
-                        player.inventory.removeItem(stack);
-                    }
-                    player.awardStat(Stats.ITEM_USED.get(this));
-                }
+            if (duration >= 10 && !worldIn.isClientSide()) {
+                launchSpear((PlayerEntity) entity, stack);
             }
         }
     }
 
     protected AbstractArrowEntity createProjectile(World world, ItemStack stack) {
         return new SpearEntity(EntityRegistry.SPEAR.get(), world, stack);
+    }
+
+    protected AbstractArrowEntity launchSpear(LivingEntity user, ItemStack stack) {
+        stack.hurtAndBreak(1, user, p -> p.broadcastBreakEvent(user.getUsedItemHand()));
+        AbstractArrowEntity proj = createProjectile(user.level, stack);
+        proj.setOwner(user);
+        proj.shootFromRotation(user, user.xRot, user.yRot, 0, 2.5f, 1);
+        proj.setPos(user.getX(), user.getEyeY(), user.getZ());
+        user.level.addFreshEntity(proj);
+        user.level.playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundCategory.PLAYERS, 1, 1);
+        return proj;
+    }
+
+    protected void launchSpear(PlayerEntity player, ItemStack stack) {
+        AbstractArrowEntity proj = launchSpear((LivingEntity) player, stack);
+        if (player.abilities.instabuild) {
+            proj.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
+        }
+        if (!player.abilities.instabuild) {
+            player.inventory.removeItem(stack);
+        }
+        player.awardStat(Stats.ITEM_USED.get(this));
     }
 
     @Override
@@ -86,6 +89,5 @@ public class SpearItem extends ToolItem implements IVanishable {
         playerIn.startUsingItem(handIn);
         return ActionResult.consume(item);
     }
-
 
 }
