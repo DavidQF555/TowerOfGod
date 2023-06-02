@@ -14,13 +14,10 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.IParticleData;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -35,7 +32,6 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     private static final int PARTICLES = 2;
     private static final DataParameter<String> ATTRIBUTE = EntityDataManager.defineId(ShinsuArrowEntity.class, DataSerializers.STRING);
     private UUID technique;
-    private BlockRayTraceResult latestHit;
 
     public ShinsuArrowEntity(EntityType<ShinsuArrowEntity> type, World world) {
         this(type, world, null);
@@ -44,7 +40,6 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     public ShinsuArrowEntity(EntityType<ShinsuArrowEntity> type, World world, @Nullable UUID technique) {
         super(type, world);
         this.technique = technique;
-        this.latestHit = null;
     }
 
     @Override
@@ -80,8 +75,11 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
 
     @Override
     protected void onHitBlock(BlockRayTraceResult rayTraceResult) {
-        latestHit = rayTraceResult;
         super.onHitBlock(rayTraceResult);
+        ShinsuAttribute attribute = getAttribute();
+        if (attribute != null) {
+            attribute.applyBlockEffect(this, rayTraceResult);
+        }
     }
 
     @Override
@@ -89,18 +87,6 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
         if (inGroundTime >= 0) {
             remove();
         }
-    }
-
-    @Override
-    public void onRemovedFromWorld() {
-        if (level instanceof ServerWorld) {
-            ShinsuAttribute attribute = getAttribute();
-            if (attribute != null) {
-                Vector3d motion = getDeltaMovement();
-                attribute.applyBlockEffect(this, latestHit == null || hasImpulse ? new BlockRayTraceResult(motion, Direction.getNearest(motion.x, motion.y, motion.z), blockPosition(), true) : latestHit);
-            }
-        }
-        super.onRemovedFromWorld();
     }
 
     @Nullable
