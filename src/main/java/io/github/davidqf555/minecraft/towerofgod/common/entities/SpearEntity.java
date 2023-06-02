@@ -26,11 +26,11 @@ public class SpearEntity extends AbstractArrowEntity {
 
     private static final DataParameter<ItemStack> STACK = EntityDataManager.defineId(SpearEntity.class, DataSerializers.ITEM_STACK);
 
-    public SpearEntity(EntityType<SpearEntity> type, World world) {
+    public SpearEntity(EntityType<? extends SpearEntity> type, World world) {
         this(type, world, ItemStack.EMPTY);
     }
 
-    public SpearEntity(EntityType<SpearEntity> type, World world, ItemStack stack) {
+    public SpearEntity(EntityType<? extends SpearEntity> type, World world, ItemStack stack) {
         super(type, world);
         setStack(stack);
     }

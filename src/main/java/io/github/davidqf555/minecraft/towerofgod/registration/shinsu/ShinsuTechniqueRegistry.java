@@ -5,6 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.OverridingShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ReplacementShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ToggleableShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.GearCondition;
@@ -41,6 +42,7 @@ public final class ShinsuTechniqueRegistry {
     public static final RegistryObject<ShinsuTechnique> FLARE_WAVE_EXPLOSION = register("flare_wave_explosion", () -> new ShinsuTechnique(false, new FlareWaveExplosion.Factory(), ShinsuIcons.TENSION, new IRequirement[]{}, ShinsuTechnique.UsageData.all(ImmutableList.of(Direction.UP, Direction.DOWN, Direction.UP)), TargetDistanceCondition.below(4)));
     public static final RegistryObject<ShinsuTechnique> REVERSE_FLOW_CONTROL = register("reverse_flow_control", () -> new ShinsuTechnique(false, new ReverseFlowControl.Factory(), ShinsuIcons.REVERSE, new IRequirement[]{}, ShinsuTechnique.UsageData.all(ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.RIGHT)), TargetDistanceCondition.below(4)));
     public static final RegistryObject<OverridingShinsuTechnique> MANIFEST = register("manifest", () -> new OverridingShinsuTechnique(true, new Manifest.Factory(), ShinsuIcons.PICKAXE, new IRequirement[]{new ShapeRequirement()}, ShinsuTechnique.UsageData.all(ImmutableList.of(Direction.LEFT, Direction.RIGHT)), MobUseCondition.TRUE));
+    public static final RegistryObject<ReplacementShinsuTechnique> THROW_SPEAR = register("throw_spear", () -> new ReplacementShinsuTechnique(inst -> inst.getTechnique().equals(MANIFEST.get()), false, new ThrowSpear.Factory(), ShinsuIcons.BAANGS, new IRequirement[0], null, MobUseCondition.TRUE));
     public static final RegistryObject<ShinsuTechnique> SHOOT_SHINSU_ARROW = register("shoot_shinsu_arrow", () -> new ShinsuTechnique(false, new ShootShinsuArrow.Factory(), ShinsuIcons.BAANGS, new IRequirement[0], null, MobUseCondition.TRUE));
     public static final RegistryObject<ShinsuTechnique> MOVE_DEVICES = register("move_devices", () -> new ShinsuTechnique(true, new MoveDevices.Factory(), ShinsuIcons.MOVE, new IRequirement[]{}, ShinsuTechnique.UsageData.all(ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.LEFT)), MobUseCondition.TRUE));
     public static final RegistryObject<OverridingShinsuTechnique> LIGHTHOUSE_FLOW_CONTROL = register("lighthouse_flow_control", () -> new OverridingShinsuTechnique(true, new LighthouseFlowControl.Factory(), ShinsuIcons.LIGHTHOUSE_FLOW_CONTROL, new IRequirement[]{}, ShinsuTechnique.UsageData.all(ImmutableList.of(Direction.UP, Direction.RIGHT, Direction.UP, Direction.LEFT)), MobUseCondition.TRUE));

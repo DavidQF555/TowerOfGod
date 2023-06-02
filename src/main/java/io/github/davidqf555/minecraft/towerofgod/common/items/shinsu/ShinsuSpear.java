@@ -5,6 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
 import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
@@ -21,18 +22,22 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ShinsuSpear extends SpearItem {
 
-    public ShinsuSpear(int attackDamageIn, float attackSpeedIn) {
-        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
+    public ShinsuSpear() {
+        super(ModToolTier.SHINSU, 1, -1.2f, new Item.Properties().setNoRepair());
     }
 
+    @Nullable
     @Override
     protected AbstractArrowEntity launchSpear(LivingEntity user, ItemStack stack) {
-        
+        stack.hurtAndBreak(1, user, p -> p.broadcastBreakEvent(user.getUsedItemHand()));
+        ShinsuTechniqueRegistry.THROW_SPEAR.get().cast(user, null, user.getLookAngle());
+        return null;
     }
 
     @Override

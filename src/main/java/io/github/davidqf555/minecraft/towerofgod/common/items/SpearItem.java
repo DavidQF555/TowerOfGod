@@ -10,12 +10,16 @@ import net.minecraft.enchantment.IVanishable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.IItemTier;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolItem;
+import net.minecraft.item.UseAction;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.HashSet;
 
@@ -58,6 +62,7 @@ public class SpearItem extends ToolItem implements IVanishable {
         return new SpearEntity(EntityRegistry.SPEAR.get(), world, stack);
     }
 
+    @Nullable
     protected AbstractArrowEntity launchSpear(LivingEntity user, ItemStack stack) {
         stack.hurtAndBreak(1, user, p -> p.broadcastBreakEvent(user.getUsedItemHand()));
         AbstractArrowEntity proj = createProjectile(user.level, stack);
@@ -71,7 +76,7 @@ public class SpearItem extends ToolItem implements IVanishable {
 
     protected void launchSpear(PlayerEntity player, ItemStack stack) {
         AbstractArrowEntity proj = launchSpear((LivingEntity) player, stack);
-        if (player.abilities.instabuild) {
+        if (proj != null && player.abilities.instabuild) {
             proj.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
         }
         if (!player.abilities.instabuild) {

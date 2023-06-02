@@ -55,7 +55,8 @@ public final class ItemRegistry {
     public static final RegistryObject<ShinsuSword> SHINSU_SWORD = register("shinsu_sword", () -> new ShinsuSword(2, -0.8f));
     public static final RegistryObject<ShinsuHoe> SHINSU_HOE = register("shinsu_hoe", () -> new ShinsuHoe(-1, 4));
     public static final RegistryObject<ShinsuBow> SHINSU_BOW = register("shinsu_bow", ShinsuBow::new);
-    public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = ImmutableList.of(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW);
+    public static final RegistryObject<ShinsuSpear> SHINSU_SPEAR = register("shinsu_spear", ShinsuSpear::new);
+    public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = ImmutableList.of(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW, SHINSU_SPEAR);
     public static final RegistryObject<GuideItem> SHINSU_GUIDE = register("shinsu_guide", () -> new GuideItem(0xFF7E79DF, new Item.Properties().tab(TowerOfGod.TAB).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<SpearItem> WOODEN_SPEAR = register("wooden_spear", () -> new SpearItem(ItemTier.WOOD, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<SpearItem> STONE_SPEAR = register("stone_spear", () -> new SpearItem(ItemTier.STONE, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));

@@ -35,6 +35,7 @@ public final class EntityRegistry {
     public static final RegistryObject<EntityType<ShinsuEntity>> SHINSU = register("shinsu", ShinsuEntity::new, EntityClassification.MISC, 1, 1);
     public static final RegistryObject<EntityType<ClickerEntity>> CLICKER = register("clicker", ClickerEntity::new, EntityClassification.MISC, 1, 1);
     public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW = register("shinsu_arrow", ShinsuArrowEntity::new, EntityClassification.MISC, 0.4f, 0.4f);
+    public static final RegistryObject<EntityType<ShinsuSpearEntity>> SHINSU_SPEAR = register("shinsu_spear", ShinsuSpearEntity::new, EntityClassification.MISC, 0.5f, 0.5f);
     public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", RankerEntity::new, EntityClassification.CREATURE, 0.6f, 1.8f);
     public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", SpearEntity::new, EntityClassification.MISC, 0.5f, 0.5f);
     public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", DirectionalLightningBoltEntity::new, EntityClassification.MISC, 1, 1);
