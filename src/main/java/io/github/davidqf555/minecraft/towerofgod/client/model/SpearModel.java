@@ -13,7 +13,7 @@ public class SpearModel extends Model {
     private final ModelRenderer spear;
 
     public SpearModel() {
-        super(RenderType::entitySolid);
+        super(RenderType::entityTranslucent);
         spear = new ModelRenderer(18, 26, 0, 0);
         spear.addBox(-0.5f, 2, -0.5f, 1, 25, 1);
         ModelRenderer point1 = new ModelRenderer(18, 26, 4, 0);

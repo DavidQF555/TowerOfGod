@@ -65,7 +65,8 @@ public final class ItemRegistry {
     public static final RegistryObject<SpearItem> DIAMOND_SPEAR = register("diamond_spear", () -> new SpearItem(ItemTier.DIAMOND, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<SpearItem> NETHERITE_SPEAR = register("netherite_spear", () -> new SpearItem(ItemTier.NETHERITE, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<SpearItem> SUSPENDIUM_SPEAR = register("suspendium_spear", () -> new SpearItem(ModToolTier.SUSPENDIUM, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
-    public static final List<RegistryObject<SpearItem>> SPEARS = ImmutableList.of(WOODEN_SPEAR, STONE_SPEAR, IRON_SPEAR, GOLDEN_SPEAR, DIAMOND_SPEAR, NETHERITE_SPEAR, SUSPENDIUM_SPEAR);
+    public static final List<RegistryObject<? extends SpearItem>> CRAFTABLE_SPEARS = ImmutableList.of(WOODEN_SPEAR, STONE_SPEAR, IRON_SPEAR, GOLDEN_SPEAR, DIAMOND_SPEAR, NETHERITE_SPEAR, SUSPENDIUM_SPEAR);
+    public static final List<RegistryObject<? extends SpearItem>> SPEARS = ImmutableList.<RegistryObject<? extends SpearItem>>builder().addAll(CRAFTABLE_SPEARS).add(SHINSU_SPEAR).build();
     public static final RegistryObject<ShinsuUserSpawnEggItem> REGULAR_SPAWN_EGG = register("regular_spawn_egg", () -> new ShinsuUserSpawnEggItem(EntityRegistry.REGULAR, new int[]{1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100}, 0x000000, 0xFF0000, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<ShinsuUserSpawnEggItem> RANKER_SPAWN_EGG = register("ranker_spawn_egg", () -> new ShinsuUserSpawnEggItem(EntityRegistry.RANKER, new int[]{1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100}, 0xFF0000, 0x000000, new Item.Properties().tab(TowerOfGod.TAB)));
 

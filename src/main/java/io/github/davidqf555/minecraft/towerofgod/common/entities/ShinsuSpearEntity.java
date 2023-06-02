@@ -22,7 +22,7 @@ import java.util.UUID;
 public class ShinsuSpearEntity extends SpearEntity {
 
     private static final int PARTICLES = 2;
-    private static final DataParameter<String> ATTRIBUTE = EntityDataManager.defineId(ShinsuArrowEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> ATTRIBUTE = EntityDataManager.defineId(ShinsuSpearEntity.class, DataSerializers.STRING);
     private UUID technique;
 
     public ShinsuSpearEntity(EntityType<ShinsuSpearEntity> type, World world) {

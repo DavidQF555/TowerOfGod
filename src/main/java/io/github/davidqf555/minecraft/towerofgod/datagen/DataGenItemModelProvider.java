@@ -32,7 +32,7 @@ public class DataGenItemModelProvider extends ItemModelProvider {
                     .texture("layer0", modLoc("item/" + loc.getPath()));
         }
         ModelFile.ExistingModelFile throwing = getExistingFile(modLoc("item/spear_throwing"));
-        for (RegistryObject<SpearItem> registry : ItemRegistry.SPEARS) {
+        for (RegistryObject<? extends SpearItem> registry : ItemRegistry.SPEARS) {
             ResourceLocation loc = registry.getId();
             withExistingParent(loc.toString(), modLoc("item/spear"))
                     .override()
