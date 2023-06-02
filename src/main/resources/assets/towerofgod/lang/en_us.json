@@ -78,6 +78,7 @@
   "shape.towerofgod.sword": "Sword",
   "shape.towerofgod.hoe": "Hoe",
   "shape.towerofgod.bow": "Bow",
+  "shape.towerofgod.spear": "Spear",
   "technique.towerofgod.error.on_cooldown": "On cooldown for %s seconds",
   "technique.towerofgod.error.requires_shinsu": "Requires %s Shinsu",
   "technique.towerofgod.error.requires_device": "Requires a device",

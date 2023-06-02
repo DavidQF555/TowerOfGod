@@ -1,0 +1,33 @@
+{
+  "parent": "towerofgod:shapes",
+  "display": {
+    "title": {
+      "translate": "shape.towerofgod.spear"
+    },
+    "icon": {
+      "item": "towerofgod:iron_spear"
+    },
+    "description": {
+      "translate": "advancement.towerofgod.shapes.affinity",
+      "with": [
+        {
+          "translate": "shape.towerofgod.spear"
+        }
+      ]
+    },
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "obtain_spear": {
+      "trigger": "inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "towerofgod:spears"
+          }
+        ]
+      }
+    }
+  }
+}
