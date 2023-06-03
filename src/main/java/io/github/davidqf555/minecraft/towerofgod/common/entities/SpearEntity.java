@@ -5,7 +5,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.TieredItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
@@ -26,11 +27,11 @@ public class SpearEntity extends AbstractArrowEntity {
 
     private static final DataParameter<ItemStack> STACK = EntityDataManager.defineId(SpearEntity.class, DataSerializers.ITEM_STACK);
 
-    public SpearEntity(EntityType<SpearEntity> type, World world) {
+    public SpearEntity(EntityType<? extends SpearEntity> type, World world) {
         this(type, world, ItemStack.EMPTY);
     }
 
-    public SpearEntity(EntityType<SpearEntity> type, World world, ItemStack stack) {
+    public SpearEntity(EntityType<? extends SpearEntity> type, World world, ItemStack stack) {
         super(type, world);
         setStack(stack);
     }
@@ -52,11 +53,6 @@ public class SpearEntity extends AbstractArrowEntity {
 
     public boolean hasEffect() {
         return getPickupItem().hasFoil();
-    }
-
-    public IItemTier getTier() {
-        Item item = getPickupItem().getItem();
-        return item instanceof TieredItem ? ((TieredItem) item).getTier() : ItemTier.IRON;
     }
 
     @Override

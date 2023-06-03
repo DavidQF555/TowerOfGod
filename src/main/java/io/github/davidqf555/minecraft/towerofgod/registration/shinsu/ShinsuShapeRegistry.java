@@ -25,6 +25,9 @@ public final class ShinsuShapeRegistry {
     public static final RegistryObject<ShinsuShape> SWORD = register("sword", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_SWORD.get().getDefaultInstance()));
     public static final RegistryObject<ShinsuShape> HOE = register("hoe", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_HOE.get().getDefaultInstance()));
     public static final RegistryObject<ShinsuShape> BOW = register("bow", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_BOW.get().getDefaultInstance()));
+    public static final RegistryObject<ShinsuShape> SPEAR = register("spear", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_SPEAR.get().getDefaultInstance()));
+    public static final RegistryObject<ShinsuShape> HOOK = register("hook", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_HOOK.get().getDefaultInstance()));
+
     private static IForgeRegistry<ShinsuShape> registry = null;
 
     private ShinsuShapeRegistry() {

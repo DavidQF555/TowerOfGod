@@ -66,12 +66,13 @@ public final class EventBusSubscriber {
             RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SPEAR.get(), SpearRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), DirectionalLightningRenderer::new);
             RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.MENTOR.get(), BipedShinsuUserRenderer::new);
+            RenderingRegistry.registerEntityRenderingHandler(EntityRegistry.SHINSU_SPEAR.get(), ShinsuSpearRenderer::new);
             KeyBindingsList.register();
             event.enqueueWork(() -> {
                 ScreenManager.register(ContainerRegistry.LIGHTHOUSE.get(), LighthouseScreen::new);
                 ItemModelsProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.getProperty(Items.BOW, new ResourceLocation("pull")));
                 ItemModelsProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.getProperty(Items.BOW, new ResourceLocation("pulling")));
-                for (RegistryObject<SpearItem> spear : ItemRegistry.SPEARS) {
+                for (RegistryObject<? extends SpearItem> spear : ItemRegistry.SPEARS) {
                     ItemModelsProperties.register(spear.get(), SpearItem.THROWING, ItemModelsProperties.getProperty(Items.TRIDENT, new ResourceLocation("throwing")));
                 }
                 EntityRendererManager manager = Minecraft.getInstance().getEntityRenderDispatcher();

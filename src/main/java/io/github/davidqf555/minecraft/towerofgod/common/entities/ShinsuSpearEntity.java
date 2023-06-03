@@ -2,14 +2,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
-import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -19,33 +16,34 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
-public class ShinsuArrowEntity extends AbstractArrowEntity {
+public class ShinsuSpearEntity extends SpearEntity {
 
     private static final int PARTICLES = 2;
-    private static final DataParameter<String> ATTRIBUTE = EntityDataManager.defineId(ShinsuArrowEntity.class, DataSerializers.STRING);
+    private static final DataParameter<String> ATTRIBUTE = EntityDataManager.defineId(ShinsuSpearEntity.class, DataSerializers.STRING);
     private UUID technique;
 
-    public ShinsuArrowEntity(EntityType<ShinsuArrowEntity> type, World world) {
-        this(type, world, null);
-    }
-
-    public ShinsuArrowEntity(EntityType<ShinsuArrowEntity> type, World world, @Nullable UUID technique) {
+    public ShinsuSpearEntity(EntityType<ShinsuSpearEntity> type, World world) {
         super(type, world);
-        this.technique = technique;
+        setStack(ItemRegistry.SHINSU_SPEAR.get().getDefaultInstance());
     }
 
     @Override
     public void defineSynchedData() {
         super.defineSynchedData();
         getEntityData().define(ATTRIBUTE, "");
+    }
+
+    @Nullable
+    public ShinsuAttribute getAttribute() {
+        return ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(getEntityData().get(ATTRIBUTE)));
+    }
+
+    public void setAttribute(@Nullable ShinsuAttribute attribute) {
+        getEntityData().set(ATTRIBUTE, attribute == null ? "" : attribute.getRegistryName().toString());
     }
 
     @Override
@@ -65,6 +63,32 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
     }
 
     @Override
+    protected void tickDespawn() {
+        if (inGroundTime >= 0) {
+            remove();
+        }
+    }
+
+    @Override
+    public void setOwner(@Nullable Entity owner) {
+        super.setOwner(owner);
+        pickup = PickupStatus.DISALLOWED;
+    }
+
+    @Nullable
+    public ShinsuTechniqueInstance getTechnique() {
+        Entity shooter = getOwner();
+        if (technique != null && shooter != null) {
+            return ShinsuTechniqueInstance.get(shooter, technique);
+        }
+        return null;
+    }
+
+    public void setTechnique(UUID technique) {
+        this.technique = technique;
+    }
+
+    @Override
     protected void onHitEntity(EntityRayTraceResult rayTraceResult) {
         super.onHitEntity(rayTraceResult);
         ShinsuAttribute attribute = getAttribute();
@@ -80,58 +104,6 @@ public class ShinsuArrowEntity extends AbstractArrowEntity {
         if (attribute != null) {
             attribute.applyBlockEffect(this, rayTraceResult);
         }
-    }
-
-    @Override
-    protected void tickDespawn() {
-        if (inGroundTime >= 0) {
-            remove();
-        }
-    }
-
-    @Nullable
-    public ShinsuAttribute getAttribute() {
-        return ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(getEntityData().get(ATTRIBUTE)));
-    }
-
-    public void setAttribute(@Nullable ShinsuAttribute attribute) {
-        ShinsuAttribute original = getAttribute();
-        setBaseDamage(getBaseDamage() * (attribute == null ? 1 : attribute.getDamage()) / (original == null ? 1 : original.getDamage()));
-        getEntityData().set(ATTRIBUTE, attribute == null ? "" : attribute.getRegistryName().toString());
-    }
-
-    @Override
-    public void setOwner(@Nullable Entity entityIn) {
-        super.setOwner(entityIn);
-        pickup = PickupStatus.DISALLOWED;
-    }
-
-    @Nullable
-    public ShinsuTechniqueInstance getTechnique() {
-        Entity shooter = getOwner();
-        if (technique != null && shooter != null) {
-            return ShinsuTechniqueInstance.get(shooter, technique);
-        }
-        return null;
-    }
-
-    public void setTechnique(@Nullable UUID technique) {
-        this.technique = technique;
-    }
-
-    @Override
-    protected ItemStack getPickupItem() {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    public boolean isCritArrow() {
-        return false;
-    }
-
-    @Override
-    public IPacket<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override

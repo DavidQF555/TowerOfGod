@@ -1,4 +1,4 @@
-package io.github.davidqf555.minecraft.towerofgod.common.items;
+package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;

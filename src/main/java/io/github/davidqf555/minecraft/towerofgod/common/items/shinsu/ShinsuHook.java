@@ -1,13 +1,14 @@
-package io.github.davidqf555.minecraft.towerofgod.common.items;
+package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
+import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.PickaxeItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
@@ -17,14 +18,12 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-@ParametersAreNonnullByDefault
-public class ShinsuPickaxe extends PickaxeItem {
+public class ShinsuHook extends HookItem {
 
-    public ShinsuPickaxe(int attackDamageIn, float attackSpeedIn) {
+    public ShinsuHook(float attackDamageIn, float attackSpeedIn) {
         super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
     }
 
@@ -65,6 +64,5 @@ public class ShinsuPickaxe extends PickaxeItem {
     public int getEntityLifespan(ItemStack itemStack, World world) {
         return 0;
     }
-
 
 }
