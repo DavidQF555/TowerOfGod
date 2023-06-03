@@ -1,35 +1,31 @@
-package io.github.davidqf555.minecraft.towerofgod.common.items;
+package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.HoeItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
-public class ShinsuHoe extends HoeItem {
+public class ShinsuSword extends SwordItem {
 
-    public ShinsuHoe(int attackDamageIn, float attackSpeedIn) {
-        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
+    public ShinsuSword(int attackDamageIn, float attackSpeedIn) {
+        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Properties().setNoRepair());
     }
 
     @Override
@@ -48,16 +44,6 @@ public class ShinsuHoe extends HoeItem {
                 }
             }
         }
-    }
-
-    @Nonnull
-    @Override
-    public InteractionResult useOn(UseOnContext context) {
-        ShinsuAttribute attribute = ShinsuAttribute.getAttribute(context.getItemInHand());
-        if (attribute != null) {
-            attribute.applyBlockEffect(context.getPlayer(), new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside()));
-        }
-        return super.useOn(context);
     }
 
     @Override
@@ -79,4 +65,5 @@ public class ShinsuHoe extends HoeItem {
     public int getEntityLifespan(ItemStack itemStack, Level world) {
         return 0;
     }
+
 }

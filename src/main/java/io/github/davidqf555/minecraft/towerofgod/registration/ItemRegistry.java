@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.registration;
 import com.google.common.collect.ImmutableList;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.items.*;
+import io.github.davidqf555.minecraft.towerofgod.common.items.shinsu.*;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraftforge.registries.DeferredRegister;
@@ -43,7 +44,9 @@ public final class ItemRegistry {
     public static final RegistryObject<HookItem> DIAMOND_HOOK = register("diamond_hook", () -> new HookItem(Tiers.DIAMOND, 3, -3.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<HookItem> NETHERITE_HOOK = register("netherite_hook", () -> new HookItem(Tiers.NETHERITE, 3, -3.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<HookItem> SUSPENDIUM_HOOK = register("suspendium_hook", () -> new HookItem(ModToolTier.SUSPENDIUM, 3, -2.4f, new Item.Properties().tab(TowerOfGod.TAB)));
-    public static final List<RegistryObject<HookItem>> HOOK_ITEMS = ImmutableList.of(WOODEN_HOOK, STONE_HOOK, IRON_HOOK, GOLDEN_HOOK, DIAMOND_HOOK, NETHERITE_HOOK, SUSPENDIUM_HOOK);
+    public static final List<RegistryObject<? extends HookItem>> CRAFTABLE_HOOKS = ImmutableList.of(WOODEN_HOOK, STONE_HOOK, IRON_HOOK, GOLDEN_HOOK, DIAMOND_HOOK, NETHERITE_HOOK, SUSPENDIUM_HOOK);
+    public static final RegistryObject<ShinsuHook> SHINSU_HOOK = register("shinsu_hook", () -> new ShinsuHook(3, -3.2f));
+    public static final List<RegistryObject<? extends HookItem>> HOOK_ITEMS = ImmutableList.<RegistryObject<? extends HookItem>>builder().addAll(CRAFTABLE_HOOKS).add(SHINSU_HOOK).build();
     public static final RegistryObject<DeviceItem> LIGHTHOUSE = register("lighthouse", () -> new DeviceItem((world, item) -> EntityRegistry.LIGHTHOUSE.get().create(world), new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<DeviceItem> OBSERVER = register("observer", () -> new DeviceItem((world, item) -> EntityRegistry.OBSERVER.get().create(world), new Item.Properties().tab(TowerOfGod.TAB)));
     public static final List<RegistryObject<? extends Item>> COLORED_DEVICE_ITEMS = ImmutableList.of(LIGHTHOUSE, OBSERVER);
@@ -54,7 +57,8 @@ public final class ItemRegistry {
     public static final RegistryObject<ShinsuSword> SHINSU_SWORD = register("shinsu_sword", () -> new ShinsuSword(2, -0.8f));
     public static final RegistryObject<ShinsuHoe> SHINSU_HOE = register("shinsu_hoe", () -> new ShinsuHoe(-1, 4));
     public static final RegistryObject<ShinsuBow> SHINSU_BOW = register("shinsu_bow", ShinsuBow::new);
-    public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = ImmutableList.of(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW);
+    public static final RegistryObject<ShinsuSpear> SHINSU_SPEAR = register("shinsu_spear", ShinsuSpear::new);
+    public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = ImmutableList.of(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW, SHINSU_SPEAR, SHINSU_HOOK);
     public static final RegistryObject<GuideItem> SHINSU_GUIDE = register("shinsu_guide", () -> new GuideItem(0xFF7E79DF, new Item.Properties().tab(TowerOfGod.TAB).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<SpearItem> WOODEN_SPEAR = register("wooden_spear", () -> new SpearItem(Tiers.WOOD, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<SpearItem> STONE_SPEAR = register("stone_spear", () -> new SpearItem(Tiers.STONE, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
@@ -63,7 +67,8 @@ public final class ItemRegistry {
     public static final RegistryObject<SpearItem> DIAMOND_SPEAR = register("diamond_spear", () -> new SpearItem(Tiers.DIAMOND, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<SpearItem> NETHERITE_SPEAR = register("netherite_spear", () -> new SpearItem(Tiers.NETHERITE, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<SpearItem> SUSPENDIUM_SPEAR = register("suspendium_spear", () -> new SpearItem(ModToolTier.SUSPENDIUM, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
-    public static final List<RegistryObject<SpearItem>> SPEARS = ImmutableList.of(WOODEN_SPEAR, STONE_SPEAR, IRON_SPEAR, GOLDEN_SPEAR, DIAMOND_SPEAR, NETHERITE_SPEAR, SUSPENDIUM_SPEAR);
+    public static final List<RegistryObject<? extends SpearItem>> CRAFTABLE_SPEARS = ImmutableList.of(WOODEN_SPEAR, STONE_SPEAR, IRON_SPEAR, GOLDEN_SPEAR, DIAMOND_SPEAR, NETHERITE_SPEAR, SUSPENDIUM_SPEAR);
+    public static final List<RegistryObject<? extends SpearItem>> SPEARS = ImmutableList.<RegistryObject<? extends SpearItem>>builder().addAll(CRAFTABLE_SPEARS).add(SHINSU_SPEAR).build();
     public static final RegistryObject<ShinsuUserSpawnEggItem> REGULAR_SPAWN_EGG = register("regular_spawn_egg", () -> new ShinsuUserSpawnEggItem(EntityRegistry.REGULAR, new int[]{1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100}, 0x000000, 0xFF0000, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<ShinsuUserSpawnEggItem> RANKER_SPAWN_EGG = register("ranker_spawn_egg", () -> new ShinsuUserSpawnEggItem(EntityRegistry.RANKER, new int[]{1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100}, 0xFF0000, 0x000000, new Item.Properties().tab(TowerOfGod.TAB)));
 

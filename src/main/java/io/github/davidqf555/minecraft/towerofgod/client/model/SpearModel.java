@@ -18,7 +18,7 @@ public class SpearModel extends Model {
     private final ModelPart spear;
 
     public SpearModel(ModelPart part) {
-        super(RenderType::entitySolid);
+        super(RenderType::entityTranslucent);
         spear = part.getChild("spear");
     }
 
@@ -48,4 +48,5 @@ public class SpearModel extends Model {
         ResourceLocation registry = item.getRegistryName();
         return new ResourceLocation(registry.getNamespace(), "textures/entity/spear/" + registry.getPath() + ".png");
     }
+
 }

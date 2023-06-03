@@ -1,15 +1,16 @@
-package io.github.davidqf555.minecraft.towerofgod.common.items;
+package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -22,9 +23,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
-public class ShinsuAxe extends AxeItem {
+public class ShinsuPickaxe extends PickaxeItem {
 
-    public ShinsuAxe(float attackDamageIn, float attackSpeedIn) {
+    public ShinsuPickaxe(int attackDamageIn, float attackSpeedIn) {
         super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
     }
 
@@ -65,4 +66,6 @@ public class ShinsuAxe extends AxeItem {
     public int getEntityLifespan(ItemStack itemStack, Level world) {
         return 0;
     }
+
+
 }

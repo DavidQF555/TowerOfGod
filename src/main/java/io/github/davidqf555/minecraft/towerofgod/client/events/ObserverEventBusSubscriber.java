@@ -19,6 +19,10 @@ public final class ObserverEventBusSubscriber {
     private ObserverEventBusSubscriber() {
     }
 
+    private static void setGlowing(LivingEntity entity, boolean glowing) {
+        entity.setSharedFlag(6, glowing || entity.hasGlowingTag());
+    }
+
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, value = Dist.CLIENT)
     public static final class ModBus {
 
@@ -51,10 +55,6 @@ public final class ObserverEventBusSubscriber {
                 setGlowing(entity, stillGlowing);
             }
         }
-    }
-
-    private static void setGlowing(LivingEntity entity, boolean glowing) {
-        entity.setSharedFlag(6, glowing || entity.hasGlowingTag());
     }
 
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)

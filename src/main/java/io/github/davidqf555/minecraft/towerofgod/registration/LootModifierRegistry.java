@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.registration;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuToolLootModifier;
+import io.github.davidqf555.minecraft.towerofgod.common.items.shinsu.ShinsuToolLootModifier;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

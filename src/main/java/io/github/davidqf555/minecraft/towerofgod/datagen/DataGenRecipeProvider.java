@@ -52,7 +52,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
                         .save(consumer);
             }
         }
-        for (RegistryObject<HookItem> registry : ItemRegistry.HOOK_ITEMS) {
+        for (RegistryObject<? extends HookItem> registry : ItemRegistry.CRAFTABLE_HOOKS) {
             HookItem item = registry.get();
             Tier tier = item.getTier();
             Ingredient material = tier.getRepairIngredient();
@@ -71,7 +71,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
                         .save(consumer);
             }
         }
-        for (RegistryObject<SpearItem> registry : ItemRegistry.SPEARS) {
+        for (RegistryObject<? extends SpearItem> registry : ItemRegistry.CRAFTABLE_SPEARS) {
             SpearItem item = registry.get();
             Tier tier = item.getTier();
             Ingredient material = tier.getRepairIngredient();
