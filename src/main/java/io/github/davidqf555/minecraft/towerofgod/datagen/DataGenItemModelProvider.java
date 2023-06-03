@@ -26,7 +26,7 @@ public class DataGenItemModelProvider extends ItemModelProvider {
                     .texture("layer0", modLoc("item/" + loc.getPath()));
         }
         ResourceLocation hookLoc = modLoc("item/hook");
-        for (RegistryObject<HookItem> registry : ItemRegistry.HOOK_ITEMS) {
+        for (RegistryObject<? extends HookItem> registry : ItemRegistry.HOOK_ITEMS) {
             ResourceLocation loc = registry.getId();
             withExistingParent(loc.toString(), hookLoc)
                     .texture("layer0", modLoc("item/" + loc.getPath()));
