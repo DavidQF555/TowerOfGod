@@ -43,7 +43,7 @@ public class ShinsuSpearEntity extends SpearEntity {
     }
 
     public void setAttribute(@Nullable ShinsuAttribute attribute) {
-        getEntityData().set(ATTRIBUTE, attribute == null ? "" : attribute.getRegistryName().toString());
+        getEntityData().set(ATTRIBUTE, attribute == null ? "" : ShinsuAttributeRegistry.getRegistry().getKey(attribute).toString());
     }
 
     @Override
@@ -122,7 +122,7 @@ public class ShinsuSpearEntity extends SpearEntity {
         super.addAdditionalSaveData(nbt);
         ShinsuAttribute attribute = getAttribute();
         if (attribute != null) {
-            nbt.putString("Attribute", attribute.getRegistryName().toString());
+            nbt.putString("Attribute", ShinsuAttributeRegistry.getRegistry().getKey(attribute).toString());
         }
         if (technique != null) {
             nbt.putUUID("Technique", technique);

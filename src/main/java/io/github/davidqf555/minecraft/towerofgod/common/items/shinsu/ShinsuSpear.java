@@ -12,7 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -43,7 +43,7 @@ public class ShinsuSpear extends SpearItem {
                 UUID id = nbt.getUUID("Technique");
                 ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
                 if (technique == null) {
-                    IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+                    IItemHandler inventory = entityIn.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
                     if (inventory.getSlots() > itemSlot) {
                         inventory.extractItem(itemSlot, stack.getCount(), false);
                     }
