@@ -32,6 +32,7 @@ public final class EntityRegistry {
     public static final RegistryObject<EntityType<ShinsuEntity>> SHINSU = register("shinsu", ShinsuEntity::new, MobCategory.MISC, 1, 1);
     public static final RegistryObject<EntityType<ClickerEntity>> CLICKER = register("clicker", ClickerEntity::new, MobCategory.MISC, 1, 1);
     public static final RegistryObject<EntityType<ShinsuArrowEntity>> SHINSU_ARROW = register("shinsu_arrow", ShinsuArrowEntity::new, MobCategory.MISC, 0.4f, 0.4f);
+    public static final RegistryObject<EntityType<ShinsuSpearEntity>> SHINSU_SPEAR = register("shinsu_spear", ShinsuSpearEntity::new, MobCategory.MISC, 0.5f, 0.5f);
     public static final RegistryObject<EntityType<RankerEntity>> RANKER = register("ranker", RankerEntity::new, MobCategory.CREATURE, 0.6f, 1.8f);
     public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", SpearEntity::new, MobCategory.MISC, 0.5f, 0.5f);
     public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", DirectionalLightningBoltEntity::new, MobCategory.MISC, 1, 1);

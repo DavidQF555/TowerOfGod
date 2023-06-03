@@ -22,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Consumer;
 
@@ -56,20 +57,7 @@ public class SpearItem extends DiggerItem implements Vanishable {
             int duration = getUseDuration(stack) - timeLeft;
             if (duration >= 10) {
                 if (!worldIn.isClientSide()) {
-                    stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(entity.getUsedItemHand()));
-                    AbstractArrow proj = createProjectile(worldIn, stack);
-                    proj.setOwner(player);
-                    proj.shootFromRotation(player, player.getXRot(), player.getYRot(), 0, 2.5f, 1);
-                    proj.setPos(player.getX(), player.getEyeY(), player.getZ());
-                    if (player.getAbilities().instabuild) {
-                        proj.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-                    }
-                    worldIn.addFreshEntity(proj);
-                    worldIn.playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1, 1);
-                    if (!player.getAbilities().instabuild) {
-                        player.getInventory().removeItem(stack);
-                    }
-                    player.awardStat(Stats.ITEM_USED.get(this));
+                    launchSpear(player, stack);
                 }
             }
         }
@@ -87,6 +75,29 @@ public class SpearItem extends DiggerItem implements Vanishable {
 
     protected AbstractArrow createProjectile(Level world, ItemStack stack) {
         return new SpearEntity(EntityRegistry.SPEAR.get(), world, stack);
+    }
+
+    @Nullable
+    protected AbstractArrow launchSpear(LivingEntity user, ItemStack stack) {
+        stack.hurtAndBreak(1, user, p -> p.broadcastBreakEvent(user.getUsedItemHand()));
+        AbstractArrow proj = createProjectile(user.level, stack);
+        proj.setOwner(user);
+        proj.shootFromRotation(user, user.getXRot(), user.getYRot(), 0, 2.5f, 1);
+        proj.setPos(user.getX(), user.getEyeY(), user.getZ());
+        user.level.addFreshEntity(proj);
+        user.level.playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1, 1);
+        return proj;
+    }
+
+    protected void launchSpear(Player player, ItemStack stack) {
+        AbstractArrow proj = launchSpear((LivingEntity) player, stack);
+        if (proj != null && player.getAbilities().instabuild) {
+            proj.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+        }
+        if (!player.getAbilities().instabuild) {
+            player.getInventory().removeItem(stack);
+        }
+        player.awardStat(Stats.ITEM_USED.get(this));
     }
 
     @Override

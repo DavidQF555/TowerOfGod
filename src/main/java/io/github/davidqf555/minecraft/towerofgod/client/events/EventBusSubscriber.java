@@ -65,6 +65,7 @@ public final class EventBusSubscriber {
             event.registerEntityRenderer(EntityRegistry.SHINSU_ARROW.get(), ShinsuArrowRenderer::new);
             event.registerEntityRenderer(EntityRegistry.RANKER.get(), BipedShinsuUserRenderer::new);
             event.registerEntityRenderer(EntityRegistry.SPEAR.get(), SpearRenderer::new);
+            event.registerEntityRenderer(EntityRegistry.SHINSU_SPEAR.get(), ShinsuSpearRenderer::new);
             event.registerEntityRenderer(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), DirectionalLightningRenderer::new);
             event.registerEntityRenderer(EntityRegistry.MENTOR.get(), BipedShinsuUserRenderer::new);
         }
@@ -98,7 +99,7 @@ public final class EventBusSubscriber {
                 MenuScreens.register(ContainerRegistry.LIGHTHOUSE.get(), LighthouseScreen::new);
                 ItemProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemProperties.getProperty(Items.BOW, new ResourceLocation("pull")));
                 ItemProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemProperties.getProperty(Items.BOW, new ResourceLocation("pulling")));
-                for (RegistryObject<SpearItem> spear : ItemRegistry.SPEARS) {
+                for (RegistryObject<? extends SpearItem> spear : ItemRegistry.SPEARS) {
                     ItemProperties.register(spear.get(), SpearItem.THROWING, ItemProperties.getProperty(Items.TRIDENT, new ResourceLocation("throwing")));
                 }
             });

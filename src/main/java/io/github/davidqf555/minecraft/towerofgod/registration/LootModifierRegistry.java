@@ -2,7 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.registration;
 
 import com.mojang.serialization.Codec;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.items.ShinsuToolLootModifier;
+import io.github.davidqf555.minecraft.towerofgod.common.items.shinsu.ShinsuToolLootModifier;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -22,4 +22,5 @@ public final class LootModifierRegistry {
     private static <T extends IGlobalLootModifier> RegistryObject<Codec<T>> register(String name, Supplier<Codec<T>> serializer) {
         return SERIALIZERS.register(name, serializer);
     }
+
 }
