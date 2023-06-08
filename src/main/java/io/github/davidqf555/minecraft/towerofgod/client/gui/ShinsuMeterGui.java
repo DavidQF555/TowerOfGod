@@ -66,14 +66,10 @@ public class ShinsuMeterGui implements IGuiOverlay {
             lines.render(new RenderContext(matrixStack, drawX, drawY, 0, height, width, 0xFFFFFFFF));
             matrixStack.popPose();
             Font font = Minecraft.getInstance().font;
-            String text = value + "";
+            String text = String.valueOf(value);
             int textX = centerX - font.width(text) / 2;
             int textY = centerY - font.lineHeight / 2;
-            graphics.drawString(font, text, textX + 1, textY, 0xFF000000);
-            graphics.drawString(font, text, textX - 1, textY, 0xFF000000);
-            graphics.drawString(font, text, textX, textY + 1, 0xFF000000);
-            graphics.drawString(font, text, textX, textY - 1, 0xFF000000);
-            graphics.drawString(font, text, textX, textY, TEXT_COLOR);
+            graphics.drawString(font, text, textX, textY, TEXT_COLOR, true);
         }
     }
 

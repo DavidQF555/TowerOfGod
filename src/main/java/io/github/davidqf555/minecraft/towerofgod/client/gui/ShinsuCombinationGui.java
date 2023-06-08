@@ -70,8 +70,8 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                         marker.render(graphics.pose(), x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT, 0);
                     }
                 } else {
-                    float centerX = x + getWidth() / 2f;
-                    float centerY = y + getHeight() / 2f;
+                    int centerX = x + getWidth() / 2;
+                    int centerY = y + getHeight() / 2;
                     float iconX = centerX - ICON_WIDTH / 2f;
                     float iconY = centerY - ICON_HEIGHT / 2f;
                     boolean hasError = ClientReference.ERRORS.containsKey(selected);
@@ -79,11 +79,11 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                     BACKGROUND.render(new RenderContext(graphics.pose(), iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, color));
                     if (hasError) {
                         Component error = ClientReference.ERRORS.get(selected);
-                        client.font.drawShadow(matrixStack, error, centerX - client.font.width(error) / 2f, centerY + ICON_HEIGHT / 2f + client.font.lineHeight + 2, color);
+                        graphics.drawString(client.font, error, centerX - client.font.width(error) / 2, centerY + ICON_HEIGHT / 2 + client.font.lineHeight + 2, color, true);
                     }
                     selected.getIcon().render(new RenderContext(graphics.pose(), iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
                     Component text = selected.getText().withStyle(ChatFormatting.BOLD);
-                    client.font.drawShadow(matrixStack, text, centerX - client.font.width(text) / 2f, centerY + ICON_HEIGHT / 2f + 1, color);
+                    graphics.drawString(client.font, text, centerX - client.font.width(text) / 2, centerY + ICON_HEIGHT / 2 + 1, color, true);
                 }
             } else {
                 if (selected != null) {

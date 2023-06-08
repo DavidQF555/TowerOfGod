@@ -47,8 +47,8 @@ public class LighthouseScreen extends AbstractContainerScreen<LighthouseEntity.L
     public void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         int hex = menu.lighthouse.getColor().getTextColor();
         int color = FastColor.ARGB32.color(255, Math.min(255, FastColor.ARGB32.red(hex) + 64), Math.min(255, FastColor.ARGB32.green(hex) + 64), Math.min(255, FastColor.ARGB32.blue(hex) + 64));
-        graphics.drawString(font, title, titleLabelX, titleLabelY, color);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, INVENTORY_TITLE_COLOR);
+        graphics.drawString(font, title, titleLabelX, titleLabelY, color, false);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, INVENTORY_TITLE_COLOR, false);
     }
 
 }

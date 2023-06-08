@@ -65,7 +65,7 @@ public class GuideScreen extends Screen {
         int centerX = x + xSize / 2;
         int difY = font.lineHeight;
         Component title = pages[page].getText().withStyle(ChatFormatting.BOLD);
-        graphics.drawString(font, title, centerX - font.width(title) / 2, y + difY * 2, 0xFF000000);
+        graphics.drawString(font, title, centerX - font.width(title) / 2, y + difY * 2, 0xFF000000, false);
         pages[page].getIcon().render(new RenderContext(stack, centerX - difY, y + difY * 4, 0, difY * 2, difY * 2, 0xFFFFFFFF));
         List<Direction> combo = pages[page].getCombination();
         int width = combo.size() * ARROW_WIDTH + (combo.size() - 1) * DIF;
@@ -105,7 +105,7 @@ public class GuideScreen extends Screen {
                 current += width;
             } else {
                 String string = builder.toString();
-                graphics.drawString(font, string, centerX - font.width(string) / 2, y + line * font.lineHeight, color);
+                graphics.drawString(font, string, centerX - font.width(string) / 2, y + line * font.lineHeight, color, false);
                 builder = new StringBuilder();
                 builder.append(word);
                 current = width;
@@ -113,7 +113,7 @@ public class GuideScreen extends Screen {
             }
         }
         String string = builder.toString();
-        graphics.drawString(font, string, centerX - font.width(string) / 2, y + line * font.lineHeight, color);
+        graphics.drawString(font, string, centerX - font.width(string) / 2, y + line * font.lineHeight, color, false);
         return line + 1;
     }
 
