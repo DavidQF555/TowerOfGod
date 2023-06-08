@@ -18,8 +18,8 @@ public class DestroyBlockAttributeEffect implements ShinsuAttributeEffect<BlockH
     @Override
     public void apply(Entity user, BlockHitResult clip) {
         BlockPos pos = clip.getBlockPos();
-        if (condition.test(user.level, pos)) {
-            user.level.destroyBlock(pos, true, user);
+        if (condition.test(user.level(), pos)) {
+            user.level().destroyBlock(pos, true, user);
         }
     }
 

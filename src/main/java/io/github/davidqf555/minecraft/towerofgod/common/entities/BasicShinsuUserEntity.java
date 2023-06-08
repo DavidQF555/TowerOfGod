@@ -101,14 +101,14 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
     public void aiStep() {
         super.aiStep();
         heal(0.025f);
-        if (level.isClientSide() && isCasting()) {
+        if (level().isClientSide() && isCasting()) {
             CastingModelHelper.spawnParticles(this, getAttributeParticles());
         }
     }
 
     @Override
     public void die(DamageSource source) {
-        if (!level.isClientSide()) {
+        if (!level().isClientSide()) {
             LivingEntity credit = getKillCredit();
             if (credit != null) {
                 ShinsuStats killed = getShinsuStats();
@@ -158,7 +158,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
     @Override
     protected void customServerAiStep() {
         setAttributeParticles(ShinsuAttribute.getParticles(getShinsuQualityData().getAttribute()));
-        shinsuTick((ServerLevel) level);
+        shinsuTick((ServerLevel) level());
     }
 
     @Override
@@ -224,7 +224,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         double dZ = target.getZ() - getZ();
         double dY = target.getY(0.3333333333333333) - arrow.getY() + Mth.sqrt((float) (dX * dX + dZ * dZ)) * 0.2;
         float velocity = 1.6f;
-        float inaccuracy = (14 - level.getDifficulty().getId() * 4f) / getShinsuLevel();
+        float inaccuracy = (14 - level().getDifficulty().getId() * 4f) / getShinsuLevel();
         if (arrow instanceof ShinsuArrowEntity) {
             Vec3 dir = new Vec3(dX, dY, dZ);
             Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(this, target, dir).left();
@@ -234,11 +234,11 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
                 inst.getTechnique().cast(target, inst);
                 return;
             } else {
-                arrow = ((ArrowItem) Items.ARROW).createArrow(level, new ItemStack(Items.ARROW), this);
+                arrow = ((ArrowItem) Items.ARROW).createArrow(level(), new ItemStack(Items.ARROW), this);
             }
         }
         arrow.shoot(dX, dY, dZ, velocity, inaccuracy);
-        level.addFreshEntity(arrow);
+        level().addFreshEntity(arrow);
     }
 
     @Override

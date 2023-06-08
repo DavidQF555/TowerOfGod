@@ -45,10 +45,10 @@ public class ScoutCommand extends DeviceCommand {
                     int zRounded = (int) Math.sqrt(xRange * xRange - x * x);
                     for (int z = -zRounded; z <= zRounded; z++) {
                         BlockPos pos = center.offset(x, y, z);
-                        if (device.level.isEmptyBlock(pos)) {
+                        if (device.level().isEmptyBlock(pos)) {
                             air.add(pos);
                             for (Direction direction : Direction.values()) {
-                                if (!device.level.isEmptyBlock(pos.relative(direction))) {
+                                if (!device.level().isEmptyBlock(pos.relative(direction))) {
                                     border.add(pos);
                                     break;
                                 }

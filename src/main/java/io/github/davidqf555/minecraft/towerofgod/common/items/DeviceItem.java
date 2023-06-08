@@ -52,7 +52,7 @@ public class DeviceItem extends Item {
                     CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
                     serverPlayer.awardStat(Stats.ITEM_USED.get(this));
                 }
-                return InteractionResultHolder.sidedSuccess(item, playerIn.level.isClientSide());
+                return InteractionResultHolder.sidedSuccess(item, playerIn.level().isClientSide());
             }
         }
         return InteractionResultHolder.pass(item);

@@ -23,7 +23,7 @@ public abstract class BasicCommandTechnique extends ShinsuTechniqueInstance {
         super(user);
         devices = new ArrayList<>();
         if (user != null) {
-            for (Entity entity : ((ServerLevel) user.level).getAllEntities()) {
+            for (Entity entity : ((ServerLevel) user.level()).getAllEntities()) {
                 if (entity instanceof FlyingDevice && user.getUUID().equals(((FlyingDevice) entity).getOwnerID()) && isTarget((FlyingDevice) entity)) {
                     devices.add(entity.getUUID());
                 }

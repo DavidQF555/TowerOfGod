@@ -64,7 +64,7 @@ public class ShinsuBow extends BowItem {
 
     @Override
     public AbstractArrow customArrow(AbstractArrow arrow) {
-        ShinsuArrowEntity shinsu = EntityRegistry.SHINSU_ARROW.get().create(arrow.level);
+        ShinsuArrowEntity shinsu = EntityRegistry.SHINSU_ARROW.get().create(arrow.level());
         if (shinsu == null) {
             return arrow;
         } else {

@@ -41,7 +41,7 @@ public class ClientUpdateClientErrorPacket {
         ServerPlayer player = context.getSender();
         context.enqueueWork(() -> {
             Vec3 eye = player.getEyePosition(1);
-            EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level, player, eye, eye.add(player.getLookAngle().scale(ShinsuTechniqueData.CAST_TARGET_RANGE)), AABB.ofSize(eye, ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2), entity -> true);
+            EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level(), player, eye, eye.add(player.getLookAngle().scale(ShinsuTechniqueData.CAST_TARGET_RANGE)), AABB.ofSize(eye, ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2), entity -> true);
             Entity target = result == null ? null : result.getEntity();
             Map<ShinsuTechnique, Component> errors = new HashMap<>();
             for (ShinsuTechnique technique : ShinsuTechniqueRegistry.getRegistry()) {

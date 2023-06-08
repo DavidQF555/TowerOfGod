@@ -156,7 +156,7 @@ public class ShinsuTechnique {
         ShinsuTechniqueData<Entity> stats = ShinsuTechniqueData.get(user);
         stats.addTechnique(instance);
         stats.onCast(user, instance);
-        instance.onUse((ServerLevel) user.level);
+        instance.onUse((ServerLevel) user.level());
     }
 
     public interface IFactory<T extends ShinsuTechniqueInstance> {

@@ -43,7 +43,7 @@ public final class CastingModelHelper {
         int count = getParticleCount(entity);
         for (int i = 0; i < count; i++) {
             Vec3 spawn = start.add(random.nextGaussian() * spread, random.nextGaussian() * spread, random.nextGaussian() * spread);
-            entity.level.addParticle(particle, spawn.x(), spawn.y(), spawn.z(), 0, 0, 0);
+            entity.level().addParticle(particle, spawn.x(), spawn.y(), spawn.z(), 0, 0, 0);
         }
     }
 

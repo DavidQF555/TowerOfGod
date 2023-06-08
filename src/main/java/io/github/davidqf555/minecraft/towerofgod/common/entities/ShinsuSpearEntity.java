@@ -57,7 +57,7 @@ public class ShinsuSpearEntity extends SpearEntity {
             particles = (int) Math.ceil(particles / 2.0);
         }
         for (int i = 0; i < particles; i++) {
-            level.addParticle(particle, getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
+            level().addParticle(particle, getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
         }
         super.tick();
     }

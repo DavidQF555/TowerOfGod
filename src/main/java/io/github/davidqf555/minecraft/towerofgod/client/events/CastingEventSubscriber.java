@@ -42,7 +42,7 @@ public final class CastingEventSubscriber {
             HumanoidModel<AbstractClientPlayer> model = event.getRenderer().getModel();
             model.rightArm.visible = false;
             model.leftArm.visible = false;
-            long gameTime = entity.level.getGameTime();
+            long gameTime = entity.level().getGameTime();
             if (gameTime != prevGameTime) {
                 CastingModelHelper.spawnParticles(entity, ShinsuAttribute.getParticles(ClientReference.getAttribute(entity)));
                 prevGameTime = gameTime;

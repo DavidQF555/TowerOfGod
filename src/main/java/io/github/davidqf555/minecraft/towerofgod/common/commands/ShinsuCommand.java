@@ -109,7 +109,7 @@ public final class ShinsuCommand {
             if (entity instanceof ServerPlayer) {
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(entity), stats.getMaxShinsu()));
             }
-            source.sendSuccess(Component.translatable(SHINSU, entity.getDisplayName(), shinsu), true);
+            source.sendSuccess(() -> Component.translatable(SHINSU, entity.getDisplayName(), shinsu), true);
         }
         return entities.size();
     }
@@ -121,7 +121,7 @@ public final class ShinsuCommand {
         }
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setResistance(factor);
-            source.sendSuccess(Component.translatable(RESISTANCE, entity.getDisplayName(), factor), true);
+            source.sendSuccess(() -> Component.translatable(RESISTANCE, entity.getDisplayName(), factor), true);
         }
         return entities.size();
     }
@@ -133,7 +133,7 @@ public final class ShinsuCommand {
         }
         for (Entity entity : entities) {
             ShinsuStats.get(entity).setTension(factor);
-            source.sendSuccess(Component.translatable(TENSION, entity.getDisplayName(), factor), true);
+            source.sendSuccess(() -> Component.translatable(TENSION, entity.getDisplayName(), factor), true);
         }
         return entities.size();
     }
@@ -143,7 +143,7 @@ public final class ShinsuCommand {
         for (Entity entity : entities) {
             if (entity instanceof Player && PlayerTechniqueData.get((Player) entity).unlock(technique)) {
                 count++;
-                source.sendSuccess(Component.translatable(UNLOCK, entity.getDisplayName(), technique.getText()), true);
+                source.sendSuccess(() -> Component.translatable(UNLOCK, entity.getDisplayName(), technique.getText()), true);
             }
         }
         return count;
@@ -154,7 +154,7 @@ public final class ShinsuCommand {
         for (Entity entity : entities) {
             if (entity instanceof Player && PlayerTechniqueData.get((Player) entity).lock(technique)) {
                 count++;
-                source.sendSuccess(Component.translatable(LOCK, entity.getDisplayName(), technique.getText()), true);
+                source.sendSuccess(() -> Component.translatable(LOCK, entity.getDisplayName(), technique.getText()), true);
             }
         }
         return count;
@@ -166,7 +166,7 @@ public final class ShinsuCommand {
             if (entity instanceof ServerPlayer) {
                 TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ServerUpdateAttributePacket(entity.getId(), attribute));
             }
-            source.sendSuccess(Component.translatable(ATTRIBUTE, entity.getDisplayName(), attribute.getName()), true);
+            source.sendSuccess(() -> Component.translatable(ATTRIBUTE, entity.getDisplayName(), attribute.getName()), true);
         }
         return entities.size();
     }
@@ -174,7 +174,7 @@ public final class ShinsuCommand {
     private static int changeShape(CommandSourceStack source, Collection<? extends Entity> entities, ShinsuShape shape) {
         for (Entity entity : entities) {
             ShinsuQualityData.get(entity).setShape(shape);
-            source.sendSuccess(Component.translatable(SHAPE, entity.getDisplayName(), shape.getName()), true);
+            source.sendSuccess(() -> Component.translatable(SHAPE, entity.getDisplayName(), shape.getName()), true);
         }
         return entities.size();
     }
@@ -185,7 +185,7 @@ public final class ShinsuCommand {
             if (entity instanceof ServerPlayer) {
                 TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ServerUpdateAttributePacket(entity.getId(), null));
             }
-            source.sendSuccess(Component.translatable(REMOVE_ATTRIBUTE, entity.getDisplayName()), true);
+            source.sendSuccess(() -> Component.translatable(REMOVE_ATTRIBUTE, entity.getDisplayName()), true);
         }
         return entities.size();
     }
@@ -193,16 +193,16 @@ public final class ShinsuCommand {
     private static int removeShape(CommandSourceStack source, Collection<? extends Entity> entities) {
         for (Entity entity : entities) {
             ShinsuQualityData.get(entity).setShape(null);
-            source.sendSuccess(Component.translatable(REMOVE_SHAPE, entity.getDisplayName()), true);
+            source.sendSuccess(() -> Component.translatable(REMOVE_SHAPE, entity.getDisplayName()), true);
         }
         return entities.size();
     }
 
     private static int printInstances(CommandSourceStack source, Collection<? extends Entity> entities) {
         for (Entity entity : entities) {
-            source.sendSuccess(Component.translatable(INSTANCES_TITLE, entity.getDisplayName()), true);
+            source.sendSuccess(() -> Component.translatable(INSTANCES_TITLE, entity.getDisplayName()), true);
             for (ShinsuTechniqueInstance inst : ShinsuTechniqueData.get(entity).getTechniques()) {
-                source.sendSuccess(Component.translatable(INSTANCES, inst.getTechnique().getText(), (inst.getDuration() - inst.getTicks()) / 20.0), true);
+                source.sendSuccess(() -> Component.translatable(INSTANCES, inst.getTechnique().getText(), (inst.getDuration() - inst.getTicks()) / 20.0), true);
             }
         }
         return entities.size();

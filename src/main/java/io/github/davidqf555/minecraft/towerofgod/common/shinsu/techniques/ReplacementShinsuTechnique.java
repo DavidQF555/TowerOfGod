@@ -47,7 +47,7 @@ public class ReplacementShinsuTechnique extends ShinsuTechnique {
 
     @Override
     public void cast(Entity user, ShinsuTechniqueInstance instance) {
-        getReplacedInstances(user).forEach(inst -> inst.remove((ServerLevel) user.level));
+        getReplacedInstances(user).forEach(inst -> inst.remove((ServerLevel) user.level()));
         super.cast(user, instance);
     }
 

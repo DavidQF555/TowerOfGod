@@ -34,7 +34,7 @@ public class ToggleableShinsuTechnique extends ShinsuTechnique {
     public void cast(Entity user, @Nullable Entity target, Vec3 dir) {
         Optional<ShinsuTechniqueInstance> used = getExistingInstance(user);
         if (used.isPresent()) {
-            used.get().remove((ServerLevel) user.level);
+            used.get().remove((ServerLevel) user.level());
             return;
         }
         super.cast(user, target, dir);

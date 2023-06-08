@@ -21,7 +21,7 @@ public class PushAttributeEffect<T extends HitResult> implements ShinsuAttribute
     public void apply(Entity user, T clip) {
         Vec3 center = clip.getLocation();
         AABB box = new AABB(center.add(-radius, -radius, -radius), center.add(radius, radius, radius));
-        for (Entity target : user.level.getEntities(user, box)) {
+        for (Entity target : user.level().getEntities(user, box)) {
             Vec3 dir = target.position().subtract(center.x(), center.y(), center.z());
             double length = dir.length();
             if (length <= radius) {

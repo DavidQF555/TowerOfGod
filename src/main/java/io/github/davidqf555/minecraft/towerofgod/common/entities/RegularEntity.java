@@ -97,8 +97,8 @@ public class RegularEntity extends BasicShinsuUserEntity {
 
     @Nullable
     public RegularTeamsSavedData.RegularTeam getRegularTeam() {
-        if (level instanceof ServerLevel) {
-            return RegularTeamsSavedData.getOrCreateTeam((ServerLevel) level, this);
+        if (level() instanceof ServerLevel) {
+            return RegularTeamsSavedData.getOrCreateTeam((ServerLevel) level(), this);
         }
         return null;
     }
@@ -134,14 +134,14 @@ public class RegularEntity extends BasicShinsuUserEntity {
         @Override
         public boolean canUse() {
             RegularTeamsSavedData.RegularTeam team = entity.getRegularTeam();
-            if (!(entity.level instanceof ServerLevel) || team == null || entity.getTarget() != null) {
+            if (!(entity.level() instanceof ServerLevel) || team == null || entity.getTarget() != null) {
                 return false;
             } else {
                 UUID id = team.getLeader();
                 if (id == null || entity.getUUID().equals(id)) {
                     return false;
                 } else {
-                    leader = ((ServerLevel) entity.level).getEntity(id);
+                    leader = ((ServerLevel) entity.level()).getEntity(id);
                     return leader != null && entity.distanceToSqr(leader) > range * range;
                 }
             }
@@ -201,7 +201,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
             if (team != null) {
                 List<UUID> members = team.getMembers();
                 AABB bounds = AABB.ofSize(entity.position(), range * 2, range * 2, range * 2);
-                List<RegularEntity> nearby = entity.level.getEntitiesOfClass(RegularEntity.class, bounds, EntitySelector.NO_SPECTATORS.and(reg -> reg.distanceToSqr(entity) <= range * range));
+                List<RegularEntity> nearby = entity.level().getEntitiesOfClass(RegularEntity.class, bounds, EntitySelector.NO_SPECTATORS.and(reg -> reg.distanceToSqr(entity) <= range * range));
                 UUID id = entity.getUUID();
                 for (RegularEntity near : nearby) {
                     if (near.personality == entity.personality) {
@@ -243,7 +243,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
             if (revenge != null) {
                 double range = this.getFollowDistance();
                 AABB bounds = AABB.ofSize(mob.position(), range * 2, 10, range * 2);
-                List<RegularEntity> nearby = mob.level.getEntitiesOfClass(RegularEntity.class, bounds);
+                List<RegularEntity> nearby = mob.level().getEntitiesOfClass(RegularEntity.class, bounds);
                 for (RegularEntity near : nearby) {
                     if (!mob.equals(near) && near.getTarget() == null && near.isAlliedTo(mob) && !near.isAlliedTo(revenge)) {
                         near.setTarget(revenge);

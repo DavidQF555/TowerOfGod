@@ -59,8 +59,8 @@ public class ThrowSpear extends ShinsuTechniqueInstance {
             proj.setPos(user.getX(), user.getEyeY(), user.getZ());
             proj.setAttribute(attribute);
             proj.setTechnique(getID());
-            user.level.addFreshEntity(proj);
-            user.level.playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1, 1);
+            user.level().addFreshEntity(proj);
+            user.level().playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1, 1);
             spear = proj.getUUID();
         }
         super.onUse(world);

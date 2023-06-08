@@ -82,8 +82,8 @@ public class LighthouseEntity extends FlyingDevice implements MenuProvider {
     @Override
     public void dropEquipment() {
         for (int i = 0; i < inventory.getSlots(); i++) {
-            ItemEntity item = new ItemEntity(level, getX(), getY(), getZ(), inventory.extractItem(i, inventory.getSlotLimit(i), false));
-            level.addFreshEntity(item);
+            ItemEntity item = new ItemEntity(level(), getX(), getY(), getZ(), inventory.extractItem(i, inventory.getSlotLimit(i), false));
+            level().addFreshEntity(item);
         }
     }
 
@@ -130,9 +130,9 @@ public class LighthouseEntity extends FlyingDevice implements MenuProvider {
             removeLight(light);
             light = null;
         }
-        if (level.isEmptyBlock(pos) && light == null && isAlive()) {
+        if (level().isEmptyBlock(pos) && light == null && isAlive()) {
             light = pos;
-            level.setBlockAndUpdate(pos, BlockRegistry.LIGHT.get().defaultBlockState());
+            level().setBlockAndUpdate(pos, BlockRegistry.LIGHT.get().defaultBlockState());
         }
     }
 
@@ -143,8 +143,8 @@ public class LighthouseEntity extends FlyingDevice implements MenuProvider {
     }
 
     private void removeLight(BlockPos pos) {
-        if (light != null && level.getBlockState(pos).getBlock().equals(BlockRegistry.LIGHT.get())) {
-            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+        if (light != null && level().getBlockState(pos).getBlock().equals(BlockRegistry.LIGHT.get())) {
+            level().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         }
     }
 
@@ -228,7 +228,7 @@ public class LighthouseEntity extends FlyingDevice implements MenuProvider {
             @Nullable
             @Override
             public LighthouseContainer create(int windowId, Inventory playerInv, FriendlyByteBuf extraData) {
-                LighthouseEntity entity = (LighthouseEntity) playerInv.player.level.getEntity(extraData.readVarInt());
+                LighthouseEntity entity = (LighthouseEntity) playerInv.player.level().getEntity(extraData.readVarInt());
                 return entity != null ? new LighthouseContainer(windowId, playerInv, entity) : null;
             }
         }

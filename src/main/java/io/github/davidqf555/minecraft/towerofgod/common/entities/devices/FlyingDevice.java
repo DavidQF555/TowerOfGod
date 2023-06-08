@@ -128,8 +128,8 @@ public abstract class FlyingDevice extends FlyingMob implements FlyingAnimal {
 
     @Nullable
     public Entity getOwner() {
-        if (owner != null && level instanceof ServerLevel) {
-            return ((ServerLevel) level).getEntity(owner);
+        if (owner != null && level() instanceof ServerLevel) {
+            return ((ServerLevel) level()).getEntity(owner);
         }
         return null;
     }

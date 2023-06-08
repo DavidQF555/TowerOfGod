@@ -19,18 +19,18 @@ public class GrowthAttributeEffect implements ShinsuAttributeEffect<BlockHitResu
     public void apply(Entity user, BlockHitResult clip) {
         BlockPos hit = clip.getBlockPos();
         BlockPos pos = hit.relative(clip.getDirection());
-        BlockState state = user.level.getBlockState(pos);
+        BlockState state = user.level().getBlockState(pos);
         Block b = state.getBlock();
         if (b instanceof BonemealableBlock) {
-            if (user.level instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level, pos, state, user.level.isClientSide())) {
-                ((BonemealableBlock) b).performBonemeal((ServerLevel) user.level, user.level.random, pos, state);
+            if (user.level() instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level(), pos, state, user.level().isClientSide())) {
+                ((BonemealableBlock) b).performBonemeal((ServerLevel) user.level(), user.level().random, pos, state);
             }
         } else {
-            state = user.level.getBlockState(hit);
+            state = user.level().getBlockState(hit);
             b = state.getBlock();
             if (b instanceof BonemealableBlock) {
-                if (user.level instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level, hit, state, user.level.isClientSide())) {
-                    ((BonemealableBlock) b).performBonemeal((ServerLevel) user.level, user.level.random, hit, state);
+                if (user.level() instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level(), hit, state, user.level().isClientSide())) {
+                    ((BonemealableBlock) b).performBonemeal((ServerLevel) user.level(), user.level().random, hit, state);
                 }
             }
         }

@@ -61,14 +61,14 @@ public class ShinsuEntity extends AbstractHurtingProjectile {
     @Override
     public void onHitEntity(EntityHitResult rayTraceResult) {
         super.onHitEntity(rayTraceResult);
-        if (level instanceof ServerLevel) {
+        if (level() instanceof ServerLevel) {
             Entity shooter = getOwner();
             Entity target = rayTraceResult.getEntity();
             float damage = DAMAGE;
             if (shooter != null) {
                 damage *= ShinsuStats.getNetResistance(shooter, target);
             }
-            target.hurt(ShinsuAttribute.getDamageSource(level, null), damage);
+            target.hurt(ShinsuAttribute.getDamageSource(level(), null), damage);
         }
         remove(RemovalReason.DISCARDED);
     }
@@ -92,7 +92,7 @@ public class ShinsuEntity extends AbstractHurtingProjectile {
             remove(RemovalReason.DISCARDED);
         }
         for (int i = 0; i < PARTICLES; i++) {
-            level.addParticle(getTrailParticle(), getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
+            level().addParticle(getTrailParticle(), getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
         }
         super.tick();
     }

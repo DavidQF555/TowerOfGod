@@ -43,7 +43,7 @@ public class ObserverEntity extends FlyingDevice {
     public void aiStep() {
         targets.clear();
         AABB bounds = AABB.ofSize(position(), RANGE * 2, RANGE * 2, RANGE * 2);
-        for (Entity entity : level.getEntities(this, bounds, target -> EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(target) && distanceToSqr(target) <= RANGE * RANGE && hasLineOfSight(target))) {
+        for (Entity entity : level().getEntities(this, bounds, target -> EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(target) && distanceToSqr(target) <= RANGE * RANGE && hasLineOfSight(target))) {
             targets.add(entity.getUUID());
         }
         Entity owner = getOwner();

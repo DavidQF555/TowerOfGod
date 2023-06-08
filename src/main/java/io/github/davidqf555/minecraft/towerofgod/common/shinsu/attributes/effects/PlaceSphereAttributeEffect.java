@@ -30,9 +30,9 @@ public class PlaceSphereAttributeEffect<T extends HitResult> implements ShinsuAt
                 int zRounded = (int) Math.sqrt(xRadius * xRadius - x * x);
                 for (int z = -zRounded; z <= zRounded; z++) {
                     BlockPos pos = hitPos.offset(x, y, z);
-                    BlockState state = this.state.apply(user.level, pos);
+                    BlockState state = this.state.apply(user.level(), pos);
                     if (state != null) {
-                        user.level.setBlockAndUpdate(pos, state);
+                        user.level().setBlockAndUpdate(pos, state);
                     }
                 }
             }

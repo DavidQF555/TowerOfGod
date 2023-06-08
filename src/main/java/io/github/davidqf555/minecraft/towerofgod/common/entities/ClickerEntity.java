@@ -48,7 +48,7 @@ public class ClickerEntity extends Entity {
         setYRot(yRotO + SPEED);
         ParticleOptions particle = ShinsuAttribute.getParticles(getAttribute());
         for (int i = 0; i < PARTICLES; i++) {
-            level.addParticle(particle, getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
+            level().addParticle(particle, getRandomX(1), getRandomY(), getRandomZ(1), 0, 0, 0);
         }
         ticksLeft--;
         if (ticksLeft <= 0) {

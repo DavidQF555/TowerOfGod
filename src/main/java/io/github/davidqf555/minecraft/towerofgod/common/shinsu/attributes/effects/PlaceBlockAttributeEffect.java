@@ -19,8 +19,8 @@ public class PlaceBlockAttributeEffect implements ShinsuAttributeEffect<BlockHit
     @Override
     public void apply(Entity user, BlockHitResult clip) {
         BlockPos pos = clip.getBlockPos().relative(clip.getDirection());
-        BlockState block = state.apply(user.level, pos);
-        user.level.setBlockAndUpdate(pos, block);
+        BlockState block = state.apply(user.level(), pos);
+        user.level().setBlockAndUpdate(pos, block);
     }
 
 }

@@ -18,6 +18,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -51,7 +52,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
     }
 
     @Override
-    public void render(ForgeGui gui, PoseStack matrixStack, float partialTick, int screenWidth, int screenHeight) {
+    public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
         Minecraft client = Minecraft.getInstance();
         if (client.player != null && !client.player.isSpectator()) {
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
@@ -66,7 +67,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                 int y = (screenHeight - getHeight()) / 2 - 50;
                 if (selected == null) {
                     for (Marker marker : markers) {
-                        marker.render(matrixStack, x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT, 0);
+                        marker.render(graphics.pose(), x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT, 0);
                     }
                 } else {
                     float centerX = x + getWidth() / 2f;
@@ -75,12 +76,12 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                     float iconY = centerY - ICON_HEIGHT / 2f;
                     boolean hasError = ClientReference.ERRORS.containsKey(selected);
                     int color = hasError ? 0xFFFF0000 : ShinsuAttribute.getColor(ClientReference.getAttribute(client.player));
-                    BACKGROUND.render(new RenderContext(matrixStack, iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, color));
+                    BACKGROUND.render(new RenderContext(graphics.pose(), iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, color));
                     if (hasError) {
                         Component error = ClientReference.ERRORS.get(selected);
                         client.font.drawShadow(matrixStack, error, centerX - client.font.width(error) / 2f, centerY + ICON_HEIGHT / 2f + client.font.lineHeight + 2, color);
                     }
-                    selected.getIcon().render(new RenderContext(matrixStack, iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
+                    selected.getIcon().render(new RenderContext(graphics.pose(), iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
                     Component text = selected.getText().withStyle(ChatFormatting.BOLD);
                     client.font.drawShadow(matrixStack, text, centerX - client.font.width(text) / 2f, centerY + ICON_HEIGHT / 2f + 1, color);
                 }

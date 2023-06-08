@@ -80,12 +80,12 @@ public class SpearItem extends DiggerItem implements Vanishable {
     @Nullable
     protected AbstractArrow launchSpear(LivingEntity user, ItemStack stack) {
         stack.hurtAndBreak(1, user, p -> p.broadcastBreakEvent(user.getUsedItemHand()));
-        AbstractArrow proj = createProjectile(user.level, stack);
+        AbstractArrow proj = createProjectile(user.level(), stack);
         proj.setOwner(user);
         proj.shootFromRotation(user, user.getXRot(), user.getYRot(), 0, 2.5f, 1);
         proj.setPos(user.getX(), user.getEyeY(), user.getZ());
-        user.level.addFreshEntity(proj);
-        user.level.playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1, 1);
+        user.level().addFreshEntity(proj);
+        user.level().playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1, 1);
         return proj;
     }
 

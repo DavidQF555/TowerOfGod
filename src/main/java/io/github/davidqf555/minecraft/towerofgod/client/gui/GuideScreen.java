@@ -11,6 +11,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -55,40 +56,41 @@ public class GuideScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        float x = (width - xSize) / 2f;
-        float y = (height - ySize) / 2f;
-        PAGE.render(new RenderContext(matrixStack, x, y, 0, xSize, ySize, 0xFFFFFFFF));
-        OUTLINE.render(new RenderContext(matrixStack, x, y, 0, xSize, ySize, color));
-        float centerX = x + xSize / 2f;
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        int x = (width - xSize) / 2;
+        int y = (height - ySize) / 2;
+        PoseStack stack = graphics.pose();
+        PAGE.render(new RenderContext(stack, x, y, 0, xSize, ySize, 0xFFFFFFFF));
+        OUTLINE.render(new RenderContext(stack, x, y, 0, xSize, ySize, color));
+        int centerX = x + xSize / 2;
         int difY = font.lineHeight;
         Component title = pages[page].getText().withStyle(ChatFormatting.BOLD);
-        font.draw(matrixStack, title, centerX - font.width(title) / 2f, y + difY * 2, 0xFF000000);
-        pages[page].getIcon().render(new RenderContext(matrixStack, centerX - difY, y + difY * 4, 0, difY * 2, difY * 2, 0xFFFFFFFF));
+        graphics.drawString(font, title, centerX - font.width(title) / 2, y + difY * 2, 0xFF000000);
+        pages[page].getIcon().render(new RenderContext(stack, centerX - difY, y + difY * 4, 0, difY * 2, difY * 2, 0xFFFFFFFF));
         List<Direction> combo = pages[page].getCombination();
         int width = combo.size() * ARROW_WIDTH + (combo.size() - 1) * DIF;
         for (int i = 0; i < combo.size(); i++) {
             float arrowX = centerX - width / 2f + (ARROW_HEIGHT + DIF) * i + ARROW_WIDTH / 2f;
             float arrowY = y + difY * 8 + ARROW_HEIGHT / 2f;
             Direction dir = combo.get(i);
-            matrixStack.pushPose();
-            matrixStack.translate(arrowX, arrowY, 0);
-            matrixStack.mulPose(Axis.ZP.rotationDegrees(dir.getAngle() + 180));
-            matrixStack.translate(-arrowX, -arrowY, 0);
-            ARROW.render(new RenderContext(matrixStack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, 0, ARROW_WIDTH, ARROW_HEIGHT, color));
-            matrixStack.popPose();
+            stack.pushPose();
+            stack.translate(arrowX, arrowY, 0);
+            stack.mulPose(Axis.ZP.rotationDegrees(dir.getAngle() + 180));
+            stack.translate(-arrowX, -arrowY, 0);
+            ARROW.render(new RenderContext(stack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, 0, ARROW_WIDTH, ARROW_HEIGHT, color));
+            stack.popPose();
         }
         int lines = 0;
         for (IRequirement req : pages[page].getRequirements()) {
             Component text = req.getText();
-            lines += renderWrappedText(matrixStack, text, centerX, y + difY * 10 + lines * font.lineHeight, xSize * 4 / 5, 0xFF000000);
+            lines += renderWrappedText(graphics, text, centerX, y + difY * 10 + lines * font.lineHeight, xSize * 4 / 5, 0xFF000000);
         }
-        renderWrappedText(matrixStack, pages[page].getDescription(), centerX, y + difY * 12 + lines * font.lineHeight, xSize * 4 / 5, 0xFF000000);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        renderWrappedText(graphics, pages[page].getDescription(), centerX, y + difY * 12 + lines * font.lineHeight, xSize * 4 / 5, 0xFF000000);
+        super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     //needs improvement
-    private int renderWrappedText(PoseStack stack, Component text, float centerX, float y, int totalWidth, int color) {
+    private int renderWrappedText(GuiGraphics graphics, Component text, int centerX, int y, int totalWidth, int color) {
         String[] words = text.getString().split(" ");
         int line = 0;
         int current = 0;
@@ -103,7 +105,7 @@ public class GuideScreen extends Screen {
                 current += width;
             } else {
                 String string = builder.toString();
-                font.draw(stack, string, centerX - font.width(string) / 2f, y + line * font.lineHeight, color);
+                graphics.drawString(font, string, centerX - font.width(string) / 2, y + line * font.lineHeight, color);
                 builder = new StringBuilder();
                 builder.append(word);
                 current = width;
@@ -111,7 +113,7 @@ public class GuideScreen extends Screen {
             }
         }
         String string = builder.toString();
-        font.draw(stack, string, centerX - font.width(string) / 2f, y + line * font.lineHeight, color);
+        graphics.drawString(font, string, centerX - font.width(string) / 2, y + line * font.lineHeight, color);
         return line + 1;
     }
 
@@ -152,9 +154,9 @@ public class GuideScreen extends Screen {
         }
 
         @Override
-        public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
             if (visible) {
-                render.render(new RenderContext(matrixStack, getX(), getY(), 0, width, height, 0xFFFFFFFF));
+                render.render(new RenderContext(graphics.pose(), getX(), getY(), 0, width, height, 0xFFFFFFFF));
             }
         }
 

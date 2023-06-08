@@ -7,6 +7,7 @@ import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
@@ -36,7 +37,7 @@ public class ShinsuMeterGui implements IGuiOverlay {
     }
 
     @Override
-    public void render(ForgeGui gui, PoseStack matrixStack, float partialTick, int screenWidth, int screenHeight) {
+    public void render(ForgeGui gui, GuiGraphics graphics, float partialTick, int screenWidth, int screenHeight) {
         if (shouldRender()) {
             int y = screenHeight / 2 - 45;
             int x = screenWidth - 9;
@@ -44,6 +45,7 @@ public class ShinsuMeterGui implements IGuiOverlay {
             int height = 90;
             int centerX = x + width / 2;
             int centerY = y + height / 2;
+            PoseStack matrixStack = graphics.pose();
             matrixStack.pushPose();
             matrixStack.translate(centerX, centerY, 0);
             matrixStack.mulPose(Axis.ZP.rotationDegrees(90));
@@ -65,13 +67,13 @@ public class ShinsuMeterGui implements IGuiOverlay {
             matrixStack.popPose();
             Font font = Minecraft.getInstance().font;
             String text = value + "";
-            float textX = centerX - font.width(text) / 2f;
-            float textY = centerY - font.lineHeight / 2f;
-            font.draw(matrixStack, text, textX + 1, textY, 0xFF000000);
-            font.draw(matrixStack, text, textX - 1, textY, 0xFF000000);
-            font.draw(matrixStack, text, textX, textY + 1, 0xFF000000);
-            font.draw(matrixStack, text, textX, textY - 1, 0xFF000000);
-            font.draw(matrixStack, text, textX, textY, TEXT_COLOR);
+            int textX = centerX - font.width(text) / 2;
+            int textY = centerY - font.lineHeight / 2;
+            graphics.drawString(font, text, textX + 1, textY, 0xFF000000);
+            graphics.drawString(font, text, textX - 1, textY, 0xFF000000);
+            graphics.drawString(font, text, textX, textY + 1, 0xFF000000);
+            graphics.drawString(font, text, textX, textY - 1, 0xFF000000);
+            graphics.drawString(font, text, textX, textY, TEXT_COLOR);
         }
     }
 

@@ -17,10 +17,10 @@ public class SummonAttributeEffect<T extends HitResult, M extends Entity> implem
 
     @Override
     public void apply(Entity user, T clip) {
-        M entity = factory.apply(user.level);
+        M entity = factory.apply(user.level());
         Vec3 pos = clip.getLocation();
         entity.setPos(pos.x(), pos.y(), pos.z());
-        user.level.addFreshEntity(entity);
+        user.level().addFreshEntity(entity);
     }
 
 }
