@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
 import org.joml.Matrix4f;
 
@@ -39,7 +40,7 @@ public final class ClientReference {
     }
 
     public static void renderTextureData(TextureRenderData data, RenderContext context) {
-        Matrix4f matrix = context.getPoseStack().last().pose();
+        Matrix4f matrix = context.getGraphics().pose().last().pose();
         float x = context.getX();
         float y = context.getY();
         int width = context.getWidth();
@@ -70,7 +71,7 @@ public final class ClientReference {
     }
 
     public static void renderItemStackData(ItemStackRenderData data, RenderContext context) {
-        Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(context.getPoseStack(), data.get(), (int) context.getX(), (int) context.getY());
+        Minecraft.getInstance().getItemRenderer().renderStatic(data.get(), ItemDisplayContext.GUI, (int) context.getX(), (int) context.getY(), context.getGraphics().pose(), context.getGraphics().bufferSource(), null, 0);
     }
 
     public static void openCombinationGUI(Set<ShinsuTechnique> unlocked) {

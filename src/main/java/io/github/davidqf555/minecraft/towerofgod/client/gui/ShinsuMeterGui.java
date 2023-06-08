@@ -52,10 +52,10 @@ public class ShinsuMeterGui implements IGuiOverlay {
             matrixStack.translate(-centerX, -centerY, 0);
             int drawX = x - (height - width) / 2;
             int drawY = y - (width - height) / 2;
-            BACKGROUND.render(new RenderContext(matrixStack, drawX, drawY, 0, height, width, 0xFFFFFFFF));
+            BACKGROUND.render(new RenderContext(graphics, drawX, drawY, 0, height, width, 0xFFFFFFFF));
             double ratio = value * 1.0 / max;
             bar.setBlitWidth((int) (BLIT_WIDTH * ratio));
-            bar.render(new RenderContext(matrixStack, drawX, drawY, 0, (int) (height * ratio), width, 0xFFFFFFFF));
+            bar.render(new RenderContext(graphics, drawX, drawY, 0, (int) (height * ratio), width, 0xFFFFFFFF));
             int startY;
             if (max < maxDisplay) {
                 startY = 7 * max / maxDisplay * 5 + 80;
@@ -63,7 +63,7 @@ public class ShinsuMeterGui implements IGuiOverlay {
                 startY = 115;
             }
             lines.setStartY(startY);
-            lines.render(new RenderContext(matrixStack, drawX, drawY, 0, height, width, 0xFFFFFFFF));
+            lines.render(new RenderContext(graphics, drawX, drawY, 0, height, width, 0xFFFFFFFF));
             matrixStack.popPose();
             Font font = Minecraft.getInstance().font;
             String text = String.valueOf(value);

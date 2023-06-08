@@ -59,16 +59,16 @@ public class GuideScreen extends Screen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
-        PoseStack stack = graphics.pose();
-        PAGE.render(new RenderContext(stack, x, y, 0, xSize, ySize, 0xFFFFFFFF));
-        OUTLINE.render(new RenderContext(stack, x, y, 0, xSize, ySize, color));
+        PAGE.render(new RenderContext(graphics, x, y, 0, xSize, ySize, 0xFFFFFFFF));
+        OUTLINE.render(new RenderContext(graphics, x, y, 0, xSize, ySize, color));
         int centerX = x + xSize / 2;
         int difY = font.lineHeight;
         Component title = pages[page].getText().withStyle(ChatFormatting.BOLD);
         graphics.drawString(font, title, centerX - font.width(title) / 2, y + difY * 2, 0xFF000000, false);
-        pages[page].getIcon().render(new RenderContext(stack, centerX - difY, y + difY * 4, 0, difY * 2, difY * 2, 0xFFFFFFFF));
+        pages[page].getIcon().render(new RenderContext(graphics, centerX - difY, y + difY * 4, 0, difY * 2, difY * 2, 0xFFFFFFFF));
         List<Direction> combo = pages[page].getCombination();
         int width = combo.size() * ARROW_WIDTH + (combo.size() - 1) * DIF;
+        PoseStack stack = graphics.pose();
         for (int i = 0; i < combo.size(); i++) {
             float arrowX = centerX - width / 2f + (ARROW_HEIGHT + DIF) * i + ARROW_WIDTH / 2f;
             float arrowY = y + difY * 8 + ARROW_HEIGHT / 2f;
@@ -77,7 +77,7 @@ public class GuideScreen extends Screen {
             stack.translate(arrowX, arrowY, 0);
             stack.mulPose(Axis.ZP.rotationDegrees(dir.getAngle() + 180));
             stack.translate(-arrowX, -arrowY, 0);
-            ARROW.render(new RenderContext(stack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, 0, ARROW_WIDTH, ARROW_HEIGHT, color));
+            ARROW.render(new RenderContext(graphics, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, 0, ARROW_WIDTH, ARROW_HEIGHT, color));
             stack.popPose();
         }
         int lines = 0;
@@ -156,7 +156,7 @@ public class GuideScreen extends Screen {
         @Override
         public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
             if (visible) {
-                render.render(new RenderContext(graphics.pose(), getX(), getY(), 0, width, height, 0xFFFFFFFF));
+                render.render(new RenderContext(graphics, getX(), getY(), 0, width, height, 0xFFFFFFFF));
             }
         }
 

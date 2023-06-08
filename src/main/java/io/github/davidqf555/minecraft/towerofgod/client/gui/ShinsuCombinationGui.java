@@ -67,7 +67,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                 int y = (screenHeight - getHeight()) / 2 - 50;
                 if (selected == null) {
                     for (Marker marker : markers) {
-                        marker.render(graphics.pose(), x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT, 0);
+                        marker.render(graphics, x + (marker.x - minX) * Marker.WIDTH, y + (marker.y - minY) * Marker.HEIGHT, 0);
                     }
                 } else {
                     int centerX = x + getWidth() / 2;
@@ -76,12 +76,12 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                     float iconY = centerY - ICON_HEIGHT / 2f;
                     boolean hasError = ClientReference.ERRORS.containsKey(selected);
                     int color = hasError ? 0xFFFF0000 : ShinsuAttribute.getColor(ClientReference.getAttribute(client.player));
-                    BACKGROUND.render(new RenderContext(graphics.pose(), iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, color));
+                    BACKGROUND.render(new RenderContext(graphics, iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, color));
                     if (hasError) {
                         Component error = ClientReference.ERRORS.get(selected);
                         graphics.drawString(client.font, error, centerX - client.font.width(error) / 2, centerY + ICON_HEIGHT / 2 + client.font.lineHeight + 2, color, true);
                     }
-                    selected.getIcon().render(new RenderContext(graphics.pose(), iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
+                    selected.getIcon().render(new RenderContext(graphics, iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
                     Component text = selected.getText().withStyle(ChatFormatting.BOLD);
                     graphics.drawString(client.font, text, centerX - client.font.width(text) / 2, centerY + ICON_HEIGHT / 2 + 1, color, true);
                 }
@@ -210,14 +210,15 @@ public class ShinsuCombinationGui implements IGuiOverlay {
             this.type = type;
         }
 
-        private void render(PoseStack matrixStack, float x, float y, float z) {
+        private void render(GuiGraphics graphics, float x, float y, float z) {
             float centerX = x + WIDTH / 2f;
             float centerY = y + HEIGHT / 2f;
+            PoseStack matrixStack = graphics.pose();
             matrixStack.pushPose();
             matrixStack.translate(centerX, centerY, 0);
             matrixStack.mulPose(Axis.ZP.rotationDegrees(direction.getAngle() + offset + 180));
             matrixStack.translate(-centerX, -centerY, 0);
-            type.texture.render(new RenderContext(matrixStack, x, y, z, WIDTH, HEIGHT, color));
+            type.texture.render(new RenderContext(graphics, x, y, z, WIDTH, HEIGHT, color));
             matrixStack.popPose();
         }
 
