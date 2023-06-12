@@ -7,7 +7,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -23,8 +22,8 @@ import java.util.function.Consumer;
 
 public class ShinsuHookItem extends HookItem {
 
-    public ShinsuHookItem(float attackDamageIn, float attackSpeedIn) {
-        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
+    public ShinsuHookItem(float attackDamageIn, float attackSpeedIn, Properties properties) {
+        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, properties.setNoRepair());
     }
 
     @Override

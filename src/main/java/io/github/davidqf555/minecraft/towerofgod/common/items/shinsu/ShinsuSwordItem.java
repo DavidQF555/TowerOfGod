@@ -24,8 +24,8 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class ShinsuSwordItem extends SwordItem {
 
-    public ShinsuSwordItem(int attackDamageIn, float attackSpeedIn) {
-        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Properties().setNoRepair());
+    public ShinsuSwordItem(int attackDamageIn, float attackSpeedIn, Properties properties) {
+        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, properties.setNoRepair());
     }
 
     @Override

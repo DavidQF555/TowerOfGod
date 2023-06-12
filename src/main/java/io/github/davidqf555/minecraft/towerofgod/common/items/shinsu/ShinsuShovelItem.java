@@ -6,7 +6,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.Shinsu
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShovelItem;
 import net.minecraft.nbt.CompoundNBT;
@@ -25,8 +24,8 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class ShinsuShovelItem extends ShovelItem {
 
-    public ShinsuShovelItem(float attackDamageIn, float attackSpeedIn) {
-        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
+    public ShinsuShovelItem(float attackDamageIn, float attackSpeedIn, Properties properties) {
+        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, properties.setNoRepair());
     }
 
     @Override

@@ -8,7 +8,6 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechn
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
@@ -23,8 +22,8 @@ import java.util.function.Consumer;
 
 public class ShinsuSpearItem extends SpearItem {
 
-    public ShinsuSpearItem() {
-        super(ModToolTier.SHINSU, 1, -1.2f, new Item.Properties().setNoRepair());
+    public ShinsuSpearItem(Properties properties) {
+        super(ModToolTier.SHINSU, 1, -1.2f, properties.setNoRepair());
     }
 
     @Nullable

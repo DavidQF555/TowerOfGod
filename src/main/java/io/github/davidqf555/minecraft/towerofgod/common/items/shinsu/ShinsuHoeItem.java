@@ -7,7 +7,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instan
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.HoeItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
@@ -29,8 +28,8 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class ShinsuHoeItem extends HoeItem {
 
-    public ShinsuHoeItem(int attackDamageIn, float attackSpeedIn) {
-        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
+    public ShinsuHoeItem(int attackDamageIn, float attackSpeedIn, Properties properties) {
+        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, properties.setNoRepair());
     }
 
     @Override

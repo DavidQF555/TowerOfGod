@@ -13,7 +13,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.BowItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.stats.Stats;
@@ -38,8 +37,8 @@ import java.util.function.Consumer;
 @ParametersAreNonnullByDefault
 public class ShinsuBowItem extends BowItem {
 
-    public ShinsuBowItem() {
-        super(new Item.Properties().setNoRepair());
+    public ShinsuBowItem(Properties properties) {
+        super(properties.setNoRepair());
     }
 
     @Override
