@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
@@ -32,14 +31,12 @@ public class ShinsuCombinationGui extends AbstractGui {
     private static final int ICON_WIDTH = 20, ICON_HEIGHT = 20;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16);
     private final List<Marker> markers;
-    private final Set<ShinsuTechnique> unlocked;
     private final int color;
     private float prevYaw, prevPitch;
     private ShinsuTechnique selected;
     private int headX, headY, minX, maxX, minY, maxY;
 
-    public ShinsuCombinationGui(Set<ShinsuTechnique> unlocked, int color, float yaw, float pitch) {
-        this.unlocked = unlocked;
+    public ShinsuCombinationGui(int color, float yaw, float pitch) {
         markers = new ArrayList<>();
         prevYaw = yaw;
         prevPitch = pitch;
@@ -59,11 +56,11 @@ public class ShinsuCombinationGui extends AbstractGui {
             int z = getBlitOffset();
             float iconX = centerX - ICON_WIDTH / 2f;
             float iconY = centerY - ICON_HEIGHT / 2f;
-            boolean hasError = ClientReference.ERRORS.containsKey(selected);
+            boolean hasError = ClientReference.error.isPresent();
             BACKGROUND.render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, hasError ? 0xFFFF0000 : color));
             Minecraft client = Minecraft.getInstance();
             if (hasError) {
-                ITextComponent error = ClientReference.ERRORS.get(selected);
+                ITextComponent error = ClientReference.error.get();
                 client.font.drawShadow(matrixStack, error, centerX - client.font.width(error) / 2f, centerY + ICON_HEIGHT / 2f + client.font.lineHeight + 2, 0xFF660000);
             }
             selected.getIcon().render(new RenderContext(matrixStack, iconX, iconY, z, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
@@ -95,8 +92,9 @@ public class ShinsuCombinationGui extends AbstractGui {
                 prevYaw = client.player.yRot;
                 prevPitch = client.player.xRot;
             }
+        } else {
+            TowerOfGod.CHANNEL.sendToServer(new ClientUpdateClientErrorPacket(getSelected()));
         }
-        TowerOfGod.CHANNEL.sendToServer(new ClientUpdateClientErrorPacket());
     }
 
     protected void reset() {
@@ -143,7 +141,7 @@ public class ShinsuCombinationGui extends AbstractGui {
         markers.add(new Marker(headX, headY, color, Marker.Type.ARROW, direction));
         List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
         if (!combination.isEmpty()) {
-            for (ShinsuTechnique technique : unlocked) {
+            for (ShinsuTechnique technique : ClientReference.UNLOCKED) {
                 if (technique.matches(combination)) {
                     selected = technique;
                     break;

@@ -10,9 +10,9 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.play
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PredictedShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateUnlockedPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -55,9 +55,10 @@ public final class DataEventSubscriber {
 
     @SubscribeEvent
     public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        LivingEntity entity = event.getEntityLiving();
-        ShinsuStats stats = ShinsuStats.get(entity);
-        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(entity), stats.getMaxShinsu()));
+        PlayerEntity player = event.getPlayer();
+        ShinsuStats stats = ShinsuStats.get(player);
+        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(player), stats.getMaxShinsu()));
+        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new ServerUpdateUnlockedPacket(PlayerTechniqueData.get(player).getUnlocked()));
     }
 
     @SubscribeEvent

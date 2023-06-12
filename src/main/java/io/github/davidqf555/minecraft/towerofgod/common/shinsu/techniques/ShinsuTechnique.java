@@ -17,6 +17,7 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShape
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -149,6 +150,12 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         stats.addTechnique(instance);
         stats.onCast(user, instance);
         instance.onUse((ServerWorld) user.level);
+    }
+
+    @Override
+    public int hashCode() {
+        ResourceLocation loc = getRegistryName();
+        return loc == null ? 0 : loc.hashCode();
     }
 
     public interface IFactory<T extends ShinsuTechniqueInstance> {

@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateUnlockedPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
@@ -11,6 +12,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
@@ -20,6 +22,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -68,10 +71,12 @@ public class MentorEntity extends RankerEntity {
     @Override
     public void die(DamageSource source) {
         super.die(source);
-        if (!level.isClientSide()) {
-            LivingEntity credit = getKillCredit();
-            if (credit instanceof PlayerEntity && PlayerTechniqueData.get((PlayerEntity) credit).unlock(technique)) {
+        LivingEntity credit = getKillCredit();
+        if (credit instanceof ServerPlayerEntity) {
+            PlayerTechniqueData data = PlayerTechniqueData.get((PlayerEntity) credit);
+            if (data.unlock(technique)) {
                 credit.sendMessage(new TranslationTextComponent(DEATH, technique.getText()), getUUID());
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) credit), new ServerUpdateUnlockedPacket(data.getUnlocked()));
             }
         }
     }

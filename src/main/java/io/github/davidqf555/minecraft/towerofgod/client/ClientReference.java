@@ -28,13 +28,14 @@ import net.minecraftforge.common.util.Constants;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public final class ClientReference {
 
-    public static final Map<ShinsuTechnique, ITextComponent> ERRORS = new HashMap<>();
+    public static final Set<ShinsuTechnique> UNLOCKED = new HashSet<>();
+    public static Optional<ITextComponent> error = Optional.empty();
     public static ShinsuMeterGui shinsu = null;
     public static ShinsuCombinationGui combo = null;
 
@@ -76,9 +77,9 @@ public final class ClientReference {
         Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(data.get(), (int) context.getX(), (int) context.getY());
     }
 
-    public static void openCombinationGUI(Set<ShinsuTechnique> unlocked) {
+    public static void openCombinationGUI() {
         PlayerEntity player = Minecraft.getInstance().player;
-        ClientReference.combo = new ShinsuCombinationGui(unlocked, ShinsuAttribute.getColor(ClientReference.getAttribute(player)), player.yHeadRot, player.getViewXRot(1));
+        ClientReference.combo = new ShinsuCombinationGui(ShinsuAttribute.getColor(ClientReference.getAttribute(player)), player.yHeadRot, player.getViewXRot(1));
     }
 
     public static void openGuideScreen(ShinsuTechnique[] pages, int color) {

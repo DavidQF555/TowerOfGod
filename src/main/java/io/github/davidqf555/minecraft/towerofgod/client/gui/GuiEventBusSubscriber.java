@@ -4,7 +4,6 @@ import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientOpenCombinationGUIPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateCastingPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.client.MainWindow;
@@ -28,13 +27,13 @@ public final class GuiEventBusSubscriber {
     @SubscribeEvent
     public static void preRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
         Minecraft client = Minecraft.getInstance();
-        if (client.player != null && !client.player.isSpectator()) {
+        if (client.player != null && !client.player.isSpectator() && !ClientReference.UNLOCKED.isEmpty()) {
             if (ClientReference.shinsu != null && ClientReference.shinsu.getMax() > 0 && !client.options.hideGui && !client.player.isCreative() && event.getType() == RenderGameOverlayEvent.ElementType.ALL) {
                 ClientReference.shinsu.render(event.getMatrixStack());
             }
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
                 if (ClientReference.combo == null) {
-                    TowerOfGod.CHANNEL.sendToServer(new ClientOpenCombinationGUIPacket());
+                    ClientReference.openCombinationGUI();
                     TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(true));
                 } else if (!client.options.hideGui && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
                     MainWindow window = client.getWindow();
@@ -51,7 +50,7 @@ public final class GuiEventBusSubscriber {
     public static void onMouseInput(InputEvent.KeyInputEvent event) {
         if (ClientReference.combo != null && KeyBindingsList.SHINSU_TECHNIQUE_GUI.matches(event.getKey(), event.getScanCode()) && event.getAction() == GLFW.GLFW_RELEASE) {
             ShinsuTechnique selected = ClientReference.combo.getSelected();
-            if (selected != null && !ClientReference.ERRORS.containsKey(selected)) {
+            if (selected != null && !ClientReference.UNLOCKED.contains(selected)) {
                 TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
                 ClientReference.combo = null;
                 TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
@@ -96,6 +95,7 @@ public final class GuiEventBusSubscriber {
         public static void onClientPlayerLoggedOut(ClientPlayerNetworkEvent.LoggedOutEvent event) {
             ClientReference.shinsu = null;
             ClientReference.combo = null;
+            ClientReference.UNLOCKED.clear();
         }
 
         private static void initializeMeters() {
