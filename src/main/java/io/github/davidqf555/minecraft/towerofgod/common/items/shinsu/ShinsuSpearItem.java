@@ -1,30 +1,38 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
+import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class ShinsuHook extends HookItem {
+public class ShinsuSpearItem extends SpearItem {
 
-    public ShinsuHook(float attackDamageIn, float attackSpeedIn) {
-        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
+    public ShinsuSpearItem() {
+        super(ModToolTier.SHINSU, 1, -1.2f, new Item.Properties().setNoRepair());
+    }
+
+    @Nullable
+    @Override
+    protected AbstractArrowEntity launchSpear(LivingEntity user, ItemStack stack) {
+        stack.hurtAndBreak(1, user, p -> p.broadcastBreakEvent(user.getUsedItemHand()));
+        ShinsuTechniqueRegistry.THROW_SPEAR.get().cast(user, null, user.getLookAngle());
+        return null;
     }
 
     @Override
@@ -51,18 +59,9 @@ public class ShinsuHook extends HookItem {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        Vector3d dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
-        ShinsuAttribute attribute = ShinsuAttribute.getAttribute(stack);
-        if (attribute != null) {
-            attribute.applyEntityEffect(target, new EntityRayTraceResult(target, dir));
-        }
-        return super.hurtEnemy(stack, target, attacker);
-    }
-
-    @Override
     public int getEntityLifespan(ItemStack itemStack, World world) {
         return 0;
     }
+
 
 }

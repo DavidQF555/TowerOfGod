@@ -1,6 +1,7 @@
-package io.github.davidqf555.minecraft.towerofgod.common.items;
+package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
@@ -22,9 +23,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
-public class ShinsuShovel extends ShovelItem {
+public class ShinsuShovelItem extends ShovelItem {
 
-    public ShinsuShovel(float attackDamageIn, float attackSpeedIn) {
+    public ShinsuShovelItem(float attackDamageIn, float attackSpeedIn) {
         super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
     }
 

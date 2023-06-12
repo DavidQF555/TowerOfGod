@@ -1,7 +1,8 @@
-package io.github.davidqf555.minecraft.towerofgod.client.gui;
+package io.github.davidqf555.minecraft.towerofgod.client.events;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuMeterGui;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateCastingPacket;

@@ -36,9 +36,9 @@ import java.util.function.Consumer;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class ShinsuBow extends BowItem {
+public class ShinsuBowItem extends BowItem {
 
-    public ShinsuBow() {
+    public ShinsuBowItem() {
         super(new Item.Properties().setNoRepair());
     }
 

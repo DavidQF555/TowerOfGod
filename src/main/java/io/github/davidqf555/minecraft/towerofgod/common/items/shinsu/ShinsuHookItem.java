@@ -1,18 +1,15 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -21,15 +18,12 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-@ParametersAreNonnullByDefault
-public class ShinsuHoe extends HoeItem {
+public class ShinsuHookItem extends HookItem {
 
-    public ShinsuHoe(int attackDamageIn, float attackSpeedIn) {
+    public ShinsuHookItem(float attackDamageIn, float attackSpeedIn) {
         super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
     }
 
@@ -51,16 +45,6 @@ public class ShinsuHoe extends HoeItem {
         }
     }
 
-    @Nonnull
-    @Override
-    public ActionResultType useOn(ItemUseContext context) {
-        ShinsuAttribute attribute = ShinsuAttribute.getAttribute(context.getItemInHand());
-        if (attribute != null) {
-            attribute.applyBlockEffect(context.getPlayer(), new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside()));
-        }
-        return super.useOn(context);
-    }
-
     @Override
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
         return 0;
@@ -80,4 +64,5 @@ public class ShinsuHoe extends HoeItem {
     public int getEntityLifespan(ItemStack itemStack, World world) {
         return 0;
     }
+
 }

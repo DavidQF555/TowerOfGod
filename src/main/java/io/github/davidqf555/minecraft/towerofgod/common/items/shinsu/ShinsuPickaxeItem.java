@@ -23,9 +23,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
-public class ShinsuPickaxe extends PickaxeItem {
+public class ShinsuPickaxeItem extends PickaxeItem {
 
-    public ShinsuPickaxe(int attackDamageIn, float attackSpeedIn) {
+    public ShinsuPickaxeItem(int attackDamageIn, float attackSpeedIn) {
         super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, new Item.Properties().setNoRepair());
     }
 
