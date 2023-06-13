@@ -4,9 +4,8 @@ import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuMeterGui;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientOpenCombinationGUIPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateCastingPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -34,7 +33,7 @@ public final class GuiEventBusSubscriber {
             }
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
                 if (ClientReference.combo == null) {
-                    ClientReference.openCombinationGUI();
+                    TowerOfGod.CHANNEL.sendToServer(new ClientOpenCombinationGUIPacket());
                     TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(true));
                 } else if (!client.options.hideGui && event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
                     MainWindow window = client.getWindow();
@@ -50,12 +49,9 @@ public final class GuiEventBusSubscriber {
     @SubscribeEvent
     public static void onMouseInput(InputEvent.KeyInputEvent event) {
         if (ClientReference.combo != null && KeyBindingsList.SHINSU_TECHNIQUE_GUI.matches(event.getKey(), event.getScanCode()) && event.getAction() == GLFW.GLFW_RELEASE) {
-            ShinsuTechnique selected = ClientReference.combo.getSelected();
-            if (selected != null && !ClientReference.UNLOCKED.contains(selected)) {
-                TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
-                ClientReference.combo = null;
-                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
-            }
+            ClientReference.combo.onRelease();
+            ClientReference.combo = null;
+            TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
         }
     }
 

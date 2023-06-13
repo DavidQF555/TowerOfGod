@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.pla
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.RequirementTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -13,6 +14,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.Constants;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +35,16 @@ public class PlayerTechniqueData extends RequirementTechniqueData<PlayerEntity> 
     @Override
     public boolean isUnlocked(PlayerEntity user, ShinsuTechnique technique) {
         return getUnlocked().contains(technique) && super.isUnlocked(user, technique);
+    }
+
+    public Set<ShinsuTechnique> getUsable(LivingEntity user) {
+        Set<ShinsuTechnique> usable = new HashSet<>();
+        for (ShinsuTechnique technique : getUnlocked()) {
+            if (Arrays.stream(technique.getRequirements()).allMatch(req -> req.isUnlocked(user))) {
+                usable.add(technique);
+            }
+        }
+        return usable;
     }
 
     public boolean unlock(ShinsuTechnique technique) {

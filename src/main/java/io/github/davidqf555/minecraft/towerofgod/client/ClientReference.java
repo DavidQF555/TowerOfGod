@@ -77,9 +77,9 @@ public final class ClientReference {
         Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(data.get(), (int) context.getX(), (int) context.getY());
     }
 
-    public static void openCombinationGUI() {
+    public static void openCombinationGUI(Set<ShinsuTechnique> usable) {
         PlayerEntity player = Minecraft.getInstance().player;
-        ClientReference.combo = new ShinsuCombinationGui(ShinsuAttribute.getColor(ClientReference.getAttribute(player)), player.yHeadRot, player.getViewXRot(1));
+        ClientReference.combo = new ShinsuCombinationGui(usable, ShinsuAttribute.getColor(ClientReference.getAttribute(player)), player.yHeadRot, player.getViewXRot(1));
     }
 
     public static void openGuideScreen(ShinsuTechnique[] pages, int color) {

@@ -27,6 +27,7 @@ public final class PacketRegistry {
             ServerUpdateCastingPacket.register(index++);
             ServerUpdateAttributePacket.register(index++);
             ServerUpdateUnlockedPacket.register(index++);
+            ClientOpenCombinationGUIPacket.register(index++);
         });
     }
 }

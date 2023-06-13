@@ -7,6 +7,7 @@ import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateClientErrorPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Direction;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
@@ -22,6 +23,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @ParametersAreNonnullByDefault
@@ -31,13 +33,15 @@ public class ShinsuCombinationGui extends AbstractGui {
     private static final int ICON_WIDTH = 20, ICON_HEIGHT = 20;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16);
     private final List<Marker> markers;
+    private final Set<ShinsuTechnique> usable;
     private final int color;
     private float prevYaw, prevPitch;
     private ShinsuTechnique selected;
     private int headX, headY, minX, maxX, minY, maxY;
 
-    public ShinsuCombinationGui(int color, float yaw, float pitch) {
+    public ShinsuCombinationGui(Set<ShinsuTechnique> usable, int color, float yaw, float pitch) {
         markers = new ArrayList<>();
+        this.usable = usable;
         prevYaw = yaw;
         prevPitch = pitch;
         this.color = color;
@@ -141,12 +145,19 @@ public class ShinsuCombinationGui extends AbstractGui {
         markers.add(new Marker(headX, headY, color, Marker.Type.ARROW, direction));
         List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
         if (!combination.isEmpty()) {
-            for (ShinsuTechnique technique : ClientReference.UNLOCKED) {
+            for (ShinsuTechnique technique : usable) {
                 if (technique.matches(combination)) {
                     selected = technique;
                     break;
                 }
             }
+        }
+    }
+
+    public void onRelease() {
+        ShinsuTechnique selected = getSelected();
+        if (selected != null && usable.contains(selected)) {
+            TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
         }
     }
 
