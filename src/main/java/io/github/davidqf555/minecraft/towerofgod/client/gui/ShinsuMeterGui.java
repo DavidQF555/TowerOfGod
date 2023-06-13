@@ -33,7 +33,7 @@ public class ShinsuMeterGui implements IGuiOverlay {
 
     public static boolean shouldRender() {
         Minecraft client = Minecraft.getInstance();
-        return client.player != null && !client.player.isSpectator() && !client.options.hideGui && !client.player.isCreative() && ClientReference.SHINSU.getMax() > 0;
+        return client.player != null && !client.player.isSpectator() && !client.options.hideGui && !client.player.isCreative() && ClientReference.SHINSU.getMax() > 0 && !ClientReference.UNLOCKED.isEmpty();
     }
 
     @Override

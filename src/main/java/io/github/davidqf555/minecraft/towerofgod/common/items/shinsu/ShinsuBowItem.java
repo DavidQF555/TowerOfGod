@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
@@ -20,7 +21,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.BowItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
@@ -36,10 +36,10 @@ import java.util.function.Consumer;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public class ShinsuBow extends BowItem {
+public class ShinsuBowItem extends BowItem {
 
-    public ShinsuBow() {
-        super(new Item.Properties().setNoRepair());
+    public ShinsuBowItem(Properties properties) {
+        super(properties.setNoRepair());
     }
 
     @Override
@@ -53,7 +53,8 @@ public class ShinsuBow extends BowItem {
             float speed = getPowerForTime(charge);
             if (speed >= 0.1 && !worldIn.isClientSide()) {
                 ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(shooter, null, shooter.getLookAngle()).ifLeft(instance -> {
-                    ((ShootShinsuArrow) instance).setVelocity(speed);
+                    ShinsuAttribute attribute = ShinsuQualityData.get(shooter).getAttribute();
+                    ((ShootShinsuArrow) instance).setVelocity(speed * 3 * (attribute == null ? 1 : (float) attribute.getSpeed()));
                     instance.getTechnique().cast(entity, instance);
                     worldIn.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1, 1 / (shooter.getRandom().nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
                     shooter.awardStat(Stats.ITEM_USED.get(this));

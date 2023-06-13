@@ -39,14 +39,13 @@ public class ShinsuCombinationGui implements IGuiOverlay {
     private static final int ICON_WIDTH = 20, ICON_HEIGHT = 20;
     private static final TextureRenderData BACKGROUND = new TextureRenderData(TEXTURE, 48, 32, 16, 16, 16, 16);
     private final List<Marker> markers;
-    private final Set<ShinsuTechnique> unlocked;
+    private final Set<ShinsuTechnique> usable = new HashSet<>();
     private boolean enabled;
     private float prevYaw, prevPitch;
     private ShinsuTechnique selected;
     private int headX, headY, minX, maxX, minY, maxY;
 
     public ShinsuCombinationGui() {
-        this.unlocked = new HashSet<>();
         markers = new ArrayList<>();
         reset();
     }
@@ -74,11 +73,11 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                     int centerY = y + getHeight() / 2;
                     float iconX = centerX - ICON_WIDTH / 2f;
                     float iconY = centerY - ICON_HEIGHT / 2f;
-                    boolean hasError = ClientReference.ERRORS.containsKey(selected);
+                    boolean hasError = ClientReference.error.isPresent();
                     int color = hasError ? 0xFFFF0000 : ShinsuAttribute.getColor(ClientReference.getAttribute(client.player));
                     BACKGROUND.render(new RenderContext(graphics, iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, color));
                     if (hasError) {
-                        Component error = ClientReference.ERRORS.get(selected);
+                        Component error = ClientReference.error.get();
                         graphics.drawString(client.font, error, centerX - client.font.width(error) / 2, centerY + ICON_HEIGHT / 2 + client.font.lineHeight + 2, color, true);
                     }
                     selected.getIcon().render(new RenderContext(graphics, iconX, iconY, 0, ICON_WIDTH, ICON_HEIGHT, 0xFFFFFFFF));
@@ -118,13 +117,14 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                 prevYaw = client.player.yHeadRot;
                 prevPitch = client.player.getXRot();
             }
+        } else {
+            TowerOfGod.CHANNEL.sendToServer(new ClientUpdateClientErrorPacket(selected));
         }
-        TowerOfGod.CHANNEL.sendToServer(new ClientUpdateClientErrorPacket());
     }
 
-    public void setUnlocked(Set<ShinsuTechnique> techniques) {
-        unlocked.clear();
-        unlocked.addAll(techniques);
+    public void setUsable(Set<ShinsuTechnique> usable) {
+        this.usable.clear();
+        this.usable.addAll(usable);
     }
 
     protected void reset() {
@@ -177,7 +177,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
         markers.add(new Marker(headX, headY, ShinsuAttribute.getColor(ClientReference.getAttribute(Minecraft.getInstance().player)), Marker.Type.ARROW, direction));
         List<Direction> combination = markers.stream().map(marker -> marker.direction).collect(Collectors.toList());
         if (!combination.isEmpty()) {
-            for (ShinsuTechnique technique : unlocked) {
+            for (ShinsuTechnique technique : usable) {
                 if (technique.matches(combination)) {
                     selected = technique;
                     break;

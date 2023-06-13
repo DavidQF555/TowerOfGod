@@ -16,8 +16,6 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -25,13 +23,18 @@ import java.util.function.Supplier;
 
 public class ClientUpdateClientErrorPacket {
 
-    private static final BiConsumer<ClientUpdateClientErrorPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
-    };
-    private static final Function<FriendlyByteBuf, ClientUpdateClientErrorPacket> DECODER = buffer -> new ClientUpdateClientErrorPacket();
+    private static final BiConsumer<ClientUpdateClientErrorPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> buffer.writeResourceLocation(message.technique.getId());
+    private static final Function<FriendlyByteBuf, ClientUpdateClientErrorPacket> DECODER = buffer -> new ClientUpdateClientErrorPacket(ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation()));
     private static final BiConsumer<ClientUpdateClientErrorPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
+
+    private final ShinsuTechnique technique;
+
+    public ClientUpdateClientErrorPacket(ShinsuTechnique technique) {
+        this.technique = technique;
+    }
 
     public static void register(int index) {
         TowerOfGod.CHANNEL.registerMessage(index, ClientUpdateClientErrorPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_SERVER));
@@ -43,11 +46,8 @@ public class ClientUpdateClientErrorPacket {
             Vec3 eye = player.getEyePosition(1);
             EntityHitResult result = ProjectileUtil.getEntityHitResult(player.level(), player, eye, eye.add(player.getLookAngle().scale(ShinsuTechniqueData.CAST_TARGET_RANGE)), AABB.ofSize(eye, ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2, ShinsuTechniqueData.CAST_TARGET_RANGE * 2), entity -> true);
             Entity target = result == null ? null : result.getEntity();
-            Map<ShinsuTechnique, Component> errors = new HashMap<>();
-            for (ShinsuTechnique technique : ShinsuTechniqueRegistry.getRegistry()) {
-                technique.create(player, target, player.getLookAngle()).ifRight(error -> errors.put(technique, error));
-            }
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ServerUpdateClientErrorPacket(errors));
+            Optional<Component> error = technique.create(player, target, player.getLookAngle()).right();
+            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new ServerUpdateClientErrorPacket(error));
         });
         context.setPacketHandled(true);
     }
