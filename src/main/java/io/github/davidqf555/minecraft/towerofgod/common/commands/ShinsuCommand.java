@@ -9,6 +9,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateUnlockedPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
@@ -146,9 +147,13 @@ public final class ShinsuCommand {
     private static int unlockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ShinsuTechnique technique) {
         int count = 0;
         for (Entity entity : entities) {
-            if (entity instanceof Player && PlayerTechniqueData.get((Player) entity).unlock(technique)) {
-                count++;
-                source.sendSuccess(new TranslatableComponent(UNLOCK, entity.getDisplayName(), technique.getText()), true);
+            if (entity instanceof ServerPlayer) {
+                PlayerTechniqueData data = PlayerTechniqueData.get((Player) entity);
+                if (data.unlock(technique)) {
+                    count++;
+                    source.sendSuccess(new TranslatableComponent(UNLOCK, entity.getDisplayName(), technique.getText()), true);
+                    TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new ServerUpdateUnlockedPacket(data.getUnlocked()));
+                }
             }
         }
         return count;
@@ -157,9 +162,13 @@ public final class ShinsuCommand {
     private static int lockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ShinsuTechnique technique) {
         int count = 0;
         for (Entity entity : entities) {
-            if (entity instanceof Player && PlayerTechniqueData.get((Player) entity).lock(technique)) {
-                count++;
-                source.sendSuccess(new TranslatableComponent(LOCK, entity.getDisplayName(), technique.getText()), true);
+            if (entity instanceof Player) {
+                PlayerTechniqueData data = PlayerTechniqueData.get((Player) entity);
+                if (data.lock(technique)) {
+                    count++;
+                    source.sendSuccess(new TranslatableComponent(LOCK, entity.getDisplayName(), technique.getText()), true);
+                    TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new ServerUpdateUnlockedPacket(data.getUnlocked()));
+                }
             }
         }
         return count;

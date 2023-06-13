@@ -230,7 +230,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
             Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(this, target, dir).left();
             if (technique.isPresent()) {
                 ShootShinsuArrow inst = (ShootShinsuArrow) technique.get();
-                inst.setVelocity(velocity);
+                inst.setVelocity(velocity * 3);
                 inst.getTechnique().cast(target, inst);
                 return;
             } else {

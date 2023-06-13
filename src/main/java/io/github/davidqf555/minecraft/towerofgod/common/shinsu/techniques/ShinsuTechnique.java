@@ -18,6 +18,7 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechn
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -149,6 +150,12 @@ public class ShinsuTechnique extends ForgeRegistryEntry<ShinsuTechnique> {
         stats.addTechnique(instance);
         stats.onCast(user, instance);
         instance.onUse((ServerLevel) user.level);
+    }
+
+    @Override
+    public int hashCode() {
+        ResourceLocation loc = getRegistryName();
+        return loc == null ? 0 : loc.hashCode();
     }
 
     public interface IFactory<T extends ShinsuTechniqueInstance> {
