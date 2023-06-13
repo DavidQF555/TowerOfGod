@@ -2,36 +2,34 @@ package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
-import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public class ShinsuSpear extends SpearItem {
+@ParametersAreNonnullByDefault
+public class ShinsuHoeItem extends HoeItem {
 
-    public ShinsuSpear() {
-        super(ModToolTier.SHINSU, 1, -1.2f, new Properties().setNoRepair());
-    }
-
-    @Nullable
-    @Override
-    protected AbstractArrow launchSpear(LivingEntity user, ItemStack stack) {
-        stack.hurtAndBreak(1, user, p -> p.broadcastBreakEvent(user.getUsedItemHand()));
-        ShinsuTechniqueRegistry.THROW_SPEAR.get().cast(user, null, user.getLookAngle());
-        return null;
+    public ShinsuHoeItem(int attackDamageIn, float attackSpeedIn, Properties properties) {
+        super(ModToolTier.SHINSU, attackDamageIn, attackSpeedIn, properties.setNoRepair());
     }
 
     @Override
@@ -52,15 +50,33 @@ public class ShinsuSpear extends SpearItem {
         }
     }
 
+    @Nonnull
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        ShinsuAttribute attribute = ShinsuAttribute.getAttribute(context.getItemInHand());
+        if (attribute != null) {
+            attribute.applyBlockEffect(context.getPlayer(), new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), context.isInside()));
+        }
+        return super.useOn(context);
+    }
+
     @Override
     public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
         return 0;
     }
 
     @Override
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        Vec3 dir = target.getEyePosition(1).subtract(attacker.getEyePosition(1)).normalize();
+        ShinsuAttribute attribute = ShinsuAttribute.getAttribute(stack);
+        if (attribute != null) {
+            attribute.applyEntityEffect(target, new EntityHitResult(target, dir));
+        }
+        return super.hurtEnemy(stack, target, attacker);
+    }
+
+    @Override
     public int getEntityLifespan(ItemStack itemStack, Level world) {
         return 0;
     }
-
-
 }

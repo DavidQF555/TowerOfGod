@@ -8,8 +8,10 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +30,16 @@ public class PlayerTechniqueData extends RequirementTechniqueData<Player> {
     @Override
     public boolean isUnlocked(Player user, ShinsuTechnique technique) {
         return getUnlocked().contains(technique) && super.isUnlocked(user, technique);
+    }
+
+    public Set<ShinsuTechnique> getUsable(LivingEntity user) {
+        Set<ShinsuTechnique> usable = new HashSet<>();
+        for (ShinsuTechnique technique : getUnlocked()) {
+            if (Arrays.stream(technique.getRequirements()).allMatch(req -> req.isUnlocked(user))) {
+                usable.add(technique);
+            }
+        }
+        return usable;
     }
 
     public boolean unlock(ShinsuTechnique technique) {

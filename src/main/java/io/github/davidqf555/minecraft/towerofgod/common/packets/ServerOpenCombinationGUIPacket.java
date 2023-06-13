@@ -18,27 +18,26 @@ import java.util.function.Supplier;
 public class ServerOpenCombinationGUIPacket {
 
     private static final BiConsumer<ServerOpenCombinationGUIPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
-        buffer.writeInt(message.unlocked.size());
-        for (ShinsuTechnique technique : message.unlocked) {
-            buffer.writeResourceLocation(technique.getId());
-        }
+        buffer.writeInt(message.usable.size());
+        message.usable.forEach(technique -> buffer.writeResourceLocation(ShinsuTechniqueRegistry.getRegistry().getKey(technique)));
     };
     private static final Function<FriendlyByteBuf, ServerOpenCombinationGUIPacket> DECODER = buffer -> {
-        Set<ShinsuTechnique> unlocked = new HashSet<>();
+        Set<ShinsuTechnique> usable = new HashSet<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            unlocked.add(ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation()));
+            usable.add(ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation()));
         }
-        return new ServerOpenCombinationGUIPacket(unlocked);
+        return new ServerOpenCombinationGUIPacket(usable);
     };
     private static final BiConsumer<ServerOpenCombinationGUIPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-    private final Set<ShinsuTechnique> unlocked;
 
-    public ServerOpenCombinationGUIPacket(Set<ShinsuTechnique> unlocked) {
-        this.unlocked = unlocked;
+    private final Set<ShinsuTechnique> usable;
+
+    public ServerOpenCombinationGUIPacket(Set<ShinsuTechnique> usable) {
+        this.usable = usable;
     }
 
     public static void register(int index) {
@@ -46,7 +45,7 @@ public class ServerOpenCombinationGUIPacket {
     }
 
     private void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> ClientReference.openCombinationGUI(unlocked));
+        context.enqueueWork(() -> ClientReference.openCombinationGUI(usable));
         context.setPacketHandled(true);
     }
 }
