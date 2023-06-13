@@ -54,11 +54,7 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
                 ShinsuAttribute attribute = ShinsuQualityData.get(user).getAttribute();
                 arrow.setAttribute(attribute);
                 arrow.setTechnique(getID());
-                float speed = velocity * 3;
-                if (attribute != null) {
-                    speed *= attribute.getSpeed();
-                }
-                arrow.shoot(direction.x(), direction.y(), direction.z(), speed, 1);
+                arrow.shoot(direction.x(), direction.y(), direction.z(), velocity, 1);
                 arrow.setOwner(user);
                 arrow.setPos(user.getX(), user.getEyeY() - 0.1, user.getZ());
                 this.arrow = arrow.getUUID();

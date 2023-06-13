@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
@@ -53,7 +54,8 @@ public class ShinsuBowItem extends BowItem {
             float speed = getPowerForTime(charge);
             if (speed >= 0.1 && !worldIn.isClientSide()) {
                 ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(shooter, null, shooter.getLookAngle()).ifLeft(instance -> {
-                    ((ShootShinsuArrow) instance).setVelocity(speed);
+                    ShinsuAttribute attribute = ShinsuQualityData.get(shooter).getAttribute();
+                    ((ShootShinsuArrow) instance).setVelocity(speed * 3 * (attribute == null ? 1 : (float) attribute.getSpeed()));
                     instance.getTechnique().cast(entity, instance);
                     worldIn.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ARROW_SHOOT, SoundCategory.PLAYERS, 1, 1 / (random.nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
                     shooter.awardStat(Stats.ITEM_USED.get(this));
