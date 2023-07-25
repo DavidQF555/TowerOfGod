@@ -19,7 +19,9 @@
       "conditions": {
         "items": [
           {
-            "item": "towerofgod:clicker"
+            "items": [
+              "towerofgod:clicker"
+            ]
           }
         ]
       }
