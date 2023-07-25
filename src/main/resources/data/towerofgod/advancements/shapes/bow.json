@@ -24,7 +24,9 @@
       "conditions": {
         "items": [
           {
-            "item": "bow"
+            "items": [
+              "bow"
+            ]
           }
         ]
       }
