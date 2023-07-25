@@ -25,7 +25,9 @@
         "items": [
           {
             "count": 64,
-            "item": "dirt"
+            "items": [
+              "dirt"
+            ]
           }
         ]
       }
