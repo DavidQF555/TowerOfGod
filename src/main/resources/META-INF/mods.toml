@@ -8,6 +8,7 @@ version = "${mod_version}"
 displayName = "${mod_name}"
 displayURL = "https://github.com/DavidQF555/TowerOfGod"
 logoFile = "logo.png"
+credits = "Thanks for this mod goes to SIU and his manhwa, Tower of God"
 authors = "${mod_authors}"
 description = 'This mod adds in many features of the Tower of God universe made by SIU. '
 [[dependencies.${ mod_id }]]
