@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -24,7 +25,7 @@ public interface IGeared<T extends LivingEntity> {
 
     static Set<Item> getAllCraftableItems(ServerLevel world, Predicate<Item> filter) {
         return world.getRecipeManager().getRecipes().stream()
-                .map(recipe -> recipe.getResultItem(world.getServer().registryAccess()))
+                .map(Recipe::getResultItem)
                 .map(ItemStack::getItem)
                 .filter(filter)
                 .collect(Collectors.toSet());

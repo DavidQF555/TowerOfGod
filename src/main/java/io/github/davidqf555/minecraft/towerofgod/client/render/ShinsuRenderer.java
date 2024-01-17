@@ -2,7 +2,9 @@ package io.github.davidqf555.minecraft.towerofgod.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
@@ -13,8 +15,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 import javax.annotation.Nonnull;
 
@@ -42,7 +42,7 @@ public class ShinsuRenderer extends EntityRenderer<ShinsuEntity> {
         int alpha = FastColor.ARGB32.alpha(hex);
         matrixStackIn.pushPose();
         matrixStackIn.mulPose(entityRenderDispatcher.cameraOrientation());
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(180f));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180f));
         VertexConsumer builder = bufferIn.getBuffer(TYPE);
         PoseStack.Pose entry = matrixStackIn.last();
         Matrix4f matrix4f = entry.pose();

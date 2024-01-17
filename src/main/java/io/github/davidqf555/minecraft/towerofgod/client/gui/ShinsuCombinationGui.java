@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientConfigs;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
@@ -214,7 +214,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
             float centerY = y + HEIGHT / 2f;
             matrixStack.pushPose();
             matrixStack.translate(centerX, centerY, 0);
-            matrixStack.mulPose(Axis.ZP.rotationDegrees(direction.getAngle() + offset + 180));
+            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(direction.getAngle() + offset + 180));
             matrixStack.translate(-centerX, -centerY, 0);
             type.texture.render(new RenderContext(matrixStack, x, y, z, WIDTH, HEIGHT, color));
             matrixStack.popPose();

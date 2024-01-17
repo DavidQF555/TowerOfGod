@@ -6,7 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -39,13 +39,13 @@ public enum ModArmorTier implements ArmorMaterial {
     }
 
     @Override
-    public int getDurabilityForType(ArmorItem.Type slotIn) {
-        return MAX_DAMAGE_ARRAY[slotIn.getSlot().getIndex()] * max;
+    public int getDurabilityForSlot(EquipmentSlot slotIn) {
+        return MAX_DAMAGE_ARRAY[slotIn.getIndex()] * max;
     }
 
     @Override
-    public int getDefenseForType(ArmorItem.Type slotIn) {
-        return damageReduction[slotIn.getSlot().getIndex()];
+    public int getDefenseForSlot(EquipmentSlot slotIn) {
+        return damageReduction[slotIn.getIndex()];
     }
 
     @Override

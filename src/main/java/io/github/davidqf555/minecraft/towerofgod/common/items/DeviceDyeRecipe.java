@@ -4,13 +4,11 @@ import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.RecipeRegistry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -24,8 +22,8 @@ public class DeviceDyeRecipe extends CustomRecipe {
 
     private static final List<? extends Item> COLORABLE = ItemRegistry.COLORED_DEVICE_ITEMS.stream().map(RegistryObject::get).toList();
 
-    public DeviceDyeRecipe(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, category);
+    public DeviceDyeRecipe(ResourceLocation idIn) {
+        super(idIn);
     }
 
     @Override
@@ -48,7 +46,7 @@ public class DeviceDyeRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess access) {
+    public ItemStack assemble(CraftingContainer inv) {
         ItemStack device = ItemStack.EMPTY;
         ItemStack dye = ItemStack.EMPTY;
         for (int i = 0; i < inv.getContainerSize(); i++) {

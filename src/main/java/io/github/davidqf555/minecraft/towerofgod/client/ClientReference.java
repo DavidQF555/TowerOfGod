@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.GuideScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuCombinationGui;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuMeterGui;
@@ -22,7 +23,6 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import org.joml.Matrix4f;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -72,7 +72,7 @@ public final class ClientReference {
     }
 
     public static void renderItemStackData(ItemStackRenderData data, RenderContext context) {
-        Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(context.getPoseStack(), data.get(), (int) context.getX(), (int) context.getY());
+        Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(data.get(), (int) context.getX(), (int) context.getY());
     }
 
     public static void openCombinationGUI(Set<ShinsuTechnique> usable) {

@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -42,7 +43,7 @@ public class FlareWaveExplosion extends ShinsuTechniqueInstance {
         Entity t = world.getEntity(target);
         if (user != null && t instanceof LivingEntity target && user.distanceToSqr(t) <= RANGE * RANGE) {
             float damage = (float) (5 / ShinsuStats.getNetResistance(user, target));
-            target.hurt(world.damageSources().magic(), damage);
+            target.hurt(DamageSource.MAGIC, damage);
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (damage * 20), (int) (damage / 2), false, false, false));
         }
     }

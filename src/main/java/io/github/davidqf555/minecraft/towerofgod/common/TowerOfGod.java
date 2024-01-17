@@ -6,6 +6,8 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttri
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -19,6 +21,12 @@ import net.minecraftforge.network.simple.SimpleChannel;
 public class TowerOfGod {
 
     public static final String MOD_ID = "towerofgod";
+    public static final CreativeModeTab TAB = new CreativeModeTab(MOD_ID) {
+        @Override
+        public ItemStack makeIcon() {
+            return ItemRegistry.SUSPENDIUM.get().getDefaultInstance();
+        }
+    };
     private static final String PROTOCOL_VERSION = "1";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(TowerOfGod.MOD_ID, TowerOfGod.MOD_ID),

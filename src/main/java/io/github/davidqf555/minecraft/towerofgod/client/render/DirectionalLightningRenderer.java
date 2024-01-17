@@ -2,7 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -11,8 +12,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Random;
@@ -28,7 +27,7 @@ public class DirectionalLightningRenderer extends EntityRenderer<DirectionalLigh
     public void render(DirectionalLightningBoltEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         Vector3f dif = entityIn.getStart();
         float totalHeightRadius = entityIn.getBbHeight() / 2f;
-        dif.sub((float) entityIn.getX(), (float) entityIn.getY() + totalHeightRadius, (float) entityIn.getZ(), dif);
+        dif.sub(new Vector3f((float) entityIn.getX(), (float) entityIn.getY() + totalHeightRadius, (float) entityIn.getZ()));
         float length = Mth.sqrt(dif.x() * dif.x() + dif.y() * dif.y() + dif.z() * dif.z());
         int segments = getSegments(length);
         Vector3f[] vertexes = new Vector3f[segments];
@@ -48,8 +47,8 @@ public class DirectionalLightningRenderer extends EntityRenderer<DirectionalLigh
         matrixStackIn.pushPose();
         float yaw = (float) Math.PI / 2 - (float) Mth.atan2(-dif.z(), dif.x());
         float pitch = (float) Math.asin(dif.y() / length);
-        matrixStackIn.mulPose(Axis.YN.rotation(yaw));
-        matrixStackIn.mulPose(Axis.XP.rotation(pitch));
+        matrixStackIn.mulPose(Vector3f.YN.rotation(yaw));
+        matrixStackIn.mulPose(Vector3f.XP.rotation(pitch));
         VertexConsumer builder = bufferIn.getBuffer(RenderType.lightning());
         Matrix4f matrix4f = matrixStackIn.last().pose();
         int color = getColor();

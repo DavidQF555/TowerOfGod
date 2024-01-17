@@ -5,7 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
-import net.minecraft.data.PackOutput;
+import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
@@ -14,8 +14,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class DataGenItemModelProvider extends ItemModelProvider {
 
-    public DataGenItemModelProvider(PackOutput output, ExistingFileHelper files) {
-        super(output, TowerOfGod.MOD_ID, files);
+    public DataGenItemModelProvider(DataGenerator gen, ExistingFileHelper files) {
+        super(gen, TowerOfGod.MOD_ID, files);
     }
 
     @Override

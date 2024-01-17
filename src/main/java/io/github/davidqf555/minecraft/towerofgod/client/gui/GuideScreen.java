@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
@@ -73,7 +73,7 @@ public class GuideScreen extends Screen {
             Direction dir = combo.get(i);
             matrixStack.pushPose();
             matrixStack.translate(arrowX, arrowY, 0);
-            matrixStack.mulPose(Axis.ZP.rotationDegrees(dir.getAngle() + 180));
+            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(dir.getAngle() + 180));
             matrixStack.translate(-arrowX, -arrowY, 0);
             ARROW.render(new RenderContext(matrixStack, arrowX - ARROW_WIDTH / 2f, arrowY - ARROW_HEIGHT / 2f, 0, ARROW_WIDTH, ARROW_HEIGHT, color));
             matrixStack.popPose();
@@ -154,12 +154,12 @@ public class GuideScreen extends Screen {
         @Override
         public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             if (visible) {
-                render.render(new RenderContext(matrixStack, getX(), getY(), 0, width, height, 0xFFFFFFFF));
+                render.render(new RenderContext(matrixStack, x, y, 0, width, height, 0xFFFFFFFF));
             }
         }
 
         @Override
-        public void updateWidgetNarration(NarrationElementOutput output) {
+        public void updateNarration(NarrationElementOutput output) {
             defaultButtonNarrationText(output);
         }
 

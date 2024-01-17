@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
+import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
@@ -12,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 

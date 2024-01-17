@@ -7,7 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -25,7 +25,7 @@ public class FireExplosion extends GroundTechniqueInstance {
 
     @Override
     public void doEffect(ServerLevel world, Vec3 pos) {
-        world.explode(getUser(world), pos.x(), pos.y(), pos.z(), 2, true, Level.ExplosionInteraction.MOB);
+        world.explode(getUser(world), pos.x(), pos.y(), pos.z(), 2, true, Explosion.BlockInteraction.NONE);
         world.sendParticles(ParticleTypes.FLAME, pos.x(), pos.y(), pos.z(), 100, 2, 2, 2, 0.2);
     }
 

@@ -1,6 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
 import com.mojang.datafixers.util.Either;
+import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
