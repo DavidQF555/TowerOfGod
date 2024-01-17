@@ -5,7 +5,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.RecipeRegistry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
@@ -24,8 +23,8 @@ public class DeviceDyeRecipe extends CustomRecipe {
 
     private static final List<? extends Item> COLORABLE = ItemRegistry.COLORED_DEVICE_ITEMS.stream().map(RegistryObject::get).toList();
 
-    public DeviceDyeRecipe(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, category);
+    public DeviceDyeRecipe(CraftingBookCategory category) {
+        super(category);
     }
 
     @Override

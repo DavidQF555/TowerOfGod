@@ -44,7 +44,7 @@ public class GuideItem extends Item {
         if (playerIn instanceof ServerPlayer) {
             ShinsuTechnique[] pages = PlayerTechniqueData.get(playerIn).getUnlocked().toArray(new ShinsuTechnique[0]);
             if (pages.length > 0) {
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerIn), new OpenGuideScreenPacket(pages, color));
+                TowerOfGod.CHANNEL.send(new OpenGuideScreenPacket(pages, color), PacketDistributor.PLAYER.with((ServerPlayer) playerIn));
                 playerIn.awardStat(Stats.ITEM_USED.get(this));
             } else {
                 playerIn.sendSystemMessage(EMPTY);

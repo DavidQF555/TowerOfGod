@@ -3,13 +3,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ServerUpdateCastingPacket {
 
@@ -18,10 +16,6 @@ public class ServerUpdateCastingPacket {
         buffer.writeBoolean(message.casting);
     };
     private static final Function<FriendlyByteBuf, ServerUpdateCastingPacket> DECODER = buffer -> new ServerUpdateCastingPacket(buffer.readInt(), buffer.readBoolean());
-    private static final BiConsumer<ServerUpdateCastingPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        NetworkEvent.Context cont = context.get();
-        message.handle(cont);
-    };
 
     private final int id;
     private final boolean casting;
@@ -32,12 +26,15 @@ public class ServerUpdateCastingPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ServerUpdateCastingPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        TowerOfGod.CHANNEL.messageBuilder(ServerUpdateCastingPacket.class, index, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ENCODER)
+                .decoder(DECODER)
+                .consumerMainThread(ServerUpdateCastingPacket::handle)
+                .add();
     }
 
-    private void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> ClientReference.handleUpdateCastingPacket(id, casting));
-        context.setPacketHandled(true);
+    private void handle(CustomPayloadEvent.Context context) {
+        ClientReference.handleUpdateCastingPacket(id, casting);
     }
 
 }

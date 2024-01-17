@@ -24,15 +24,15 @@ public final class PersistentDataEventSubscriber {
         Player player = event.getEntity();
         Entity target = event.getTarget();
         if (player instanceof ServerPlayer && target instanceof Player) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new ServerUpdateAttributePacket(target.getId(), ShinsuQualityData.get(target).getAttribute()));
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new ServerUpdateCastingPacket(target.getId(), CastingData.get((Player) target).isCasting()));
+            TowerOfGod.CHANNEL.send(new ServerUpdateAttributePacket(target.getId(), ShinsuQualityData.get(target).getAttribute()), PacketDistributor.PLAYER.with((ServerPlayer) player));
+            TowerOfGod.CHANNEL.send(new ServerUpdateCastingPacket(target.getId(), CastingData.get((Player) target).isCasting()), PacketDistributor.PLAYER.with((ServerPlayer) player));
         }
     }
 
     @SubscribeEvent
     public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
-        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new ServerUpdateAttributePacket(player.getId(), ShinsuQualityData.get(player).getAttribute()));
+        TowerOfGod.CHANNEL.send(new ServerUpdateAttributePacket(player.getId(), ShinsuQualityData.get(player).getAttribute()), PacketDistributor.PLAYER.with((ServerPlayer) player));
     }
 
 }

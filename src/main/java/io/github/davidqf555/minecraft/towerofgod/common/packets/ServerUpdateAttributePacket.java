@@ -5,14 +5,12 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ServerUpdateAttributePacket {
 
@@ -24,10 +22,6 @@ public class ServerUpdateAttributePacket {
         }
     };
     private static final Function<FriendlyByteBuf, ServerUpdateAttributePacket> DECODER = buffer -> new ServerUpdateAttributePacket(buffer.readInt(), buffer.readBoolean() ? null : ShinsuAttributeRegistry.getRegistry().getValue(buffer.readResourceLocation()));
-    private static final BiConsumer<ServerUpdateAttributePacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        NetworkEvent.Context cont = context.get();
-        message.handle(cont);
-    };
 
     private final int id;
     private final ShinsuAttribute attribute;
@@ -38,12 +32,15 @@ public class ServerUpdateAttributePacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ServerUpdateAttributePacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        TowerOfGod.CHANNEL.messageBuilder(ServerUpdateAttributePacket.class, index, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ENCODER)
+                .decoder(DECODER)
+                .consumerMainThread(ServerUpdateAttributePacket::handle)
+                .add();
     }
 
-    private void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> ClientReference.handleUpdateAttributePacket(id, attribute));
-        context.setPacketHandled(true);
+    private void handle(CustomPayloadEvent.Context context) {
+        ClientReference.handleUpdateAttributePacket(id, attribute);
     }
 
 }

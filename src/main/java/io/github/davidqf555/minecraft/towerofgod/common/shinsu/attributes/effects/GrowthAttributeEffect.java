@@ -22,14 +22,14 @@ public class GrowthAttributeEffect implements ShinsuAttributeEffect<BlockHitResu
         BlockState state = user.level().getBlockState(pos);
         Block b = state.getBlock();
         if (b instanceof BonemealableBlock) {
-            if (user.level() instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level(), pos, state, user.level().isClientSide())) {
+            if (user.level() instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level(), pos, state)) {
                 ((BonemealableBlock) b).performBonemeal((ServerLevel) user.level(), user.level().random, pos, state);
             }
         } else {
             state = user.level().getBlockState(hit);
             b = state.getBlock();
             if (b instanceof BonemealableBlock) {
-                if (user.level() instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level(), hit, state, user.level().isClientSide())) {
+                if (user.level() instanceof ServerLevel && ((BonemealableBlock) b).isValidBonemealTarget(user.level(), hit, state)) {
                     ((BonemealableBlock) b).performBonemeal((ServerLevel) user.level(), user.level().random, hit, state);
                 }
             }

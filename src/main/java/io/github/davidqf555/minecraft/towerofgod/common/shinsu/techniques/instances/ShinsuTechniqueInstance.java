@@ -92,7 +92,7 @@ public abstract class ShinsuTechniqueInstance implements INBTSerializable<Compou
         Entity user = getUser(world);
         if (user instanceof ServerPlayer) {
             ShinsuStats stats = ShinsuStats.get(user);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) user), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(user), stats.getMaxShinsu()));
+            TowerOfGod.CHANNEL.send(new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(user), stats.getMaxShinsu()), PacketDistributor.PLAYER.with((ServerPlayer) user));
         }
     }
 

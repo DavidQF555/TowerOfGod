@@ -56,8 +56,8 @@ public final class DataEventSubscriber {
     public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
         ShinsuStats stats = ShinsuStats.get(player);
-        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(player), stats.getMaxShinsu()));
-        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new ServerUpdateUnlockedPacket(PlayerTechniqueData.get(player).getUnlocked()));
+        TowerOfGod.CHANNEL.send(new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(player), stats.getMaxShinsu()), PacketDistributor.PLAYER.with((ServerPlayer) player));
+        TowerOfGod.CHANNEL.send(new ServerUpdateUnlockedPacket(PlayerTechniqueData.get(player).getUnlocked()), PacketDistributor.PLAYER.with((ServerPlayer) player));
     }
 
     @SubscribeEvent

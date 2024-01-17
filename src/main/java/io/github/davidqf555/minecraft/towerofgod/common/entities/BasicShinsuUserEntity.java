@@ -117,7 +117,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
                 stats.setTension(stats.getTension() * (1 + Math.max(0, killed.getTension() - stats.getTension()) / 5));
                 stats.setResistance(stats.getResistance() * (1 + Math.max(0, killed.getResistance() - stats.getResistance()) / 5));
                 if (credit instanceof ServerPlayer) {
-                    TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) credit), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(credit), stats.getMaxShinsu()));
+                    TowerOfGod.CHANNEL.send(new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(credit), stats.getMaxShinsu()), PacketDistributor.PLAYER.with((ServerPlayer) credit));
                 }
             }
         }

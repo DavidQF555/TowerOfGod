@@ -4,7 +4,10 @@ import io.github.davidqf555.minecraft.towerofgod.common.items.HookItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.NeedleItem;
 import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.data.PackOutput;
@@ -18,8 +21,9 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class DataGenRecipeProvider extends RecipeProvider {
 
@@ -28,14 +32,14 @@ public class DataGenRecipeProvider extends RecipeProvider {
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(RecipeOutput consumer) {
         for (RegistryObject<NeedleItem> registry : ItemRegistry.NEEDLE_ITEMS) {
             NeedleItem item = registry.get();
             Tier tier = item.getTier();
             Ingredient material = tier.getRepairIngredient();
             if (tier.equals(Tiers.NETHERITE)) {
                 SmithingTransformRecipeBuilder.smithing(Ingredient.EMPTY, Ingredient.of(ItemRegistry.DIAMOND_NEEDLE.get()), material, RecipeCategory.COMBAT, item)
-                        .unlocks("has_material", inventoryTrigger(getPredicates(material)))
+                        .unlocks("has_material", getTrigger(material))
                         .save(consumer, registry.getId());
 
             } else {
@@ -45,8 +49,8 @@ public class DataGenRecipeProvider extends RecipeProvider {
                         .pattern("  y")
                         .define('x', material)
                         .define('y', Items.IRON_INGOT)
-                        .unlockedBy("has_material", inventoryTrigger(getPredicates(material)))
-                        .save(consumer);
+                        .unlockedBy("has_material", getTrigger(material))
+                        .save(consumer, registry.getId());
             }
         }
         for (RegistryObject<? extends HookItem> registry : ItemRegistry.CRAFTABLE_HOOKS) {
@@ -55,7 +59,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
             Ingredient material = tier.getRepairIngredient();
             if (tier.equals(Tiers.NETHERITE)) {
                 SmithingTransformRecipeBuilder.smithing(Ingredient.EMPTY, Ingredient.of(ItemRegistry.DIAMOND_HOOK.get()), material, RecipeCategory.COMBAT, item)
-                        .unlocks("has_material", inventoryTrigger(getPredicates(material)))
+                        .unlocks("has_material", getTrigger(material))
                         .save(consumer, registry.getId());
 
             } else {
@@ -64,8 +68,8 @@ public class DataGenRecipeProvider extends RecipeProvider {
                         .pattern("x x")
                         .pattern("x  ")
                         .define('x', material)
-                        .unlockedBy("has_material", inventoryTrigger(getPredicates(material)))
-                        .save(consumer);
+                        .unlockedBy("has_material", getTrigger(material))
+                        .save(consumer, registry.getId());
             }
         }
         for (RegistryObject<? extends SpearItem> registry : ItemRegistry.CRAFTABLE_SPEARS) {
@@ -74,7 +78,7 @@ public class DataGenRecipeProvider extends RecipeProvider {
             Ingredient material = tier.getRepairIngredient();
             if (tier.equals(Tiers.NETHERITE)) {
                 SmithingTransformRecipeBuilder.smithing(Ingredient.EMPTY, Ingredient.of(ItemRegistry.DIAMOND_SPEAR.get()), material, RecipeCategory.COMBAT, item)
-                        .unlocks("has_material", inventoryTrigger(getPredicates(material)))
+                        .unlocks("has_material", getTrigger(material))
                         .save(consumer, registry.getId());
 
             } else {
@@ -84,10 +88,15 @@ public class DataGenRecipeProvider extends RecipeProvider {
                         .pattern("y  ")
                         .define('x', material)
                         .define('y', Items.STICK)
-                        .unlockedBy("has_material", inventoryTrigger(getPredicates(material)))
-                        .save(consumer);
+                        .unlockedBy("has_material", getTrigger(material))
+                        .save(consumer, registry.getId());
             }
         }
+    }
+
+    private Criterion<InventoryChangeTrigger.TriggerInstance> getTrigger(Ingredient ingredient) {
+        ItemPredicate[] predicates = getPredicates(ingredient);
+        return CriteriaTriggers.INVENTORY_CHANGED.createCriterion(new InventoryChangeTrigger.TriggerInstance(Optional.empty(), MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, List.of(predicates)));
     }
 
     private ItemPredicate[] getPredicates(Ingredient ingredient) {

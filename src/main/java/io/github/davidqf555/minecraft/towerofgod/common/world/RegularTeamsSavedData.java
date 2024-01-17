@@ -7,6 +7,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -39,7 +40,7 @@ public class RegularTeamsSavedData extends SavedData {
     }
 
     public static RegularTeamsSavedData getOrCreate(ServerLevel world) {
-        return world.getDataStorage().computeIfAbsent(RegularTeamsSavedData::new, RegularTeamsSavedData::new, NAME);
+        return world.getDataStorage().computeIfAbsent(new Factory<>(RegularTeamsSavedData::new, RegularTeamsSavedData::new, DataFixTypes.LEVEL), NAME);
     }
 
     public static RegularTeam getOrCreateTeam(ServerLevel world, RegularEntity entity) {

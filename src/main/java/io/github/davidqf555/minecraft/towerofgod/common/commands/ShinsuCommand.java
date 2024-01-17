@@ -108,7 +108,7 @@ public final class ShinsuCommand {
             ShinsuStats stats = ShinsuStats.get(entity);
             stats.setMaxShinsu(shinsu);
             if (entity instanceof ServerPlayer) {
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(entity), stats.getMaxShinsu()));
+                TowerOfGod.CHANNEL.send(new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(entity), stats.getMaxShinsu()), PacketDistributor.PLAYER.with((ServerPlayer) entity));
             }
             source.sendSuccess(() -> Component.translatable(SHINSU, entity.getDisplayName(), shinsu), true);
         }
@@ -147,7 +147,7 @@ public final class ShinsuCommand {
                 if (data.unlock(technique)) {
                     count++;
                     source.sendSuccess(() -> Component.translatable(UNLOCK, entity.getDisplayName(), technique.getText()), true);
-                    TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new ServerUpdateUnlockedPacket(data.getUnlocked()));
+                    TowerOfGod.CHANNEL.send(new ServerUpdateUnlockedPacket(data.getUnlocked()), PacketDistributor.PLAYER.with((ServerPlayer) entity));
                 }
             }
         }
@@ -162,7 +162,7 @@ public final class ShinsuCommand {
                 if (data.lock(technique)) {
                     count++;
                     source.sendSuccess(() -> Component.translatable(LOCK, entity.getDisplayName(), technique.getText()), true);
-                    TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new ServerUpdateUnlockedPacket(data.getUnlocked()));
+                    TowerOfGod.CHANNEL.send(new ServerUpdateUnlockedPacket(data.getUnlocked()), PacketDistributor.PLAYER.with((ServerPlayer) entity));
                 }
             }
         }
@@ -173,7 +173,7 @@ public final class ShinsuCommand {
         for (Entity entity : entities) {
             ShinsuQualityData.get(entity).setAttribute(attribute);
             if (entity instanceof ServerPlayer) {
-                TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ServerUpdateAttributePacket(entity.getId(), attribute));
+                TowerOfGod.CHANNEL.send(new ServerUpdateAttributePacket(entity.getId(), attribute), PacketDistributor.TRACKING_ENTITY_AND_SELF.with(entity));
             }
             source.sendSuccess(() -> Component.translatable(ATTRIBUTE, entity.getDisplayName(), attribute.getName()), true);
         }
@@ -192,7 +192,7 @@ public final class ShinsuCommand {
         for (Entity entity : entities) {
             ShinsuQualityData.get(entity).setAttribute(null);
             if (entity instanceof ServerPlayer) {
-                TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ServerUpdateAttributePacket(entity.getId(), null));
+                TowerOfGod.CHANNEL.send(new ServerUpdateAttributePacket(entity.getId(), null), PacketDistributor.TRACKING_ENTITY_AND_SELF.with(entity));
             }
             source.sendSuccess(() -> Component.translatable(REMOVE_ATTRIBUTE, entity.getDisplayName()), true);
         }

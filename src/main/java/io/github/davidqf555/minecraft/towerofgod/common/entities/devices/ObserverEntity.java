@@ -48,7 +48,7 @@ public class ObserverEntity extends FlyingDevice {
         }
         Entity owner = getOwner();
         if (owner instanceof ServerPlayer) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) owner), new ObserverChangeHighlightPacket(getUUID(), targets));
+            TowerOfGod.CHANNEL.send(new ObserverChangeHighlightPacket(getUUID(), targets), PacketDistributor.PLAYER.with((ServerPlayer) owner));
         }
         super.aiStep();
     }
@@ -62,7 +62,7 @@ public class ObserverEntity extends FlyingDevice {
     public void setOwnerID(@Nonnull UUID id) {
         Entity owner = getOwner();
         if (owner instanceof ServerPlayer) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) owner), new ObserverChangeHighlightPacket(getUUID(), new HashSet<>()));
+            TowerOfGod.CHANNEL.send(new ObserverChangeHighlightPacket(getUUID(), new HashSet<>()), PacketDistributor.PLAYER.with((ServerPlayer) owner));
         }
         super.setOwnerID(id);
     }
@@ -71,7 +71,7 @@ public class ObserverEntity extends FlyingDevice {
     public void onRemovedFromWorld() {
         Entity owner = getOwner();
         if (owner instanceof ServerPlayer) {
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) owner), new ObserverChangeHighlightPacket(getUUID(), new HashSet<>()));
+            TowerOfGod.CHANNEL.send(new ObserverChangeHighlightPacket(getUUID(), new HashSet<>()), PacketDistributor.PLAYER.with((ServerPlayer) owner));
         }
         super.onRemovedFromWorld();
     }

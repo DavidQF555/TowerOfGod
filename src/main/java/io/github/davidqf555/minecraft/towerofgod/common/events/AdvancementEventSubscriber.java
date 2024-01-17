@@ -4,7 +4,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PredictedShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
-import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -21,16 +21,18 @@ public final class AdvancementEventSubscriber {
     @SubscribeEvent
     public static void onAdvancement(AdvancementEvent event) {
         Player player = event.getEntity();
-        Advancement advancement = event.getAdvancement();
-        Advancement parent = advancement.getParent();
-        if (player instanceof ServerPlayer && parent != null) {
-            if (parent.getId().equals(ShinsuAttributeRegistry.ADVANCEMENT)) {
-                PredictedShinsuQuality.get(player).setAttribute(ShinsuAttributeRegistry.getRegistry().getValue(getLocation(advancement.getId())));
-                revokeAdvancement((ServerPlayer) player, advancement);
-            } else if (parent.getId().equals(ShinsuShapeRegistry.ADVANCEMENT)) {
-                PredictedShinsuQuality.get(player).setShape(ShinsuShapeRegistry.getRegistry().getValue(getLocation(advancement.getId())));
-                revokeAdvancement((ServerPlayer) player, advancement);
-            }
+        if (player instanceof ServerPlayer) {
+            AdvancementHolder advancement = event.getAdvancement();
+            ResourceLocation id = advancement.id();
+            advancement.value().parent().ifPresent(parent -> {
+                if (parent.equals(ShinsuAttributeRegistry.ADVANCEMENT)) {
+                    PredictedShinsuQuality.get(player).setAttribute(ShinsuAttributeRegistry.getRegistry().getValue(getLocation(id)));
+                    revokeAdvancement((ServerPlayer) player, advancement);
+                } else if (parent.equals(ShinsuShapeRegistry.ADVANCEMENT)) {
+                    PredictedShinsuQuality.get(player).setShape(ShinsuShapeRegistry.getRegistry().getValue(getLocation(id)));
+                    revokeAdvancement((ServerPlayer) player, advancement);
+                }
+            });
         }
     }
 
@@ -39,8 +41,8 @@ public final class AdvancementEventSubscriber {
         return new ResourceLocation(advancement.getNamespace(), split[split.length - 1]);
     }
 
-    private static void revokeAdvancement(ServerPlayer player, Advancement advancement) {
-        advancement.getCriteria().keySet().forEach(criterion -> player.getAdvancements().revoke(advancement, criterion));
+    private static void revokeAdvancement(ServerPlayer player, AdvancementHolder advancement) {
+        advancement.value().criteria().keySet().forEach(criterion -> player.getAdvancements().revoke(advancement, criterion));
     }
 
 }

@@ -4,16 +4,14 @@ import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.client.events.ObserverEventBusSubscriber;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ObserverChangeHighlightPacket {
 
@@ -33,10 +31,6 @@ public class ObserverChangeHighlightPacket {
         }
         return new ObserverChangeHighlightPacket(id, entities);
     };
-    private static final BiConsumer<ObserverChangeHighlightPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        NetworkEvent.Context cont = context.get();
-        message.handle(cont);
-    };
     private final UUID id;
     private final Set<UUID> entities;
 
@@ -46,11 +40,14 @@ public class ObserverChangeHighlightPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ObserverChangeHighlightPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        TowerOfGod.CHANNEL.messageBuilder(ObserverChangeHighlightPacket.class, index, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ENCODER)
+                .decoder(DECODER)
+                .consumerMainThread(ObserverChangeHighlightPacket::handle)
+                .add();
     }
 
-    private void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
+    private void handle(CustomPayloadEvent.Context context) {
             if (ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.containsKey(id)) {
                 Pair<Set<UUID>, Set<UUID>> pair = ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.get(id);
                 Set<UUID> highlight = pair.getFirst();
@@ -61,7 +58,5 @@ public class ObserverChangeHighlightPacket {
             } else {
                 ObserverEventBusSubscriber.START_STOP_HIGHLIGHT.put(id, Pair.of(entities, new HashSet<>()));
             }
-        });
-        context.setPacketHandled(true);
     }
 }

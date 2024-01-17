@@ -3,13 +3,11 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class UpdateShinsuMeterPacket {
 
@@ -18,10 +16,6 @@ public class UpdateShinsuMeterPacket {
         buffer.writeInt(message.maxShinsu);
     };
     private static final Function<FriendlyByteBuf, UpdateShinsuMeterPacket> DECODER = buffer -> new UpdateShinsuMeterPacket(buffer.readInt(), buffer.readInt());
-    private static final BiConsumer<UpdateShinsuMeterPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        NetworkEvent.Context cont = context.get();
-        message.handle(cont);
-    };
 
     private final int shinsu;
     private final int maxShinsu;
@@ -32,15 +26,16 @@ public class UpdateShinsuMeterPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, UpdateShinsuMeterPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        TowerOfGod.CHANNEL.messageBuilder(UpdateShinsuMeterPacket.class, index, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ENCODER)
+                .decoder(DECODER)
+                .consumerMainThread(UpdateShinsuMeterPacket::handle)
+                .add();
     }
 
-    private void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
+    private void handle(CustomPayloadEvent.Context context) {
             ClientReference.SHINSU.setValue(shinsu);
             ClientReference.SHINSU.setMax(maxShinsu);
-        });
-        context.setPacketHandled(true);
     }
 
 }

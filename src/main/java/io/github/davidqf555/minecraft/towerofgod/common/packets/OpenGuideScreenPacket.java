@@ -5,13 +5,11 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class OpenGuideScreenPacket {
 
@@ -30,11 +28,6 @@ public class OpenGuideScreenPacket {
         }
         return new OpenGuideScreenPacket(pages, buffer.readInt());
     };
-    private static final BiConsumer<OpenGuideScreenPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        NetworkEvent.Context cont = context.get();
-        message.handle(cont);
-    };
-
     private final ShinsuTechnique[] pages;
     private final int color;
 
@@ -44,12 +37,15 @@ public class OpenGuideScreenPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, OpenGuideScreenPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        TowerOfGod.CHANNEL.messageBuilder(OpenGuideScreenPacket.class, index, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ENCODER)
+                .decoder(DECODER)
+                .consumerMainThread(OpenGuideScreenPacket::handle)
+                .add();
     }
 
-    private void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> ClientReference.openGuideScreen(pages, color));
-        context.setPacketHandled(true);
+    private void handle(CustomPayloadEvent.Context context) {
+        ClientReference.openGuideScreen(pages, color);
     }
 
 }

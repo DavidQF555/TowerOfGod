@@ -58,7 +58,7 @@ public class ClickerItem extends Item {
                 entity.setShape(shape);
                 CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, item);
                 serverPlayer.awardStat(Stats.ITEM_USED.get(this));
-                TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> serverPlayer), new ServerUpdateAttributePacket(serverPlayer.getId(), attribute));
+                TowerOfGod.CHANNEL.send(new ServerUpdateAttributePacket(serverPlayer.getId(), attribute), PacketDistributor.TRACKING_ENTITY_AND_SELF.with(serverPlayer));
             }
             worldIn.addFreshEntity(entity);
             return InteractionResultHolder.sidedSuccess(item, playerIn.level().isClientSide());

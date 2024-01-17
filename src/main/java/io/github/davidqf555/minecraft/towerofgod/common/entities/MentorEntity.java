@@ -77,7 +77,7 @@ public class MentorEntity extends RankerEntity {
             PlayerTechniqueData data = PlayerTechniqueData.get((Player) credit);
             if (data.unlock(technique)) {
                 credit.sendSystemMessage(Component.translatable(DEATH, technique.getText()));
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) credit), new ServerUpdateUnlockedPacket(data.getUnlocked()));
+                TowerOfGod.CHANNEL.send(new ServerUpdateUnlockedPacket(data.getUnlocked()), PacketDistributor.PLAYER.with((ServerPlayer) credit));
             }
         }
     }

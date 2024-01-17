@@ -24,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public class ShinsuCombinationGui implements IGuiOverlay {
         if (client.player != null && !client.player.isSpectator()) {
             if (KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
                 if (!enabled) {
-                    TowerOfGod.CHANNEL.sendToServer(new ClientOpenCombinationGUIPacket());
-                    TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(true));
+                    TowerOfGod.CHANNEL.send(new ClientOpenCombinationGUIPacket(), PacketDistributor.SERVER.noArg());
+                    TowerOfGod.CHANNEL.send(new ClientUpdateCastingPacket(true), PacketDistributor.SERVER.noArg());
                     prevYaw = client.player.yHeadRot;
                     prevPitch = client.player.getXRot();
                     enabled = true;
@@ -86,9 +87,9 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                 }
             } else {
                 if (selected != null) {
-                    TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket(selected));
+                    TowerOfGod.CHANNEL.send(new CastShinsuPacket(selected), PacketDistributor.SERVER.noArg());
                 }
-                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateCastingPacket(false));
+                TowerOfGod.CHANNEL.send(new ClientUpdateCastingPacket(false), PacketDistributor.SERVER.noArg());
                 reset();
             }
         }
@@ -118,7 +119,7 @@ public class ShinsuCombinationGui implements IGuiOverlay {
                 prevPitch = client.player.getXRot();
             }
         } else {
-            TowerOfGod.CHANNEL.sendToServer(new ClientUpdateClientErrorPacket(selected));
+            TowerOfGod.CHANNEL.send(new ClientUpdateClientErrorPacket(selected), PacketDistributor.SERVER.noArg());
         }
     }
 

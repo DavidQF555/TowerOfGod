@@ -35,7 +35,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.network.IContainerFactory;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -94,7 +93,7 @@ public class LighthouseEntity extends FlyingDevice implements MenuProvider {
             if (!player.isCrouching() && player.getItemInHand(hand).isEmpty()) {
                 return player.startRiding(this) ? InteractionResult.SUCCESS : InteractionResult.PASS;
             } else {
-                NetworkHooks.openScreen((ServerPlayer) player, this, buf -> buf.writeVarInt(getId()));
+                player.openMenu(this);
                 return InteractionResult.SUCCESS;
             }
         }

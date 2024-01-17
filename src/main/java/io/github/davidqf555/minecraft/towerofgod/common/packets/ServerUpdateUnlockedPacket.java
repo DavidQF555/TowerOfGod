@@ -5,15 +5,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ServerUpdateUnlockedPacket {
 
@@ -31,10 +29,6 @@ public class ServerUpdateUnlockedPacket {
         }
         return new ServerUpdateUnlockedPacket(unlocked);
     };
-    private static final BiConsumer<ServerUpdateUnlockedPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        NetworkEvent.Context cont = context.get();
-        message.handle(cont);
-    };
     private final Set<ShinsuTechnique> unlocked;
 
     public ServerUpdateUnlockedPacket(Set<ShinsuTechnique> unlocked) {
@@ -42,15 +36,16 @@ public class ServerUpdateUnlockedPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ServerUpdateUnlockedPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        TowerOfGod.CHANNEL.messageBuilder(ServerUpdateUnlockedPacket.class, index, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ENCODER)
+                .decoder(DECODER)
+                .consumerMainThread(ServerUpdateUnlockedPacket::handle)
+                .add();
     }
 
-    private void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
+    private void handle(CustomPayloadEvent.Context context) {
             ClientReference.UNLOCKED.clear();
             ClientReference.UNLOCKED.addAll(unlocked);
-        });
-        context.setPacketHandled(true);
     }
 
 }

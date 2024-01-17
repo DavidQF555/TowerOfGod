@@ -5,15 +5,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class ServerOpenCombinationGUIPacket {
 
@@ -29,10 +27,6 @@ public class ServerOpenCombinationGUIPacket {
         }
         return new ServerOpenCombinationGUIPacket(usable);
     };
-    private static final BiConsumer<ServerOpenCombinationGUIPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
-        NetworkEvent.Context cont = context.get();
-        message.handle(cont);
-    };
 
     private final Set<ShinsuTechnique> usable;
 
@@ -41,11 +35,15 @@ public class ServerOpenCombinationGUIPacket {
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ServerOpenCombinationGUIPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        TowerOfGod.CHANNEL.messageBuilder(ServerOpenCombinationGUIPacket.class, index, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ENCODER)
+                .decoder(DECODER)
+                .consumerMainThread(ServerOpenCombinationGUIPacket::handle)
+                .add();
     }
 
-    private void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> ClientReference.openCombinationGUI(usable));
-        context.setPacketHandled(true);
+    private void handle(CustomPayloadEvent.Context context) {
+        ClientReference.openCombinationGUI(usable);
     }
+
 }

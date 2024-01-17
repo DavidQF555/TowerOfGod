@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
@@ -92,7 +93,7 @@ public final class CastingEventSubscriber {
         float f6 = Mth.sin(sqrtSwing * (float) Math.PI);
         matrixStack.mulPose(Axis.YP.rotationDegrees(factor * f6 * 70));
         matrixStack.mulPose(Axis.ZP.rotationDegrees(factor * f5 * -20));
-        client.getTextureManager().bindForSetup(client.player.getSkinTextureLocation());
+        client.getTextureManager().bindForSetup(client.player.getSkin().texture());
         matrixStack.translate(factor * -1, 3.6F, 3.5);
         matrixStack.mulPose(Axis.ZP.rotationDegrees(factor * 120));
         matrixStack.mulPose(Axis.XP.rotationDegrees(200));
@@ -122,9 +123,10 @@ public final class CastingEventSubscriber {
         arm.visible = !isSpectator;
         sleeve.visible = !isSpectator;
         arm.xRot = 0;
-        arm.render(stack, buffer.getBuffer(RenderType.entitySolid(player.getSkinTextureLocation())), light, OverlayTexture.NO_OVERLAY);
+        ResourceLocation loc = player.getSkin().texture();
+        arm.render(stack, buffer.getBuffer(RenderType.entitySolid(loc)), light, OverlayTexture.NO_OVERLAY);
         sleeve.xRot = 0;
-        sleeve.render(stack, buffer.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation())), light, OverlayTexture.NO_OVERLAY);
+        sleeve.render(stack, buffer.getBuffer(RenderType.entityTranslucent(loc)), light, OverlayTexture.NO_OVERLAY);
     }
 
 }
