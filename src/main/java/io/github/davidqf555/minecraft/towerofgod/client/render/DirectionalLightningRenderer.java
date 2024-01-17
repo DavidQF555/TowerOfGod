@@ -27,7 +27,7 @@ public class DirectionalLightningRenderer extends EntityRenderer<DirectionalLigh
     public void render(DirectionalLightningBoltEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         Vector3f dif = entityIn.getStart();
         float totalHeightRadius = entityIn.getBbHeight() / 2f;
-        dif.sub(new Vector3f((float) entityIn.getX(), (float) entityIn.getY() + totalHeightRadius, (float) entityIn.getZ()));
+        dif.sub(new Vector3f(entityIn.position().add(0, totalHeightRadius, 0)));
         float length = Mth.sqrt(dif.x() * dif.x() + dif.y() * dif.y() + dif.z() * dif.z());
         int segments = getSegments(length);
         Vector3f[] vertexes = new Vector3f[segments];
