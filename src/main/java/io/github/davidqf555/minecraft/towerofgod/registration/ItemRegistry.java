@@ -36,7 +36,6 @@ public final class ItemRegistry {
     public static final RegistryObject<NeedleItem> DIAMOND_NEEDLE = register("diamond_needle", () -> new NeedleItem(ItemTier.DIAMOND, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<NeedleItem> NETHERITE_NEEDLE = register("netherite_needle", () -> new NeedleItem(ItemTier.NETHERITE, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<NeedleItem> SUSPENDIUM_NEEDLE = register("suspendium_needle", () -> new NeedleItem(ModToolTier.SUSPENDIUM, 1, 1.6f, new Item.Properties().tab(TowerOfGod.TAB)));
-    public static final List<RegistryObject<NeedleItem>> NEEDLE_ITEMS = ImmutableList.of(WOODEN_NEEDLE, STONE_NEEDLE, IRON_NEEDLE, GOLDEN_NEEDLE, DIAMOND_NEEDLE, NETHERITE_NEEDLE, SUSPENDIUM_NEEDLE);
     public static final RegistryObject<HookItem> WOODEN_HOOK = register("wooden_hook", () -> new HookItem(ItemTier.WOOD, 3, -3.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<HookItem> STONE_HOOK = register("stone_hook", () -> new HookItem(ItemTier.STONE, 3, -3.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<HookItem> IRON_HOOK = register("iron_hook", () -> new HookItem(ItemTier.IRON, 3, -3.2f, new Item.Properties().tab(TowerOfGod.TAB)));
@@ -44,12 +43,9 @@ public final class ItemRegistry {
     public static final RegistryObject<HookItem> DIAMOND_HOOK = register("diamond_hook", () -> new HookItem(ItemTier.DIAMOND, 3, -3.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<HookItem> NETHERITE_HOOK = register("netherite_hook", () -> new HookItem(ItemTier.NETHERITE, 3, -3.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<HookItem> SUSPENDIUM_HOOK = register("suspendium_hook", () -> new HookItem(ModToolTier.SUSPENDIUM, 3, -2.4f, new Item.Properties().tab(TowerOfGod.TAB)));
-    public static final List<RegistryObject<? extends HookItem>> CRAFTABLE_HOOKS = ImmutableList.of(WOODEN_HOOK, STONE_HOOK, IRON_HOOK, GOLDEN_HOOK, DIAMOND_HOOK, NETHERITE_HOOK, SUSPENDIUM_HOOK);
     public static final RegistryObject<ShinsuHookItem> SHINSU_HOOK = register("shinsu_hook", () -> new ShinsuHookItem(3, -3.2f, new Item.Properties()));
-    public static final List<RegistryObject<? extends HookItem>> HOOK_ITEMS = ImmutableList.<RegistryObject<? extends HookItem>>builder().addAll(CRAFTABLE_HOOKS).add(SHINSU_HOOK).build();
     public static final RegistryObject<DeviceItem> LIGHTHOUSE = register("lighthouse", () -> new DeviceItem((world, item) -> EntityRegistry.LIGHTHOUSE.get().create(world), new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<DeviceItem> OBSERVER = register("observer", () -> new DeviceItem((world, item) -> EntityRegistry.OBSERVER.get().create(world), new Item.Properties().tab(TowerOfGod.TAB)));
-    public static final List<RegistryObject<? extends Item>> COLORED_DEVICE_ITEMS = ImmutableList.of(LIGHTHOUSE, OBSERVER);
     public static final RegistryObject<ClickerItem> CLICKER = register("clicker", () -> new ClickerItem(new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<ShinsuShovelItem> SHINSU_SHOVEL = register("shinsu_shovel", () -> new ShinsuShovelItem(0.5f, -2, new Item.Properties()));
     public static final RegistryObject<ShinsuPickaxeItem> SHINSU_PICKAXE = register("shinsu_pickaxe", () -> new ShinsuPickaxeItem(0, -1.6f, new Item.Properties()));
@@ -58,7 +54,6 @@ public final class ItemRegistry {
     public static final RegistryObject<ShinsuHoeItem> SHINSU_HOE = register("shinsu_hoe", () -> new ShinsuHoeItem(-1, 4, new Item.Properties()));
     public static final RegistryObject<ShinsuBowItem> SHINSU_BOW = register("shinsu_bow", () -> new ShinsuBowItem(new Item.Properties()));
     public static final RegistryObject<ShinsuSpearItem> SHINSU_SPEAR = register("shinsu_spear", () -> new ShinsuSpearItem(new Item.Properties()));
-    public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = ImmutableList.of(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW, SHINSU_SPEAR, SHINSU_HOOK);
     public static final RegistryObject<GuideItem> SHINSU_GUIDE = register("shinsu_guide", () -> new GuideItem(0xFF7E79DF, new Item.Properties().tab(TowerOfGod.TAB).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<SpearItem> WOODEN_SPEAR = register("wooden_spear", () -> new SpearItem(ItemTier.WOOD, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<SpearItem> STONE_SPEAR = register("stone_spear", () -> new SpearItem(ItemTier.STONE, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
@@ -67,10 +62,15 @@ public final class ItemRegistry {
     public static final RegistryObject<SpearItem> DIAMOND_SPEAR = register("diamond_spear", () -> new SpearItem(ItemTier.DIAMOND, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<SpearItem> NETHERITE_SPEAR = register("netherite_spear", () -> new SpearItem(ItemTier.NETHERITE, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<SpearItem> SUSPENDIUM_SPEAR = register("suspendium_spear", () -> new SpearItem(ModToolTier.SUSPENDIUM, 1, -1.2f, new Item.Properties().tab(TowerOfGod.TAB)));
-    public static final List<RegistryObject<? extends SpearItem>> CRAFTABLE_SPEARS = ImmutableList.of(WOODEN_SPEAR, STONE_SPEAR, IRON_SPEAR, GOLDEN_SPEAR, DIAMOND_SPEAR, NETHERITE_SPEAR, SUSPENDIUM_SPEAR);
-    public static final List<RegistryObject<? extends SpearItem>> SPEARS = ImmutableList.<RegistryObject<? extends SpearItem>>builder().addAll(CRAFTABLE_SPEARS).add(SHINSU_SPEAR).build();
     public static final RegistryObject<ShinsuUserSpawnEggItem> REGULAR_SPAWN_EGG = register("regular_spawn_egg", () -> new ShinsuUserSpawnEggItem(EntityRegistry.REGULAR, new int[]{1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100}, 0x000000, 0xFF0000, new Item.Properties().tab(TowerOfGod.TAB)));
     public static final RegistryObject<ShinsuUserSpawnEggItem> RANKER_SPAWN_EGG = register("ranker_spawn_egg", () -> new ShinsuUserSpawnEggItem(EntityRegistry.RANKER, new int[]{1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100}, 0xFF0000, 0x000000, new Item.Properties().tab(TowerOfGod.TAB)));
+
+    public static final List<RegistryObject<? extends Item>> COLORED_DEVICE_ITEMS = ImmutableList.of(LIGHTHOUSE, OBSERVER);
+    public static final List<RegistryObject<? extends Item>> SHINSU_ITEMS = ImmutableList.of(SHINSU_SHOVEL, SHINSU_PICKAXE, SHINSU_AXE, SHINSU_SWORD, SHINSU_HOE, SHINSU_BOW, SHINSU_SPEAR, SHINSU_HOOK);
+
+    public static final List<RegistryObject<NeedleItem>> NEEDLE_ITEMS = ImmutableList.of(WOODEN_NEEDLE, STONE_NEEDLE, IRON_NEEDLE, GOLDEN_NEEDLE, DIAMOND_NEEDLE, NETHERITE_NEEDLE, SUSPENDIUM_NEEDLE);
+    public static final List<RegistryObject<? extends HookItem>> HOOK_ITEMS = ImmutableList.of(WOODEN_HOOK, STONE_HOOK, IRON_HOOK, GOLDEN_HOOK, DIAMOND_HOOK, NETHERITE_HOOK, SUSPENDIUM_HOOK, SHINSU_HOOK);
+    public static final List<RegistryObject<? extends SpearItem>> SPEAR_ITEMS = ImmutableList.of(WOODEN_SPEAR, STONE_SPEAR, IRON_SPEAR, GOLDEN_SPEAR, DIAMOND_SPEAR, NETHERITE_SPEAR, SUSPENDIUM_SPEAR, SHINSU_SPEAR);
 
     private ItemRegistry() {
     }

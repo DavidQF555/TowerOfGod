@@ -72,7 +72,7 @@ public final class EventBusSubscriber {
                 ScreenManager.register(ContainerRegistry.LIGHTHOUSE.get(), LighthouseScreen::new);
                 ItemModelsProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemModelsProperties.getProperty(Items.BOW, new ResourceLocation("pull")));
                 ItemModelsProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pulling"), ItemModelsProperties.getProperty(Items.BOW, new ResourceLocation("pulling")));
-                for (RegistryObject<? extends SpearItem> spear : ItemRegistry.SPEARS) {
+                for (RegistryObject<? extends SpearItem> spear : ItemRegistry.SPEAR_ITEMS) {
                     ItemModelsProperties.register(spear.get(), SpearItem.THROWING, ItemModelsProperties.getProperty(Items.TRIDENT, new ResourceLocation("throwing")));
                 }
                 EntityRendererManager manager = Minecraft.getInstance().getEntityRenderDispatcher();
