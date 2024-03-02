@@ -1,0 +1,16 @@
+{
+  "type": "towerofgod:flare_wave_explosion",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 0,
+    "cooldown": 400,
+    "range": 1,
+    "damage": 15,
+    "slow_duration": 40,
+    "slow_magnitude": 1
+  }
+}

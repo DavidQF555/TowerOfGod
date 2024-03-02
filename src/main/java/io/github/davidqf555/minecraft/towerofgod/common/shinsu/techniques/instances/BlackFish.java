@@ -1,93 +1,58 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 
-public class BlackFish extends ShinsuTechniqueInstance {
+public class BlackFish extends ShinsuTechniqueType<BlackFish.Config, NoData> {
 
-    private int duration, light;
+    private final MobEffectInstance effect = new MobEffectInstance(MobEffects.INVISIBILITY, 2, 0, true, true, true);
 
-    public BlackFish(Entity user, int duration, int light) {
-        super(user);
-        this.duration = duration;
-        this.light = light;
+    public BlackFish() {
+        super(Config.CODEC, NoData.CODEC);
+    }
+
+    @Nullable
+    @Override
+    public NoData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        return NoData.INSTANCE;
     }
 
     @Override
-    public int getDuration() {
-        return duration;
-    }
-
-    @Override
-    public void tick(ServerLevel world) {
-        Entity e = getUser(world);
-        if (e instanceof LivingEntity && world.getLightEmission(e.blockPosition()) <= light) {
-            ((LivingEntity) e).addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 2, 0, true, true, true));
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, NoData> inst) {
+        if (user.level.getLightEmission(user.blockPosition()) <= inst.getConfigured().getConfig().light) {
+            user.addEffect(effect);
         }
-        super.tick(world);
+        super.tick(user, inst);
     }
 
     @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.BLACK_FISH.get();
+    public IRequirement[] getRequirements() {
+        return new IRequirement[0];
     }
 
-    @Override
-    public int getCooldown() {
-        return 400;
-    }
+    public static class Config extends ShinsuTechniqueConfig {
 
-    @Override
-    public int getShinsuUse() {
-        return 10;
-    }
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(
+                        ExtraCodecs.NON_NEGATIVE_INT.fieldOf("light").forGetter(config -> config.light)
+                ).apply(inst, Config::new));
+        public final int light;
 
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Duration", Tag.TAG_INT)) {
-            duration = nbt.getInt("Duration");
-        }
-        if (nbt.contains("Light", Tag.TAG_INT)) {
-            light = nbt.getInt("Light");
-        }
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        nbt.putInt("Duration", duration);
-        nbt.putInt("Light", light);
-        return nbt;
-    }
-
-    @MethodsReturnNonnullByDefault
-    @ParametersAreNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<BlackFish> {
-
-        @Override
-        public Either<BlackFish, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return Either.left(new BlackFish(user, 2400, 7));
-        }
-
-        @Override
-        public BlackFish blankCreate() {
-            return new BlackFish(null, 0, 0);
+        public Config(Display display, Optional<Integer> duration, int cooldown, int light) {
+            super(display, duration, cooldown);
+            this.light = light;
         }
 
     }
+
 }

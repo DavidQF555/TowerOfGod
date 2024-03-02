@@ -1,0 +1,13 @@
+{
+  "type": "towerofgod:grow_tree",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 0,
+    "cooldown": 400,
+    "range": 64
+  }
+}

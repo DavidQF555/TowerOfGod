@@ -1,75 +1,38 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 
-public class Manifest extends ShinsuTechniqueInstance {
+public class Manifest extends ShinsuTechniqueType<ShinsuTechniqueConfig, Manifest.Data> {
 
-    private ShinsuShape shape;
-    private ShinsuAttribute attribute;
-
-    public Manifest(Entity user, ShinsuShape shape, @Nullable ShinsuAttribute attribute) {
-        super(user);
-        this.shape = shape;
-        this.attribute = attribute;
+    public Manifest() {
+        super(ShinsuTechniqueConfig.CODEC, Data.CODEC);
     }
 
     @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.MANIFEST.get();
-    }
-
-    @Override
-    public void onUse(ServerLevel world) {
-        Entity user = getUser(world);
-        ItemStack item = shape.getItem();
-        item.getOrCreateTagElement(TowerOfGod.MOD_ID).putUUID("Technique", getID());
-        ShinsuAttribute.setAttribute(item, attribute);
-        IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            if (inventory.isItemValid(i, item)) {
-                item = inventory.insertItem(i, item, false);
-                if (item.isEmpty()) {
-                    break;
-                }
-            }
-        }
-        super.onUse(world);
-    }
-
-    @Override
-    public int getShinsuUse() {
-        return 15;
-    }
-
-    @Override
-    public void tick(ServerLevel world) {
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<ShinsuTechniqueConfig, Data> inst) {
         boolean contains = false;
-        IItemHandler inventory = getUser(world).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
-        UUID id = getID();
+        IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+        UUID id = inst.getData().id;
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack slot = inventory.getStackInSlot(i);
             CompoundTag tag = slot.getTagElement(TowerOfGod.MOD_ID);
@@ -79,46 +42,51 @@ public class Manifest extends ShinsuTechniqueInstance {
             }
         }
         if (!contains) {
-            remove(world);
+            inst.remove(user);
         }
-        super.tick(world);
+        super.tick(user, inst);
+    }
+
+    @Nullable
+    @Override
+    public Data onUse(LivingEntity user, ShinsuTechniqueConfig config, @Nullable LivingEntity target) {
+        ShinsuQualityData quality = ShinsuQualityData.get(user);
+        ShinsuShape shape = quality.getShape();
+        if (shape == null) {
+            return null;
+        }
+        UUID id = Mth.createInsecureUUID();
+        ItemStack item = shape.getItem();
+        item.getOrCreateTagElement(TowerOfGod.MOD_ID).putUUID("Technique", id);
+        ShinsuAttribute.setAttribute(item, quality.getAttribute());
+        IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            if (inventory.isItemValid(i, item)) {
+                item = inventory.insertItem(i, item, false);
+                if (item.isEmpty()) {
+                    break;
+                }
+            }
+        }
+        return new Data(id);
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Shape", Tag.TAG_STRING)) {
-            shape = ShinsuShapeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Shape")));
-        }
-        if (nbt.contains("Attribute", Tag.TAG_STRING)) {
-            attribute = ShinsuAttributeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Attribute")));
-        }
+    public IRequirement[] getRequirements() {
+        return new IRequirement[0];
     }
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        nbt.putString("Shape", shape.getRegistryName().toString());
-        if (attribute != null) {
-            nbt.putString("Attribute", attribute.getRegistryName().toString());
-        }
-        return nbt;
-    }
+    public static class Data {
 
-    @MethodsReturnNonnullByDefault
-    @ParametersAreNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<Manifest> {
+        public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id)
+        ).apply(inst, Data::new));
+        public final UUID id;
 
-        @Override
-        public Either<Manifest, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            ShinsuQualityData stats = ShinsuQualityData.get(user);
-            return Either.left(new Manifest(user, stats.getShape(), stats.getAttribute()));
-        }
-
-        @Override
-        public Manifest blankCreate() {
-            return new Manifest(null, null, null);
+        public Data(UUID id) {
+            this.id = id;
         }
 
     }
+
 }

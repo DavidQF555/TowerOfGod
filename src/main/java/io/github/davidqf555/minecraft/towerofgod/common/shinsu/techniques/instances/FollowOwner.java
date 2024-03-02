@@ -1,56 +1,54 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FollowOwnerCommand;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.Vec3;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
+import net.minecraft.world.entity.LivingEntity;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-public class FollowOwner extends BasicCommandTechnique {
+public class FollowOwner extends BasicCommandTechnique<FollowOwner.Config, BasicCommandTechnique.Data> {
 
-    public FollowOwner(Entity user) {
-        super(user);
+    private final IRequirement[] requirements = new IRequirement[0];
+
+    public FollowOwner() {
+        super(Config.CODEC, Data.CODEC);
     }
 
     @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.FOLLOW_OWNER.get();
+    protected DeviceCommand createCommand(LivingEntity user, Config config, FlyingDevice entity, UUID id) {
+        return new FollowOwnerCommand(entity, id, 1);
     }
 
     @Override
-    public int getShinsuUse() {
-        return getDevices().size() * 10;
+    protected Data createData(UUID id, List<UUID> devices) {
+        return new Data(id, devices);
     }
 
     @Override
-    protected DeviceCommand createCommand(FlyingDevice entity, ServerLevel world) {
-        return new FollowOwnerCommand(entity, getID(), 1);
+    public IRequirement[] getRequirements() {
+        return requirements;
     }
 
-    @MethodsReturnNonnullByDefault
-    @ParametersAreNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<FollowOwner> {
+    public static class Config extends ShinsuTechniqueConfig {
 
-        @Override
-        public Either<FollowOwner, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            FollowOwner technique = new FollowOwner(user);
-            return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
-        }
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(
+                        Codec.FLOAT.fieldOf("speed").forGetter(config -> config.speed)
+                ).apply(inst, Config::new));
+        public final float speed;
 
-        @Override
-        public FollowOwner blankCreate() {
-            return new FollowOwner(null);
+        public Config(Display display, Optional<Integer> duration, int cooldown, float speed) {
+            super(display, duration, cooldown);
+            this.speed = speed;
         }
 
     }
+
 }

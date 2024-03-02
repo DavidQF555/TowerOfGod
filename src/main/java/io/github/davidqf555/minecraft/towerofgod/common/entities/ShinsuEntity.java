@@ -84,8 +84,8 @@ public class ShinsuEntity extends AbstractHurtingProjectile {
         return null;
     }
 
-    public void setTechnique(ShinsuTechniqueInstance technique) {
-        this.technique = technique.getID();
+    public void setTechnique(UUID technique) {
+        this.technique = technique;
     }
 
     @Override

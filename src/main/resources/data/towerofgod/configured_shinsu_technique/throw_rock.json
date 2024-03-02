@@ -1,0 +1,11 @@
+{
+  "type": "towerofgod:throw_rock",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "cooldown": 200
+  }
+}

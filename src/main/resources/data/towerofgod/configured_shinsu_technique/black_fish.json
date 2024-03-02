@@ -1,0 +1,13 @@
+{
+  "type": "towerofgod:black_fish",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 2400,
+    "cooldown": 400,
+    "light": 7
+  }
+}

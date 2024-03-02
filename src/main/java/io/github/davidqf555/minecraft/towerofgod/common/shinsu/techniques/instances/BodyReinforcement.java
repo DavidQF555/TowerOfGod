@@ -1,91 +1,54 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 
-public class BodyReinforcement extends ShinsuTechniqueInstance {
+public class BodyReinforcement extends ShinsuTechniqueType<BodyReinforcement.Config, NoData> {
 
-    private int duration;
+    public BodyReinforcement() {
+        super(Config.CODEC, NoData.CODEC);
+    }
 
-    public BodyReinforcement(Entity user, int duration) {
-        super(user);
-        this.duration = duration;
+    @Nullable
+    @Override
+    public NoData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        return NoData.INSTANCE;
     }
 
     @Override
-    public int getDuration() {
-        return duration;
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, NoData> inst) {
+        user.addEffect(new MobEffectInstance(EffectRegistry.BODY_REINFORCEMENT.get(), 2, inst.getConfigured().getConfig().amp, false, true, true));
+        super.tick(user, inst);
     }
 
     @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.BODY_REINFORCEMENT.get();
+    public IRequirement[] getRequirements() {
+        return new IRequirement[0];
     }
 
-    @Override
-    public void tick(ServerLevel world) {
-        Entity user = getUser(world);
-        if (user instanceof LivingEntity) {
-            ShinsuStats stats = ShinsuStats.get(user);
-            int amp = (int) (stats.getTension() * stats.getResistance()) / 2;
-            ((LivingEntity) user).addEffect(new MobEffectInstance(EffectRegistry.BODY_REINFORCEMENT.get(), 2, amp, false, true, true));
-        }
-        super.tick(world);
-    }
+    public static class Config extends ShinsuTechniqueConfig {
 
-    @Override
-    public int getCooldown() {
-        return 200;
-    }
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(
+                        ExtraCodecs.NON_NEGATIVE_INT.fieldOf("amp").forGetter(config -> config.amp)
+                ).apply(inst, Config::new));
+        public final int amp;
 
-    @Override
-    public int getShinsuUse() {
-        return 15;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Duration", Tag.TAG_INT)) {
-            duration = nbt.getInt("Duration");
-        }
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        nbt.putInt("Duration", getDuration());
-        return nbt;
-    }
-
-    @MethodsReturnNonnullByDefault
-    @ParametersAreNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<BodyReinforcement> {
-
-        @Override
-        public Either<BodyReinforcement, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return Either.left(new BodyReinforcement(user, 2400));
-        }
-
-        @Override
-        public BodyReinforcement blankCreate() {
-            return new BodyReinforcement(null, 0);
+        public Config(Display display, Optional<Integer> duration, int cooldown, int amp) {
+            super(display, duration, cooldown);
+            this.amp = amp;
         }
 
     }
+
 }

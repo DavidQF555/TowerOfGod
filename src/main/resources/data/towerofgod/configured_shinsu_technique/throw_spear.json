@@ -1,0 +1,12 @@
+{
+  "type": "towerofgod:throw_spear",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 200,
+    "cooldown": 400
+  }
+}

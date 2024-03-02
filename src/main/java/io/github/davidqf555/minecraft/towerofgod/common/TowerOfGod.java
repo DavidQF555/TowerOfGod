@@ -1,10 +1,11 @@
 package io.github.davidqf555.minecraft.towerofgod.common;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientConfigs;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.*;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueTypeRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -55,7 +56,7 @@ public class TowerOfGod {
         TileEntityRegistry.TYPES.register(bus);
         ShinsuShapeRegistry.SHAPES.register(bus);
         ShinsuAttributeRegistry.QUALITIES.register(bus);
-        ShinsuTechniqueRegistry.TECHNIQUES.register(bus);
+        ShinsuTechniqueTypeRegistry.TYPES.register(bus);
         GroupRegistry.GROUPS.register(bus);
     }
 }

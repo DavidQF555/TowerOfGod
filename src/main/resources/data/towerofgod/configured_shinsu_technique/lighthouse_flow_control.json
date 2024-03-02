@@ -1,0 +1,13 @@
+{
+  "type": "towerofgod:lighthouse_flow_control",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "cooldown": 600,
+    "duration": 60,
+    "range": 3
+  }
+}

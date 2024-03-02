@@ -1,25 +1,23 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 
-public class ShootShinsuArrow extends ShinsuTechniqueInstance {
+// TODO: FIX
+public class ShootShinsuArrow extends ShinsuTechniqueType<ShinsuTechniqueConfig, ShootShinsuArrow.Data> {
 
     private Vec3 direction;
     private float velocity;
@@ -77,46 +75,19 @@ public class ShootShinsuArrow extends ShinsuTechniqueInstance {
         super.tick(world);
     }
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        if (arrow != null) {
-            nbt.putUUID("Arrow", arrow);
-        }
-        nbt.putFloat("Velocity", velocity);
-        nbt.putDouble("X", direction.x());
-        nbt.putDouble("Y", direction.y());
-        nbt.putDouble("Z", direction.z());
-        return nbt;
-    }
+    public static class Data {
 
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Arrow", Tag.TAG_INT_ARRAY)) {
-            arrow = nbt.getUUID("Arrow");
-        }
-        if (nbt.contains("Velocity", Tag.TAG_FLOAT)) {
-            setVelocity(nbt.getFloat("Velocity"));
-        }
-        if (nbt.contains("X", Tag.TAG_DOUBLE) && nbt.contains("Y", Tag.TAG_DOUBLE) && nbt.contains("Z", Tag.TAG_DOUBLE)) {
-            direction = new Vec3(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
-        }
-    }
+        public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),
+                Util.UUID_CODEC.fieldOf("arrow").forGetter(data -> data.arrow)
+        ).apply(inst, Data::new));
+        public final UUID id, arrow;
 
-    @MethodsReturnNonnullByDefault
-    @ParametersAreNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<ShootShinsuArrow> {
-
-        @Override
-        public Either<ShootShinsuArrow, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return Either.left(new ShootShinsuArrow(user, dir));
-        }
-
-        @Override
-        public ShootShinsuArrow blankCreate() {
-            return new ShootShinsuArrow(null, Vec3.ZERO);
+        public Data(UUID id, UUID arrow) {
+            this.id = id;
+            this.arrow = arrow;
         }
 
     }
+
 }

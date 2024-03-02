@@ -1,0 +1,14 @@
+{
+  "type": "towerofgod:flamethrower",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 40,
+    "cooldown": 900,
+    "spread": 45,
+    "magnitude": 0.75
+  }
+}

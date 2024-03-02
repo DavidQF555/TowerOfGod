@@ -1,71 +1,47 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class Forest extends AreaTechnique {
+public class Forest extends AreaTechnique<AreaTechnique.Config, NoData> {
 
-    public Forest(Entity user, double minRadius, double radius) {
-        super(user, minRadius, radius, 20, 5);
+    public Forest() {
+        super(Config.CODEC, NoData.CODEC);
+    }
+
+    @Nullable
+    @Override
+    public NoData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        return NoData.INSTANCE;
     }
 
     @Override
-    public int getDuration() {
-        return 500;
+    public IRequirement[] getRequirements() {
+        return new IRequirement[0];
     }
 
     @Override
-    protected void doEffect(ServerLevel world, Vec3 pos) {
-        List<ConfiguredFeature<?, ?>> trees = world.getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
-        if (!trees.isEmpty()) {
-            BlockPos block = new BlockPos(pos).above();
-            Random random = world.getRandom();
-            ConfiguredFeature<?, ?> tree = trees.get(random.nextInt(trees.size()));
-            if (TreeFeature.validTreePos(world, block)) {
-                tree.place(world, world.getChunkSource().getGenerator(), random, block);
+    protected void doEffect(LivingEntity user, ShinsuTechniqueInstance<Config, NoData> inst, Vec3 pos) {
+        if (user.level instanceof ServerLevel) {
+            List<ConfiguredFeature<?, ?>> trees = ((ServerLevel) user.level).getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
+            if (!trees.isEmpty()) {
+                BlockPos block = new BlockPos(pos).above();
+                Random random = user.getRandom();
+                ConfiguredFeature<?, ?> tree = trees.get(random.nextInt(trees.size()));
+                if (TreeFeature.validTreePos(user.level, block)) {
+                    tree.place((ServerLevel) user.level, ((ServerLevel) user.level).getChunkSource().getGenerator(), random, block);
+                }
             }
         }
     }
-
-    @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.FOREST.get();
-    }
-
-    @Override
-    public int getShinsuUse() {
-        return 60;
-    }
-
-    @Override
-    public int getCooldown() {
-        return 2000;
-    }
-
-    public static class Factory implements ShinsuTechnique.IFactory<Forest> {
-
-        @Override
-        public Either<Forest, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return Either.left(new Forest(user, 4, 32));
-        }
-
-        @Override
-        public Forest blankCreate() {
-            return new Forest(null, 0, 0);
-        }
-    }
-
 }

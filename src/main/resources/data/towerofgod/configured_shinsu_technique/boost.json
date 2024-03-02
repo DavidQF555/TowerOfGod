@@ -1,0 +1,13 @@
+{
+  "type": "towerofgod:boost",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 0,
+    "cooldown": 600,
+    "particles": 25
+  }
+}

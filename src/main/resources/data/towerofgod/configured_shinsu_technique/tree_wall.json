@@ -1,0 +1,15 @@
+{
+  "type": "towerofgod:tree_wall",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "cooldown": 2400,
+    "duration": 120,
+    "speed": 1.5,
+    "period": 1,
+    "max_y": 8
+  }
+}

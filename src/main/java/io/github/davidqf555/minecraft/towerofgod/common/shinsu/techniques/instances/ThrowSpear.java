@@ -1,114 +1,97 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuSpearEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.UUID;
 
-public class ThrowSpear extends ShinsuTechniqueInstance {
+public class ThrowSpear extends ShinsuTechniqueType<ShinsuTechniqueConfig, ThrowSpear.Data> {
 
-    private Vec3 direction;
-    private UUID spear;
 
-    public ThrowSpear(Entity user, Vec3 direction) {
-        super(user);
-        this.direction = direction;
+    public ThrowSpear() {
+        super(ShinsuTechniqueConfig.CODEC, Data.CODEC);
     }
 
     @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.THROW_SPEAR.get();
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<ShinsuTechniqueConfig, Data> inst) {
+        UUID spear = inst.getData().spear;
+        if (user.level instanceof ServerLevel && ((ServerLevel) user.level).getEntity(spear) == null) {
+            inst.remove(user);
+        }
+        super.tick(user, inst);
     }
 
+    @Nullable
     @Override
-    public int getShinsuUse() {
-        return 15;
-    }
-
-    @Override
-    public int getDuration() {
-        return 200;
-    }
-
-    @Override
-    public void onUse(ServerLevel world) {
-        Entity user = getUser(world);
-        ShinsuSpearEntity proj = EntityRegistry.SHINSU_SPEAR.get().create(world);
+    public Data onUse(LivingEntity user, ShinsuTechniqueConfig config, @Nullable LivingEntity target) {
+        ShinsuSpearEntity proj = EntityRegistry.SHINSU_SPEAR.get().create(user.level);
         if (proj != null) {
             proj.setOwner(user);
             float speed = 2.5f;
             ShinsuAttribute attribute = ShinsuQualityData.get(user).getAttribute();
             if (attribute != null) {
-                speed *= attribute.getSpeed();
+                speed *= (float) attribute.getSpeed();
             }
+            Vec3 direction = user.getLookAngle();
             proj.shoot(direction.x(), direction.y(), direction.z(), speed, 1);
             proj.setPos(user.getX(), user.getEyeY(), user.getZ());
             proj.setAttribute(attribute);
-            proj.setTechnique(getID());
+            UUID id = Mth.createInsecureUUID();
+            proj.setTechnique(id);
             user.level.addFreshEntity(proj);
             user.level.playSound(null, proj, SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1, 1);
-            spear = proj.getUUID();
+            return new Data(id, proj.getUUID());
         }
-        super.onUse(world);
-    }
-
-
-    @Override
-    public void tick(ServerLevel world) {
-        if (spear == null || world.getEntity(spear) == null) {
-            remove(world);
-        }
-        super.tick(world);
+        return null;
     }
 
     @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        if (spear != null) {
-            nbt.putUUID("Spear", spear);
-        }
-        nbt.putDouble("X", direction.x());
-        nbt.putDouble("Y", direction.y());
-        nbt.putDouble("Z", direction.z());
-        return nbt;
+    public IRequirement[] getRequirements() {
+        return new IRequirement[0];
     }
 
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Spear", Tag.TAG_INT_ARRAY)) {
-            spear = nbt.getUUID("Spear");
+    public static class Config extends ShinsuTechniqueConfig {
+
+        public static final Codec<ShinsuBlast.Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(
+                        Codec.FLOAT.fieldOf("speed").forGetter(config -> config.speed)
+                ).apply(inst, ShinsuBlast.Config::new));
+        public final float speed;
+
+        public Config(Display display, Optional<Integer> duration, int cooldown, float speed) {
+            super(display, duration, cooldown);
+            this.speed = speed;
         }
-        if (nbt.contains("X", Tag.TAG_DOUBLE) && nbt.contains("Y", Tag.TAG_DOUBLE) && nbt.contains("Z", Tag.TAG_DOUBLE)) {
-            direction = new Vec3(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
-        }
+
     }
 
+    public static class Data {
 
-    public static class Factory implements ShinsuTechnique.IFactory<ThrowSpear> {
+        public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),
+                Util.UUID_CODEC.fieldOf("spear").forGetter(data -> data.spear)
+        ).apply(inst, Data::new));
+        public final UUID id, spear;
 
-        @Override
-        public Either<ThrowSpear, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return Either.left(new ThrowSpear(user, dir));
-        }
-
-        @Override
-        public ThrowSpear blankCreate() {
-            return new ThrowSpear(null, Vec3.ZERO);
+        public Data(UUID id, UUID spear) {
+            this.id = id;
+            this.spear = spear;
         }
 
     }

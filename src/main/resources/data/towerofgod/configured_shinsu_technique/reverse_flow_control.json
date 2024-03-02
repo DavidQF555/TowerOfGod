@@ -1,0 +1,13 @@
+{
+  "type": "towerofgod:reverse_flow_control",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 60,
+    "cooldown": 600,
+    "range": 3
+  }
+}

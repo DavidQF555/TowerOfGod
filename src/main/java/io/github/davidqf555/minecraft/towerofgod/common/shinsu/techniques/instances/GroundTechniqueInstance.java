@@ -1,98 +1,89 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
-public abstract class GroundTechniqueInstance extends ShinsuTechniqueInstance {
+import java.util.Optional;
 
-    private double startX, startZ, dX, dZ, speed;
-    private int period, maxYDif, prevY;
+public abstract class GroundTechniqueInstance<C extends GroundTechniqueInstance.Config, S extends GroundTechniqueInstance.Data> extends ShinsuTechniqueType<C, S> {
 
-    public GroundTechniqueInstance(Entity user, double dX, double dZ, double speed, int period, int maxYDif) {
-        super(user);
-        Vec3 start = user == null ? Vec3.ZERO : user.position();
-        this.startX = start.x();
-        this.startZ = start.z();
-        double length = Mth.sqrt((float) (dX * dX + dZ * dZ));
-        this.dX = dX / length;
-        this.dZ = dZ / length;
-        this.speed = speed;
-        this.period = period;
-        this.maxYDif = maxYDif;
-        prevY = (int) start.y();
+    public GroundTechniqueInstance(Codec<C> config, Codec<S> data) {
+        super(config, data);
     }
 
-    public abstract void doEffect(ServerLevel world, Vec3 pos);
+    public abstract void doEffect(LivingEntity user, ShinsuTechniqueInstance<C, S> inst, Vec3 pos);
 
     @Override
-    public void tick(ServerLevel world) {
-        if (getTicks() % period == 0) {
-            int count = getTicks() / period;
-            double x = startX + dX * speed * (count + 1);
-            double z = startZ + dZ * speed * (count + 1);
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<C, S> inst) {
+        C config = inst.getConfigured().getConfig();
+        if (inst.getTicks() % config.period == 0) {
+            S data = inst.getData();
+            int count = inst.getTicks() / config.period;
+            double x = data.startX + data.dX * config.speed * (count + 1);
+            double z = data.startZ + data.dZ * config.speed * (count + 1);
             BlockPos pos = null;
-            for (int dY = -maxYDif; dY < maxYDif; dY++) {
-                BlockPos test = new BlockPos(x, prevY + dY, z);
-                if (world.getBlockState(test).isCollisionShapeFullBlock(world, test) && world.getBlockState(test.above()).getCollisionShape(world, test.above()).isEmpty() && (pos == null || Math.abs(dY) < Math.abs(prevY - pos.getY()))) {
+            for (int dY = -config.maxYDif; dY < config.maxYDif; dY++) {
+                BlockPos test = new BlockPos(x, data.prevY + dY, z);
+                if (user.level.getBlockState(test).isCollisionShapeFullBlock(user.level, test) && user.level.getBlockState(test.above()).getCollisionShape(user.level, test.above()).isEmpty() && (pos == null || Math.abs(dY) < Math.abs(data.prevY - pos.getY()))) {
                     pos = test;
                 }
             }
             if (pos == null) {
-                remove(world);
+                inst.remove(user);
             } else {
-                doEffect(world, new Vec3(x, pos.getY(), z));
-                prevY = pos.getY();
+                doEffect(user, inst, new Vec3(x, pos.getY(), z));
+                data.prevY = pos.getY();
             }
         }
-        super.tick(world);
+        super.tick(user, inst);
     }
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag tag = super.serializeNBT();
-        tag.putDouble("Speed", speed);
-        tag.putDouble("StartX", startX);
-        tag.putDouble("StartZ", startZ);
-        tag.putDouble("DX", dX);
-        tag.putDouble("DZ", dZ);
-        tag.putInt("Period", period);
-        tag.putInt("MaxYDif", maxYDif);
-        tag.putInt("PrevY", prevY);
-        return tag;
+    public static class Data {
+
+        public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Codec.DOUBLE.fieldOf("start_x").forGetter(data -> data.startX),
+                Codec.DOUBLE.fieldOf("start_z").forGetter(data -> data.startZ),
+                Codec.DOUBLE.fieldOf("dX").forGetter(data -> data.dX),
+                Codec.DOUBLE.fieldOf("dZ").forGetter(data -> data.dZ),
+                Codec.INT.fieldOf("prev_y").forGetter(data -> data.prevY)
+        ).apply(inst, Data::new));
+        public final double startX, startZ, dX, dZ;
+        public int prevY;
+
+        public Data(double startX, double startZ, double dX, double dZ, int prevY) {
+            this.startX = startX;
+            this.startZ = startZ;
+            double length = Math.sqrt(dX * dX + dZ * dZ);
+            this.dX = dX / length;
+            this.dZ = dZ / length;
+            this.prevY = prevY;
+        }
+
     }
 
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Speed", Tag.TAG_DOUBLE)) {
-            speed = nbt.getDouble("Speed");
+    public static class Config extends ShinsuTechniqueConfig {
+
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(inst.group(
+                        Codec.DOUBLE.fieldOf("speed").forGetter(config -> config.speed),
+                        Codec.INT.fieldOf("period").forGetter(config -> config.period),
+                        Codec.INT.fieldOf("max_y").forGetter(config -> config.maxYDif)
+                )).apply(inst, Config::new));
+        public final double speed;
+        public final int period, maxYDif;
+
+        public Config(Display display, Optional<Integer> duration, int cooldown, double speed, int period, int maxYDif) {
+            super(display, duration, cooldown);
+            this.speed = speed;
+            this.period = period;
+            this.maxYDif = maxYDif;
         }
-        if (nbt.contains("StartX", Tag.TAG_DOUBLE)) {
-            startX = nbt.getDouble("StartX");
-        }
-        if (nbt.contains("StartZ", Tag.TAG_DOUBLE)) {
-            startZ = nbt.getDouble("StartZ");
-        }
-        if (nbt.contains("DX", Tag.TAG_DOUBLE)) {
-            dX = nbt.getDouble("DX");
-        }
-        if (nbt.contains("DZ", Tag.TAG_DOUBLE)) {
-            dZ = nbt.getDouble("DZ");
-        }
-        if (nbt.contains("Period", Tag.TAG_INT)) {
-            period = nbt.getInt("Period");
-        }
-        if (nbt.contains("MaxYDif", Tag.TAG_INT)) {
-            maxYDif = nbt.getInt("MaxYDif");
-        }
-        if (nbt.contains("PrevY", Tag.TAG_INT)) {
-            prevY = nbt.getInt("PrevY");
-        }
+
     }
 
 }
