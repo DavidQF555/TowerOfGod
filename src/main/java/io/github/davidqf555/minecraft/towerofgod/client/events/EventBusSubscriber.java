@@ -95,8 +95,6 @@ public final class EventBusSubscriber {
         @SubscribeEvent
         public static void onFMLClientSetup(FMLClientSetupEvent event) {
             KeyBindingsList.register();
-            OverlayRegistry.registerOverlayTop(new ResourceLocation(TowerOfGod.MOD_ID, "combination").toString(), ClientReference.COMBO);
-            OverlayRegistry.registerOverlayAbove(ForgeIngameGui.EXPERIENCE_BAR_ELEMENT, new ResourceLocation(TowerOfGod.MOD_ID, "shinsu").toString(), ClientReference.SHINSU);
             event.enqueueWork(() -> {
                 MenuScreens.register(ContainerRegistry.LIGHTHOUSE.get(), LighthouseScreen::new);
                 ItemProperties.register(ItemRegistry.SHINSU_BOW.get(), new ResourceLocation(TowerOfGod.MOD_ID, "pull"), ItemProperties.getProperty(Items.BOW, new ResourceLocation("pull")));

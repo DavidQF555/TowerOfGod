@@ -39,7 +39,7 @@ public final class CastingEventSubscriber {
     }
 
     @SubscribeEvent
-    public static void onRelease(InputEvent.MouseInputEvent event) {
+    public static void onMouseInput(InputEvent.MouseInputEvent event) {
         Player player = Minecraft.getInstance().player;
         if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_RIGHT && event.getAction() == GLFW.GLFW_RELEASE && player != null && ClientReference.isCasting(player)) {
             TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket());
