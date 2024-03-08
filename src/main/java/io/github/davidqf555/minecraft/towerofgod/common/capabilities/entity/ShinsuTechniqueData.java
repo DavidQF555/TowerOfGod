@@ -5,7 +5,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -15,14 +14,14 @@ import net.minecraftforge.common.util.INBTSerializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShinsuTechniqueData<T extends Entity> implements INBTSerializable<CompoundTag> {
+public class ShinsuTechniqueData<T extends LivingEntity> implements INBTSerializable<CompoundTag> {
 
     public static final Capability<ShinsuTechniqueData<?>> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
     });
     public static final double CAST_TARGET_RANGE = 32;
     private final List<ShinsuTechniqueInstance<?, ?>> technique = new ArrayList<>();
 
-    public static <T extends Entity> ShinsuTechniqueData<T> get(T entity) {
+    public static <T extends LivingEntity> ShinsuTechniqueData<T> get(T entity) {
         return entity.getCapability(CAPABILITY).<ShinsuTechniqueData<T>>cast().orElseGet(ShinsuTechniqueData::new);
     }
 
@@ -38,7 +37,7 @@ public class ShinsuTechniqueData<T extends Entity> implements INBTSerializable<C
         technique.remove(inst);
     }
 
-    public void tick(LivingEntity user) {
+    public void tick(T user) {
         List<ShinsuTechniqueInstance<?, ?>> techniques = new ArrayList<>(getTechniques());
         for (ShinsuTechniqueInstance<?, ?> technique : techniques) {
             technique.tick(user);

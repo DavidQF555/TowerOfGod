@@ -3,21 +3,16 @@ package io.github.davidqf555.minecraft.towerofgod.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.GuideScreen;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuCombinationGui;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuMeterGui;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.Entity;
@@ -25,17 +20,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.UUID;
 
 public final class ClientReference {
-
-
-    public static final Set<ShinsuTechnique> UNLOCKED = new HashSet<>();
-    public static final ShinsuMeterGui SHINSU = new ShinsuMeterGui(200);
-    public static final ShinsuCombinationGui COMBO = new ShinsuCombinationGui();
-    public static Optional<Component> error = Optional.empty();
 
     private ClientReference() {
     }
@@ -76,20 +63,12 @@ public final class ClientReference {
         Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(data.get(), (int) context.getX(), (int) context.getY());
     }
 
-    public static void openCombinationGUI(Set<ShinsuTechnique> usable) {
-        COMBO.setUsable(usable);
-    }
-
-    public static void openGuideScreen(ShinsuTechnique[] pages, int color) {
-        Minecraft.getInstance().setScreen(new GuideScreen(pages, 221, 180, color));
-    }
-
-    public static void handleUpdateCastingPacket(int id, boolean casting) {
+    public static void handleUpdateCastingPacket(UUID id, boolean casting) {
         Level world = Minecraft.getInstance().level;
         if (world != null) {
-            Entity entity = world.getEntity(id);
-            if (entity instanceof Player) {
-                setCasting((Player) entity, casting);
+            Player player = world.getPlayerByUUID(id);
+            if (player != null) {
+                setCasting(player, casting);
             }
         }
     }
