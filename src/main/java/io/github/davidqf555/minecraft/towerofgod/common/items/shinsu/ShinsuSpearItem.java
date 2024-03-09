@@ -1,10 +1,10 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
 import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.Manifest;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -38,16 +38,23 @@ public class ShinsuSpearItem extends SpearItem {
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
         if (worldIn instanceof ServerLevel) {
-            CompoundTag nbt = stack.getTagElement(TowerOfGod.MOD_ID);
-            if (!stack.isEmpty() && nbt != null) {
-                UUID id = nbt.getUUID("Technique");
-                ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
-                if (technique == null) {
-                    IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
-                    if (inventory.getSlots() > itemSlot) {
-                        inventory.extractItem(itemSlot, stack.getCount(), false);
+            if (!stack.isEmpty()) {
+                CompoundTag nbt = stack.getTagElement(TowerOfGod.MOD_ID);
+                if (nbt != null && entityIn instanceof LivingEntity) {
+                    UUID id = nbt.getUUID("Technique");
+                    if (ShinsuTechniqueData.get((LivingEntity) entityIn)
+                            .getTechniques().stream()
+                            .filter(inst -> inst.getData() instanceof Manifest.Data)
+                            .map(inst -> ((Manifest.Data) inst.getData()).id)
+                            .anyMatch(id::equals)) {
+                        return;
                     }
                 }
+                IItemHandler inventory = entityIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
+                if (inventory.getSlots() > itemSlot) {
+                    inventory.extractItem(itemSlot, stack.getCount(), false);
+                }
+                inventory.extractItem(itemSlot, stack.getCount(), false);
             }
         }
     }
@@ -61,6 +68,5 @@ public class ShinsuSpearItem extends SpearItem {
     public int getEntityLifespan(ItemStack itemStack, Level world) {
         return 0;
     }
-
 
 }

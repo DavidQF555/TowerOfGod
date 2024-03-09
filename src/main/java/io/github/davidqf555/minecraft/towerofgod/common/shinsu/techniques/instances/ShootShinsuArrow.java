@@ -8,71 +8,54 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEnti
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
-// TODO: FIX
-public class ShootShinsuArrow extends ShinsuTechniqueType<ShinsuTechniqueConfig, ShootShinsuArrow.Data> {
+public class ShootShinsuArrow extends ShinsuTechniqueType<ShootShinsuArrow.Config, ShootShinsuArrow.Data> {
 
-    private Vec3 direction;
-    private float velocity;
-    private UUID arrow;
+    private final IRequirement[] requirements = new IRequirement[0];
 
-    public ShootShinsuArrow(Entity user, Vec3 direction) {
-        super(user);
-        this.direction = direction;
-        arrow = null;
+    public ShootShinsuArrow() {
+        super(Config.CODEC, Data.CODEC);
     }
 
-    public void setVelocity(float velocity) {
-        this.velocity = velocity;
-    }
-
+    @Nullable
     @Override
-    public int getDuration() {
-        return 200;
-    }
-
-    @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get();
-    }
-
-    @Override
-    public void onUse(ServerLevel world) {
-        Entity user = getUser(world);
-        if (user != null) {
-            ShinsuArrowEntity arrow = EntityRegistry.SHINSU_ARROW.get().create(world);
-            if (arrow != null) {
-                ShinsuAttribute attribute = ShinsuQualityData.get(user).getAttribute();
-                arrow.setAttribute(attribute);
-                arrow.setTechnique(getID());
-                arrow.shoot(direction.x(), direction.y(), direction.z(), velocity, 1);
-                arrow.setOwner(user);
-                arrow.setPos(user.getX(), user.getEyeY() - 0.1, user.getZ());
-                this.arrow = arrow.getUUID();
-                world.addFreshEntity(arrow);
-            }
+    public Data onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        ShinsuArrowEntity arrow = EntityRegistry.SHINSU_ARROW.get().create(user.level);
+        if (arrow != null) {
+            UUID id = Mth.createInsecureUUID();
+            ShinsuAttribute attribute = ShinsuQualityData.get(user).getAttribute();
+            arrow.setAttribute(attribute);
+            arrow.setTechnique(id);
+            Vec3 dir = user.getLookAngle();
+            arrow.shoot(dir.x(), dir.y(), dir.z(), config.speed, 1);
+            arrow.setOwner(user);
+            arrow.setPos(user.getX(), user.getEyeY() - 0.1, user.getZ());
+            user.level.addFreshEntity(arrow);
+            return new Data(id, arrow.getUUID());
         }
-        super.onUse(world);
+        return null;
     }
 
     @Override
-    public int getShinsuUse() {
-        return 5;
-    }
-
-    @Override
-    public void tick(ServerLevel world) {
-        if (arrow == null || world.getEntity(arrow) == null) {
-            remove(world);
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, Data> inst) {
+        if (user.level instanceof ServerLevel && ((ServerLevel) user.level).getEntity(inst.getData().arrow) == null) {
+            inst.remove(user);
         }
-        super.tick(world);
+    }
+
+    @Override
+    public IRequirement[] getRequirements() {
+        return requirements;
     }
 
     public static class Data {
@@ -86,6 +69,21 @@ public class ShootShinsuArrow extends ShinsuTechniqueType<ShinsuTechniqueConfig,
         public Data(UUID id, UUID arrow) {
             this.id = id;
             this.arrow = arrow;
+        }
+
+    }
+
+    public static class Config extends ShinsuTechniqueConfig {
+
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(
+                        Codec.FLOAT.fieldOf("speed").forGetter(config -> config.speed)
+                ).apply(inst, Config::new));
+        public final float speed;
+
+        public Config(Display display, Optional<Integer> duration, int cooldown, float speed) {
+            super(display, duration, cooldown);
+            this.speed = speed;
         }
 
     }

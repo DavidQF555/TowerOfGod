@@ -17,7 +17,7 @@ public class ConfiguredShinsuTechniqueType<C extends ShinsuTechniqueConfig, S> e
     private final ShinsuTechniqueType<C, S> type;
     private final C config;
 
-    protected ConfiguredShinsuTechniqueType(ShinsuTechniqueType<C, S> type, C config) {
+    public ConfiguredShinsuTechniqueType(ShinsuTechniqueType<C, S> type, C config) {
         super();
         this.type = type;
         this.config = config;

@@ -58,6 +58,10 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
         return attribute == null ? DamageSource.DROWN : attribute.getSource();
     }
 
+    public static double getSpeed(@Nullable ShinsuAttribute attribute) {
+        return attribute == null ? 1 : attribute.getSpeed();
+    }
+
     public static void setAttribute(ItemStack item, @Nullable ShinsuAttribute attribute) {
         CompoundTag tag = item.getOrCreateTagElement(TowerOfGod.MOD_ID);
         if (attribute == null) {
@@ -87,7 +91,7 @@ public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
         return source;
     }
 
-    public double getSpeed() {
+    protected double getSpeed() {
         return speed;
     }
 

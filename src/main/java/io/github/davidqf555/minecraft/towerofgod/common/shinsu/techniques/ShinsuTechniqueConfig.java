@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
 import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.davidqf555.minecraft.towerofgod.common.Util;
+import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -45,14 +45,19 @@ public class ShinsuTechniqueConfig {
         return cooldown;
     }
 
-    public record Display(TranslatableComponent name, TranslatableComponent desc, ResourceLocation icon,
-                          @Nullable ShinsuAttribute attribute) {
+    public record Display(String name, String desc, ResourceLocation icon, @Nullable ShinsuAttribute attribute) {
+        public static final Display NULL = new Display("", "", new ResourceLocation(TowerOfGod.MOD_ID, "item/suspendium"), null);
         public static final Codec<Display> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                Util.TRANSLATABLE_CODEC.fieldOf("name").forGetter(Display::name),
-                Util.TRANSLATABLE_CODEC.fieldOf("description").forGetter(Display::desc),
+                Codec.STRING.fieldOf("name").forGetter(Display::name),
+                Codec.STRING.fieldOf("description").forGetter(Display::desc),
                 ResourceLocation.CODEC.fieldOf("icon").forGetter(Display::icon),
                 ShinsuAttribute.CODEC.optionalFieldOf("attribute", null).forGetter(Display::attribute)
         ).apply(inst, Display::new));
+
+        public TranslatableComponent getName() {
+            return new TranslatableComponent(name());
+        }
+
     }
 
 }
