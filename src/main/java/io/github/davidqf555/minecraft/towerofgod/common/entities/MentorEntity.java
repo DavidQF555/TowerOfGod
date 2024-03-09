@@ -41,10 +41,8 @@ public class MentorEntity extends RankerEntity {
 
     public static AttributeSupplier.Builder setAttributes() {
         return MentorEntity.createMobAttributes()
-                .add(Attributes.FOLLOW_RANGE, 32)
-                .add(Attributes.MOVEMENT_SPEED, 0.215)
-                .add(Attributes.MAX_HEALTH, 20)
-                .add(Attributes.ATTACK_DAMAGE, 1);
+                .add(Attributes.MAX_HEALTH, 1)
+                .add(Attributes.FLYING_SPEED, 0.215);
     }
 
     @Override

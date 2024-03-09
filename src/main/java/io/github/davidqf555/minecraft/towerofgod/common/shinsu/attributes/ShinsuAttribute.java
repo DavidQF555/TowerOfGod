@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes;
 
+import com.mojang.serialization.Codec;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects.ShinsuAttributeEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter.DropsFilter;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public class ShinsuAttribute extends ForgeRegistryEntry<ShinsuAttribute> {
 
+    public static final Codec<ShinsuAttribute> CODEC = ResourceLocation.CODEC.xmap(loc -> ShinsuAttributeRegistry.getRegistry().getValue(loc), ForgeRegistryEntry::getRegistryName);
     private final ParticleOptions particleType;
     private final DamageSource source;
     private final double speed;
