@@ -1,9 +1,11 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities.devices;
 
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.BasicCommandTechnique;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -46,7 +48,11 @@ public abstract class DeviceCommand extends Goal implements INBTSerializable<Com
             remove();
         } else {
             Entity owner = getEntity().getOwner();
-            if (owner == null || ShinsuTechniqueInstance.get(owner, technique) == null) {
+            if (!(owner instanceof LivingEntity) || ShinsuTechniqueData.get((LivingEntity) owner).getTechniques().stream()
+                    .filter(inst -> inst.getConfigured().getType() instanceof BasicCommandTechnique<?, ?>)
+                    .map(inst -> (BasicCommandTechnique.Data) inst.getData())
+                    .map(data -> data.id)
+                    .noneMatch(technique::equals)) {
                 remove();
             }
         }

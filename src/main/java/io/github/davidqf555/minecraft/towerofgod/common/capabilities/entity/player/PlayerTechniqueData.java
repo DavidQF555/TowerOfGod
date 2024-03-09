@@ -7,7 +7,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
@@ -16,21 +15,21 @@ import java.util.Set;
 
 public class PlayerTechniqueData extends BaangsTechniqueData<Player> {
 
-    private final Set<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>> unlocked = new HashSet<>();
+    private final Set<ConfiguredShinsuTechniqueType<?, ?>> unlocked = new HashSet<>();
 
     public static PlayerTechniqueData get(Player player) {
         return player.getCapability(CAPABILITY).<PlayerTechniqueData>cast().orElseGet(PlayerTechniqueData::new);
     }
 
-    public Set<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>> getUnlocked() {
+    public Set<ConfiguredShinsuTechniqueType<?, ?>> getUnlocked() {
         return unlocked;
     }
 
-    public boolean unlock(ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> technique) {
+    public boolean unlock(ConfiguredShinsuTechniqueType<?, ?> technique) {
         return unlocked.add(technique);
     }
 
-    public boolean lock(ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> technique) {
+    public boolean lock(ConfiguredShinsuTechniqueType<?, ?> technique) {
         return unlocked.remove(technique);
     }
 
@@ -48,7 +47,7 @@ public class PlayerTechniqueData extends BaangsTechniqueData<Player> {
         super.deserializeNBT(nbt);
         if (nbt.contains("Unlocked", Tag.TAG_LIST)) {
             for (Tag tag : nbt.getList("Unlocked", Tag.TAG_STRING)) {
-                unlock(ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, new ResourceLocation(tag.getAsString())));
+                unlock(ConfiguredTechniqueTypeRegistry.getRegistry().getValue(new ResourceLocation(tag.getAsString())));
             }
         }
     }
