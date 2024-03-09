@@ -1,9 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
@@ -22,14 +19,14 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class Manifest extends ShinsuTechniqueType<ShinsuTechniqueConfig, Manifest.Data> {
+public class Manifest extends ShinsuTechniqueType<ShinsuTechniqueConfig, IDData> {
 
     public Manifest() {
-        super(ShinsuTechniqueConfig.CODEC, Data.CODEC);
+        super(ShinsuTechniqueConfig.CODEC, IDData.CODEC);
     }
 
     @Override
-    public void tick(LivingEntity user, ShinsuTechniqueInstance<ShinsuTechniqueConfig, Data> inst) {
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<ShinsuTechniqueConfig, IDData> inst) {
         boolean contains = false;
         IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         UUID id = inst.getData().id;
@@ -49,7 +46,7 @@ public class Manifest extends ShinsuTechniqueType<ShinsuTechniqueConfig, Manifes
 
     @Nullable
     @Override
-    public Data onUse(LivingEntity user, ShinsuTechniqueConfig config, @Nullable LivingEntity target) {
+    public IDData onUse(LivingEntity user, ShinsuTechniqueConfig config, @Nullable LivingEntity target) {
         ShinsuQualityData quality = ShinsuQualityData.get(user);
         ShinsuShape shape = quality.getShape();
         if (shape == null) {
@@ -68,25 +65,12 @@ public class Manifest extends ShinsuTechniqueType<ShinsuTechniqueConfig, Manifes
                 }
             }
         }
-        return new Data(id);
+        return new IDData(id);
     }
 
     @Override
     public IRequirement[] getRequirements() {
         return new IRequirement[0];
-    }
-
-    public static class Data {
-
-        public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id)
-        ).apply(inst, Data::new));
-        public final UUID id;
-
-        public Data(UUID id) {
-            this.id = id;
-        }
-
     }
 
 }

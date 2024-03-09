@@ -83,17 +83,16 @@ public abstract class BasicCommandTechnique<C extends ShinsuTechniqueConfig, S e
         }
     }
 
-    public static class Data {
+    public static class Data extends IDData {
 
         public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),
                 Util.UUID_CODEC.listOf().fieldOf("devices").forGetter(data -> data.devices)
         ).apply(inst, Data::new));
-        public final UUID id;
         public final List<UUID> devices;
 
         public Data(UUID id, List<UUID> devices) {
-            this.id = id;
+            super(id);
             this.devices = devices;
         }
 

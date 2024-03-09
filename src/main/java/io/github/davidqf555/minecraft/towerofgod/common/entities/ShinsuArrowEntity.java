@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.IDData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import net.minecraft.core.particles.ParticleOptions;
@@ -14,6 +15,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -107,10 +109,10 @@ public class ShinsuArrowEntity extends AbstractArrow {
     }
 
     @Nullable
-    public ShinsuTechniqueInstance getTechnique() {
+    public ShinsuTechniqueInstance<?, ?> getTechnique() {
         Entity shooter = getOwner();
-        if (technique != null && shooter != null) {
-            return ShinsuTechniqueInstance.get(shooter, technique);
+        if (technique != null && shooter instanceof LivingEntity) {
+            return IDData.getTechnique((LivingEntity) shooter, technique);
         }
         return null;
     }

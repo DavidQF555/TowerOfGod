@@ -1,11 +1,15 @@
 package io.github.davidqf555.minecraft.towerofgod.common.items.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
+import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuSpearEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.items.ModToolTier;
 import io.github.davidqf555.minecraft.towerofgod.common.items.SpearItem;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.Manifest;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.IDData;
+import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +20,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -26,12 +29,27 @@ public class ShinsuSpearItem extends SpearItem {
         super(ModToolTier.SHINSU, 1, -1.2f, properties.setNoRepair());
     }
 
-    @Nullable
     @Override
-    protected AbstractArrow launchSpear(LivingEntity user, ItemStack stack) {
-        stack.hurtAndBreak(1, user, p -> p.broadcastBreakEvent(user.getUsedItemHand()));
-        ShinsuTechniqueRegistry.THROW_SPEAR.get().cast(user, null, user.getLookAngle());
+    protected AbstractArrow createProjectile(Level world, LivingEntity shooter, ItemStack stack) {
+        ShinsuSpearEntity spear = EntityRegistry.SHINSU_SPEAR.get().create(world);
+        if (spear != null) {
+            CompoundTag tag = stack.getTagElement(TowerOfGod.MOD_ID);
+            if (tag != null && tag.contains("Technique", Tag.TAG_INT_ARRAY)) {
+                spear.setTechnique(tag.getUUID("Technique"));
+                ShinsuAttribute attribute = ShinsuQualityData.get(shooter).getAttribute();
+                spear.setAttribute(attribute);
+                return spear;
+            }
+        }
         return null;
+    }
+
+    @Override
+    protected float getSpeedFactor(AbstractArrow arrow) {
+        if (arrow instanceof ShinsuSpearEntity) {
+            return (float) ShinsuAttribute.getSpeed(((ShinsuSpearEntity) arrow).getAttribute());
+        }
+        return 1;
     }
 
     @Override
@@ -42,11 +60,7 @@ public class ShinsuSpearItem extends SpearItem {
                 CompoundTag nbt = stack.getTagElement(TowerOfGod.MOD_ID);
                 if (nbt != null && entityIn instanceof LivingEntity) {
                     UUID id = nbt.getUUID("Technique");
-                    if (ShinsuTechniqueData.get((LivingEntity) entityIn)
-                            .getTechniques().stream()
-                            .filter(inst -> inst.getData() instanceof Manifest.Data)
-                            .map(inst -> ((Manifest.Data) inst.getData()).id)
-                            .anyMatch(id::equals)) {
+                    if (IDData.getTechnique((LivingEntity) entityIn, id) != null) {
                         return;
                     }
                 }

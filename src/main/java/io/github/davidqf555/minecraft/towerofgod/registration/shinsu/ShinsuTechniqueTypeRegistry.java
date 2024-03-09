@@ -1,11 +1,8 @@
 package io.github.davidqf555.minecraft.towerofgod.registration.shinsu;
 
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.data.ShinsuIcons;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.*;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -26,8 +23,6 @@ public final class ShinsuTechniqueTypeRegistry {
     public static final RegistryObject<FlareWaveExplosion> FLARE_WAVE_EXPLOSION = register("flare_wave_explosion", FlareWaveExplosion::new);
     public static final RegistryObject<ReverseFlowControl> REVERSE_FLOW_CONTROL = register("reverse_flow_control", ReverseFlowControl::new);
     public static final RegistryObject<Manifest> MANIFEST = register("manifest", Manifest::new);
-    public static final RegistryObject<ThrowSpear> THROW_SPEAR = register("throw_spear", ThrowSpear::new);
-    public static final RegistryObject<ShootShinsuArrow> SHOOT_SHINSU_ARROW = register("shoot_shinsu_arrow", ShootShinsuArrow::new);
     public static final RegistryObject<MoveDevices> MOVE_DEVICES = register("move_devices", MoveDevices::new);
     public static final RegistryObject<LighthouseFlowControl> LIGHTHOUSE_FLOW_CONTROL = register("lighthouse_flow_control", LighthouseFlowControl::new);
     public static final RegistryObject<Scout> SCOUT = register("scout", Scout::new);

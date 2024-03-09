@@ -69,17 +69,16 @@ public class ShinsuBlast extends ShinsuTechniqueType<ShinsuBlast.Config, ShinsuB
 
     }
 
-    public static class Data {
+    public static class Data extends IDData {
 
         public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),
                 Util.UUID_CODEC.fieldOf("blast").forGetter(data -> data.blast)
         ).apply(inst, Data::new));
-        public final UUID id;
         public UUID blast;
 
         public Data(UUID id, UUID blast) {
-            this.id = id;
+            super(id);
             this.blast = blast;
         }
 
