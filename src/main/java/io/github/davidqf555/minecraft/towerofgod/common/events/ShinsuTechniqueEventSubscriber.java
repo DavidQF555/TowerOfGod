@@ -18,7 +18,7 @@ public final class ShinsuTechniqueEventSubscriber {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.START) {
-            ShinsuTechniqueData.get(event.player).tick((ServerLevel) event.player.level);
+            ShinsuTechniqueData.get(event.player).tick(event.player);
         }
     }
 
