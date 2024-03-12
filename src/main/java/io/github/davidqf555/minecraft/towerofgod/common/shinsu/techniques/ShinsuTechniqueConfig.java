@@ -4,6 +4,8 @@ import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.data.FullTextureRenderData;
+import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -56,6 +58,14 @@ public class ShinsuTechniqueConfig {
 
         public TranslatableComponent getName() {
             return new TranslatableComponent(name());
+        }
+
+        public IRenderData getIcon() {
+            return new FullTextureRenderData(icon());
+        }
+
+        public TranslatableComponent getDescription() {
+            return new TranslatableComponent(desc());
         }
 
     }

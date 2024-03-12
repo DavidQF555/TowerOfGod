@@ -2,8 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
@@ -17,16 +17,16 @@ public class OpenGuideScreenPacket {
 
     private static final BiConsumer<OpenGuideScreenPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.pages.length);
-        for (ShinsuTechnique technique : message.pages) {
+        for (ConfiguredShinsuTechniqueType<?, ?> technique : message.pages) {
             buffer.writeResourceLocation(technique.getRegistryName());
         }
         buffer.writeInt(message.color);
     };
     private static final Function<FriendlyByteBuf, OpenGuideScreenPacket> DECODER = buffer -> {
         int size = buffer.readInt();
-        ShinsuTechnique[] pages = new ShinsuTechnique[size];
+        ConfiguredShinsuTechniqueType<?, ?>[] pages = new ConfiguredShinsuTechniqueType[size];
         for (int i = 0; i < size; i++) {
-            pages[i] = ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation());
+            pages[i] = ConfiguredTechniqueTypeRegistry.getRegistry().getValue(buffer.readResourceLocation());
         }
         return new OpenGuideScreenPacket(pages, buffer.readInt());
     };
@@ -35,10 +35,10 @@ public class OpenGuideScreenPacket {
         message.handle(cont);
     };
 
-    private final ShinsuTechnique[] pages;
+    private final ConfiguredShinsuTechniqueType<?, ?>[] pages;
     private final int color;
 
-    public OpenGuideScreenPacket(ShinsuTechnique[] pages, int color) {
+    public OpenGuideScreenPacket(ConfiguredShinsuTechniqueType<?, ?>[] pages, int color) {
         this.pages = pages;
         this.color = color;
     }
