@@ -4,6 +4,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requir
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
@@ -24,7 +25,7 @@ public class TreeWall extends GroundTechniqueInstance<GroundTechniqueInstance.Co
     @Nullable
     @Override
     public Data onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
-        return new Data(user.getX(), user.getZ(), user.getLookAngle().x(), user.getLookAngle().z(), user.getBlockY());
+        return new Data(Mth.createInsecureUUID(), user.getX(), user.getZ(), user.getLookAngle().x(), user.getLookAngle().z(), user.getBlockY());
     }
 
     @Override

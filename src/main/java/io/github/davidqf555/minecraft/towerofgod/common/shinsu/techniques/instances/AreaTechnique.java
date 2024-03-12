@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -12,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Optional;
 import java.util.Random;
 
-public abstract class AreaTechnique<C extends AreaTechnique.Config, S> extends ShinsuTechniqueType<C, S> {
+public abstract class AreaTechnique<C extends AreaTechnique.Config, S extends ShinsuTechniqueInstanceData> extends ShinsuTechniqueType<C, S> {
 
     private static final int TRIES = 16;
 

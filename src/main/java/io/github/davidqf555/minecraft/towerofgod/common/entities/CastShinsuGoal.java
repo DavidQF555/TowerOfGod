@@ -1,25 +1,28 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import com.mojang.datafixers.util.Pair;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 
-public class CastShinsuGoal<T extends Mob & IShinsuUser> extends Goal {
+public class CastShinsuGoal<T extends Mob & IShinsuUser<T>> extends Goal {
 
     private final T entity;
     private final int cooldown;
+    private final int cast;
     private int time;
-    private ShinsuTechnique selected;
+    private Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity> selected;
     private int duration;
 
-    public CastShinsuGoal(T entity, int cooldown) {
+    public CastShinsuGoal(T entity, int cast, int cooldown) {
         this.entity = entity;
+        this.cast = cast;
         this.cooldown = cooldown;
         setFlags(EnumSet.of(Flag.MOVE));
     }
@@ -27,11 +30,9 @@ public class CastShinsuGoal<T extends Mob & IShinsuUser> extends Goal {
     @Override
     public boolean canUse() {
         if (--time <= 0) {
-            List<ShinsuTechnique> possible = new ArrayList<>();
-            for (ShinsuTechnique technique : ShinsuTechnique.getObtainableTechniques()) {
-                if (technique.shouldMobUse(entity)) {
-                    create(technique).ifPresent(inst -> possible.add(technique));
-                }
+            List<Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity>> possible = new ArrayList<>();
+            for (BaangEntity baang : entity.getShinsuTechniqueData().getBaangs((ServerLevel) entity.level)) {
+                possible.add(Pair.of(baang.getTechniqueType(), baang));
             }
             if (possible.isEmpty()) {
                 return false;
@@ -42,29 +43,26 @@ public class CastShinsuGoal<T extends Mob & IShinsuUser> extends Goal {
         return false;
     }
 
-    protected ShinsuTechnique selectTechnique(List<ShinsuTechnique> possible) {
+    protected Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity> selectTechnique(List<Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity>> possible) {
         return possible.get(entity.getRandom().nextInt(possible.size()));
     }
 
     @Override
     public boolean canContinueToUse() {
-        return duration > 0 && create(selected).isPresent();
+        return duration > 0 && selected.getSecond().isAlive();
     }
 
     @Override
     public void tick() {
         if (--duration <= 0) {
-            selected.cast(entity, entity.getTarget(), entity.getLookAngle());
+            ShinsuTechniqueInstance<?, ?> inst = selected.getFirst().cast(entity, entity.getTarget());
+            selected.getSecond().setTechniqueID(inst.getData().id);
         }
-    }
-
-    private Optional<? extends ShinsuTechniqueInstance> create(ShinsuTechnique technique) {
-        return technique.create(entity, entity.getTarget(), entity.getLookAngle()).left();
     }
 
     @Override
     public void start() {
-        duration = selected.getCombination().size() * 15;
+        duration = cast;
         entity.setCasting(true);
     }
 
@@ -75,4 +73,5 @@ public class CastShinsuGoal<T extends Mob & IShinsuUser> extends Goal {
         duration = 0;
         time = cooldown;
     }
+
 }

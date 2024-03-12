@@ -5,6 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.nbt.CompoundTag;
@@ -19,14 +20,14 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class Manifest extends ShinsuTechniqueType<ShinsuTechniqueConfig, IDData> {
+public class Manifest extends ShinsuTechniqueType<ShinsuTechniqueConfig, ShinsuTechniqueInstanceData> {
 
     public Manifest() {
-        super(ShinsuTechniqueConfig.CODEC, IDData.CODEC);
+        super(ShinsuTechniqueConfig.CODEC, ShinsuTechniqueInstanceData.CODEC);
     }
 
     @Override
-    public void tick(LivingEntity user, ShinsuTechniqueInstance<ShinsuTechniqueConfig, IDData> inst) {
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<ShinsuTechniqueConfig, ShinsuTechniqueInstanceData> inst) {
         boolean contains = false;
         IItemHandler inventory = user.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseGet(ItemStackHandler::new);
         UUID id = inst.getData().id;
@@ -46,7 +47,7 @@ public class Manifest extends ShinsuTechniqueType<ShinsuTechniqueConfig, IDData>
 
     @Nullable
     @Override
-    public IDData onUse(LivingEntity user, ShinsuTechniqueConfig config, @Nullable LivingEntity target) {
+    public ShinsuTechniqueInstanceData onUse(LivingEntity user, ShinsuTechniqueConfig config, @Nullable LivingEntity target) {
         ShinsuQualityData quality = ShinsuQualityData.get(user);
         ShinsuShape shape = quality.getShape();
         if (shape == null) {
@@ -65,7 +66,7 @@ public class Manifest extends ShinsuTechniqueType<ShinsuTechniqueConfig, IDData>
                 }
             }
         }
-        return new IDData(id);
+        return new ShinsuTechniqueInstanceData(id);
     }
 
     @Override

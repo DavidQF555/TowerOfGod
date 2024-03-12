@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
@@ -69,7 +70,7 @@ public class ShinsuBlast extends ShinsuTechniqueType<ShinsuBlast.Config, ShinsuB
 
     }
 
-    public static class Data extends IDData {
+    public static class Data extends ShinsuTechniqueInstanceData {
 
         public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),

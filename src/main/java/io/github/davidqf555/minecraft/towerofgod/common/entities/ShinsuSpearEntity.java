@@ -1,7 +1,7 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.IDData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
@@ -81,7 +81,7 @@ public class ShinsuSpearEntity extends SpearEntity {
     public ShinsuTechniqueInstance<?, ?> getTechnique() {
         Entity shooter = getOwner();
         if (technique != null && shooter instanceof LivingEntity) {
-            return IDData.getTechnique((LivingEntity) shooter, technique);
+            return ShinsuTechniqueInstanceData.getTechnique((LivingEntity) shooter, technique);
         }
         return null;
     }

@@ -1,12 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateUnlockedPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -32,11 +32,10 @@ import java.util.Random;
 public class MentorEntity extends RankerEntity {
 
     private static final String DEATH = Util.makeDescriptionId("entity", new ResourceLocation(TowerOfGod.MOD_ID, "mentor")) + ".death";
-    private ShinsuTechnique technique;
+    private ConfiguredShinsuTechniqueType<?, ?> technique;
 
     public MentorEntity(EntityType<? extends MentorEntity> type, Level world) {
         super(type, world);
-        technique = ShinsuTechniqueRegistry.BODY_REINFORCEMENT.get();
     }
 
     public static AttributeSupplier.Builder setAttributes() {
@@ -50,7 +49,7 @@ public class MentorEntity extends RankerEntity {
         super.registerGoals();
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new SwapWeaponToMainHandGoal<>(this, 5));
-        goalSelector.addGoal(2, new CastFavoredTechniqueGoal<>(this, 50));
+        goalSelector.addGoal(2, new CastFavoredTechniqueGoal<>(this, 20, 50));
         goalSelector.addGoal(3, new RangedMainHandAttackGoal<>(this, 1, 12, 15));
         goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.5, true));
         goalSelector.addGoal(5, new LookAtPlayerGoal(this, Player.class, 8));
@@ -62,7 +61,7 @@ public class MentorEntity extends RankerEntity {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
-        List<ShinsuTechnique> all = ShinsuTechnique.getObtainableTechniques();
+        List<ConfiguredShinsuTechniqueType<?, ?>> all = List.copyOf(ConfiguredTechniqueTypeRegistry.getRegistry().getValues());
         technique = all.get(random.nextInt(all.size()));
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
@@ -74,7 +73,7 @@ public class MentorEntity extends RankerEntity {
         if (credit instanceof ServerPlayer) {
             PlayerTechniqueData data = PlayerTechniqueData.get((Player) credit);
             if (data.unlock(technique)) {
-                credit.sendMessage(new TranslatableComponent(DEATH, technique.getText()), getUUID());
+                credit.sendMessage(new TranslatableComponent(DEATH, technique.getConfig().getDisplay().name()), getUUID());
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) credit), new ServerUpdateUnlockedPacket(data.getUnlocked()));
             }
         }
@@ -82,23 +81,8 @@ public class MentorEntity extends RankerEntity {
 
     @Nullable
     @Override
-    public Group getInitialGroup(Random random) {
-        List<Group> groups = technique.getUsageData().getMentorGroups();
-        return groups.isEmpty() ? null : groups.get(random.nextInt(groups.size()));
-    }
-
-    @Nullable
-    @Override
     public ShinsuAttribute getInitialAttribute(Random random) {
-        List<ShinsuAttribute> attributes = technique.getUsageData().getMentorAttributes();
-        return attributes.isEmpty() ? null : attributes.get(random.nextInt(attributes.size()));
-    }
-
-    @Nullable
-    @Override
-    public ShinsuShape getInitialShape(Random random) {
-        List<ShinsuShape> shapes = technique.getUsageData().getMentorShapes();
-        return shapes.isEmpty() ? null : shapes.get(random.nextInt(shapes.size()));
+        return technique.getConfig().getDisplay().attribute();
     }
 
     @Override
@@ -111,19 +95,24 @@ public class MentorEntity extends RankerEntity {
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Technique", Tag.TAG_STRING)) {
-            technique = ShinsuTechniqueRegistry.getRegistry().getValue(new ResourceLocation(compound.getString("Technique")));
+            technique = ConfiguredTechniqueTypeRegistry.getRegistry().getValue(new ResourceLocation(compound.getString("Technique")));
         }
     }
 
-    protected class CastFavoredTechniqueGoal<T extends Mob & IShinsuUser> extends CastShinsuGoal<T> {
+    protected class CastFavoredTechniqueGoal<T extends Mob & IShinsuUser<T>> extends CastShinsuGoal<T> {
 
-        public CastFavoredTechniqueGoal(T entity, int cooldown) {
-            super(entity, cooldown);
+        public CastFavoredTechniqueGoal(T entity, int cast, int cooldown) {
+            super(entity, cast, cooldown);
         }
 
         @Override
-        protected ShinsuTechnique selectTechnique(List<ShinsuTechnique> possible) {
-            return possible.contains(technique) ? technique : super.selectTechnique(possible);
+        protected Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity> selectTechnique(List<Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity>> possible) {
+            for (Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity> pair : possible) {
+                if (pair.getFirst().equals(technique)) {
+                    return pair;
+                }
+            }
+            return super.selectTechnique(possible);
         }
 
     }

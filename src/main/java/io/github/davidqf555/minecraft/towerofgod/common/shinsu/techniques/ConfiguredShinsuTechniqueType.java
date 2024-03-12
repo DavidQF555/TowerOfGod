@@ -10,7 +10,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
-public class ConfiguredShinsuTechniqueType<C extends ShinsuTechniqueConfig, S> extends ForgeRegistryEntry<ConfiguredShinsuTechniqueType<?, ?>> {
+public class ConfiguredShinsuTechniqueType<C extends ShinsuTechniqueConfig, S extends ShinsuTechniqueInstanceData> extends ForgeRegistryEntry<ConfiguredShinsuTechniqueType<?, ?>> {
 
     public static final Codec<ConfiguredShinsuTechniqueType<?, ?>> DIRECT_CODEC = ShinsuTechniqueType.CODEC.dispatch(ConfiguredShinsuTechniqueType::getType, ShinsuTechniqueType::configuredCodec);
     public static final RegistryFileCodec<ConfiguredShinsuTechniqueType<?, ?>> CODEC = RegistryFileCodec.create(ConfiguredTechniqueTypeRegistry.REGISTRY, DIRECT_CODEC);
@@ -39,14 +39,15 @@ public class ConfiguredShinsuTechniqueType<C extends ShinsuTechniqueConfig, S> e
         return config;
     }
 
-    public boolean cast(LivingEntity user, @Nullable LivingEntity target) {
+    @Nullable
+    public ShinsuTechniqueInstance<C, S> cast(LivingEntity user, @Nullable LivingEntity target) {
         S data = getType().onUse(user, getConfig(), target);
         if (data == null) {
-            return false;
+            return null;
         }
         ShinsuTechniqueInstance<C, S> inst = new ShinsuTechniqueInstance<>(this, data);
         ShinsuTechniqueData.get(user).addTechnique(inst);
-        return true;
+        return inst;
     }
 
 }

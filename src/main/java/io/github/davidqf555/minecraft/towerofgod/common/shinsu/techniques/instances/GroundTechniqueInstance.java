@@ -2,13 +2,16 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public abstract class GroundTechniqueInstance<C extends GroundTechniqueInstance.Config, S extends GroundTechniqueInstance.Data> extends ShinsuTechniqueType<C, S> {
 
@@ -43,9 +46,10 @@ public abstract class GroundTechniqueInstance<C extends GroundTechniqueInstance.
         super.tick(user, inst);
     }
 
-    public static class Data {
+    public static class Data extends ShinsuTechniqueInstanceData {
 
         public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),
                 Codec.DOUBLE.fieldOf("start_x").forGetter(data -> data.startX),
                 Codec.DOUBLE.fieldOf("start_z").forGetter(data -> data.startZ),
                 Codec.DOUBLE.fieldOf("dX").forGetter(data -> data.dX),
@@ -55,7 +59,8 @@ public abstract class GroundTechniqueInstance<C extends GroundTechniqueInstance.
         public final double startX, startZ, dX, dZ;
         public int prevY;
 
-        public Data(double startX, double startZ, double dX, double dZ, int prevY) {
+        public Data(UUID id, double startX, double startZ, double dX, double dZ, int prevY) {
+            super(id);
             this.startX = startX;
             this.startZ = startZ;
             double length = Math.sqrt(dX * dX + dZ * dZ);

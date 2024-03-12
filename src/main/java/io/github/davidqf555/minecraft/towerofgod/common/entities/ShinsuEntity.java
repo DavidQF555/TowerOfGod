@@ -2,7 +2,6 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.IDData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.particles.ParticleOptions;
@@ -70,7 +69,7 @@ public class ShinsuEntity extends AbstractHurtingProjectile {
             Entity target = rayTraceResult.getEntity();
             float damage = DAMAGE;
             if (shooter != null) {
-                damage *= ShinsuStats.getNetResistance(shooter, target);
+                damage *= (float) ShinsuStats.getNetResistance(shooter, target);
             }
             target.hurt(ShinsuAttribute.getDamageSource(null), damage);
         }
@@ -81,7 +80,7 @@ public class ShinsuEntity extends AbstractHurtingProjectile {
     public ShinsuTechniqueInstance<?, ?> getTechnique() {
         Entity shooter = getOwner();
         if (technique != null && shooter instanceof LivingEntity) {
-            return IDData.getTechnique((LivingEntity) shooter, technique);
+            return ShinsuTechniqueInstance.getById((LivingEntity) shooter, technique);
         }
         return null;
     }

@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.util.ExtraCodecs;
@@ -16,15 +17,15 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 
 @ParametersAreNonnullByDefault
-public class FlareWaveExplosion extends ShinsuTechniqueType<FlareWaveExplosion.Config, NoData> {
+public class FlareWaveExplosion extends ShinsuTechniqueType<FlareWaveExplosion.Config, ShinsuTechniqueInstanceData> {
 
     public FlareWaveExplosion() {
-        super(Config.CODEC, NoData.CODEC);
+        super(Config.CODEC, ShinsuTechniqueInstanceData.CODEC);
     }
 
     @Nullable
     @Override
-    public NoData onUse(LivingEntity user, FlareWaveExplosion.Config config, @Nullable LivingEntity target) {
+    public ShinsuTechniqueInstanceData onUse(LivingEntity user, FlareWaveExplosion.Config config, @Nullable LivingEntity target) {
         if (target != null && user.distanceToSqr(target) <= config.range * config.range) {
             target.hurt(DamageSource.MAGIC, config.damage);
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, config.slowDuration, config.slowMag, false, false, false));

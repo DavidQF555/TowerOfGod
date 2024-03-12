@@ -10,7 +10,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
-public abstract class ShinsuTechniqueType<T extends ShinsuTechniqueConfig, S> extends ForgeRegistryEntry<ShinsuTechniqueType<?, ?>> {
+public abstract class ShinsuTechniqueType<T extends ShinsuTechniqueConfig, S extends ShinsuTechniqueInstanceData> extends ForgeRegistryEntry<ShinsuTechniqueType<?, ?>> {
 
     public static final Codec<ShinsuTechniqueType<?, ?>> CODEC = ResourceLocation.CODEC.xmap(loc -> ShinsuTechniqueTypeRegistry.getRegistry().getValue(loc), ShinsuTechniqueType::getRegistryName);
     private final Codec<ConfiguredShinsuTechniqueType<T, S>> configured;

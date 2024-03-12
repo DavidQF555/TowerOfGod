@@ -5,11 +5,15 @@ import com.mojang.serialization.*;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.LivingEntity;
 
-public class ShinsuTechniqueInstance<C extends ShinsuTechniqueConfig, S> {
+import javax.annotation.Nullable;
+import java.util.UUID;
+
+public class ShinsuTechniqueInstance<C extends ShinsuTechniqueConfig, S extends ShinsuTechniqueInstanceData> {
 
     public static final Codec<ShinsuTechniqueInstance<?, ?>> CODEC = Codec.of(new InstanceEncoder(), new InstanceDecoder());
     private final ConfiguredShinsuTechniqueType<C, S> type;
@@ -24,6 +28,15 @@ public class ShinsuTechniqueInstance<C extends ShinsuTechniqueConfig, S> {
         this.type = type;
         this.data = data;
         this.ticks = ticks;
+    }
+
+    @Nullable
+    public static ShinsuTechniqueInstance<?, ?> getById(LivingEntity user, UUID id) {
+        return ShinsuTechniqueData.get(user).getTechniques().stream()
+                .filter(inst -> id.equals(inst.getData().id))
+                .map(inst -> (ShinsuTechniqueInstance<?, ? extends ShinsuTechniqueInstanceData>) inst)
+                .findAny()
+                .orElse(null);
     }
 
     public int getTicks() {
@@ -51,10 +64,6 @@ public class ShinsuTechniqueInstance<C extends ShinsuTechniqueConfig, S> {
 
     public void onEnd(LivingEntity user) {
         getConfigured().onEnd(user, this);
-    }
-
-    public void onUse(LivingEntity user) {
-        getConfigured().onUse(user, this);
     }
 
     public boolean shouldRemove() {
@@ -87,13 +96,13 @@ public class ShinsuTechniqueInstance<C extends ShinsuTechniqueConfig, S> {
             DataResult<ConfiguredShinsuTechniqueType<?, ?>> type = ops.get(input, "Type")
                     .flatMap(val -> ConfiguredShinsuTechniqueType.CODEC.parse(ops, val))
                     .map(Holder::value);
-            DataResult<?> data = type
+            DataResult<? extends ShinsuTechniqueInstanceData> data = type
                     .map(ConfiguredShinsuTechniqueType::getType)
                     .map(ShinsuTechniqueType::dataCodec)
                     .flatMap(codec -> ops.get(input, "Data")
                             .flatMap(val -> codec.parse(ops, val))
                     );
-            return type.apply3((t, d, ti) -> new ShinsuTechniqueInstance<>((ConfiguredShinsuTechniqueType<ShinsuTechniqueConfig, Object>) t, d, ti), data, ticks)
+            return type.apply3((t, d, ti) -> new ShinsuTechniqueInstance<>((ConfiguredShinsuTechniqueType<ShinsuTechniqueConfig, ShinsuTechniqueInstanceData>) t, d, ti), data, ticks)
                     .map(inst -> Pair.of(inst, input));
         }
     }

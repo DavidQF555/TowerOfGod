@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.CastingHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -33,8 +34,9 @@ import java.util.UUID;
 
 public class BaangEntity extends PathfinderMob {
 
-    private ConfiguredShinsuTechniqueType<?, ?> technique;
+    private ConfiguredShinsuTechniqueType<?, ?> type;
     private UUID user;
+    private UUID technique;
 
     public BaangEntity(EntityType<? extends BaangEntity> type, Level world) {
         super(type, world);
@@ -63,8 +65,16 @@ public class BaangEntity extends PathfinderMob {
     @Override
     public void tick() {
         super.tick();
-        if (level instanceof ServerLevel && getUser() == null) {
-            discard();
+        if (level instanceof ServerLevel) {
+            LivingEntity user = getUser();
+            if (user == null) {
+                discard();
+            } else {
+                UUID technique = getTechniqueID();
+                if (technique != null && ShinsuTechniqueInstance.getById(user, technique) == null) {
+                    discard();
+                }
+            }
         }
     }
 
@@ -107,16 +117,25 @@ public class BaangEntity extends PathfinderMob {
         return user;
     }
 
+    @Nullable
+    public UUID getTechniqueID() {
+        return technique;
+    }
+
+    public void setTechniqueID(@Nullable UUID technique) {
+        this.technique = technique;
+    }
+
     public void setUserID(@Nullable UUID user) {
         this.user = user;
     }
 
-    public void setTechnique(ConfiguredShinsuTechniqueType<?, ?> technique) {
-        this.technique = technique;
+    public ConfiguredShinsuTechniqueType<?, ?> getTechniqueType() {
+        return type;
     }
 
-    public ConfiguredShinsuTechniqueType<?, ?> getTechnique() {
-        return technique;
+    public void setTechniqueType(ConfiguredShinsuTechniqueType<?, ?> type) {
+        this.type = type;
     }
 
     @Nullable
@@ -137,8 +156,11 @@ public class BaangEntity extends PathfinderMob {
         if (nbt.contains("User", Tag.TAG_INT_ARRAY)) {
             setUserID(nbt.getUUID("User"));
         }
-        if (nbt.contains("Technique", Tag.TAG_STRING)) {
-            setTechnique(ConfiguredTechniqueTypeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Technique"))));
+        if (nbt.contains("Technique", Tag.TAG_INT_ARRAY)) {
+            setTechniqueID(nbt.getUUID("Technique"));
+        }
+        if (nbt.contains("TechniqueType", Tag.TAG_STRING)) {
+            setTechniqueType(ConfiguredTechniqueTypeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("TechniqueType"))));
         }
     }
 
@@ -148,7 +170,10 @@ public class BaangEntity extends PathfinderMob {
         if (getUserID() != null) {
             tag.putUUID("User", getUserID());
         }
-        tag.putString("Technique", ConfiguredTechniqueTypeRegistry.getRegistry().getKey(getTechnique()).toString());
+        if (getTechniqueID() != null) {
+            tag.putUUID("Technique", getTechniqueID());
+        }
+        tag.putString("TechniqueType", ConfiguredTechniqueTypeRegistry.getRegistry().getKey(getTechniqueType()).toString());
         return tag;
     }
 

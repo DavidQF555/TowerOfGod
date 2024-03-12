@@ -5,11 +5,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.AttributeRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -17,12 +19,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class ChannelLightning extends RayTraceTechnique<ChannelLightning.Config, NoData> {
+public class ChannelLightning extends RayTraceTechnique<ChannelLightning.Config, ShinsuTechniqueInstanceData> {
 
     private final IRequirement[] requirements = new IRequirement[]{new AttributeRequirement(ShinsuAttributeRegistry.LIGHTNING)};
 
     public ChannelLightning() {
-        super(Config.CODEC, NoData.CODEC);
+        super(Config.CODEC, ShinsuTechniqueInstanceData.CODEC);
     }
 
     @Override
@@ -32,7 +34,7 @@ public class ChannelLightning extends RayTraceTechnique<ChannelLightning.Config,
 
     @Nullable
     @Override
-    protected NoData doEffect(LivingEntity user, Config config, @Nullable LivingEntity target, HitResult result) {
+    protected ShinsuTechniqueInstanceData doEffect(LivingEntity user, Config config, @Nullable LivingEntity target, HitResult result) {
         DirectionalLightningBoltEntity lightning = EntityRegistry.DIRECTIONAL_LIGHTNING.get().create(user.level);
         if (lightning != null) {
             if (user instanceof ServerPlayer) {
@@ -43,7 +45,7 @@ public class ChannelLightning extends RayTraceTechnique<ChannelLightning.Config,
             lightning.setPos(pos.x(), pos.y(), pos.z());
             lightning.setStart(new Vector3f(user.getEyePosition(1)));
             user.level.addFreshEntity(lightning);
-            return NoData.INSTANCE;
+            return new ShinsuTechniqueInstanceData(Mth.createInsecureUUID());
         }
         return null;
     }

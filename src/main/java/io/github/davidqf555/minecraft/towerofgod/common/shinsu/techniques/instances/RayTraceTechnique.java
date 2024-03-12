@@ -4,6 +4,7 @@ import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -16,7 +17,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public abstract class RayTraceTechnique<C extends RayTraceTechnique.Config, S> extends ShinsuTechniqueType<C, S> {
+public abstract class RayTraceTechnique<C extends RayTraceTechnique.Config, S extends ShinsuTechniqueInstanceData> extends ShinsuTechniqueType<C, S> {
 
     protected RayTraceTechnique(Codec<C> config, Codec<S> data) {
         super(config, data);

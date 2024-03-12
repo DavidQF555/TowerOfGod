@@ -1,35 +1,36 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.BaangsTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-public interface IShinsuUser {
+public interface IShinsuUser<T extends LivingEntity> {
 
     ShinsuStats getShinsuStats();
 
     ShinsuQualityData getShinsuQualityData();
 
-    ShinsuTechniqueData<?> getShinsuTechniqueData();
+    BaangsTechniqueData<T> getShinsuTechniqueData();
 
     int getShinsuLevel();
 
-    default int getInitialMaxShinsu(Random random) {
+    default int getInitialMaxBaangs(Random random) {
         Group group = getGroup();
-        return Mth.ceil(10 * Math.pow(Math.pow(50, 1.0 / 99), getShinsuLevel() - 1) * (group == null ? 1 : group.getShinsu()) * (0.8 + random.nextDouble() * 0.4));
+        double mult = group == null ? 1 : group.getBaangs();
+        return Mth.ceil(getShinsuLevel() * mult * (0.8 + random.nextDouble() * 0.4) * 0.25);
     }
 
     default double getInitialResistance(Random random) {
@@ -42,10 +43,26 @@ public interface IShinsuUser {
         return Math.pow(Math.pow(10, 1.0 / 99), getShinsuLevel() - 1) * (group == null ? 1 : group.getTension()) * (0.8 + random.nextDouble() * 0.4);
     }
 
+    default void initializeTechniques(ServerLevelAccessor world, T entity) {
+        BaangsTechniqueData<T> data = getShinsuTechniqueData();
+        int max = getInitialMaxBaangs(world.getRandom());
+        data.setMaxBaangs(max);
+        ConfiguredShinsuTechniqueType<?, ?>[] possible = ConfiguredTechniqueTypeRegistry.getRegistry().getValues().stream()
+                .filter(type -> Arrays.stream(type.getType().getRequirements()).allMatch(req -> req.isUnlocked(entity)))
+                .toArray(ConfiguredShinsuTechniqueType<?, ?>[]::new);
+        if (possible.length > 0) {
+            Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> levels = new HashMap<>();
+            for (int i = 0; i < max; i++) {
+                ConfiguredShinsuTechniqueType<?, ?> selected = possible[world.getRandom().nextInt(possible.length)];
+                levels.put(selected, levels.getOrDefault(selected, 0) + 1);
+            }
+            data.setBaangs(levels);
+        }
+    }
+
     default void initializeStats(ServerLevelAccessor world) {
         ShinsuStats stats = getShinsuStats();
         Random random = world.getRandom();
-        stats.setMaxShinsu(getInitialMaxShinsu(random));
         stats.setResistance(getInitialResistance(random));
         stats.setTension(getInitialTension(random));
     }
@@ -56,15 +73,16 @@ public interface IShinsuUser {
         stats.setShape(getInitialShape(world.getRandom()));
     }
 
-    default void initialize(ServerLevelAccessor world) {
+    default void initialize(ServerLevelAccessor world, T entity) {
         Random random = world.getRandom();
         setGroup(getInitialGroup(random));
         initializeStats(world);
         initializeQuality(world);
+        initializeTechniques(world, entity);
     }
 
-    default void shinsuTick(ServerLevel world) {
-        getShinsuTechniqueData().tick(world);
+    default void shinsuTick(T user) {
+        getShinsuTechniqueData().tick(user);
     }
 
     default double getPreferredAttributeChance() {

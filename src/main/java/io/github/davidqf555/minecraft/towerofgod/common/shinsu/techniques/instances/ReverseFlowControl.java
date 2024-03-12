@@ -5,10 +5,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,13 +32,13 @@ public class ReverseFlowControl extends ShinsuTechniqueType<ReverseFlowControl.C
     @Nullable
     @Override
     public Data onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
-        return target == null || user.distanceToSqr(target) > config.range * config.range ? null : new Data(target.getUUID());
+        return target == null || user.distanceToSqr(target) > config.range * config.range ? null : new Data(Mth.createInsecureUUID(), target.getUUID());
     }
 
     @Override
     public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, Data> inst) {
         if (user.level instanceof ServerLevel) {
-            Entity target = ((ServerLevel) user.level).getEntity(inst.getData().id);
+            Entity target = ((ServerLevel) user.level).getEntity(inst.getData().target);
             if (!(target instanceof LivingEntity) || user.distanceToSqr(target) > inst.getConfigured().getConfig().range * inst.getConfigured().getConfig().range) {
                 inst.remove(user);
                 return;
@@ -65,15 +67,17 @@ public class ReverseFlowControl extends ShinsuTechniqueType<ReverseFlowControl.C
         }
     }
 
-    public static class Data {
+    public static class Data extends ShinsuTechniqueInstanceData {
 
         public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id)
+                Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),
+                Util.UUID_CODEC.fieldOf("target").forGetter(data -> data.target)
         ).apply(inst, Data::new));
-        public final UUID id;
+        public final UUID target;
 
-        public Data(UUID id) {
-            this.id = id;
+        public Data(UUID id, UUID target) {
+            super(id);
+            this.target = target;
         }
 
     }

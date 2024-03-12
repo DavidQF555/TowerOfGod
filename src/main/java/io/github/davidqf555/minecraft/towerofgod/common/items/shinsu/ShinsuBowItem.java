@@ -5,7 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.IDData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -90,7 +90,7 @@ public class ShinsuBowItem extends BowItem {
                 CompoundTag nbt = stack.getTagElement(TowerOfGod.MOD_ID);
                 if (nbt != null && entityIn instanceof LivingEntity) {
                     UUID id = nbt.getUUID("Technique");
-                    if (IDData.getTechnique((LivingEntity) entityIn, id) != null) {
+                    if (ShinsuTechniqueInstance.getById((LivingEntity) entityIn, id) != null) {
                         return;
                     }
                 }

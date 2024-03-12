@@ -1,9 +1,11 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
@@ -15,10 +17,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class GrowTree extends RayTraceTechnique<RayTraceTechnique.Config, NoData> {
+public class GrowTree extends RayTraceTechnique<RayTraceTechnique.Config, ShinsuTechniqueInstanceData> {
 
     public GrowTree() {
-        super(Config.CODEC, NoData.CODEC);
+        super(Config.CODEC, ShinsuTechniqueInstanceData.CODEC);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class GrowTree extends RayTraceTechnique<RayTraceTechnique.Config, NoData
 
     @Nullable
     @Override
-    protected NoData doEffect(LivingEntity user, Config config, @Nullable LivingEntity target, HitResult result) {
+    protected ShinsuTechniqueInstanceData doEffect(LivingEntity user, Config config, @Nullable LivingEntity target, HitResult result) {
         if (user.level instanceof ServerLevel) {
             BlockPos pos;
             switch (result.getType()) {
@@ -48,7 +50,7 @@ public class GrowTree extends RayTraceTechnique<RayTraceTechnique.Config, NoData
                 if (TreeFeature.validTreePos(user.level, pos)) {
                     tree.place((ServerLevel) user.level, ((ServerLevel) user.level).getChunkSource().getGenerator(), random, pos);
                 }
-                return NoData.INSTANCE;
+                return new ShinsuTechniqueInstanceData(Mth.createInsecureUUID());
             }
         }
         return null;

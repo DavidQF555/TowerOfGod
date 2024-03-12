@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -83,7 +84,7 @@ public abstract class BasicCommandTechnique<C extends ShinsuTechniqueConfig, S e
         }
     }
 
-    public static class Data extends IDData {
+    public static class Data extends ShinsuTechniqueInstanceData {
 
         public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
                 Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),

@@ -7,7 +7,6 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredT
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -33,12 +32,21 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
         this.max = max;
     }
 
-    public void setBaangs(Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> baangs) {
+    public BaangEntity[] getBaangs(ServerLevel world) {
+        return baangs.stream()
+                .filter(inst -> inst.id != null)
+                .map(inst -> world.getEntity(inst.id))
+                .filter(entity -> entity instanceof BaangEntity)
+                .map(entity -> (BaangEntity) entity)
+                .toArray(BaangEntity[]::new);
+    }
+
+    public void setBaangs(Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs) {
         this.baangs.clear();
         baangs.forEach((type, count) -> {
             if (count > 0) {
                 Instance inst = new Instance();
-                inst.type = ConfiguredTechniqueTypeRegistry.getRegistry().getValue(type.location());
+                inst.type = type;
                 this.baangs.add(inst);
             }
         });
@@ -69,7 +77,7 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
         BaangEntity baang = EntityRegistry.BAANG.get().create(user.level);
         if (baang != null) {
             baang.setUserID(user.getUUID());
-            baang.setTechnique(type);
+            baang.setTechniqueType(type);
             user.level.addFreshEntity(baang);
             return baang.getUUID();
         }

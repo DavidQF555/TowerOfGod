@@ -1,9 +1,11 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
@@ -13,16 +15,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class Forest extends AreaTechnique<AreaTechnique.Config, NoData> {
+public class Forest extends AreaTechnique<AreaTechnique.Config, ShinsuTechniqueInstanceData> {
 
     public Forest() {
-        super(Config.CODEC, NoData.CODEC);
+        super(Config.CODEC, ShinsuTechniqueInstanceData.CODEC);
     }
 
     @Nullable
     @Override
-    public NoData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
-        return NoData.INSTANCE;
+    public ShinsuTechniqueInstanceData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        return new ShinsuTechniqueInstanceData(Mth.createInsecureUUID());
     }
 
     @Override
@@ -31,7 +33,7 @@ public class Forest extends AreaTechnique<AreaTechnique.Config, NoData> {
     }
 
     @Override
-    protected void doEffect(LivingEntity user, ShinsuTechniqueInstance<Config, NoData> inst, Vec3 pos) {
+    protected void doEffect(LivingEntity user, ShinsuTechniqueInstance<Config, ShinsuTechniqueInstanceData> inst, Vec3 pos) {
         if (user.level instanceof ServerLevel) {
             List<ConfiguredFeature<?, ?>> trees = ((ServerLevel) user.level).getServer().registryAccess().registryOrThrow(Registry.CONFIGURED_FEATURE_REGISTRY).stream().filter(feature -> feature.feature() instanceof TreeFeature).toList();
             if (!trees.isEmpty()) {

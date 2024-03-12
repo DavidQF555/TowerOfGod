@@ -4,8 +4,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.SmallFireball;
@@ -15,20 +17,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
-public class Flamethrower extends ShinsuTechniqueType<Flamethrower.Config, NoData> {
+public class Flamethrower extends ShinsuTechniqueType<Flamethrower.Config, ShinsuTechniqueInstanceData> {
 
     public Flamethrower() {
-        super(Config.CODEC, NoData.CODEC);
+        super(Config.CODEC, ShinsuTechniqueInstanceData.CODEC);
     }
 
     @Nullable
     @Override
-    public NoData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
-        return NoData.INSTANCE;
+    public ShinsuTechniqueInstanceData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        return new ShinsuTechniqueInstanceData(Mth.createInsecureUUID());
     }
 
     @Override
-    public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, NoData> inst) {
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, ShinsuTechniqueInstanceData> inst) {
         Random rand = user.getRandom();
         Vec3 center = user.getLookAngle();
         int count = (int) (ShinsuStats.get(user).getTension() * 2) + 1;

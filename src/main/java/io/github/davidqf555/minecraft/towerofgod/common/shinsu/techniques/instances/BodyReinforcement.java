@@ -3,30 +3,32 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class BodyReinforcement extends ShinsuTechniqueType<BodyReinforcement.Config, NoData> {
+public class BodyReinforcement extends ShinsuTechniqueType<BodyReinforcement.Config, ShinsuTechniqueInstanceData> {
 
     public BodyReinforcement() {
-        super(Config.CODEC, NoData.CODEC);
+        super(Config.CODEC, ShinsuTechniqueInstanceData.CODEC);
     }
 
     @Nullable
     @Override
-    public NoData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
-        return NoData.INSTANCE;
+    public ShinsuTechniqueInstanceData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        return new ShinsuTechniqueInstanceData(Mth.createInsecureUUID());
     }
 
     @Override
-    public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, NoData> inst) {
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, ShinsuTechniqueInstanceData> inst) {
         user.addEffect(new MobEffectInstance(EffectRegistry.BODY_REINFORCEMENT.get(), 2, inst.getConfigured().getConfig().amp, false, true, true));
         super.tick(user, inst);
     }
