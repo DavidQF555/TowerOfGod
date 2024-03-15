@@ -9,6 +9,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PredictedShinsuQuality;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.IShinsuUser;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateBaangsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateUnlockedPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,8 +52,8 @@ public final class DataEventSubscriber {
     @SubscribeEvent
     public static void onServerPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getPlayer();
-        ShinsuStats stats = ShinsuStats.get(player);
         TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new ServerUpdateUnlockedPacket(PlayerTechniqueData.get(player).getUnlocked()));
+        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new ServerUpdateBaangsPacket(PlayerTechniqueData.get(player).getBaangSettings()));
     }
 
     @SubscribeEvent

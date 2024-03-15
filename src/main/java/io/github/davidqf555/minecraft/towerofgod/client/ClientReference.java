@@ -22,12 +22,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public final class ClientReference {
 
+    public static final Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> BAANGS = new HashMap<>();
     public static final Set<ConfiguredShinsuTechniqueType<?, ?>> UNLOCKED = new HashSet<>();
     public static int maxBaangs = 0;
 

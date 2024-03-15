@@ -14,10 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechniqueData<T> {
 
@@ -32,6 +29,12 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
         this.max = max;
     }
 
+    public Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> getBaangSettings() {
+        Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> map = new HashMap<>();
+        baangs.forEach(inst -> map.put(inst.type, map.getOrDefault(inst.type, 0) + inst.cooldown));
+        return map;
+    }
+
     public BaangEntity[] getBaangs(ServerLevel world) {
         return baangs.stream()
                 .filter(inst -> inst.id != null)
@@ -43,13 +46,18 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
 
     public void setBaangs(Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs) {
         this.baangs.clear();
-        baangs.forEach((type, count) -> {
-            if (count > 0) {
-                Instance inst = new Instance();
-                inst.type = type;
-                this.baangs.add(inst);
+        int total = 0;
+        for (ConfiguredShinsuTechniqueType<?, ?> type : baangs.keySet()) {
+            int count = baangs.get(type);
+            for (int i = 0; i < count; i++) {
+                if (total < getMaxBaangs()) {
+                    Instance inst = new Instance();
+                    inst.type = type;
+                    this.baangs.add(inst);
+                    total++;
+                }
             }
-        });
+        }
     }
 
     @Override

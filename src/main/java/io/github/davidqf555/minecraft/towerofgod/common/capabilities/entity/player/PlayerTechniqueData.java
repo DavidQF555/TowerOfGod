@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class PlayerTechniqueData extends BaangsTechniqueData<Player> {
@@ -19,6 +20,12 @@ public class PlayerTechniqueData extends BaangsTechniqueData<Player> {
 
     public static PlayerTechniqueData get(Player player) {
         return player.getCapability(CAPABILITY).<PlayerTechniqueData>cast().orElseGet(PlayerTechniqueData::new);
+    }
+
+    @Override
+    public void setBaangs(Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs) {
+        baangs.keySet().removeIf(type -> !getUnlocked().contains(type));
+        super.setBaangs(baangs);
     }
 
     public Set<ConfiguredShinsuTechniqueType<?, ?>> getUnlocked() {
