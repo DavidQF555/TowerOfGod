@@ -3,6 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
@@ -19,7 +20,7 @@ public class FireExplosion extends GroundTechniqueInstance<GroundTechniqueInstan
     @Nullable
     @Override
     public Data onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
-        return new Data(user.getX(), user.getZ(), user.getLookAngle().x(), user.getLookAngle().z(), user.getBlockY());
+        return new Data(Mth.createInsecureUUID(), user.getX(), user.getZ(), user.getLookAngle().x(), user.getLookAngle().z(), user.getBlockY());
     }
 
     @Override

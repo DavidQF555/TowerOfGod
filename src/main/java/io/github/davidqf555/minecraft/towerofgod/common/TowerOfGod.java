@@ -36,7 +36,6 @@ public class TowerOfGod {
             PROTOCOL_VERSION::equals);
 
     public TowerOfGod() {
-        ModLoadingContext context = ModLoadingContext.get();
         registerRegistries(FMLJavaModLoadingContext.get().getModEventBus());
         MinecraftForge.EVENT_BUS.register(this);
     }

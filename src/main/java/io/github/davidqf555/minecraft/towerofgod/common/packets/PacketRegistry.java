@@ -17,17 +17,13 @@ public final class PacketRegistry {
     public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             CastShinsuPacket.register(index++);
-            UpdateShinsuMeterPacket.register(index++);
-            ClientUpdateClientErrorPacket.register(index++);
-            ServerUpdateClientErrorPacket.register(index++);
+            ClientUpdateBaangsPacket.register(index++);
             ObserverChangeHighlightPacket.register(index++);
-            ServerOpenCombinationGUIPacket.register(index++);
             OpenGuideScreenPacket.register(index++);
-            ClientUpdateCastingPacket.register(index++);
-            ServerUpdateCastingPacket.register(index++);
             ServerUpdateAttributePacket.register(index++);
+            ServerUpdateBaangsPacket.register(index++);
             ServerUpdateUnlockedPacket.register(index++);
-            ClientOpenCombinationGUIPacket.register(index++);
+            UpdateCastingPacket.register(index++);
         });
     }
 }

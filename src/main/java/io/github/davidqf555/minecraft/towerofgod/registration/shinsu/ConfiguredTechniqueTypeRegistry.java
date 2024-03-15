@@ -28,7 +28,7 @@ public final class ConfiguredTechniqueTypeRegistry {
 
     @SubscribeEvent
     public static void onNewRegistry(NewRegistryEvent event) {
-        registry = event.create(new RegistryBuilder<ConfiguredShinsuTechniqueType<?, ?>>().setName(REGISTRY.location()).dataPackRegistry(ConfiguredShinsuTechniqueType.DIRECT_CODEC));
+        registry = event.create(new RegistryBuilder<ConfiguredShinsuTechniqueType<?, ?>>().setType((Class<ConfiguredShinsuTechniqueType<?, ?>>) (Class<?>) ConfiguredTechniqueTypeRegistry.class).setName(REGISTRY.location()).dataPackRegistry(ConfiguredShinsuTechniqueType.DIRECT_CODEC));
     }
 
 }

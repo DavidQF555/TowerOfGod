@@ -17,6 +17,7 @@ public final class ShinsuTechniqueTypeRegistry {
 
     public static final ResourceKey<Registry<ShinsuTechniqueType<?, ?>>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_technique"));
     public static final DeferredRegister<ShinsuTechniqueType<?, ?>> TYPES = DeferredRegister.create(REGISTRY, TowerOfGod.MOD_ID);
+
     public static final RegistryObject<BodyReinforcement> BODY_REINFORCEMENT = register("body_reinforcement", BodyReinforcement::new);
     public static final RegistryObject<BlackFish> BLACK_FISH = register("black_fish", BlackFish::new);
     public static final RegistryObject<ShinsuBlast> SHINSU_BLAST = register("shinsu_blast", ShinsuBlast::new);
@@ -53,7 +54,7 @@ public final class ShinsuTechniqueTypeRegistry {
 
     @SubscribeEvent
     public static void onNewRegistry(NewRegistryEvent event) {
-        registry = event.create(new RegistryBuilder<ShinsuTechniqueType<?, ?>>().setName(REGISTRY.location()));
+        registry = event.create(new RegistryBuilder<ShinsuTechniqueType<?, ?>>().setType((Class<ShinsuTechniqueType<?, ?>>) (Class<?>) ShinsuTechniqueType.class).setName(REGISTRY.location()));
     }
 
 }

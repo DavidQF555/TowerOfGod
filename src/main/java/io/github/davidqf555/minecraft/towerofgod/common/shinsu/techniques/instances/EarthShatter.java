@@ -2,6 +2,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.insta
 
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,7 +22,7 @@ public class EarthShatter extends GroundTechniqueInstance<GroundTechniqueInstanc
     @Nullable
     @Override
     public Data onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
-        return new Data(user.getX(), user.getZ(), user.getLookAngle().x(), user.getLookAngle().z(), user.getBlockY());
+        return new Data(Mth.createInsecureUUID(), user.getX(), user.getZ(), user.getLookAngle().x(), user.getLookAngle().z(), user.getBlockY());
     }
 
     @Override

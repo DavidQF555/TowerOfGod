@@ -36,7 +36,7 @@ public class BaangRenderer extends EntityRenderer<BaangEntity> {
 
     @Override
     public void render(BaangEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        int color = ShinsuAttribute.getColor(entityIn.getType().getConfig().getDisplay().attribute());
+        int color = ShinsuAttribute.getColor(entityIn.getTechniqueType().getConfig().getDisplay().attribute());
         int alpha = FastColor.ARGB32.alpha(color);
         int red = FastColor.ARGB32.red(color);
         int blue = FastColor.ARGB32.blue(color);
