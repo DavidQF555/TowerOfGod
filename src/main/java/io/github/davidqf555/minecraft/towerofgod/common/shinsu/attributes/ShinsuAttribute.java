@@ -1,5 +1,6 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes;
 
+import com.mojang.serialization.Codec;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effects.ShinsuAttributeEffect;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter.DropsFilter;
@@ -24,6 +25,7 @@ import javax.annotation.Nullable;
 
 public class ShinsuAttribute {
 
+    public static final Codec<ShinsuAttribute> CODEC = ResourceLocation.CODEC.xmap(loc -> ShinsuAttributeRegistry.getRegistry().getValue(loc), ShinsuAttribute::getId);
     private final ParticleOptions particleType;
     private final DamageSource source;
     private final double speed;
@@ -55,6 +57,10 @@ public class ShinsuAttribute {
 
     public static DamageSource getDamageSource(@Nullable ShinsuAttribute attribute) {
         return attribute == null ? DamageSource.DROWN : attribute.getSource();
+    }
+
+    public static double getSpeed(@Nullable ShinsuAttribute attribute) {
+        return attribute == null ? 1 : attribute.getSpeed();
     }
 
     public static void setAttribute(ItemStack item, @Nullable ShinsuAttribute attribute) {
@@ -93,7 +99,7 @@ public class ShinsuAttribute {
         return source;
     }
 
-    public double getSpeed() {
+    protected double getSpeed() {
         return speed;
     }
 

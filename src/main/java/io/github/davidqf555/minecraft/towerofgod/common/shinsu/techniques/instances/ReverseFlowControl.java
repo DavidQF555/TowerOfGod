@@ -1,103 +1,83 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 import java.util.UUID;
 
 @ParametersAreNonnullByDefault
-public class ReverseFlowControl extends ShinsuTechniqueInstance {
+public class ReverseFlowControl extends ShinsuTechniqueType<ReverseFlowControl.Config, ReverseFlowControl.Data> {
 
-    private static final double RANGE = 3;
-    private int duration;
-    private UUID target;
+    private final IRequirement[] requirements = new IRequirement[0];
 
-    public ReverseFlowControl(Entity user, UUID target, int duration) {
-        super(user);
-        this.target = target;
-        this.duration = duration;
+    public ReverseFlowControl() {
+        super(Config.CODEC, Data.CODEC);
+    }
+
+    @Nullable
+    @Override
+    public Data onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        return target == null || user.distanceToSqr(target) > config.range * config.range ? null : new Data(Mth.createInsecureUUID(), target.getUUID());
     }
 
     @Override
-    public int getDuration() {
-        return duration;
-    }
-
-    @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.REVERSE_FLOW_CONTROL.get();
-    }
-
-    @Override
-    public void tick(ServerLevel world) {
-        Entity target = world.getEntity(this.target);
-        if (target instanceof LivingEntity) {
-            Entity user = getUser(world);
-            if (user.distanceToSqr(target) > RANGE * RANGE) {
-                remove(world);
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, Data> inst) {
+        if (user.level instanceof ServerLevel) {
+            Entity target = ((ServerLevel) user.level).getEntity(inst.getData().target);
+            if (!(target instanceof LivingEntity) || user.distanceToSqr(target) > inst.getConfigured().getConfig().range * inst.getConfigured().getConfig().range) {
+                inst.remove(user);
                 return;
             }
             double resistance = ShinsuStats.getNetResistance(user, target);
             ((LivingEntity) target).addEffect(new MobEffectInstance(EffectRegistry.REVERSE_FLOW.get(), 2, (int) (resistance * 2)));
         }
-        super.tick(world);
     }
 
     @Override
-    public int getCooldown() {
-        return 600;
+    public IRequirement[] getRequirements() {
+        return requirements;
     }
 
-    @Override
-    public int getShinsuUse() {
-        return 30;
-    }
+    public static class Config extends ShinsuTechniqueConfig {
 
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Target", Tag.TAG_INT_ARRAY)) {
-            target = nbt.getUUID("Target");
-        }
-        if (nbt.contains("Duration", Tag.TAG_INT)) {
-            duration = nbt.getInt("Duration");
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(
+                        Codec.DOUBLE.fieldOf("range").forGetter(config -> config.range)
+                ).apply(inst, Config::new));
+        public final double range;
+
+        public Config(Display display, Optional<Integer> duration, int cooldown, double range) {
+            super(display, duration, cooldown);
+            this.range = range;
         }
     }
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        nbt.putUUID("Target", target);
-        nbt.putInt("Duration", getDuration());
-        return nbt;
-    }
+    public static class Data extends ShinsuTechniqueInstanceData {
 
-    @MethodsReturnNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<ReverseFlowControl> {
+        public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),
+                Util.UUID_CODEC.fieldOf("target").forGetter(data -> data.target)
+        ).apply(inst, Data::new));
+        public final UUID target;
 
-        @Override
-        public Either<ReverseFlowControl, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new ReverseFlowControl(user, target.getUUID(), 60)) : Either.right(Messages.getRequiresTarget(RANGE));
-        }
-
-        @Override
-        public ReverseFlowControl blankCreate() {
-            return new ReverseFlowControl(null, null, 0);
+        public Data(UUID id, UUID target) {
+            super(id);
+            this.target = target;
         }
 
     }

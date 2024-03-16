@@ -1,0 +1,11 @@
+{
+  "type": "towerofgod:manifest",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "cooldown": 0
+  }
+}

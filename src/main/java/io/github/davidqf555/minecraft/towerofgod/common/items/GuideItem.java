@@ -3,7 +3,7 @@ package io.github.davidqf555.minecraft.towerofgod.common.items;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenGuideScreenPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
@@ -20,6 +20,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class GuideItem extends Item {
@@ -42,8 +44,9 @@ public class GuideItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack item = playerIn.getItemInHand(handIn);
         if (playerIn instanceof ServerPlayer) {
-            ShinsuTechnique[] pages = PlayerTechniqueData.get(playerIn).getUnlocked().toArray(new ShinsuTechnique[0]);
+            ConfiguredShinsuTechniqueType<?, ?>[] pages = PlayerTechniqueData.get(playerIn).getUnlocked().toArray(ConfiguredShinsuTechniqueType[]::new);
             if (pages.length > 0) {
+                Arrays.sort(pages, Comparator.comparing(technique -> technique.getConfig().getDisplay().name()));
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerIn), new OpenGuideScreenPacket(pages, color));
                 playerIn.awardStat(Stats.ITEM_USED.get(this));
             } else {

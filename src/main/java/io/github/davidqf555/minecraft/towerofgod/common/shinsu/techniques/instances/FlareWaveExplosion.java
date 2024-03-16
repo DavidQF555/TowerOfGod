@@ -1,89 +1,62 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.UUID;
+import java.util.Optional;
 
 @ParametersAreNonnullByDefault
-public class FlareWaveExplosion extends ShinsuTechniqueInstance {
+public class FlareWaveExplosion extends ShinsuTechniqueType<FlareWaveExplosion.Config, ShinsuTechniqueInstanceData> {
 
-    private static final double RANGE = 1;
-    private UUID target;
-
-    public FlareWaveExplosion(Entity user, UUID target) {
-        super(user);
-        this.target = target;
+    public FlareWaveExplosion() {
+        super(Config.CODEC, ShinsuTechniqueInstanceData.CODEC);
     }
 
+    @Nullable
     @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.FLARE_WAVE_EXPLOSION.get();
-    }
-
-    @Override
-    public void onUse(ServerLevel world) {
-        Entity user = getUser(world);
-        Entity t = world.getEntity(target);
-        if (user != null && t instanceof LivingEntity target && user.distanceToSqr(t) <= RANGE * RANGE) {
-            float damage = (float) (5 / ShinsuStats.getNetResistance(user, target));
-            target.hurt(DamageSource.MAGIC, damage);
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (damage * 20), (int) (damage / 2), false, false, false));
+    public ShinsuTechniqueInstanceData onUse(LivingEntity user, FlareWaveExplosion.Config config, @Nullable LivingEntity target) {
+        if (target != null && user.distanceToSqr(target) <= config.range * config.range) {
+            target.hurt(DamageSource.MAGIC, config.damage);
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, config.slowDuration, config.slowMag, false, false, false));
         }
+        return null;
     }
 
     @Override
-    public int getCooldown() {
-        return 400;
+    public IRequirement[] getRequirements() {
+        return new IRequirement[0];
     }
 
-    @Override
-    public int getShinsuUse() {
-        return 25;
-    }
+    public static class Config extends ShinsuTechniqueConfig {
 
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Target", Tag.TAG_INT_ARRAY)) {
-            target = nbt.getUUID("Target");
-        }
-    }
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(inst.group(
+                        Codec.FLOAT.fieldOf("damage").forGetter(config -> config.damage),
+                        Codec.DOUBLE.fieldOf("range").forGetter(config -> config.range),
+                        ExtraCodecs.NON_NEGATIVE_INT.fieldOf("slow_duration").forGetter(config -> config.slowDuration),
+                        ExtraCodecs.NON_NEGATIVE_INT.fieldOf("slow_magnitude").forGetter(config -> config.slowMag)
+                )).apply(inst, Config::new));
+        public final float damage;
+        public final double range;
+        public final int slowDuration, slowMag;
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        nbt.putUUID("Target", target);
-        return nbt;
-    }
-
-    @MethodsReturnNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<FlareWaveExplosion> {
-
-        @Override
-        public Either<FlareWaveExplosion, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return target instanceof LivingEntity && user.distanceToSqr(target) <= RANGE * RANGE ? Either.left(new FlareWaveExplosion(user, target.getUUID())) : Either.right(Messages.getRequiresTarget(RANGE));
-        }
-
-        @Override
-        public FlareWaveExplosion blankCreate() {
-            return new FlareWaveExplosion(null, null);
+        public Config(Display display, Optional<Integer> duration, int cooldown, float damage, double range, int slowDuration, int slowMag) {
+            super(display, duration, cooldown);
+            this.damage = damage;
+            this.range = range;
+            this.slowDuration = slowDuration;
+            this.slowMag = slowMag;
         }
 
     }

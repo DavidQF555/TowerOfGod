@@ -1,0 +1,12 @@
+{
+  "type": "towerofgod:body_reinforcement",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "cooldown": 200,
+    "amp": 2
+  }
+}

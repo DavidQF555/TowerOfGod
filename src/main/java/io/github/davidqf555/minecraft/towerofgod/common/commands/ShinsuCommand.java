@@ -10,10 +10,9 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateUnlockedPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,6 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -32,7 +32,7 @@ public final class ShinsuCommand {
     private static final MutableComponent ZERO = Component.translatable("commands." + TowerOfGod.MOD_ID + ".shinsu.zero");
     private static final String REMOVE_SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_shape";
     private static final String REMOVE_ATTRIBUTE = "commands." + TowerOfGod.MOD_ID + ".shinsu.remove_attribute";
-    private static final String SHINSU = "commands." + TowerOfGod.MOD_ID + ".shinsu.shinsu";
+    private static final String BAANGS = "commands." + TowerOfGod.MOD_ID + ".shinsu.baangs";
     private static final String RESISTANCE = "commands." + TowerOfGod.MOD_ID + ".shinsu.resistance";
     private static final String TENSION = "commands." + TowerOfGod.MOD_ID + ".shinsu.tension";
     private static final String UNLOCK = "commands." + TowerOfGod.MOD_ID + ".shinsu.unlock";
@@ -49,9 +49,9 @@ public final class ShinsuCommand {
         dispatcher.register(Commands.literal("shinsu")
                 .requires(source -> source.hasPermission(2))
                 .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.literal("shinsu")
+                        .then(Commands.literal("baangs")
                                 .then(Commands.argument("value", IntegerArgumentType.integer(0))
-                                        .executes(context -> setMaxShinsu(context.getSource(), EntityArgument.getEntities(context, "targets"), IntegerArgumentType.getInteger(context, "value")))
+                                        .executes(context -> setMaxBaangs(context.getSource(), EntityArgument.getEntities(context, "targets"), IntegerArgumentType.getInteger(context, "value")))
                                 )
                         )
                         .then(Commands.literal("resistance")
@@ -67,12 +67,12 @@ public final class ShinsuCommand {
                         .then(Commands.literal("technique")
                                 .then(Commands.literal("unlock")
                                         .then(Commands.argument("technique", new ShinsuTechniqueArgumentType())
-                                                .executes(context -> unlockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ShinsuTechnique.class)))
+                                                .executes(context -> unlockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ConfiguredShinsuTechniqueType.class)))
                                         )
                                 )
                                 .then(Commands.literal("lock")
                                         .then(Commands.argument("technique", new ShinsuTechniqueArgumentType())
-                                                .executes(context -> lockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ShinsuTechnique.class)))
+                                                .executes(context -> lockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ConfiguredShinsuTechniqueType.class)))
                                         )
                                 )
                         )
@@ -103,14 +103,11 @@ public final class ShinsuCommand {
         );
     }
 
-    private static int setMaxShinsu(CommandSourceStack source, Collection<? extends Entity> entities, int shinsu) {
+    private static int setMaxBaangs(CommandSourceStack source, Collection<? extends Entity> entities, int baangs) {
         for (Entity entity : entities) {
             ShinsuStats stats = ShinsuStats.get(entity);
-            stats.setMaxShinsu(shinsu);
-            if (entity instanceof ServerPlayer) {
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(entity), stats.getMaxShinsu()));
-            }
-            source.sendSuccess(Component.translatable(SHINSU, entity.getDisplayName(), shinsu), true);
+            stats.setMaxBaangs(baangs);
+            source.sendSuccess(Component.translatable(BAANGS, entity.getDisplayName(), baangs), true);
         }
         return entities.size();
     }
@@ -139,14 +136,14 @@ public final class ShinsuCommand {
         return entities.size();
     }
 
-    private static int unlockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ShinsuTechnique technique) {
+    private static int unlockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ConfiguredShinsuTechniqueType<?, ?> technique) {
         int count = 0;
         for (Entity entity : entities) {
             if (entity instanceof ServerPlayer) {
                 PlayerTechniqueData data = PlayerTechniqueData.get((Player) entity);
                 if (data.unlock(technique)) {
                     count++;
-                    source.sendSuccess(Component.translatable(UNLOCK, entity.getDisplayName(), technique.getText()), true);
+                    source.sendSuccess(Component.translatable(UNLOCK, entity.getDisplayName(), technique.getConfig().getDisplay().name()), true);
                     TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new ServerUpdateUnlockedPacket(data.getUnlocked()));
                 }
             }
@@ -154,14 +151,14 @@ public final class ShinsuCommand {
         return count;
     }
 
-    private static int lockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ShinsuTechnique technique) {
+    private static int lockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ConfiguredShinsuTechniqueType<?, ?> technique) {
         int count = 0;
         for (Entity entity : entities) {
             if (entity instanceof Player) {
                 PlayerTechniqueData data = PlayerTechniqueData.get((Player) entity);
                 if (data.lock(technique)) {
                     count++;
-                    source.sendSuccess(Component.translatable(LOCK, entity.getDisplayName(), technique.getText()), true);
+                    source.sendSuccess(Component.translatable(LOCK, entity.getDisplayName(), technique.getConfig().getDisplay().name()), true);
                     TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new ServerUpdateUnlockedPacket(data.getUnlocked()));
                 }
             }
@@ -209,9 +206,11 @@ public final class ShinsuCommand {
 
     private static int printInstances(CommandSourceStack source, Collection<? extends Entity> entities) {
         for (Entity entity : entities) {
-            source.sendSuccess(Component.translatable(INSTANCES_TITLE, entity.getDisplayName()), true);
-            for (ShinsuTechniqueInstance inst : ShinsuTechniqueData.get(entity).getTechniques()) {
-                source.sendSuccess(Component.translatable(INSTANCES, inst.getTechnique().getText(), (inst.getDuration() - inst.getTicks()) / 20.0), true);
+            if (entity instanceof LivingEntity) {
+                source.sendSuccess(Component.translatable(INSTANCES_TITLE, entity.getDisplayName()), true);
+                for (ShinsuTechniqueInstance<?, ?> inst : ShinsuTechniqueData.get((LivingEntity) entity).getTechniques()) {
+                    source.sendSuccess(Component.translatable(INSTANCES, inst.getConfigured().getConfig().getDisplay().name(), inst.getConfigured().getConfig().getDuration().map(dur -> (dur - inst.getTicks()) / 20.0).orElse(Double.MAX_VALUE)), true);
+                }
             }
         }
         return entities.size();

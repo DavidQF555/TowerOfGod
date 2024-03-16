@@ -1,0 +1,13 @@
+{
+  "type": "towerofgod:channel_lightning",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 0,
+    "cooldown": 200,
+    "damage": 5
+  }
+}

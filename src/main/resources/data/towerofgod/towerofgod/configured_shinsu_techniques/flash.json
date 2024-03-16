@@ -1,0 +1,13 @@
+{
+  "type": "towerofgod:flash",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 0,
+    "cooldown": 900,
+    "range": 64
+  }
+}

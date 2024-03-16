@@ -2,8 +2,8 @@ package io.github.davidqf555.minecraft.towerofgod.common.packets;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
@@ -19,15 +19,15 @@ public class ServerUpdateUnlockedPacket {
 
     private static final BiConsumer<ServerUpdateUnlockedPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.unlocked.size());
-        for (ShinsuTechnique technique : message.unlocked) {
+        for (ConfiguredShinsuTechniqueType<?, ?> technique : message.unlocked) {
             buffer.writeResourceLocation(technique.getId());
         }
     };
     private static final Function<FriendlyByteBuf, ServerUpdateUnlockedPacket> DECODER = buffer -> {
-        Set<ShinsuTechnique> unlocked = new HashSet<>();
+        Set<ConfiguredShinsuTechniqueType<?, ?>> unlocked = new HashSet<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            unlocked.add(ShinsuTechniqueRegistry.getRegistry().getValue(buffer.readResourceLocation()));
+            unlocked.add(ConfiguredTechniqueTypeRegistry.getRegistry().getValue(buffer.readResourceLocation()));
         }
         return new ServerUpdateUnlockedPacket(unlocked);
     };
@@ -35,9 +35,9 @@ public class ServerUpdateUnlockedPacket {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-    private final Set<ShinsuTechnique> unlocked;
+    private final Set<ConfiguredShinsuTechniqueType<?, ?>> unlocked;
 
-    public ServerUpdateUnlockedPacket(Set<ShinsuTechnique> unlocked) {
+    public ServerUpdateUnlockedPacket(Set<ConfiguredShinsuTechniqueType<?, ?>> unlocked) {
         this.unlocked = unlocked;
     }
 

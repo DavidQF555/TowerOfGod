@@ -7,32 +7,33 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class ServerUpdateCastingPacket {
+public class UpdateCastingPacket {
 
-    private static final BiConsumer<ServerUpdateCastingPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
-        buffer.writeInt(message.id);
+    private static final BiConsumer<UpdateCastingPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
+        buffer.writeUUID(message.id);
         buffer.writeBoolean(message.casting);
     };
-    private static final Function<FriendlyByteBuf, ServerUpdateCastingPacket> DECODER = buffer -> new ServerUpdateCastingPacket(buffer.readInt(), buffer.readBoolean());
-    private static final BiConsumer<ServerUpdateCastingPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
+    private static final Function<FriendlyByteBuf, UpdateCastingPacket> DECODER = buffer -> new UpdateCastingPacket(buffer.readUUID(), buffer.readBoolean());
+    private static final BiConsumer<UpdateCastingPacket, Supplier<NetworkEvent.Context>> CONSUMER = (message, context) -> {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
 
-    private final int id;
+    private final UUID id;
     private final boolean casting;
 
-    public ServerUpdateCastingPacket(int id, boolean casting) {
+    public UpdateCastingPacket(UUID id, boolean casting) {
         this.id = id;
         this.casting = casting;
     }
 
     public static void register(int index) {
-        TowerOfGod.CHANNEL.registerMessage(index, ServerUpdateCastingPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        TowerOfGod.CHANNEL.registerMessage(index, UpdateCastingPacket.class, ENCODER, DECODER, CONSUMER, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     private void handle(NetworkEvent.Context context) {

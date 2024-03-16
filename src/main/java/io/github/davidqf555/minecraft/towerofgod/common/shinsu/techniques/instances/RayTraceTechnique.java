@@ -1,9 +1,12 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -11,65 +14,58 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-public abstract class RayTraceTechnique extends ShinsuTechniqueInstance {
+import javax.annotation.Nullable;
+import java.util.Optional;
 
-    private boolean entityCollision;
-    private Vec3 direction;
-    private double range;
+public abstract class RayTraceTechnique<C extends RayTraceTechnique.Config, S extends ShinsuTechniqueInstanceData> extends ShinsuTechniqueType<C, S> {
 
-    public RayTraceTechnique(Entity user, Vec3 direction, double range, boolean entityCollision) {
-        super(user);
-        this.direction = direction;
-        this.range = range;
-        this.entityCollision = entityCollision;
+    protected RayTraceTechnique(Codec<C> config, Codec<S> data) {
+        super(config, data);
     }
 
+    @Nullable
     @Override
-    public void onUse(ServerLevel world) {
-        Entity user = getUser(world);
+    public S onUse(LivingEntity user, C config, @Nullable LivingEntity target) {
         Vec3 start = new Vec3(user.getX(), user.getEyeY(), user.getZ());
-        Vec3 end = start.add(direction.scale(range));
-        if (entityCollision) {
-            EntityHitResult entity = ProjectileUtil.getEntityHitResult(world, null, start, end, AABB.ofSize(start, range * 2, range * 2, range * 2), e -> true);
+        Vec3 end = start.add(user.getLookAngle().scale(config.range));
+        if (config.entityCollision) {
+            EntityHitResult entity = ProjectileUtil.getEntityHitResult(user.level, null, start, end, AABB.ofSize(start, config.range * 2, config.range * 2, config.range * 2), e -> true);
             if (entity != null) {
-                doEffect(world, entity);
-                doEntityEffect(world, entity);
-                super.onUse(world);
-                return;
+                S effect = doEffect(user, config, target, entity);
+                S data = doEntityEffect(user, config, target, entity);
+                return data == null ? effect : data;
             }
         }
-        doEffect(world, world.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null)));
-        super.onUse(world);
+        return doEffect(user, config, target, user.level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null)));
     }
 
-    public abstract void doEffect(ServerLevel world, HitResult result);
+    @Nullable
+    protected abstract S doEffect(LivingEntity user, C config, @Nullable LivingEntity target, HitResult result);
 
-    public void doEntityEffect(ServerLevel world, EntityHitResult result) {
+    @Nullable
+    protected S doEntityEffect(LivingEntity user, C config, @Nullable LivingEntity target, EntityHitResult result) {
+        return null;
     }
 
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("X", Tag.TAG_DOUBLE) && nbt.contains("Y", Tag.TAG_DOUBLE) && nbt.contains("Z", Tag.TAG_DOUBLE)) {
-            direction = new Vec3(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
-        }
-        if (nbt.contains("EntityCollision", Tag.TAG_BYTE)) {
-            entityCollision = nbt.getBoolean("EntityCollision");
-        }
-        if (nbt.contains("Range", Tag.TAG_DOUBLE)) {
-            range = nbt.getDouble("Range");
-        }
-    }
+    public static class Config extends ShinsuTechniqueConfig {
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        nbt.putDouble("X", direction.x());
-        nbt.putDouble("Y", direction.y());
-        nbt.putDouble("Z", direction.z());
-        nbt.putBoolean("EntityCollision", entityCollision);
-        nbt.putDouble("Range", range);
-        return nbt;
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst -> rayTraceCommonCodec(inst).apply(inst, Config::new));
+        public final boolean entityCollision;
+        public final double range;
+
+        public Config(Display display, Optional<Integer> duration, int cooldown, boolean entityCollision, double range) {
+            super(display, duration, cooldown);
+            this.entityCollision = entityCollision;
+            this.range = range;
+        }
+
+        protected static <T extends Config> Products.P5<RecordCodecBuilder.Mu<T>, Display, Optional<Integer>, Integer, Boolean, Double> rayTraceCommonCodec(RecordCodecBuilder.Instance<T> inst) {
+            return commonCodec(inst).and(inst.group(
+                    Codec.BOOL.optionalFieldOf("entity_collision", true).forGetter(config -> config.entityCollision),
+                    Codec.DOUBLE.optionalFieldOf("range", 64.0).forGetter(config -> config.range)
+            ));
+        }
+
     }
 
 }

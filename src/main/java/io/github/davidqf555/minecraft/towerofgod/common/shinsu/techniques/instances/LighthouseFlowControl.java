@@ -1,92 +1,54 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseFlowControlCommand;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.Vec3;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
+import net.minecraft.world.entity.LivingEntity;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-public class LighthouseFlowControl extends BasicCommandTechnique {
+public class LighthouseFlowControl extends BasicCommandTechnique<LighthouseFlowControl.Config, BasicCommandTechnique.Data> {
 
-    private int duration;
-    private double range;
+    private final IRequirement[] requirements = new IRequirement[0];
 
-    public LighthouseFlowControl(Entity user, int duration, double range) {
-        super(user);
-        this.duration = duration;
-        this.range = range;
+    public LighthouseFlowControl() {
+        super(Config.CODEC, Data.CODEC);
     }
 
     @Override
-    public int getDuration() {
-        return duration;
+    public IRequirement[] getRequirements() {
+        return requirements;
     }
 
     @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.LIGHTHOUSE_FLOW_CONTROL.get();
+    protected DeviceCommand createCommand(LivingEntity user, Config config, FlyingDevice entity, UUID id) {
+        return new LighthouseFlowControlCommand(entity, id, config.range, config.getDuration().orElseThrow());
     }
 
     @Override
-    public int getShinsuUse() {
-        return getDevices().size() * 25;
+    protected Data createData(UUID id, List<UUID> devices) {
+        return new Data(id, devices);
     }
 
-    @Override
-    protected DeviceCommand createCommand(FlyingDevice entity, ServerLevel world) {
-        return new LighthouseFlowControlCommand(entity, getID(), range, getDuration());
-    }
+    public static class Config extends ShinsuTechniqueConfig {
 
-    @Override
-    public int getCooldown() {
-        return 600;
-    }
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(
+                        Codec.DOUBLE.fieldOf("range").forGetter(config -> config.range)
+                ).apply(inst, Config::new));
+        public final double range;
 
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Range", Tag.TAG_DOUBLE)) {
-            range = nbt.getDouble("Range");
-        }
-        if (nbt.contains("Duration", Tag.TAG_INT)) {
-            duration = nbt.getInt("Duration");
-        }
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        nbt.putDouble("Range", range);
-        nbt.putInt("Duration", getDuration());
-        return nbt;
-    }
-
-    @MethodsReturnNonnullByDefault
-    @ParametersAreNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<LighthouseFlowControl> {
-
-        @Override
-        public Either<LighthouseFlowControl, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            LighthouseFlowControl technique = new LighthouseFlowControl(user, 60, 3);
-            return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
-        }
-
-        @Override
-        public LighthouseFlowControl blankCreate() {
-            return new LighthouseFlowControl(null, 0, 0);
+        public Config(Display display, Optional<Integer> duration, int cooldown, double range) {
+            super(display, duration, cooldown);
+            this.range = range;
         }
 
     }
+
 }

@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -66,7 +67,7 @@ public class ShinsuEntity extends AbstractHurtingProjectile {
             Entity target = rayTraceResult.getEntity();
             float damage = DAMAGE;
             if (shooter != null) {
-                damage *= ShinsuStats.getNetResistance(shooter, target);
+                damage *= (float) ShinsuStats.getNetResistance(shooter, target);
             }
             target.hurt(ShinsuAttribute.getDamageSource(null), damage);
         }
@@ -74,16 +75,16 @@ public class ShinsuEntity extends AbstractHurtingProjectile {
     }
 
     @Nullable
-    public ShinsuTechniqueInstance getTechnique() {
+    public ShinsuTechniqueInstance<?, ?> getTechnique() {
         Entity shooter = getOwner();
-        if (technique != null && shooter != null) {
-            return ShinsuTechniqueInstance.get(shooter, technique);
+        if (technique != null && shooter instanceof LivingEntity) {
+            return ShinsuTechniqueInstance.getById((LivingEntity) shooter, technique);
         }
         return null;
     }
 
-    public void setTechnique(ShinsuTechniqueInstance technique) {
-        this.technique = technique.getID();
+    public void setTechnique(UUID technique) {
+        this.technique = technique;
     }
 
     @Override

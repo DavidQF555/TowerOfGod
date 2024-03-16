@@ -6,16 +6,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuArrowEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -51,14 +48,25 @@ public class ShinsuBowItem extends BowItem {
                 return;
             }
             float speed = getPowerForTime(charge);
-            if (speed >= 0.1 && !worldIn.isClientSide()) {
-                ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(shooter, null, shooter.getLookAngle()).ifLeft(instance -> {
+            CompoundTag tag = stack.getTagElement(TowerOfGod.MOD_ID);
+            if (tag == null) {
+                return;
+            }
+            if (speed >= 0.1 && !worldIn.isClientSide() && tag.contains("Technique", Tag.TAG_INT_ARRAY)) {
+                ShinsuArrowEntity arrow = EntityRegistry.SHINSU_ARROW.get().create(worldIn);
+                if (arrow != null) {
                     ShinsuAttribute attribute = ShinsuQualityData.get(shooter).getAttribute();
-                    ((ShootShinsuArrow) instance).setVelocity(speed * 3 * (attribute == null ? 1 : (float) attribute.getSpeed()));
-                    instance.getTechnique().cast(entity, instance);
-                    worldIn.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1, 1 / (shooter.getRandom().nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
-                    shooter.awardStat(Stats.ITEM_USED.get(this));
-                });
+                    double velocity = speed * 3 * ShinsuAttribute.getSpeed(attribute);
+                    arrow.setAttribute(attribute);
+                    arrow.setTechnique(tag.getUUID("Technique"));
+                    Vec3 dir = shooter.getLookAngle();
+                    arrow.shoot(dir.x(), dir.y(), dir.z(), (float) velocity, 1);
+                    arrow.setOwner(shooter);
+                    arrow.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
+                    worldIn.addFreshEntity(arrow);
+                worldIn.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1, 1 / (shooter.getRandom().nextFloat() * 0.4f + 1.2f) + speed * 0.5f);
+                shooter.awardStat(Stats.ITEM_USED.get(this));
+                }
             }
         }
     }
@@ -75,33 +83,22 @@ public class ShinsuBowItem extends BowItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
-        ItemStack itemstack = playerIn.getItemInHand(handIn);
-        InteractionResultHolder<ItemStack> ret = ForgeEventFactory.onArrowNock(itemstack, worldIn, playerIn, handIn, true);
-        if (ret != null) {
-            return ret;
-        } else if (ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(playerIn, null, playerIn.getLookAngle()).left().isPresent()) {
-            playerIn.startUsingItem(handIn);
-            return InteractionResultHolder.consume(itemstack);
-        } else {
-            return InteractionResultHolder.fail(itemstack);
-        }
-    }
-
-    @Override
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
         if (worldIn instanceof ServerLevel) {
-            CompoundTag nbt = stack.getTagElement(TowerOfGod.MOD_ID);
-            if (!stack.isEmpty() && nbt != null) {
-                UUID id = nbt.getUUID("Technique");
-                ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
-                if (technique == null) {
-                    IItemHandler inventory = entityIn.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
-                    if (inventory.getSlots() > itemSlot) {
-                        inventory.extractItem(itemSlot, stack.getCount(), false);
+            if (!stack.isEmpty()) {
+                CompoundTag nbt = stack.getTagElement(TowerOfGod.MOD_ID);
+                if (nbt != null && entityIn instanceof LivingEntity) {
+                    UUID id = nbt.getUUID("Technique");
+                    if (ShinsuTechniqueInstance.getById((LivingEntity) entityIn, id) != null) {
+                        return;
                     }
                 }
+                IItemHandler inventory = entityIn.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
+                if (inventory.getSlots() > itemSlot) {
+                    inventory.extractItem(itemSlot, stack.getCount(), false);
+                }
+                inventory.extractItem(itemSlot, stack.getCount(), false);
             }
         }
     }

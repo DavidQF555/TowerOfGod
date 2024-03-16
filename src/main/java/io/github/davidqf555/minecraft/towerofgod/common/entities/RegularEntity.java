@@ -55,7 +55,7 @@ public class RegularEntity extends BasicShinsuUserEntity {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new FindRegularTeamGoal(this, 5, 16));
         goalSelector.addGoal(2, new SwapWeaponToMainHandGoal<>(this, 5));
-        goalSelector.addGoal(3, new CastShinsuGoal<>(this, 100));
+        goalSelector.addGoal(3, new CastShinsuGoal<>(this, 40, 100));
         goalSelector.addGoal(4, new RangedMainHandAttackGoal<>(this, 1, 12, 15));
         goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.5, true));
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8));

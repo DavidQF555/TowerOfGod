@@ -2,15 +2,12 @@ package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
 import io.github.davidqf555.minecraft.towerofgod.client.model.CastingModelHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.BaangsTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShootShinsuArrow;
 import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -20,8 +17,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
@@ -34,15 +29,12 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Optional;
 
 @ParametersAreNonnullByDefault
-public abstract class BasicShinsuUserEntity extends PathfinderMob implements IShinsuUser, IGeared<BasicShinsuUserEntity>, RangedAttackMob {
+public abstract class BasicShinsuUserEntity extends PathfinderMob implements IShinsuUser<BasicShinsuUserEntity>, IGeared<BasicShinsuUserEntity>, RangedAttackMob {
 
     private static final EntityDataAccessor<String> GROUP = SynchedEntityData.defineId(BasicShinsuUserEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Boolean> CASTING = SynchedEntityData.defineId(BasicShinsuUserEntity.class, EntityDataSerializers.BOOLEAN);
@@ -68,7 +60,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         } else {
             shinsuLevel = getInitialLevel(random);
         }
-        initialize(worldIn);
+        initialize(worldIn, this);
         initializeWeapons();
         Group group = getGroup();
         MutableComponent text;
@@ -113,12 +105,8 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
             if (credit != null) {
                 ShinsuStats killed = getShinsuStats();
                 ShinsuStats stats = ShinsuStats.get(credit);
-                stats.setMaxShinsu(stats.getMaxShinsu() + 1 + Math.max(0, killed.getMaxShinsu() - stats.getMaxShinsu()) / 10);
                 stats.setTension(stats.getTension() * (1 + Math.max(0, killed.getTension() - stats.getTension()) / 5));
                 stats.setResistance(stats.getResistance() * (1 + Math.max(0, killed.getResistance() - stats.getResistance()) / 5));
-                if (credit instanceof ServerPlayer) {
-                    TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) credit), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(credit), stats.getMaxShinsu()));
-                }
             }
         }
         super.die(source);
@@ -158,7 +146,7 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
     @Override
     protected void customServerAiStep() {
         setAttributeParticles(ShinsuAttribute.getParticles(getShinsuQualityData().getAttribute()));
-        shinsuTick((ServerLevel) level);
+        shinsuTick(this);
     }
 
     @Override
@@ -197,8 +185,8 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
     }
 
     @Override
-    public ShinsuTechniqueData<BasicShinsuUserEntity> getShinsuTechniqueData() {
-        return ShinsuTechniqueData.get(this);
+    public BaangsTechniqueData<BasicShinsuUserEntity> getShinsuTechniqueData() {
+        return (BaangsTechniqueData<BasicShinsuUserEntity>) ShinsuTechniqueData.get(this);
     }
 
     @Nullable
@@ -226,13 +214,10 @@ public abstract class BasicShinsuUserEntity extends PathfinderMob implements ISh
         float velocity = 1.6f;
         float inaccuracy = (14 - level.getDifficulty().getId() * 4f) / getShinsuLevel();
         if (arrow instanceof ShinsuArrowEntity) {
-            Vec3 dir = new Vec3(dX, dY, dZ);
-            Optional<? extends ShinsuTechniqueInstance> technique = ShinsuTechniqueRegistry.SHOOT_SHINSU_ARROW.get().create(this, target, dir).left();
-            if (technique.isPresent()) {
-                ShootShinsuArrow inst = (ShootShinsuArrow) technique.get();
-                inst.setVelocity(velocity * 3);
-                inst.getTechnique().cast(target, inst);
-                return;
+            CompoundTag tag = hand.getTagElement(TowerOfGod.MOD_ID);
+            if (tag != null && tag.contains("Technique", Tag.TAG_INT_ARRAY)) {
+                ((ShinsuArrowEntity) arrow).setAttribute(ShinsuQualityData.get(this).getAttribute());
+                ((ShinsuArrowEntity) arrow).setTechnique(tag.getUUID("Technique"));
             } else {
                 arrow = ((ArrowItem) Items.ARROW).createArrow(level, new ItemStack(Items.ARROW), this);
             }

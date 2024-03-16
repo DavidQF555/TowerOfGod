@@ -1,0 +1,61 @@
+package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques;
+
+import com.mojang.serialization.Codec;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
+import net.minecraft.resources.RegistryFileCodec;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+
+import javax.annotation.Nullable;
+
+public class ConfiguredShinsuTechniqueType<C extends ShinsuTechniqueConfig, S extends ShinsuTechniqueInstanceData> {
+
+    public static final Codec<ConfiguredShinsuTechniqueType<?, ?>> DIRECT_CODEC = ShinsuTechniqueType.CODEC.dispatch(ConfiguredShinsuTechniqueType::getType, ShinsuTechniqueType::configuredCodec);
+    public static final RegistryFileCodec<ConfiguredShinsuTechniqueType<?, ?>> CODEC = RegistryFileCodec.create(ConfiguredTechniqueTypeRegistry.REGISTRY, DIRECT_CODEC);
+    private final ShinsuTechniqueType<C, S> type;
+    private final C config;
+    private ResourceLocation id;
+
+    public ConfiguredShinsuTechniqueType(ShinsuTechniqueType<C, S> type, C config) {
+        super();
+        this.type = type;
+        this.config = config;
+    }
+
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<C, S> inst) {
+        getType().tick(user, inst);
+    }
+
+    public void onEnd(LivingEntity user, ShinsuTechniqueInstance<C, S> inst) {
+        getType().onEnd(user, inst);
+    }
+
+    public ShinsuTechniqueType<C, S> getType() {
+        return type;
+    }
+
+    public C getConfig() {
+        return config;
+    }
+
+    @Nullable
+    public ShinsuTechniqueInstance<C, S> cast(LivingEntity user, @Nullable LivingEntity target) {
+        S data = getType().onUse(user, getConfig(), target);
+        if (data == null) {
+            return null;
+        }
+        ShinsuTechniqueInstance<C, S> inst = new ShinsuTechniqueInstance<>(this, data);
+        ShinsuTechniqueData.get(user).addTechnique(inst);
+        return inst;
+    }
+
+    public ResourceLocation getId(){
+        if(id == null) {
+            id = ConfiguredTechniqueTypeRegistry.getRegistry().getKey(this);
+        }
+        return id;
+    }
+
+}

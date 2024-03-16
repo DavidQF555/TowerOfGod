@@ -1,76 +1,55 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.datafixers.util.Either;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.Random;
 
-public class EarthShatter extends GroundTechniqueInstance {
+public class EarthShatter extends GroundTechniqueInstance<GroundTechniqueInstance.Config, GroundTechniqueInstance.Data> {
 
-    public EarthShatter(Entity user, double dX, double dZ) {
-        super(user, dX, dZ, 4, 1, 4);
+    private final IRequirement[] requirements = new IRequirement[0];
+
+    public EarthShatter() {
+        super(Config.CODEC, Data.CODEC);
+    }
+
+    @Nullable
+    @Override
+    public Data onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        return new Data(Mth.createInsecureUUID(), user.getX(), user.getZ(), user.getLookAngle().x(), user.getLookAngle().z(), user.getBlockY());
     }
 
     @Override
-    public void doEffect(ServerLevel world, Vec3 pos) {
-        RandomSource random = world.getRandom();
+    public IRequirement[] getRequirements() {
+        return requirements;
+    }
+
+    @Override
+    public void doEffect(LivingEntity user, ShinsuTechniqueInstance<Config, Data> inst, Vec3 pos) {
+        RandomSource random = user.getRandom();
         int horizontalRadius = 3;
         int yRadius = 5;
         for (int dY = -yRadius; dY <= 1; dY++) {
             for (int dX = -horizontalRadius; dX < horizontalRadius; dX++) {
                 for (int dZ = -horizontalRadius; dZ < horizontalRadius; dZ++) {
-                    BlockPos effect = new BlockPos((int) pos.x(), (int) pos.y(), (int) pos.z()).offset(dX, dY, dZ);
-                    BlockState state = world.getBlockState(effect);
-                    if (!world.isEmptyBlock(effect) && state.getDestroySpeed(world, effect) > 0) {
-                        FallingBlockEntity block = FallingBlockEntity.fall(world, effect, state);
+                    BlockPos effect = new BlockPos(pos).offset(dX, dY, dZ);
+                    BlockState state = user.level.getBlockState(effect);
+                    if (!user.level.isEmptyBlock(effect) && state.getDestroySpeed(user.level, effect) > 0) {
+                        FallingBlockEntity block = FallingBlockEntity.fall(user.level, effect, state);
                         block.dropItem = false;
                         block.setDeltaMovement(random.nextGaussian() * 0.25, random.nextDouble(), random.nextGaussian() * 0.25);
-                        world.addFreshEntity(block);
+                        user.level.addFreshEntity(block);
                     }
                 }
             }
         }
     }
 
-    @Override
-    public int getDuration() {
-        return 10;
-    }
-
-    @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.EARTH_SHATTER.get();
-    }
-
-    @Override
-    public int getShinsuUse() {
-        return 70;
-    }
-
-    @Override
-    public int getCooldown() {
-        return 2400;
-    }
-
-    public static class Factory implements ShinsuTechnique.IFactory<EarthShatter> {
-
-        @Override
-        public Either<EarthShatter, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return Either.left(new EarthShatter(user, dir.x(), dir.z()));
-        }
-
-        @Override
-        public EarthShatter blankCreate() {
-            return new EarthShatter(null, 1, 0);
-        }
-    }
 }

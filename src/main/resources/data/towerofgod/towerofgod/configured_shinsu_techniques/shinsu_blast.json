@@ -1,0 +1,13 @@
+{
+  "type": "towerofgod:shinsu_blast",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 400,
+    "cooldown": 200,
+    "speed": 0.5
+  }
+}

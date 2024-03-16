@@ -1,0 +1,14 @@
+{
+  "type": "towerofgod:move_devices",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "speed": 1,
+    "duration": 40,
+    "cooldown": 900,
+    "distance": 64
+  }
+}

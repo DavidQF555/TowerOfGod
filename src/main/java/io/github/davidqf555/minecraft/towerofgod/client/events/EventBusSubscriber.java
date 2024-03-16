@@ -1,7 +1,9 @@
 package io.github.davidqf555.minecraft.towerofgod.client.events;
 
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
+import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.LighthouseScreen;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuTechniqueScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.model.LighthouseModel;
 import io.github.davidqf555.minecraft.towerofgod.client.model.ObserverModel;
 import io.github.davidqf555.minecraft.towerofgod.client.model.SpearModel;
@@ -15,6 +17,7 @@ import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.player.KeyboardInput;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -24,8 +27,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -49,6 +54,16 @@ public final class EventBusSubscriber {
         }
     }
 
+    @SubscribeEvent
+    public static void onKeyInput(InputEvent.Key event) {
+        if (event.getAction() == GLFW.GLFW_PRESS && KeyBindingsList.SHINSU_TECHNIQUE_GUI.getKey().getValue() == event.getKey() && KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
+            Player player = Minecraft.getInstance().player;
+            if (player != null) {
+                Minecraft.getInstance().setScreen(new ShinsuTechniqueScreen(ClientReference.UNLOCKED, ClientReference.BAANGS, ClientReference.maxBaangs));
+            }
+        }
+    }
+
     @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static final class ModBus {
 
@@ -68,6 +83,7 @@ public final class EventBusSubscriber {
             event.registerEntityRenderer(EntityRegistry.SHINSU_SPEAR.get(), ShinsuSpearRenderer::new);
             event.registerEntityRenderer(EntityRegistry.DIRECTIONAL_LIGHTNING.get(), DirectionalLightningRenderer::new);
             event.registerEntityRenderer(EntityRegistry.MENTOR.get(), BipedShinsuUserRenderer::new);
+            event.registerEntityRenderer(EntityRegistry.BAANG.get(), BaangRenderer::new);
         }
 
         @SubscribeEvent
@@ -85,12 +101,6 @@ public final class EventBusSubscriber {
         @SubscribeEvent
         public static void onRegisterClientReloadListeners(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener(SpearItemStackRenderer.INSTANCE);
-        }
-
-        @SubscribeEvent
-        public static void onRegisterGuiOverlays(RegisterGuiOverlaysEvent event) {
-            event.registerAboveAll("combination", ClientReference.COMBO);
-            event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), "shinsu", ClientReference.SHINSU);
         }
 
         @SubscribeEvent

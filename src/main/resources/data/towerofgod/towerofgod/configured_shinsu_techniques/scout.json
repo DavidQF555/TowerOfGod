@@ -1,0 +1,15 @@
+{
+  "type": "towerofgod:scout",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "duration": 600,
+    "cooldown": 200,
+    "range": 8,
+    "radius": 12,
+    "speed": 1
+  }
+}

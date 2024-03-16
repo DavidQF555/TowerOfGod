@@ -32,16 +32,19 @@ public class ShinsuAxeItem extends AxeItem {
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
         if (worldIn instanceof ServerLevel) {
-            CompoundTag nbt = stack.getTagElement(TowerOfGod.MOD_ID);
-            if (!stack.isEmpty() && nbt != null) {
-                UUID id = nbt.getUUID("Technique");
-                ShinsuTechniqueInstance technique = ShinsuTechniqueInstance.get(entityIn, id);
-                if (technique == null) {
-                    IItemHandler inventory = entityIn.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
-                    if (inventory.getSlots() > itemSlot) {
-                        inventory.extractItem(itemSlot, stack.getCount(), false);
+            if (!stack.isEmpty()) {
+                CompoundTag nbt = stack.getTagElement(TowerOfGod.MOD_ID);
+                if (nbt != null && entityIn instanceof LivingEntity) {
+                    UUID id = nbt.getUUID("Technique");
+                    if (ShinsuTechniqueInstance.getById((LivingEntity) entityIn, id) != null) {
+                        return;
                     }
                 }
+                IItemHandler inventory = entityIn.getCapability(ForgeCapabilities.ITEM_HANDLER).orElseGet(ItemStackHandler::new);
+                if (inventory.getSlots() > itemSlot) {
+                    inventory.extractItem(itemSlot, stack.getCount(), false);
+                }
+                inventory.extractItem(itemSlot, stack.getCount(), false);
             }
         }
     }

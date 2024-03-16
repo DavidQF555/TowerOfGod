@@ -1,0 +1,15 @@
+{
+  "type": "towerofgod:eruption",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "cooldown": 2400,
+    "duration": 15,
+    "speed": 3,
+    "period": 1,
+    "max_y": 8
+  }
+}

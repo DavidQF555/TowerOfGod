@@ -1,98 +1,66 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.MoveCommand;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.Messages;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-public class MoveDevices extends BasicCommandTechnique {
+public class MoveDevices extends BasicCommandTechnique<MoveDevices.Config, BasicCommandTechnique.Data> {
 
-    private Vec3 direction;
-    private double distance;
+    private final IRequirement[] requirements = new IRequirement[0];
 
-    public MoveDevices(Entity user, Vec3 direction, double distance) {
-        super(user);
-        this.direction = direction;
-        this.distance = distance;
+    public MoveDevices() {
+        super(Config.CODEC, Data.CODEC);
     }
 
     @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.MOVE_DEVICES.get();
+    public IRequirement[] getRequirements() {
+        return requirements;
     }
 
     @Override
-    public int getShinsuUse() {
-        return getDevices().size() * 10;
-    }
-
-    @Override
-    public int getCooldown() {
-        return 20;
-    }
-
-    @Override
-    protected DeviceCommand createCommand(FlyingDevice entity, ServerLevel world) {
-        Entity user = getUser(world);
+    protected DeviceCommand createCommand(LivingEntity user, Config config, FlyingDevice entity, UUID id) {
         Vec3 eye = user.getEyePosition(1);
-        Vec3 end = eye.add(direction.scale(distance));
-        EntityHitResult trace = ProjectileUtil.getEntityHitResult(world, user, eye, end, AABB.ofSize(eye, distance * 2, distance * 2, distance * 2), e -> true);
-        Vec3 target = trace == null ? world.clip(new ClipContext(eye, end, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity)).getLocation() : trace.getLocation();
-        return new MoveCommand(entity, getID(), target, 1);
+        Vec3 end = eye.add(user.getLookAngle().scale(config.distance));
+        EntityHitResult trace = ProjectileUtil.getEntityHitResult(user.level, user, eye, end, AABB.ofSize(eye, config.distance * 2, config.distance * 2, config.distance * 2), e -> true);
+        Vec3 target = trace == null ? user.level.clip(new ClipContext(eye, end, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity)).getLocation() : trace.getLocation();
+        return new MoveCommand(entity, id, target, config.speed);
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("X", Tag.TAG_DOUBLE) && nbt.contains("Y", Tag.TAG_DOUBLE) && nbt.contains("Z", Tag.TAG_DOUBLE)) {
-            direction = new Vec3(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
-        }
-        if (nbt.contains("Distance", Tag.TAG_DOUBLE)) {
-            distance = nbt.getDouble("Distance");
-        }
+    protected Data createData(UUID id, List<UUID> devices) {
+        return new Data(id, devices);
     }
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        nbt.putDouble("X", direction.x());
-        nbt.putDouble("Y", direction.y());
-        nbt.putDouble("Z", direction.z());
-        nbt.putDouble("Distance", distance);
-        return nbt;
-    }
+    public static class Config extends ShinsuTechniqueConfig {
 
-    @MethodsReturnNonnullByDefault
-    @ParametersAreNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<MoveDevices> {
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(inst.group(
+                        Codec.DOUBLE.fieldOf("distance").forGetter(config -> config.distance),
+                        Codec.FLOAT.fieldOf("speed").forGetter(config -> config.speed)
+                )).apply(inst, Config::new));
+        public final double distance;
+        public final float speed;
 
-        @Override
-        public Either<MoveDevices, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            MoveDevices technique = new MoveDevices(user, dir, 64);
-            return technique.getDevices().size() > 0 ? Either.left(technique) : Either.right(Messages.REQUIRES_DEVICE);
-        }
-
-        @Override
-        public MoveDevices blankCreate() {
-            return new MoveDevices(null, Vec3.ZERO, 0);
+        public Config(Display display, Optional<Integer> duration, int cooldown, double distance, float speed) {
+            super(display, duration, cooldown);
+            this.distance = distance;
+            this.speed = speed;
         }
 
     }
+
 }

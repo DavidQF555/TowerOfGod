@@ -1,117 +1,88 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.blaze3d.MethodsReturnNonnullByDefault;
-import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Optional;
 import java.util.UUID;
 
-public class ShinsuBlast extends ShinsuTechniqueInstance {
+public class ShinsuBlast extends ShinsuTechniqueType<ShinsuBlast.Config, ShinsuBlast.Data> {
 
-    private static final float BASE_SPEED = 0.5f;
-    private UUID blast;
-    private Vec3 direction;
+    private static final IRequirement[] EMPTY = new IRequirement[0];
 
-    public ShinsuBlast(Entity user, Vec3 direction) {
-        super(user);
-        this.direction = direction;
-        blast = null;
+    public ShinsuBlast() {
+        super(Config.CODEC, Data.CODEC);
     }
 
     @Override
-    public int getDuration() {
-        return 400;
+    public void tick(LivingEntity user, ShinsuTechniqueInstance<Config, Data> inst) {
+        if (user.level instanceof ServerLevel && ((ServerLevel) user.level).getEntity(inst.getData().blast) == null) {
+            inst.remove(user);
+        }
     }
 
+    @Nullable
     @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.SHINSU_BLAST.get();
-    }
-
-    @Override
-    public void onUse(ServerLevel world) {
-        Entity u = getUser(world);
-        if (u instanceof LivingEntity) {
-            ShinsuEntity shinsu = EntityRegistry.SHINSU.get().create(world);
+    public Data onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        ShinsuEntity shinsu = EntityRegistry.SHINSU.get().create(user.level);
             if (shinsu != null) {
-                LivingEntity user = (LivingEntity) u;
+                UUID id = Mth.createInsecureUUID();
+                Vec3 dir = user.getLookAngle();
                 shinsu.setOwner(user);
-                shinsu.setTechnique(this);
+                shinsu.setTechnique(id);
                 shinsu.setPos(user.getX(), user.getEyeY() - shinsu.getBoundingBox().getYsize() / 2, user.getZ());
-                shinsu.shoot(direction.x(), direction.y(), direction.z(), BASE_SPEED, 0);
-                blast = shinsu.getUUID();
-                world.addFreshEntity(shinsu);
+                shinsu.shoot(dir.x(), dir.y(), dir.z(), config.speed, 0);
+                user.level.addFreshEntity(shinsu);
+                return new Data(id, shinsu.getUUID());
             }
-        }
-        super.onUse(world);
+        return null;
     }
 
     @Override
-    public void tick(ServerLevel world) {
-        if (blast == null || world.getEntity(blast) == null) {
-            remove(world);
-        }
-        super.tick(world);
+    public IRequirement[] getRequirements() {
+        return EMPTY;
     }
 
-    @Override
-    public int getCooldown() {
-        return 200;
-    }
+    public static class Config extends ShinsuTechniqueConfig {
 
-    @Override
-    public int getShinsuUse() {
-        return 15;
-    }
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(
+                        Codec.FLOAT.fieldOf("speed").forGetter(config -> config.speed)
+                ).apply(inst, Config::new));
+        public final float speed;
 
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = super.serializeNBT();
-        if (blast != null) {
-            nbt.putUUID("Blast", blast);
-        }
-        nbt.putDouble("X", direction.x());
-        nbt.putDouble("Y", direction.y());
-        nbt.putDouble("Z", direction.z());
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("Blast", Tag.TAG_INT_ARRAY)) {
-            blast = nbt.getUUID("Blast");
-        }
-        if (nbt.contains("X", Tag.TAG_DOUBLE) && nbt.contains("Y", Tag.TAG_DOUBLE) && nbt.contains("Z", Tag.TAG_DOUBLE)) {
-            direction = new Vec3(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
-        }
-    }
-
-    @MethodsReturnNonnullByDefault
-    @ParametersAreNonnullByDefault
-    public static class Factory implements ShinsuTechnique.IFactory<ShinsuBlast> {
-
-        @Override
-        public Either<ShinsuBlast, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return Either.left(new ShinsuBlast(user, dir));
-        }
-
-        @Override
-        public ShinsuBlast blankCreate() {
-            return new ShinsuBlast(null, Vec3.ZERO);
+        public Config(Display display, Optional<Integer> duration, int cooldown, float speed) {
+            super(display, duration, cooldown);
+            this.speed = speed;
         }
 
     }
+
+    public static class Data extends ShinsuTechniqueInstanceData {
+
+        public static final Codec<Data> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                Util.UUID_CODEC.fieldOf("id").forGetter(data -> data.id),
+                Util.UUID_CODEC.fieldOf("blast").forGetter(data -> data.blast)
+        ).apply(inst, Data::new));
+        public UUID blast;
+
+        public Data(UUID id, UUID blast) {
+            super(id);
+            this.blast = blast;
+        }
+
+    }
+
 }

@@ -1,123 +1,110 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.*;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
-import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateShinsuMeterPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.network.PacketDistributor;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import net.minecraft.core.Holder;
+import net.minecraft.world.entity.LivingEntity;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public abstract class ShinsuTechniqueInstance implements INBTSerializable<CompoundTag> {
+public class ShinsuTechniqueInstance<C extends ShinsuTechniqueConfig, S extends ShinsuTechniqueInstanceData> {
 
-    private UUID id;
-    private UUID user;
+    public static final Codec<ShinsuTechniqueInstance<?, ?>> CODEC = Codec.of(new InstanceEncoder(), new InstanceDecoder());
+    private final ConfiguredShinsuTechniqueType<C, S> type;
+    private final S data;
     private int ticks;
 
-    public ShinsuTechniqueInstance(Entity user) {
-        id = Mth.createInsecureUUID();
-        this.user = user == null ? null : user.getUUID();
-        ticks = 0;
+    public ShinsuTechniqueInstance(ConfiguredShinsuTechniqueType<C, S> type, S data) {
+        this(type, data, 0);
+    }
+
+    protected ShinsuTechniqueInstance(ConfiguredShinsuTechniqueType<C, S> type, S data, int ticks) {
+        this.type = type;
+        this.data = data;
+        this.ticks = ticks;
     }
 
     @Nullable
-    public static ShinsuTechniqueInstance get(Entity user, UUID id) {
-        ShinsuTechniqueData<?> stats = ShinsuTechniqueData.get(user);
-        for (ShinsuTechniqueInstance instance : stats.getTechniques()) {
-            if (instance.id.equals(id)) {
-                return instance;
-            }
-        }
-        return null;
-    }
-
-    public UUID getID() {
-        return id;
+    public static ShinsuTechniqueInstance<?, ?> getById(LivingEntity user, UUID id) {
+        return ShinsuTechniqueData.get(user).getTechniques().stream()
+                .filter(inst -> id.equals(inst.getData().id))
+                .map(inst -> (ShinsuTechniqueInstance<?, ? extends ShinsuTechniqueInstanceData>) inst)
+                .findAny()
+                .orElse(null);
     }
 
     public int getTicks() {
         return ticks;
     }
 
-    public int getDuration() {
-        return 1;
+    public ConfiguredShinsuTechniqueType<C, S> getConfigured() {
+        return type;
     }
 
-    @Nullable
-    public Entity getUser(ServerLevel world) {
-        return world.getEntity(user);
+    public S getData() {
+        return data;
     }
 
-    public abstract ShinsuTechnique getTechnique();
-
-    public void onEnd(ServerLevel world) {
+    public void remove(LivingEntity user) {
+        ShinsuTechniqueData<?> stats = ShinsuTechniqueData.get(user);
+        stats.removeTechnique(this);
+        getConfigured().onEnd(user, this);
     }
 
-    public void onUse(ServerLevel world) {
-        updateMeters(world);
+    public void tick(LivingEntity user) {
+        getConfigured().tick(user, this);
+        ticks++;
     }
 
-    public int getCooldown() {
-        return 0;
+    public void onEnd(LivingEntity user) {
+        getConfigured().onEnd(user, this);
     }
 
-    public abstract int getShinsuUse();
+    public boolean shouldRemove() {
+        return getConfigured().getConfig().getDuration()
+                .map(duration -> ticks >= duration)
+                .orElse(false);
+    }
 
-    public void remove(ServerLevel world) {
-        onEnd(world);
-        Entity user = getUser(world);
-        if (user != null) {
-            ShinsuTechniqueData<?> stats = ShinsuTechniqueData.get(user);
-            stats.removeTechnique(this);
-            updateMeters(world);
+    private static class InstanceEncoder implements Encoder<ShinsuTechniqueInstance<?, ?>> {
+
+        @Override
+        public <T> DataResult<T> encode(ShinsuTechniqueInstance<?, ?> input, DynamicOps<T> ops, T prefix) {
+            RecordBuilder<T> builder = ops.mapBuilder();
+
+            builder.add("Type", ConfiguredShinsuTechniqueType.CODEC.encodeStart(ops, Holder.direct(input.getConfigured())));
+            Codec<Object> codec = (Codec<Object>) input.getConfigured().getType().dataCodec();
+            builder.add("Data", codec.encodeStart(ops, input.getData()));
+            builder.add("Ticks", Codec.INT.encodeStart(ops, input.ticks));
+
+            return builder.build(prefix);
         }
     }
 
-    public void tick(ServerLevel world) {
-        if (!getTechnique().isIndefinite()) {
-            ticks++;
+    private static class InstanceDecoder implements Decoder<ShinsuTechniqueInstance<?, ?>> {
+
+        @Override
+        public <T> DataResult<Pair<ShinsuTechniqueInstance<?, ?>, T>> decode(DynamicOps<T> ops, T input) {
+            DataResult<Integer> ticks = ops.get(input, "Ticks")
+                    .flatMap(val -> Codec.INT.parse(ops, val));
+            DataResult<ConfiguredShinsuTechniqueType<?, ?>> type = ops.get(input, "Type")
+                    .flatMap(val -> ConfiguredShinsuTechniqueType.CODEC.parse(ops, val))
+                    .map(Holder::value);
+            DataResult<? extends ShinsuTechniqueInstanceData> data = type
+                    .map(ConfiguredShinsuTechniqueType::getType)
+                    .map(ShinsuTechniqueType::dataCodec)
+                    .flatMap(codec -> ops.get(input, "Data")
+                            .flatMap(val -> codec.parse(ops, val))
+                    );
+            return type.apply3((t, d, ti) -> new ShinsuTechniqueInstance<>((ConfiguredShinsuTechniqueType<ShinsuTechniqueConfig, ShinsuTechniqueInstanceData>) t, d, ti), data, ticks)
+                    .map(inst -> Pair.of(inst, input));
         }
     }
 
-    protected void updateMeters(ServerLevel world) {
-        Entity user = getUser(world);
-        if (user instanceof ServerPlayer) {
-            ShinsuStats stats = ShinsuStats.get(user);
-            TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) user), new UpdateShinsuMeterPacket(ShinsuStats.getShinsu(user), stats.getMaxShinsu()));
-        }
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag nbt = new CompoundTag();
-        nbt.putUUID("ID", getID());
-        if (user != null) {
-            nbt.putUUID("User", user);
-        }
-        nbt.putString("Technique", getTechnique().getId().toString());
-        nbt.putInt("Ticks", ticks);
-        return nbt;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        if (nbt.contains("ID", Tag.TAG_INT_ARRAY)) {
-            id = nbt.getUUID("ID");
-        }
-        if (nbt.contains("User", Tag.TAG_INT_ARRAY)) {
-            user = nbt.getUUID("User");
-        }
-        if (nbt.contains("Ticks", Tag.TAG_INT)) {
-            ticks = nbt.getInt("Ticks");
-        }
-    }
 }

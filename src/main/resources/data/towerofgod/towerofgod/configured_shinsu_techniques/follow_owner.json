@@ -1,0 +1,12 @@
+{
+  "type": "towerofgod:follow_owner",
+  "config": {
+    "display": {
+      "name": "",
+      "description": "",
+      "icon": ""
+    },
+    "cooldown": 900,
+    "speed": 1
+  }
+}

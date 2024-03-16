@@ -1,83 +1,64 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances;
 
-import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechnique;
-import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuTechniqueRegistry;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.AttributeRequirement;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
-public class Boost extends ShinsuTechniqueInstance {
+public class Boost extends ShinsuTechniqueType<Boost.Config, ShinsuTechniqueInstanceData> {
 
-    private static final int PARTICLES = 25;
-    private Vec3 dir;
+    private final IRequirement[] requirements = new IRequirement[]{new AttributeRequirement(ShinsuAttributeRegistry.FIRE)};
 
-    public Boost(Entity user, Vec3 dir) {
-        super(user);
-        this.dir = dir;
+    public Boost() {
+        super(Config.CODEC, ShinsuTechniqueInstanceData.CODEC);
     }
 
+    @Nullable
     @Override
-    public void onUse(ServerLevel world) {
-        Entity user = getUser(world);
-        float width = user.getBbWidth() / 2;
-        world.sendParticles(ParticleTypes.FLAME, user.getX(), user.getY(), user.getZ(), PARTICLES, width, user.getBbHeight() * 0.25, width, 0);
-        Vec3 dir = this.dir.scale(ShinsuStats.get(user).getTension() * 2);
-        user.push(dir.x(), dir.y(), dir.z());
-        user.hurtMarked = true;
-        super.onUse(world);
-    }
-
-    @Override
-    public ShinsuTechnique getTechnique() {
-        return ShinsuTechniqueRegistry.BOOST.get();
-    }
-
-    @Override
-    public int getShinsuUse() {
-        return 20;
-    }
-
-    @Override
-    public int getCooldown() {
-        return 600;
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        CompoundTag tag = super.serializeNBT();
-        tag.putDouble("X", dir.x());
-        tag.putDouble("Y", dir.y());
-        tag.putDouble("Z", dir.z());
-        return tag;
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
-        if (nbt.contains("X", Tag.TAG_DOUBLE) && nbt.contains("Y", Tag.TAG_DOUBLE) && nbt.contains("Z", Tag.TAG_DOUBLE)) {
-            dir = new Vec3(nbt.getDouble("X"), nbt.getDouble("Y"), nbt.getDouble("Z"));
+    public ShinsuTechniqueInstanceData onUse(LivingEntity user, Config config, @Nullable LivingEntity target) {
+        if (user.level instanceof ServerLevel) {
+            float width = user.getBbWidth() / 2;
+            ((ServerLevel) user.level).sendParticles(ParticleTypes.FLAME, user.getX(), user.getY(), user.getZ(), config.particles, width, user.getBbHeight() * 0.25, width, 0);
+            Vec3 dir = user.getLookAngle().scale(ShinsuStats.get(user).getTension() * 2);
+            user.push(dir.x(), dir.y(), dir.z());
+            user.hurtMarked = true;
+            return new ShinsuTechniqueInstanceData(Mth.createInsecureUUID());
         }
+        return null;
     }
 
-    public static class Factory implements ShinsuTechnique.IFactory<Boost> {
+    @Override
+    public IRequirement[] getRequirements() {
+        return requirements;
+    }
 
-        @Override
-        public Either<Boost, Component> create(Entity user, @Nullable Entity target, Vec3 dir) {
-            return Either.left(new Boost(user, dir));
+    public static class Config extends ShinsuTechniqueConfig {
+
+        public static final Codec<Config> CODEC = RecordCodecBuilder.create(inst ->
+                commonCodec(inst).and(
+                        ExtraCodecs.NON_NEGATIVE_INT.fieldOf("particles").forGetter(config -> config.particles)
+                ).apply(inst, Config::new));
+        public final int particles;
+
+        public Config(Display display, Optional<Integer> duration, int cooldown, int particles) {
+            super(display, duration, cooldown);
+            this.particles = particles;
         }
 
-        @Override
-        public Boost blankCreate() {
-            return new Boost(null, Vec3.ZERO);
-        }
     }
 
 }

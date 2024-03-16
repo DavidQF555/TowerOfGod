@@ -5,6 +5,7 @@ import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.model.CastingModelHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.CastShinsuPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
@@ -20,12 +21,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class CastingEventSubscriber {
@@ -33,6 +36,14 @@ public final class CastingEventSubscriber {
     private static long prevGameTime = -1;
 
     private CastingEventSubscriber() {
+    }
+
+    @SubscribeEvent
+    public static void onMouseInput(InputEvent.MouseButton event) {
+        Player player = Minecraft.getInstance().player;
+        if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_RIGHT && event.getAction() == GLFW.GLFW_RELEASE && player != null && ClientReference.isCasting(player)) {
+            TowerOfGod.CHANNEL.sendToServer(new CastShinsuPacket());
+        }
     }
 
     @SubscribeEvent
@@ -62,8 +73,8 @@ public final class CastingEventSubscriber {
     public static void onMovementInputUpdate(MovementInputUpdateEvent event) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null && ClientReference.isCasting(player)) {
-            player.input.leftImpulse *= 0.2;
-            player.input.forwardImpulse *= 0.2;
+            player.input.leftImpulse *= 0.2f;
+            player.input.forwardImpulse *= 0.2f;
         }
     }
 

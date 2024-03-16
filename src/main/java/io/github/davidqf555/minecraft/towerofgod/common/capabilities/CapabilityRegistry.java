@@ -4,7 +4,6 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
-import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.CastingData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PredictedShinsuQuality;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,7 +21,6 @@ public final class CapabilityRegistry {
         event.register(ShinsuQualityData.class);
         event.register(ShinsuTechniqueData.class);
         event.register(PredictedShinsuQuality.class);
-        event.register(CastingData.class);
     }
 
 }

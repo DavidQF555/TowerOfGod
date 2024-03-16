@@ -13,6 +13,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -76,10 +77,10 @@ public class ShinsuSpearEntity extends SpearEntity {
     }
 
     @Nullable
-    public ShinsuTechniqueInstance getTechnique() {
+    public ShinsuTechniqueInstance<?, ?> getTechnique() {
         Entity shooter = getOwner();
-        if (technique != null && shooter != null) {
-            return ShinsuTechniqueInstance.get(shooter, technique);
+        if (technique != null && shooter instanceof LivingEntity) {
+            return ShinsuTechniqueInstance.getById((LivingEntity) shooter, technique);
         }
         return null;
     }

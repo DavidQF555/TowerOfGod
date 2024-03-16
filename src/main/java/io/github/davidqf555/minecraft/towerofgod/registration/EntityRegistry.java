@@ -37,6 +37,7 @@ public final class EntityRegistry {
     public static final RegistryObject<EntityType<SpearEntity>> SPEAR = register("spear", SpearEntity::new, MobCategory.MISC, 0.5f, 0.5f);
     public static final RegistryObject<EntityType<DirectionalLightningBoltEntity>> DIRECTIONAL_LIGHTNING = register("directional_lightning", DirectionalLightningBoltEntity::new, MobCategory.MISC, 1, 1);
     public static final RegistryObject<EntityType<MentorEntity>> MENTOR = register("mentor", MentorEntity::new, MobCategory.CREATURE, 0.6f, 1.8f);
+    public static final RegistryObject<EntityType<BaangEntity>> BAANG = register("baang", BaangEntity::new, MobCategory.MISC, 0.25f, 0.25f);
 
     private EntityRegistry() {
     }
@@ -56,6 +57,7 @@ public final class EntityRegistry {
         event.put(REGULAR.get(), RegularEntity.setAttributes().build());
         event.put(RANKER.get(), RankerEntity.setAttributes().build());
         event.put(MENTOR.get(), MentorEntity.setAttributes().build());
+        event.put(BAANG.get(), BaangEntity.setAttributes().build());
     }
 
 
