@@ -55,7 +55,7 @@ public final class EventBusSubscriber {
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (event.getAction() == GLFW.GLFW_PRESS && KeyBindingsList.SHINSU_TECHNIQUE_GUI.getKey().getValue() == event.getKey()) {
+        if (event.getAction() == GLFW.GLFW_PRESS && KeyBindingsList.SHINSU_TECHNIQUE_GUI.getKey().getValue() == event.getKey() && KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
                 Minecraft.getInstance().setScreen(new ShinsuTechniqueScreen(ClientReference.UNLOCKED, ClientReference.BAANGS, ClientReference.maxBaangs));

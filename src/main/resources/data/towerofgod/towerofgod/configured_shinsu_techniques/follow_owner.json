@@ -1,13 +1,12 @@
 {
-  "type": "towerofgod:move_devices",
+  "type": "towerofgod:follow_owner",
   "config": {
     "display": {
       "name": "",
       "description": "",
       "icon": ""
     },
-    "duration": 40,
     "cooldown": 900,
-    "distance": 64
+    "speed": 1
   }
 }

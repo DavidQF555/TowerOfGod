@@ -82,7 +82,7 @@ public class MentorEntity extends RankerEntity {
     @Nullable
     @Override
     public ShinsuAttribute getInitialAttribute(Random random) {
-        return technique.getConfig().getDisplay().attribute();
+        return technique.getConfig().getDisplay().attribute().orElse(null);
     }
 
     @Override

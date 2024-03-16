@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 @Mod.EventBusSubscriber(modid = TowerOfGod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class ConfiguredTechniqueTypeRegistry {
 
-    public static final ResourceKey<Registry<ConfiguredShinsuTechniqueType<?, ?>>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(TowerOfGod.MOD_ID, "configured_shinsu_technique"));
+    public static final ResourceKey<Registry<ConfiguredShinsuTechniqueType<?, ?>>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(TowerOfGod.MOD_ID, "configured_shinsu_techniques"));
     private static Supplier<IForgeRegistry<ConfiguredShinsuTechniqueType<?, ?>>> registry = null;
 
     private ConfiguredTechniqueTypeRegistry() {
