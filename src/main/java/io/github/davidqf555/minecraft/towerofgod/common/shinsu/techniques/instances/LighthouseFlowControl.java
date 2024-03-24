@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceC
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.LighthouseFlowControlCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -44,8 +45,8 @@ public class LighthouseFlowControl extends BasicCommandTechnique<LighthouseFlowC
                 ).apply(inst, Config::new));
         public final double range;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, double range) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, double range) {
+            super(display, condition, duration, cooldown);
             this.range = range;
         }
 

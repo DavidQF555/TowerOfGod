@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.AttributeRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
@@ -54,8 +55,8 @@ public class Boost extends ShinsuTechniqueType<Boost.Config, ShinsuTechniqueInst
                 ).apply(inst, Config::new));
         public final int particles;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, int particles) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, int particles) {
+            super(display, condition, duration, cooldown);
             this.particles = particles;
         }
 

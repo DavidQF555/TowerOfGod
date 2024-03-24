@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
@@ -53,13 +54,13 @@ public abstract class RayTraceTechnique<C extends RayTraceTechnique.Config, S ex
         public final boolean entityCollision;
         public final double range;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, boolean entityCollision, double range) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, boolean entityCollision, double range) {
+            super(display, condition, duration, cooldown);
             this.entityCollision = entityCollision;
             this.range = range;
         }
 
-        protected static <T extends Config> Products.P5<RecordCodecBuilder.Mu<T>, Display, Optional<Integer>, Integer, Boolean, Double> rayTraceCommonCodec(RecordCodecBuilder.Instance<T> inst) {
+        protected static <T extends Config> Products.P6<RecordCodecBuilder.Mu<T>, Display, MobUseCondition, Optional<Integer>, Integer, Boolean, Double> rayTraceCommonCodec(RecordCodecBuilder.Instance<T> inst) {
             return commonCodec(inst).and(inst.group(
                     Codec.BOOL.optionalFieldOf("entity_collision", true).forGetter(config -> config.entityCollision),
                     Codec.DOUBLE.optionalFieldOf("range", 64.0).forGetter(config -> config.range)

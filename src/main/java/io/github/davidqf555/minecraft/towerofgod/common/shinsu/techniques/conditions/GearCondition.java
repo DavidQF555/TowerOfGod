@@ -1,24 +1,34 @@
 package io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.MobUseConditionRegistry;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.item.ItemStack;
-
-import java.util.function.Predicate;
 
 public class GearCondition implements MobUseCondition {
 
+    public static final Codec<GearCondition> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+            Codec.STRING.xmap(EquipmentSlot::byName, EquipmentSlot::getName).fieldOf("slot").forGetter(cond -> cond.slot),
+            Codec.BOOL.fieldOf("gear").forGetter(cond -> cond.gear)
+    ).apply(inst, GearCondition::new));
     private final EquipmentSlot slot;
-    private final Predicate<ItemStack> condition;
+    private final boolean gear;
 
-    public GearCondition(EquipmentSlot slot, Predicate<ItemStack> condition) {
+    public GearCondition(EquipmentSlot slot, boolean gear) {
         this.slot = slot;
-        this.condition = condition;
+        this.gear = gear;
+
     }
 
     @Override
     public boolean shouldUse(Mob entity) {
-        return condition.test(entity.getItemBySlot(slot));
+        return entity.getItemBySlot(slot).isEmpty() != gear;
+    }
+
+    @Override
+    public MobUseConditionType getType() {
+        return MobUseConditionRegistry.GEAR.get();
     }
 
 }

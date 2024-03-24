@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.DirectionalLightningBoltEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.AttributeRequirement;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
@@ -58,8 +59,8 @@ public class ChannelLightning extends RayTraceTechnique<ChannelLightning.Config,
                 ).apply(inst, Config::new));
         public final float damage;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, boolean entityCollision, double range, float damage) {
-            super(display, duration, cooldown, entityCollision, range);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, boolean entityCollision, double range, float damage) {
+            super(display, condition, duration, cooldown, entityCollision, range);
             this.damage = damage;
         }
 

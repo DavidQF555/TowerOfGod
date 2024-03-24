@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
 import net.minecraft.util.ExtraCodecs;
@@ -46,8 +47,8 @@ public class BodyReinforcement extends ShinsuTechniqueType<BodyReinforcement.Con
                 ).apply(inst, Config::new));
         public final int amp;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, int amp) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, int amp) {
+            super(display, condition, duration, cooldown);
             this.amp = amp;
         }
 

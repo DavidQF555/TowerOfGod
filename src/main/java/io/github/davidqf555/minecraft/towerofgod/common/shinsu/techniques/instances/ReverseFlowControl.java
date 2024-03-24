@@ -7,6 +7,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EffectRegistry;
 import net.minecraft.server.level.ServerLevel;
@@ -61,8 +62,8 @@ public class ReverseFlowControl extends ShinsuTechniqueType<ReverseFlowControl.C
                 ).apply(inst, Config::new));
         public final double range;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, double range) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, double range) {
+            super(display, condition, duration, cooldown);
             this.range = range;
         }
     }

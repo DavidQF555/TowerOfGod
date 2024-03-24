@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.Util;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -82,8 +83,8 @@ public abstract class GroundTechniqueInstance<C extends GroundTechniqueInstance.
         public final double speed;
         public final int period, maxYDif;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, double speed, int period, int maxYDif) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, double speed, int period, int maxYDif) {
+            super(display, condition, duration, cooldown);
             this.speed = speed;
             this.period = period;
             this.maxYDif = maxYDif;

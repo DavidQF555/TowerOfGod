@@ -7,6 +7,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.ShinsuEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import net.minecraft.server.level.ServerLevel;
@@ -63,8 +64,8 @@ public class ShinsuBlast extends ShinsuTechniqueType<ShinsuBlast.Config, ShinsuB
                 ).apply(inst, Config::new));
         public final float speed;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, float speed) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, float speed) {
+            super(display, condition, duration, cooldown);
             this.speed = speed;
         }
 

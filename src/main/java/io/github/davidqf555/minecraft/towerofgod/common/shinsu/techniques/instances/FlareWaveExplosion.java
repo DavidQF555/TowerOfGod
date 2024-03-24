@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.damagesource.DamageSource;
@@ -51,8 +52,8 @@ public class FlareWaveExplosion extends ShinsuTechniqueType<FlareWaveExplosion.C
         public final double range;
         public final int slowDuration, slowMag;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, float damage, double range, int slowDuration, int slowMag) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, float damage, double range, int slowDuration, int slowMag) {
+            super(display, condition, duration, cooldown);
             this.damage = damage;
             this.range = range;
             this.slowDuration = slowDuration;

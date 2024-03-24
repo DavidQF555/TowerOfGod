@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,8 +61,8 @@ public abstract class AreaTechnique<C extends AreaTechnique.Config, S extends Sh
         public final double minRadius, maxRadius;
         public final int maxY, period;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, double minRadius, double maxRadius, int maxY, int period) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, double minRadius, double maxRadius, int maxY, int period) {
+            super(display, condition, duration, cooldown);
             this.minRadius = minRadius;
             this.maxRadius = maxRadius;
             this.maxY = maxY;

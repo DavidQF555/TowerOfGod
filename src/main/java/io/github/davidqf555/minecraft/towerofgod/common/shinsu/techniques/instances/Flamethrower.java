@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.Shin
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -66,8 +67,8 @@ public class Flamethrower extends ShinsuTechniqueType<Flamethrower.Config, Shins
         public final float spread;
         public final double magnitude;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, float spread, double magnitude) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, float spread, double magnitude) {
+            super(display, condition, duration, cooldown);
             this.spread = spread;
             this.magnitude = magnitude;
         }

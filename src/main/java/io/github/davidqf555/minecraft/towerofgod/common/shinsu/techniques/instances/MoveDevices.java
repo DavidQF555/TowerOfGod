@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.DeviceC
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.FlyingDevice;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.devices.MoveCommand;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -55,8 +56,8 @@ public class MoveDevices extends BasicCommandTechnique<MoveDevices.Config, Basic
         public final double distance;
         public final float speed;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, double distance, float speed) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, double distance, float speed) {
+            super(display, condition, duration, cooldown);
             this.distance = distance;
             this.speed = speed;
         }

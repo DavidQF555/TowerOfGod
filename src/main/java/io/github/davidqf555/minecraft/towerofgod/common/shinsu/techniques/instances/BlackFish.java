@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueConfig;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueInstanceData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.conditions.MobUseCondition;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.requirements.IRequirement;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
@@ -50,8 +51,8 @@ public class BlackFish extends ShinsuTechniqueType<BlackFish.Config, ShinsuTechn
                 ).apply(inst, Config::new));
         public final int light;
 
-        public Config(Display display, Optional<Integer> duration, int cooldown, int light) {
-            super(display, duration, cooldown);
+        public Config(Display display, MobUseCondition condition, Optional<Integer> duration, int cooldown, int light) {
+            super(display, condition, duration, cooldown);
             this.light = light;
         }
 
