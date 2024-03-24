@@ -4,10 +4,13 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.OpenGuideScreenPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -45,10 +48,15 @@ public class GuideItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack item = playerIn.getItemInHand(handIn);
         if (playerIn instanceof ServerPlayer) {
-            ConfiguredShinsuTechniqueType<?, ?>[] pages = PlayerTechniqueData.get(playerIn).getUnlocked().toArray(ConfiguredShinsuTechniqueType[]::new);
+            Registry<ConfiguredShinsuTechniqueType<?, ?>> registry = ConfiguredTechniqueTypeRegistry.getRegistry(playerIn.getServer().registryAccess());
+            ConfiguredShinsuTechniqueType<?, ?>[] pages = PlayerTechniqueData.get(playerIn).getUnlocked().stream().map(registry::getOrThrow).toArray(ConfiguredShinsuTechniqueType[]::new);
             if (pages.length > 0) {
                 Arrays.sort(pages, Comparator.comparing(technique -> technique.getConfig().getDisplay().name()));
-                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerIn), new OpenGuideScreenPacket(pages, color));
+                ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>[] keys = Arrays.stream(pages)
+                        .map(registry::getKey)
+                        .map(loc -> ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, loc))
+                        .toArray(ResourceKey[]::new);
+                TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) playerIn), new OpenGuideScreenPacket(keys, color));
                 playerIn.awardStat(Stats.ITEM_USED.get(this));
             } else {
                 playerIn.sendMessage(EMPTY, Util.NIL_UUID);

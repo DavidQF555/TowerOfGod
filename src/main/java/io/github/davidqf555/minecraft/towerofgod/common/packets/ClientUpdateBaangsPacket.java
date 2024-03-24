@@ -6,6 +6,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.play
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
@@ -23,15 +24,15 @@ public class ClientUpdateBaangsPacket {
     private static final BiConsumer<ClientUpdateBaangsPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.unlocked.size());
         message.unlocked.forEach((type, count) -> {
-            buffer.writeResourceLocation(type.getRegistryName());
+            buffer.writeResourceLocation(type.location());
             buffer.writeInt(count);
         });
     };
     private static final Function<FriendlyByteBuf, ClientUpdateBaangsPacket> DECODER = buffer -> {
-        Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs = new HashMap<>();
+        Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> baangs = new HashMap<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            ConfiguredShinsuTechniqueType<?, ?> type = ConfiguredTechniqueTypeRegistry.getRegistry().getValue(buffer.readResourceLocation());
+            ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> type = ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, buffer.readResourceLocation());
             int count = buffer.readInt();
             baangs.put(type, count);
         }
@@ -41,15 +42,15 @@ public class ClientUpdateBaangsPacket {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-    private final Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> unlocked;
+    private final Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> unlocked;
 
-    public ClientUpdateBaangsPacket(Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> unlocked) {
+    public ClientUpdateBaangsPacket(Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> unlocked) {
         this.unlocked = unlocked;
     }
 
-    public ClientUpdateBaangsPacket(Pair<ConfiguredShinsuTechniqueType<?, ?>, Integer>[] unlocked) {
-        Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> map = new HashMap<>();
-        for (Pair<ConfiguredShinsuTechniqueType<?, ?>, Integer> pair : unlocked) {
+    public ClientUpdateBaangsPacket(Pair<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer>[] unlocked) {
+        Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> map = new HashMap<>();
+        for (Pair<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> pair : unlocked) {
             map.put(pair.getFirst(), map.getOrDefault(pair.getFirst(), 0) + pair.getSecond());
         }
         this.unlocked = map;

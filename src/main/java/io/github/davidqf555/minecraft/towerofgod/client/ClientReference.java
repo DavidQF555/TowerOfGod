@@ -4,17 +4,22 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.GuideScreen;
+import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuTechniqueScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.ItemStackRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.Entity;
@@ -23,14 +28,19 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class ClientReference {
 
-    public static final Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> BAANGS = new HashMap<>();
-    public static final Set<ConfiguredShinsuTechniqueType<?, ?>> UNLOCKED = new HashSet<>();
+    public static final Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> BAANGS = new HashMap<>();
+    public static final Set<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>> UNLOCKED = new HashSet<>();
     public static int maxBaangs = 0;
 
     private ClientReference() {
+    }
+
+    public static RegistryAccess getRegistryAccess() {
+        return Minecraft.getInstance().getConnection().registryAccess();
     }
 
     public static void renderFullTexture(ResourceLocation loc, RenderContext context) {
@@ -97,8 +107,23 @@ public final class ClientReference {
         Minecraft.getInstance().getItemRenderer().renderAndDecorateItem(data.get(), (int) context.getX(), (int) context.getY());
     }
 
-    public static void openGuideScreen(ConfiguredShinsuTechniqueType<?, ?>[] pages, int color) {
-        Minecraft.getInstance().setScreen(new GuideScreen(pages, 221, 180, color));
+    public static void openGuideScreen(ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>[] pages, int color) {
+        Registry<ConfiguredShinsuTechniqueType<?, ?>> registry = ConfiguredTechniqueTypeRegistry.getRegistry(getRegistryAccess());
+        ConfiguredShinsuTechniqueType<?, ?>[] types = Arrays.stream(pages)
+                .map(registry::getOrThrow)
+                .toArray(ConfiguredShinsuTechniqueType[]::new);
+        Minecraft.getInstance().setScreen(new GuideScreen(types, color));
+    }
+
+    public static void openTechniqueScreen(Set<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>> unlocked, Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> baangs, int max) {
+        Registry<ConfiguredShinsuTechniqueType<?, ?>> registry = ConfiguredTechniqueTypeRegistry.getRegistry(ClientReference.getRegistryAccess());
+        Set<ConfiguredShinsuTechniqueType<?, ?>> types = unlocked.stream().map(registry::getOrThrow).collect(Collectors.toSet());
+        Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> equipped = new HashMap<>();
+        baangs.forEach((key, val) -> {
+            ConfiguredShinsuTechniqueType<?, ?> type = registry.getOrThrow(key);
+            equipped.merge(type, val, Integer::sum);
+        });
+        Minecraft.getInstance().setScreen(new ShinsuTechniqueScreen(types, equipped, max));
     }
 
     public static void handleUpdateCastingPacket(UUID id, boolean casting) {

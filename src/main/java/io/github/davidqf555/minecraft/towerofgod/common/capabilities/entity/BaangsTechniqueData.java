@@ -4,9 +4,11 @@ import io.github.davidqf555.minecraft.towerofgod.common.entities.BaangEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.EntityRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -29,8 +31,8 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
         this.max = max;
     }
 
-    public Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> getBaangSettings() {
-        Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> map = new HashMap<>();
+    public Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> getBaangSettings() {
+        Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> map = new HashMap<>();
         baangs.forEach(inst -> map.put(inst.type, map.getOrDefault(inst.type, 0) + inst.cooldown));
         return map;
     }
@@ -44,10 +46,10 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
                 .toArray(BaangEntity[]::new);
     }
 
-    public void setBaangs(Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs) {
+    public void setBaangs(Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> baangs) {
         this.baangs.clear();
         int total = 0;
-        for (ConfiguredShinsuTechniqueType<?, ?> type : baangs.keySet()) {
+        for (ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> type : baangs.keySet()) {
             int count = baangs.get(type);
             for (int i = 0; i < count; i++) {
                 if (total < getMaxBaangs()) {
@@ -65,6 +67,7 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
         super.tick(user);
         if (user.level instanceof ServerLevel) {
             UUID id = user.getUUID();
+            Registry<ConfiguredShinsuTechniqueType<?, ?>> registry = ConfiguredTechniqueTypeRegistry.getRegistry(user.getServer().registryAccess());
             baangs.forEach(instance -> {
                 if (instance.id != null) {
                     Entity baang = ((ServerLevel) user.level).getEntity(instance.id);
@@ -73,7 +76,7 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
                     }
                 } else if (--instance.cooldown <= 0) {
                     if ((instance.id = spawnBaang(user, instance.type)) != null) {
-                        instance.cooldown = instance.type.getConfig().getCooldown();
+                        instance.cooldown = registry.getOrThrow(instance.type).getConfig().getCooldown();
                     }
                 }
             });
@@ -81,13 +84,15 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
     }
 
     @Nullable
-    protected UUID spawnBaang(T user, ConfiguredShinsuTechniqueType<?, ?> type) {
+    protected UUID spawnBaang(T user, ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> type) {
         BaangEntity baang = EntityRegistry.BAANG.get().create(user.level);
         if (baang != null) {
             baang.setUserID(user.getUUID());
             baang.setTechniqueType(type);
-            user.level.addFreshEntity(baang);
-            return baang.getUUID();
+            baang.setPos(user.position());
+            if (user.level.addFreshEntity(baang)) {
+                return baang.getUUID();
+            }
         }
         return null;
     }
@@ -119,14 +124,14 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
 
     private static class Instance implements INBTSerializable<CompoundTag> {
 
-        private ConfiguredShinsuTechniqueType<?, ?> type;
+        private ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> type;
         private int cooldown;
         private UUID id;
 
         @Override
         public CompoundTag serializeNBT() {
             CompoundTag tag = new CompoundTag();
-            tag.putString("Type", ConfiguredTechniqueTypeRegistry.getRegistry().getKey(type).toString());
+            tag.putString("Type", type.location().toString());
             tag.putInt("Cooldown", cooldown);
             if (id != null) {
                 tag.putUUID("ID", id);
@@ -137,7 +142,7 @@ public class BaangsTechniqueData<T extends LivingEntity> extends ShinsuTechnique
         @Override
         public void deserializeNBT(CompoundTag nbt) {
             if (nbt.contains("Type", Tag.TAG_STRING)) {
-                type = ConfiguredTechniqueTypeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("Type")));
+                type = ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, new ResourceLocation(nbt.getString("Type")));
             }
             if (nbt.contains("Cooldown", Tag.TAG_INT)) {
                 cooldown = nbt.getInt("Cooldown");

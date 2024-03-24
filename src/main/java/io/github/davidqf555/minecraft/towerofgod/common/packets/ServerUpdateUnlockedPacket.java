@@ -5,6 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -19,15 +20,15 @@ public class ServerUpdateUnlockedPacket {
 
     private static final BiConsumer<ServerUpdateUnlockedPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.unlocked.size());
-        for (ConfiguredShinsuTechniqueType<?, ?> technique : message.unlocked) {
-            buffer.writeResourceLocation(technique.getRegistryName());
+        for (ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> technique : message.unlocked) {
+            buffer.writeResourceLocation(technique.location());
         }
     };
     private static final Function<FriendlyByteBuf, ServerUpdateUnlockedPacket> DECODER = buffer -> {
-        Set<ConfiguredShinsuTechniqueType<?, ?>> unlocked = new HashSet<>();
+        Set<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>> unlocked = new HashSet<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            unlocked.add(ConfiguredTechniqueTypeRegistry.getRegistry().getValue(buffer.readResourceLocation()));
+            unlocked.add(ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, buffer.readResourceLocation()));
         }
         return new ServerUpdateUnlockedPacket(unlocked);
     };
@@ -35,9 +36,9 @@ public class ServerUpdateUnlockedPacket {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-    private final Set<ConfiguredShinsuTechniqueType<?, ?>> unlocked;
+    private final Set<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>> unlocked;
 
-    public ServerUpdateUnlockedPacket(Set<ConfiguredShinsuTechniqueType<?, ?>> unlocked) {
+    public ServerUpdateUnlockedPacket(Set<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>> unlocked) {
         this.unlocked = unlocked;
     }
 

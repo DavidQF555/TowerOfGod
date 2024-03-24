@@ -10,6 +10,8 @@ import io.github.davidqf555.minecraft.towerofgod.registration.GroupRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuAttributeRegistry;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShapeRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -30,7 +32,7 @@ public interface IShinsuUser<T extends LivingEntity> {
     default int getInitialMaxBaangs(Random random) {
         Group group = getGroup();
         double mult = group == null ? 1 : group.getBaangs();
-        return Mth.ceil(getShinsuLevel() * mult * (0.8 + random.nextDouble() * 0.4) * 0.25);
+        return Mth.ceil(getShinsuLevel() * mult * (0.8 + random.nextDouble() * 0.4) * 0.1);
     }
 
     default double getInitialResistance(Random random) {
@@ -47,14 +49,16 @@ public interface IShinsuUser<T extends LivingEntity> {
         BaangsTechniqueData<T> data = getShinsuTechniqueData();
         int max = getInitialMaxBaangs(world.getRandom());
         data.setMaxBaangs(max);
-        ConfiguredShinsuTechniqueType<?, ?>[] possible = ConfiguredTechniqueTypeRegistry.getRegistry().getValues().stream()
-                .filter(type -> Arrays.stream(type.getType().getRequirements()).allMatch(req -> req.isUnlocked(entity)))
-                .toArray(ConfiguredShinsuTechniqueType<?, ?>[]::new);
+        Registry<ConfiguredShinsuTechniqueType<?, ?>> registry = ConfiguredTechniqueTypeRegistry.getRegistry(world.getServer().registryAccess());
+        ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>[] possible = registry.keySet().stream()
+                .map(loc -> ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, loc))
+                .filter(key -> Arrays.stream(registry.getOrThrow(key).getType().getRequirements()).allMatch(req -> req.isUnlocked(entity)))
+                .toArray(size -> (ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>[]) new ResourceKey[size]);
         if (possible.length > 0) {
-            Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> levels = new HashMap<>();
+            Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> levels = new HashMap<>();
             for (int i = 0; i < max; i++) {
-                ConfiguredShinsuTechniqueType<?, ?> selected = possible[world.getRandom().nextInt(possible.length)];
-                levels.put(selected, levels.getOrDefault(selected, 0) + 1);
+                ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> selected = possible[world.getRandom().nextInt(possible.length)];
+                levels.merge(selected, 1, Integer::sum);
             }
             data.setBaangs(levels);
         }

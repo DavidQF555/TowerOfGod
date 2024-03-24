@@ -7,8 +7,10 @@ import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.effect
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter.DropsFilter;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter.FactorDropsFilter;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.filter.SmeltDropsFilter;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -30,6 +32,8 @@ import java.util.function.Supplier;
 public final class ShinsuAttributeRegistry {
 
     public static final ResourceLocation ADVANCEMENT = new ResourceLocation(TowerOfGod.MOD_ID, "attributes");
+
+    public static final ResourceKey<Registry<ShinsuAttribute>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_attributes"));
 
     public static final DeferredRegister<ShinsuAttribute> QUALITIES = DeferredRegister.create(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_attributes"), TowerOfGod.MOD_ID);
 
@@ -79,7 +83,7 @@ public final class ShinsuAttributeRegistry {
 
     @SubscribeEvent
     public static void onNewRegistry(NewRegistryEvent event) {
-        registry = event.create(new RegistryBuilder<ShinsuAttribute>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_attributes")).setType(ShinsuAttribute.class));
+        registry = event.create(new RegistryBuilder<ShinsuAttribute>().setName(REGISTRY.location()).setType(ShinsuAttribute.class));
     }
 
 }

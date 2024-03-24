@@ -25,11 +25,16 @@ public class GuideScreen extends Screen {
     private static final TextureRenderData PAGE = new TextureRenderData(TEXTURE, 221, 370, 0, 180, 221, 180);
     private static final TextureRenderData NEXT = new TextureRenderData(TEXTURE, 221, 370, 0, 360, 18, 10);
     private static final TextureRenderData BACK = new TextureRenderData(TEXTURE, 221, 370, 18, 360, 18, 10);
-    private static final int BUTTON_WIDTH = 18, BUTTON_HEIGHT = 10, ARROW_WIDTH = 10, ARROW_HEIGHT = 10, DIF = 10;
+    private static final int BUTTON_WIDTH = 18, BUTTON_HEIGHT = 10;
     private final ConfiguredShinsuTechniqueType<?, ?>[] pages;
     private final int xSize, ySize, color;
     private ChangePageButton next, back;
     private int page;
+
+
+    public GuideScreen(ConfiguredShinsuTechniqueType<?, ?>[] pages, int color) {
+        this(pages, 221, 180, color);
+    }
 
     public GuideScreen(ConfiguredShinsuTechniqueType<?, ?>[] pages, int xSize, int ySize, int color) {
         super(TITLE);

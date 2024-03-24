@@ -1,11 +1,14 @@
 package io.github.davidqf555.minecraft.towerofgod.common.entities;
 
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.CastingHelper;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.instances.ShinsuTechniqueInstance;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,9 +37,10 @@ import java.util.UUID;
 
 public class BaangEntity extends PathfinderMob {
 
-    private ConfiguredShinsuTechniqueType<?, ?> type;
+    private ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> key;
     private UUID user;
     private UUID technique;
+    private ConfiguredShinsuTechniqueType<?, ?> type;
 
     public BaangEntity(EntityType<? extends BaangEntity> type, Level world) {
         super(type, world);
@@ -67,7 +71,7 @@ public class BaangEntity extends PathfinderMob {
         super.tick();
         if (level instanceof ServerLevel) {
             LivingEntity user = getUser();
-            if (user == null) {
+            if (user == null || getTechniqueTypeKey() == null) {
                 discard();
             } else {
                 UUID technique = getTechniqueID();
@@ -130,12 +134,23 @@ public class BaangEntity extends PathfinderMob {
         this.user = user;
     }
 
+    @Nullable
+    public ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> getTechniqueTypeKey() {
+        return key;
+    }
+
+    @Nullable
     public ConfiguredShinsuTechniqueType<?, ?> getTechniqueType() {
+        if (getTechniqueTypeKey() != null && type == null) {
+            Registry<ConfiguredShinsuTechniqueType<?, ?>> registry = ConfiguredTechniqueTypeRegistry.getRegistry(level.isClientSide() ? ClientReference.getRegistryAccess() : getServer().registryAccess());
+            type = registry.getOrThrow(getTechniqueTypeKey());
+        }
         return type;
     }
 
-    public void setTechniqueType(ConfiguredShinsuTechniqueType<?, ?> type) {
-        this.type = type;
+    public void setTechniqueType(ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> type) {
+        this.key = type;
+        this.type = null;
     }
 
     @Nullable
@@ -160,7 +175,7 @@ public class BaangEntity extends PathfinderMob {
             setTechniqueID(nbt.getUUID("Technique"));
         }
         if (nbt.contains("TechniqueType", Tag.TAG_STRING)) {
-            setTechniqueType(ConfiguredTechniqueTypeRegistry.getRegistry().getValue(new ResourceLocation(nbt.getString("TechniqueType"))));
+            setTechniqueType(ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, new ResourceLocation(nbt.getString("TechniqueType"))));
         }
     }
 
@@ -173,7 +188,9 @@ public class BaangEntity extends PathfinderMob {
         if (getTechniqueID() != null) {
             tag.putUUID("Technique", getTechniqueID());
         }
-        tag.putString("TechniqueType", ConfiguredTechniqueTypeRegistry.getRegistry().getKey(getTechniqueType()).toString());
+        if (getTechniqueTypeKey() != null) {
+            tag.putString("TechniqueType", getTechniqueTypeKey().location().toString());
+        }
         return tag;
     }
 

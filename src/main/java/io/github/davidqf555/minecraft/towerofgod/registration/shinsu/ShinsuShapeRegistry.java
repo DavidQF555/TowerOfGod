@@ -3,6 +3,8 @@ package io.github.davidqf555.minecraft.towerofgod.registration.shinsu;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.registration.ItemRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,6 +16,9 @@ import java.util.function.Supplier;
 public final class ShinsuShapeRegistry {
 
     public static final ResourceLocation ADVANCEMENT = new ResourceLocation(TowerOfGod.MOD_ID, "shapes");
+
+    public static final ResourceKey<Registry<ShinsuShape>> REGISTRY = ResourceKey.createRegistryKey(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_shapes"));
+
     public static final DeferredRegister<ShinsuShape> SHAPES = DeferredRegister.create(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_shapes"), TowerOfGod.MOD_ID);
     public static final RegistryObject<ShinsuShape> SHOVEL = register("shovel", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_SHOVEL.get().getDefaultInstance()));
     public static final RegistryObject<ShinsuShape> PICKAXE = register("pickaxe", () -> new ShinsuShape(() -> ItemRegistry.SHINSU_PICKAXE.get().getDefaultInstance()));
@@ -38,7 +43,7 @@ public final class ShinsuShapeRegistry {
 
     @SubscribeEvent
     public static void onNewRegistry(NewRegistryEvent event) {
-        registry = event.create(new RegistryBuilder<ShinsuShape>().setName(new ResourceLocation(TowerOfGod.MOD_ID, "shinsu_shapes")).setType(ShinsuShape.class));
+        registry = event.create(new RegistryBuilder<ShinsuShape>().setName(REGISTRY.location()).setType(ShinsuShape.class));
     }
 
 }

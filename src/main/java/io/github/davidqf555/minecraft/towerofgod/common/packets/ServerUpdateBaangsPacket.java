@@ -5,6 +5,7 @@ import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -20,15 +21,15 @@ public class ServerUpdateBaangsPacket {
     private static final BiConsumer<ServerUpdateBaangsPacket, FriendlyByteBuf> ENCODER = (message, buffer) -> {
         buffer.writeInt(message.baangs.size());
         message.baangs.forEach((type, count) -> {
-            buffer.writeResourceLocation(type.getRegistryName());
+            buffer.writeResourceLocation(type.location());
             buffer.writeInt(count);
         });
     };
     private static final Function<FriendlyByteBuf, ServerUpdateBaangsPacket> DECODER = buffer -> {
-        Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs = new HashMap<>();
+        Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> baangs = new HashMap<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            ConfiguredShinsuTechniqueType<?, ?> type = ConfiguredTechniqueTypeRegistry.getRegistry().getValue(buffer.readResourceLocation());
+            ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> type = ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, buffer.readResourceLocation());
             int count = buffer.readInt();
             baangs.put(type, count);
         }
@@ -38,9 +39,9 @@ public class ServerUpdateBaangsPacket {
         NetworkEvent.Context cont = context.get();
         message.handle(cont);
     };
-    private final Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs;
+    private final Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> baangs;
 
-    public ServerUpdateBaangsPacket(Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs) {
+    public ServerUpdateBaangsPacket(Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> baangs) {
         this.baangs = baangs;
     }
 

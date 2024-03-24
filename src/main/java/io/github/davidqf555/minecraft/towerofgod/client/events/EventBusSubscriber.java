@@ -3,7 +3,6 @@ package io.github.davidqf555.minecraft.towerofgod.client.events;
 import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.KeyBindingsList;
 import io.github.davidqf555.minecraft.towerofgod.client.gui.LighthouseScreen;
-import io.github.davidqf555.minecraft.towerofgod.client.gui.ShinsuTechniqueScreen;
 import io.github.davidqf555.minecraft.towerofgod.client.model.LighthouseModel;
 import io.github.davidqf555.minecraft.towerofgod.client.model.ObserverModel;
 import io.github.davidqf555.minecraft.towerofgod.client.model.SpearModel;
@@ -58,7 +57,7 @@ public final class EventBusSubscriber {
         if (event.getAction() == GLFW.GLFW_PRESS && KeyBindingsList.SHINSU_TECHNIQUE_GUI.getKey().getValue() == event.getKey() && KeyBindingsList.SHINSU_TECHNIQUE_GUI.isDown()) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
-                Minecraft.getInstance().setScreen(new ShinsuTechniqueScreen(ClientReference.UNLOCKED, ClientReference.BAANGS, ClientReference.maxBaangs));
+                ClientReference.openTechniqueScreen(ClientReference.UNLOCKED, ClientReference.BAANGS, ClientReference.maxBaangs);
             }
         }
     }

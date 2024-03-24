@@ -2,20 +2,26 @@ package io.github.davidqf555.minecraft.towerofgod.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import io.github.davidqf555.minecraft.towerofgod.client.ClientReference;
 import io.github.davidqf555.minecraft.towerofgod.client.render.RenderContext;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.data.IRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.data.TextureRenderData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ClientUpdateBaangsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
+import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,12 +32,17 @@ public class ShinsuTechniqueScreen extends Screen {
     private static final TextureRenderData MAIN = new TextureRenderData(TEXTURE, 256, 256, 0, 0, 195, 136);
     private final Pair<ConfiguredShinsuTechniqueType<?, ?>, Integer>[] unlocked;
     private final Slot[][] slots = new Slot[6][9];
-    private final int imageWidth = 195, imageHeight = 136;
-    private final int max;
+    private final int xSize, ySize, max;
     private int total;
 
     public ShinsuTechniqueScreen(Set<ConfiguredShinsuTechniqueType<?, ?>> unlocked, Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs, int max) {
+        this(unlocked, baangs, max, 195, 136);
+    }
+
+    public ShinsuTechniqueScreen(Set<ConfiguredShinsuTechniqueType<?, ?>> unlocked, Map<ConfiguredShinsuTechniqueType<?, ?>, Integer> baangs, int max, int xSize, int ySize) {
         super(TITLE);
+        this.xSize = xSize;
+        this.ySize = ySize;
         this.max = max;
         this.unlocked = new Pair[unlocked.size()];
         int i = 0;
@@ -44,17 +55,17 @@ public class ShinsuTechniqueScreen extends Screen {
 
     @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partial) {
-        int x = (width - imageWidth) / 2;
-        int y = (height - imageHeight) / 2;
-        MAIN.render(new RenderContext(poseStack, x, y, getBlitOffset(), imageWidth, imageHeight, 0xFFFFFFFF));
+        int x = (width - xSize) / 2;
+        int y = (height - ySize) / 2;
+        MAIN.render(new RenderContext(poseStack, x, y, getBlitOffset(), xSize, ySize, 0xFFFFFFFF));
         super.render(poseStack, mouseX, mouseY, partial);
     }
 
     @Override
     protected void init() {
         super.init();
-        int x = (width - imageWidth) / 2;
-        int y = (height - imageHeight) / 2;
+        int x = (width - xSize) / 2;
+        int y = (height - ySize) / 2;
         for (int j = 0; j < 6; j++) {
             for (int i = 0; i < 9; i++) {
                 slots[j][i] = new Slot(9 + 18 * i, 15 + 18 * j, 16, 16);
@@ -108,7 +119,13 @@ public class ShinsuTechniqueScreen extends Screen {
                     unlocked[index] = Pair.of(unlocked[index].getFirst(), unlocked[index].getSecond() + 1);
                     total++;
                 }
-                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateBaangsPacket(unlocked));
+                Registry<ConfiguredShinsuTechniqueType<?, ?>> registry = ConfiguredTechniqueTypeRegistry.getRegistry(ClientReference.getRegistryAccess());
+                Map<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, Integer> baangs = new HashMap<>();
+                Arrays.stream(unlocked).forEach(pair -> {
+                    ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> key = ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, registry.getKey(pair.getFirst()));
+                    baangs.merge(key, pair.getSecond(), Integer::sum);
+                });
+                TowerOfGod.CHANNEL.sendToServer(new ClientUpdateBaangsPacket(baangs));
             }
         }
 

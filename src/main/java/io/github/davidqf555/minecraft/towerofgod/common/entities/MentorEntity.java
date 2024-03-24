@@ -4,13 +4,13 @@ import com.mojang.datafixers.util.Pair;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateUnlockedPacket;
-import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredTechniqueTypeRegistry;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.DifficultyInstance;
@@ -27,21 +27,22 @@ import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public class MentorEntity extends RankerEntity {
 
     private static final String DEATH = Util.makeDescriptionId("entity", new ResourceLocation(TowerOfGod.MOD_ID, "mentor")) + ".death";
-    private ConfiguredShinsuTechniqueType<?, ?> technique;
+    private ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> technique;
 
     public MentorEntity(EntityType<? extends MentorEntity> type, Level world) {
         super(type, world);
     }
 
     public static AttributeSupplier.Builder setAttributes() {
-        return MentorEntity.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 1)
-                .add(Attributes.FLYING_SPEED, 0.215);
+        return createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32)
+                .add(Attributes.MOVEMENT_SPEED, 0.215)
+                .add(Attributes.MAX_HEALTH, 20)
+                .add(Attributes.ATTACK_DAMAGE, 1);
     }
 
     @Override
@@ -61,8 +62,14 @@ public class MentorEntity extends RankerEntity {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
-        List<ConfiguredShinsuTechniqueType<?, ?>> all = List.copyOf(ConfiguredTechniqueTypeRegistry.getRegistry().getValues());
-        technique = all.get(random.nextInt(all.size()));
+        List<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>> all = ConfiguredTechniqueTypeRegistry.getRegistry(worldIn.registryAccess()).keySet().stream()
+                .map(loc -> ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, loc))
+                .toList();
+        if (all.isEmpty()) {
+            discard();
+        } else {
+            technique = all.get(random.nextInt(all.size()));
+        }
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
@@ -70,32 +77,29 @@ public class MentorEntity extends RankerEntity {
     public void die(DamageSource source) {
         super.die(source);
         LivingEntity credit = getKillCredit();
-        if (credit instanceof ServerPlayer) {
+        if (credit instanceof ServerPlayer && technique != null) {
             PlayerTechniqueData data = PlayerTechniqueData.get((Player) credit);
             if (data.unlock(technique)) {
-                credit.sendMessage(new TranslatableComponent(DEATH, technique.getConfig().getDisplay().name()), getUUID());
+                ConfiguredShinsuTechniqueType<?, ?> type = ConfiguredTechniqueTypeRegistry.getRegistry(credit.getServer().registryAccess()).getOrThrow(technique);
+                credit.sendMessage(new TranslatableComponent(DEATH, type.getConfig().getDisplay().name()), getUUID());
                 TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) credit), new ServerUpdateUnlockedPacket(data.getUnlocked()));
             }
         }
     }
 
-    @Nullable
-    @Override
-    public ShinsuAttribute getInitialAttribute(Random random) {
-        return technique.getConfig().getDisplay().attribute().orElse(null);
-    }
-
     @Override
     public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        nbt.putString("Technique", technique.getRegistryName().toString());
+        if (technique != null) {
+            nbt.putString("Technique", technique.location().toString());
+        }
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Technique", Tag.TAG_STRING)) {
-            technique = ConfiguredTechniqueTypeRegistry.getRegistry().getValue(new ResourceLocation(compound.getString("Technique")));
+            technique = ResourceKey.create(ConfiguredTechniqueTypeRegistry.REGISTRY, new ResourceLocation(compound.getString("Technique")));
         }
     }
 
@@ -106,8 +110,8 @@ public class MentorEntity extends RankerEntity {
         }
 
         @Override
-        protected Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity> selectTechnique(List<Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity>> possible) {
-            for (Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity> pair : possible) {
+        protected Pair<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, BaangEntity> selectTechnique(List<Pair<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, BaangEntity>> possible) {
+            for (Pair<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, BaangEntity> pair : possible) {
                 if (pair.getFirst().equals(technique)) {
                     return pair;
                 }

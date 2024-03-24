@@ -20,7 +20,10 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ShinsuShape
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ResourceKeyArgument;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,9 +46,6 @@ public final class ShinsuCommand {
     private static final String SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.shape";
     private static final String INSTANCES = "commands." + TowerOfGod.MOD_ID + ".shinsu.instances";
     private static final String INSTANCES_TITLE = "commands." + TowerOfGod.MOD_ID + ".shinsu.instances.entity";
-    private static final String UNKNOWN_ATTRIBUTE = "commands." + TowerOfGod.MOD_ID + ".shinsu.unknown_attribute";
-    private static final String UNKNOWN_SHAPE = "commands." + TowerOfGod.MOD_ID + ".shinsu.unknown_shape";
-    private static final String UNKNOWN_TECHNIQUE = "commands." + TowerOfGod.MOD_ID + ".shinsu.unknown_technique";
 
     private ShinsuCommand() {
     }
@@ -71,20 +71,20 @@ public final class ShinsuCommand {
                         )
                         .then(Commands.literal("technique")
                                 .then(Commands.literal("unlock")
-                                        .then(Commands.argument("technique", new ForgeRegistryArgument<>(ConfiguredTechniqueTypeRegistry.getRegistry(), UNKNOWN_TECHNIQUE))
-                                                .executes(context -> unlockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ConfiguredShinsuTechniqueType.class)))
+                                        .then(Commands.argument("technique", new ResourceKeyArgument<>(ConfiguredTechniqueTypeRegistry.REGISTRY))
+                                                .executes(context -> unlockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ResourceKey.class)))
                                         )
                                 )
                                 .then(Commands.literal("lock")
-                                        .then(Commands.argument("technique", new ForgeRegistryArgument<>(ConfiguredTechniqueTypeRegistry.getRegistry(), UNKNOWN_TECHNIQUE))
-                                                .executes(context -> lockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ConfiguredShinsuTechniqueType.class)))
+                                        .then(Commands.argument("technique", new ResourceKeyArgument<>(ConfiguredTechniqueTypeRegistry.REGISTRY))
+                                                .executes(context -> lockTechnique(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("technique", ResourceKey.class)))
                                         )
                                 )
                         )
                         .then(Commands.literal("attribute")
                                 .then(Commands.literal("set")
-                                        .then(Commands.argument("value", new ForgeRegistryArgument<>(ShinsuAttributeRegistry.getRegistry(), UNKNOWN_ATTRIBUTE))
-                                                .executes(context -> changeAttribute(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("value", ShinsuAttribute.class)))
+                                        .then(Commands.argument("value", new ResourceKeyArgument<>(ShinsuAttributeRegistry.REGISTRY))
+                                                .executes(context -> changeAttribute(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("value", ResourceKey.class)))
                                         )
                                 )
                                 .then(Commands.literal("remove")
@@ -93,8 +93,8 @@ public final class ShinsuCommand {
                         )
                         .then(Commands.literal("shape")
                                 .then(Commands.literal("set")
-                                        .then(Commands.argument("value", new ForgeRegistryArgument<>(ShinsuShapeRegistry.getRegistry(), UNKNOWN_SHAPE))
-                                                .executes(context -> changeShape(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("value", ShinsuShape.class)))
+                                        .then(Commands.argument("value", new ResourceKeyArgument<>(ShinsuShapeRegistry.REGISTRY))
+                                                .executes(context -> changeShape(context.getSource(), EntityArgument.getEntities(context, "targets"), context.getArgument("value", ResourceKey.class)))
                                         )
                                 )
                                 .then(Commands.literal("remove")
@@ -141,14 +141,16 @@ public final class ShinsuCommand {
         return entities.size();
     }
 
-    private static int unlockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ConfiguredShinsuTechniqueType<?, ?> technique) {
+    private static int unlockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> technique) {
         int count = 0;
+        Registry<ConfiguredShinsuTechniqueType<?, ?>> registry = ConfiguredTechniqueTypeRegistry.getRegistry(source.getServer().registryAccess());
+        ConfiguredShinsuTechniqueType<?, ?> val = registry.getOrThrow(technique);
         for (Entity entity : entities) {
             if (entity instanceof ServerPlayer) {
                 PlayerTechniqueData data = PlayerTechniqueData.get((Player) entity);
                 if (data.unlock(technique)) {
                     count++;
-                    source.sendSuccess(new TranslatableComponent(UNLOCK, entity.getDisplayName(), technique.getConfig().getDisplay().name()), true);
+                    source.sendSuccess(new TranslatableComponent(UNLOCK, entity.getDisplayName(), val.getConfig().getDisplay().name()), true);
                     TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new ServerUpdateUnlockedPacket(data.getUnlocked()));
                 }
             }
@@ -156,14 +158,16 @@ public final class ShinsuCommand {
         return count;
     }
 
-    private static int lockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ConfiguredShinsuTechniqueType<?, ?> technique) {
+    private static int lockTechnique(CommandSourceStack source, Collection<? extends Entity> entities, ResourceKey<ConfiguredShinsuTechniqueType<?, ?>> technique) {
         int count = 0;
+        Registry<ConfiguredShinsuTechniqueType<?, ?>> registry = ConfiguredTechniqueTypeRegistry.getRegistry(source.getServer().registryAccess());
+        ConfiguredShinsuTechniqueType<?, ?> val = registry.getOrThrow(technique);
         for (Entity entity : entities) {
             if (entity instanceof Player) {
                 PlayerTechniqueData data = PlayerTechniqueData.get((Player) entity);
                 if (data.lock(technique)) {
                     count++;
-                    source.sendSuccess(new TranslatableComponent(LOCK, entity.getDisplayName(), technique.getConfig().getDisplay().name()), true);
+                    source.sendSuccess(new TranslatableComponent(LOCK, entity.getDisplayName(), val.getConfig().getDisplay().name()), true);
                     TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new ServerUpdateUnlockedPacket(data.getUnlocked()));
                 }
             }
@@ -171,21 +175,23 @@ public final class ShinsuCommand {
         return count;
     }
 
-    private static int changeAttribute(CommandSourceStack source, Collection<? extends Entity> entities, ShinsuAttribute attribute) {
+    private static int changeAttribute(CommandSourceStack source, Collection<? extends Entity> entities, ResourceKey<ShinsuAttribute> attribute) {
+        ShinsuAttribute val = ShinsuAttributeRegistry.getRegistry().getValue(attribute.location());
         for (Entity entity : entities) {
-            ShinsuQualityData.get(entity).setAttribute(attribute);
+            ShinsuQualityData.get(entity).setAttribute(val);
             if (entity instanceof ServerPlayer) {
-                TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ServerUpdateAttributePacket(entity.getId(), attribute));
+                TowerOfGod.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), new ServerUpdateAttributePacket(entity.getId(), val));
             }
-            source.sendSuccess(new TranslatableComponent(ATTRIBUTE, entity.getDisplayName(), attribute.getName()), true);
+            source.sendSuccess(new TranslatableComponent(ATTRIBUTE, entity.getDisplayName(), val.getName()), true);
         }
         return entities.size();
     }
 
-    private static int changeShape(CommandSourceStack source, Collection<? extends Entity> entities, ShinsuShape shape) {
+    private static int changeShape(CommandSourceStack source, Collection<? extends Entity> entities, ResourceKey<ShinsuShape> shape) {
+        ShinsuShape val = ShinsuShapeRegistry.getRegistry().getValue(shape.location());
         for (Entity entity : entities) {
-            ShinsuQualityData.get(entity).setShape(shape);
-            source.sendSuccess(new TranslatableComponent(SHAPE, entity.getDisplayName(), shape.getName()), true);
+            ShinsuQualityData.get(entity).setShape(val);
+            source.sendSuccess(new TranslatableComponent(SHAPE, entity.getDisplayName(), val.getName()), true);
         }
         return entities.size();
     }

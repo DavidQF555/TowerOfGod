@@ -8,6 +8,7 @@ import com.mojang.math.Vector3f;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
 import io.github.davidqf555.minecraft.towerofgod.common.entities.BaangEntity;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
+import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -36,16 +37,16 @@ public class BaangRenderer extends EntityRenderer<BaangEntity> {
 
     @Override
     public void render(BaangEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        int color = ShinsuAttribute.getColor(entityIn.getTechniqueType().getConfig().getDisplay().attribute().orElse(null));
+        ConfiguredShinsuTechniqueType<?, ?> type = entityIn.getTechniqueType();
+        int color = ShinsuAttribute.getColor(type == null ? null : type.getConfig().getDisplay().attribute().orElse(null));
         int alpha = FastColor.ARGB32.alpha(color);
         int red = FastColor.ARGB32.red(color);
         int blue = FastColor.ARGB32.blue(color);
         int green = FastColor.ARGB32.green(color);
         VertexConsumer consumer = bufferIn.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entityIn)));
         matrixStackIn.pushPose();
-        matrixStackIn.scale(2.0F, 2.0F, 2.0F);
         matrixStackIn.mulPose(this.entityRenderDispatcher.cameraOrientation());
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
         PoseStack.Pose posestack$pose = matrixStackIn.last();
         Matrix4f matrix4f = posestack$pose.pose();
         Matrix3f matrix3f = posestack$pose.normal();
