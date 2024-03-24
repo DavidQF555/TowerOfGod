@@ -54,6 +54,11 @@ public class ShinsuTechniqueScreen extends Screen {
     }
 
     @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partial) {
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
@@ -68,11 +73,11 @@ public class ShinsuTechniqueScreen extends Screen {
         int y = (height - ySize) / 2;
         for (int j = 0; j < 6; j++) {
             for (int i = 0; i < 9; i++) {
-                slots[j][i] = new Slot(9 + 18 * i, 15 + 18 * j, 16, 16);
-                addWidget(slots[j][i]);
+                slots[j][i] = new Slot(x + 9 + 18 * i, y + 15 + 18 * j, 16, 16);
+                addRenderableWidget(slots[j][i]);
             }
         }
-        addWidget(new Slider(x + 175, y + 15, 12, 15, y + 15, y + 106));
+        addRenderableWidget(new Slider(x + 175, y + 15, 12, 15, y + 15, y + 106));
         updateSlots(0);
     }
 
@@ -104,7 +109,7 @@ public class ShinsuTechniqueScreen extends Screen {
                 unlocked[index].getFirst().getConfig().getDisplay().getIcon().render(new RenderContext(pose, x, y, getBlitOffset(), width, height, 0xFFFFFFFF));
                 int count = unlocked[index].getSecond();
                 if (count > 0) {
-
+                    font.drawShadow(pose, count + "", x, y, 0xFF0000);
                 }
             }
         }
@@ -131,7 +136,7 @@ public class ShinsuTechniqueScreen extends Screen {
 
         @Override
         public void updateNarration(NarrationElementOutput output) {
-            updateNarratedWidget(output);
+            defaultButtonNarrationText(output);
         }
     }
 
@@ -155,15 +160,15 @@ public class ShinsuTechniqueScreen extends Screen {
 
         @Override
         protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-            x = (int) Mth.clamp(mouseY, min, max);
-            int totalRows = Mth.ceil(unlocked.length / 9.0) - 5;
-            int startRow = (x - min) * totalRows / (max - min);
+            y = (int) Mth.clamp(mouseY, min, max);
+            int totalRows = Math.max(1, Mth.ceil(unlocked.length / 9.0) - 5);
+            int startRow = (y - min) * totalRows / (max - min + 1);
             updateSlots(startRow);
         }
 
         @Override
         public void updateNarration(NarrationElementOutput output) {
-            updateNarratedWidget(output);
+            defaultButtonNarrationText(output);
         }
 
     }

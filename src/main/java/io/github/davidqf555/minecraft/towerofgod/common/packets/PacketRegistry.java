@@ -24,6 +24,7 @@ public final class PacketRegistry {
             ServerUpdateBaangsPacket.register(index++);
             ServerUpdateUnlockedPacket.register(index++);
             UpdateCastingPacket.register(index++);
+            UpdateMaxBaangsPacket.register(index++);
         });
     }
 }

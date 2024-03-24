@@ -4,12 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import io.github.davidqf555.minecraft.towerofgod.common.TowerOfGod;
+import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.BaangsTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuQualityData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuStats;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.ShinsuTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.capabilities.entity.player.PlayerTechniqueData;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateAttributePacket;
 import io.github.davidqf555.minecraft.towerofgod.common.packets.ServerUpdateUnlockedPacket;
+import io.github.davidqf555.minecraft.towerofgod.common.packets.UpdateMaxBaangsPacket;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.attributes.ShinsuAttribute;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.shape.ShinsuShape;
 import io.github.davidqf555.minecraft.towerofgod.common.shinsu.techniques.ConfiguredShinsuTechniqueType;
@@ -109,12 +111,21 @@ public final class ShinsuCommand {
     }
 
     private static int setMaxBaangs(CommandSourceStack source, Collection<? extends Entity> entities, int baangs) {
+        int count = 0;
         for (Entity entity : entities) {
-            ShinsuStats stats = ShinsuStats.get(entity);
-            stats.setMaxBaangs(baangs);
-            source.sendSuccess(new TranslatableComponent(BAANGS, entity.getDisplayName(), baangs), true);
+            if (entity instanceof LivingEntity) {
+                ShinsuTechniqueData<?> data = ShinsuTechniqueData.get((LivingEntity) entity);
+                if (data instanceof BaangsTechniqueData<?> cap) {
+                    cap.setMaxBaangs(baangs);
+                    source.sendSuccess(new TranslatableComponent(BAANGS, entity.getDisplayName(), baangs), true);
+                    count++;
+                    if (entity instanceof ServerPlayer) {
+                        TowerOfGod.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) entity), new UpdateMaxBaangsPacket(baangs));
+                    }
+                }
+            }
         }
-        return entities.size();
+        return count;
     }
 
     private static int setResistance(CommandSourceStack source, Collection<? extends Entity> entities, double factor) {
