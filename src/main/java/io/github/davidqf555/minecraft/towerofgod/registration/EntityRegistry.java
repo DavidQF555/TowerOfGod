@@ -61,9 +61,7 @@ public final class EntityRegistry {
         event.put(REGULAR.get(), RegularEntity.setAttributes().build());
         event.put(RANKER.get(), RankerEntity.setAttributes().build());
         event.put(MENTOR.get(), MentorEntity.setAttributes().build());
-        event.put(BAANG.get(), BaangEntity.setAttributes().build());
     }
-
 
     @SubscribeEvent
     public static void onFMLCommonSetup(FMLCommonSetupEvent event) {

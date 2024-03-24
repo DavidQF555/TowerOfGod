@@ -25,9 +25,9 @@ public class BaangRenderer extends EntityRenderer<BaangEntity> {
         super(context);
     }
 
-    private static void vertex(VertexConsumer consumer, Matrix4f last, Matrix3f normal, int light, float x, float y, float uv1, float uv2, int alpha, int red, int blue, int green) {
+    private static void vertex(VertexConsumer consumer, Matrix4f last, Matrix3f normal, int light, float x, float y, float uv1, float uv2, int alpha, int red, int green, int blue) {
         consumer.vertex(last, x - 0.5f, y - 0.25f, 0)
-                .color(alpha, red, blue, green)
+                .color(red, green, blue, alpha)
                 .uv(uv1, uv2)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(light)
@@ -50,10 +50,10 @@ public class BaangRenderer extends EntityRenderer<BaangEntity> {
         PoseStack.Pose posestack$pose = matrixStackIn.last();
         Matrix4f matrix4f = posestack$pose.pose();
         Matrix3f matrix3f = posestack$pose.normal();
-        vertex(consumer, matrix4f, matrix3f, packedLightIn, 0, 0, 0, 1, alpha, red, blue, green);
-        vertex(consumer, matrix4f, matrix3f, packedLightIn, 1, 0, 1, 1, alpha, red, blue, green);
-        vertex(consumer, matrix4f, matrix3f, packedLightIn, 1, 1, 1, 0, alpha, red, blue, green);
-        vertex(consumer, matrix4f, matrix3f, packedLightIn, 0, 1, 0, 0, alpha, red, blue, green);
+        vertex(consumer, matrix4f, matrix3f, packedLightIn, 0, 0, 0, 1, alpha, red, green, blue);
+        vertex(consumer, matrix4f, matrix3f, packedLightIn, 1, 0, 1, 1, alpha, red, green, blue);
+        vertex(consumer, matrix4f, matrix3f, packedLightIn, 1, 1, 1, 0, alpha, red, green, blue);
+        vertex(consumer, matrix4f, matrix3f, packedLightIn, 0, 1, 0, 0, alpha, red, green, blue);
         matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
