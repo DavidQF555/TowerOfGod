@@ -11,6 +11,10 @@
     "range": 1,
     "damage": 15,
     "slow_duration": 40,
-    "slow_magnitude": 1
+    "slow_magnitude": 1,
+    "mob_condition": {
+      "type": "towerofgod:target_distance",
+      "max": 4
+    }
   }
 }

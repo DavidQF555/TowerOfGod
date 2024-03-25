@@ -9,8 +9,8 @@ import net.minecraft.world.entity.Mob;
 public class TargetDistanceCondition extends HasTargetCondition {
 
     public static final Codec<TargetDistanceCondition> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Codec.DOUBLE.fieldOf("min").forGetter(cond -> cond.min),
-            Codec.DOUBLE.fieldOf("max").forGetter(cond -> cond.max)
+            Codec.DOUBLE.optionalFieldOf("min", 0.0).forGetter(cond -> cond.min),
+            Codec.DOUBLE.optionalFieldOf("max", Double.MAX_VALUE).forGetter(cond -> cond.max)
     ).apply(inst, TargetDistanceCondition::new));
     private final double min;
     private final double max;

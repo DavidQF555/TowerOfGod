@@ -9,5 +9,9 @@
     "cooldown": 600,
     "duration": 60,
     "range": 3
+  },
+  "mob_condition": {
+    "type": "towerofgod:target",
+    "has": true
   }
 }

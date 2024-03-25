@@ -8,6 +8,10 @@
     },
     "duration": 0,
     "cooldown": 200,
-    "damage": 5
+    "damage": 5,
+    "mob_condition": {
+      "type": "towerofgod:target_distance",
+      "min": 8
+    }
   }
 }

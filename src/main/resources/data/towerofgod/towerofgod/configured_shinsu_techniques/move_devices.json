@@ -9,6 +9,10 @@
     "speed": 1,
     "duration": 40,
     "cooldown": 900,
-    "distance": 64
+    "distance": 64,
+    "mob_condition": {
+      "type": "towerofgod:target_distance",
+      "min": 16
+    }
   }
 }

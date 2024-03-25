@@ -9,6 +9,11 @@
     "duration": 40,
     "cooldown": 900,
     "spread": 45,
-    "magnitude": 0.75
+    "magnitude": 0.75,
+    "mob_condition": {
+      "type": "towerofgod:target_distance",
+      "min": 2,
+      "max": 16
+    }
   }
 }

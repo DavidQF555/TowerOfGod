@@ -6,6 +6,10 @@
       "description": "",
       "icon": ""
     },
-    "cooldown": 200
+    "cooldown": 200,
+    "mob_condition": {
+      "type": "towerofgod:target_distance",
+      "min": 4
+    }
   }
 }

@@ -20,7 +20,7 @@ public final class MobUseConditionRegistry {
     public static final RegistryObject<MobUseConditionType> ALWAYS = register("always", () -> new MobUseConditionType(Codec.unit(MobUseCondition.ALWAYS)));
     public static final RegistryObject<MobUseConditionType> COMBINATION = register("combination", () -> new MobUseConditionType(CombinationCondition.CODEC.get()));
     public static final RegistryObject<MobUseConditionType> GEAR = register("gear", () -> new MobUseConditionType(GearCondition.CODEC));
-    public static final RegistryObject<MobUseConditionType> HAS_TARGET = register("has_target", () -> new MobUseConditionType(HasTargetCondition.CODEC));
+    public static final RegistryObject<MobUseConditionType> HAS_TARGET = register("target", () -> new MobUseConditionType(HasTargetCondition.CODEC));
     public static final RegistryObject<MobUseConditionType> TARGET_DISTANCE = register("target_distance", () -> new MobUseConditionType(TargetDistanceCondition.CODEC));
     private static Supplier<IForgeRegistry<MobUseConditionType>> registry = null;
 

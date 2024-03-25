@@ -8,6 +8,10 @@
     },
     "duration": 60,
     "cooldown": 600,
-    "range": 3
+    "range": 3,
+    "mob_condition": {
+      "type": "towerofgod:target_distance",
+      "max": 3
+    }
   }
 }

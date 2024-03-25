@@ -8,6 +8,31 @@
     },
     "duration": 2400,
     "cooldown": 400,
-    "light": 7
+    "light": 7,
+    "mob_condition": {
+      "type": "towerofgod:combination",
+      "all": [
+        {
+          "type": "towerofgod:gear",
+          "slot": "feet",
+          "gear": false
+        },
+        {
+          "type": "towerofgod:gear",
+          "slot": "legs",
+          "gear": false
+        },
+        {
+          "type": "towerofgod:gear",
+          "slot": "chest",
+          "gear": false
+        },
+        {
+          "type": "towerofgod:gear",
+          "slot": "head",
+          "gear": false
+        }
+      ]
+    }
   }
 }

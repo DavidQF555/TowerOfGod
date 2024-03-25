@@ -8,6 +8,10 @@
     },
     "duration": 0,
     "cooldown": 600,
-    "particles": 25
+    "particles": 25,
+    "mob_condition": {
+      "type": "towerofgod:target_distance",
+      "min": 16
+    }
   }
 }

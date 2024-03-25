@@ -8,7 +8,7 @@ import net.minecraft.world.entity.Mob;
 public class HasTargetCondition implements MobUseCondition {
 
     public static final Codec<HasTargetCondition> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Codec.BOOL.fieldOf("target").forGetter(cond -> cond.has)
+            Codec.BOOL.fieldOf("has").forGetter(cond -> cond.has)
     ).apply(inst, HasTargetCondition::new));
     private final boolean has;
 

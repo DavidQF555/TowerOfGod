@@ -10,6 +10,10 @@
     "duration": 120,
     "speed": 1.5,
     "period": 1,
-    "max_y": 8
+    "max_y": 8,
+    "mob_condition": {
+      "type": "towerofgod:target_distance",
+      "min": 8
+    }
   }
 }

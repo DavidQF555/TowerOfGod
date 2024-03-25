@@ -110,9 +110,9 @@ public class MentorEntity extends RankerEntity {
         }
 
         @Override
-        protected Pair<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, BaangEntity> selectTechnique(List<Pair<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, BaangEntity>> possible) {
-            for (Pair<ResourceKey<ConfiguredShinsuTechniqueType<?, ?>>, BaangEntity> pair : possible) {
-                if (pair.getFirst().equals(technique)) {
+        protected Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity> selectTechnique(List<Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity>> possible) {
+            for (Pair<ConfiguredShinsuTechniqueType<?, ?>, BaangEntity> pair : possible) {
+                if (technique.location().equals(pair.getFirst().getRegistryName())) {
                     return pair;
                 }
             }
