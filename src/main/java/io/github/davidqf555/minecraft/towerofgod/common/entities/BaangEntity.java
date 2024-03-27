@@ -8,7 +8,6 @@ import io.github.davidqf555.minecraft.towerofgod.registration.shinsu.ConfiguredT
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -23,29 +22,55 @@ import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 import java.util.UUID;
 
-public class BaangEntity extends Entity {
+public class BaangEntity extends PathfinderMob {
 
-    private static final double HOVER_RANGE = 10, SPEED = 0.05;
     private static final EntityDataAccessor<String> KEY = SynchedEntityData.defineId(BaangEntity.class, EntityDataSerializers.STRING);
-    private UUID user;
+    private UUID userId;
     private UUID technique;
+    private Entity user;
     private ConfiguredShinsuTechniqueType<?, ?> type;
 
     public BaangEntity(EntityType<? extends BaangEntity> type, Level world) {
         super(type, world);
         setNoGravity(true);
+        moveControl = new FlyingMoveControl(this, 90, true);
+    }
+
+    public static AttributeSupplier.Builder setAttributes() {
+        return createMobAttributes()
+                .add(Attributes.FLYING_SPEED, 0.215)
+                .add(Attributes.MAX_HEALTH, 1);
+    }
+
+    @Override
+    protected PathNavigation createNavigation(Level world) {
+        return new FlyingPathNavigation(this, world);
+    }
+
+    @Override
+    protected void registerGoals() {
+        super.registerGoals();
+        goalSelector.addGoal(0, new FollowUser(1, 4, 12));
     }
 
     @Override
     protected void defineSynchedData() {
+        super.defineSynchedData();
         getEntityData().define(KEY, "");
     }
 
@@ -54,32 +79,30 @@ public class BaangEntity extends Entity {
         super.tick();
         if (level instanceof ServerLevel) {
             LivingEntity user = getUser();
+            UUID technique = getTechniqueID();
             if (user == null || getTechniqueTypeKey() == null) {
                 discard();
-            } else {
-                UUID technique = getTechniqueID();
-                if (technique != null && ShinsuTechniqueInstance.getById(user, technique) == null) {
-                    discard();
-                } else if (!user.getEyePosition().closerThan(position(), HOVER_RANGE)) {
-                    Vec3 dir = user.getEyePosition().subtract(position()).normalize();
-                    setPos(position().add(dir.scale(SPEED)));
-                }
+            } else if (technique != null && ShinsuTechniqueInstance.getById(user, technique) == null) {
+                discard();
             }
         }
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
-        if (player instanceof ServerPlayer && hand == InteractionHand.MAIN_HAND && !CastingHelper.isCasting(player)) {
-            CastingHelper.startCasting((ServerPlayer) player, this);
-            return InteractionResult.CONSUME;
-        }
-        return InteractionResult.PASS;
+    public float getBrightness() {
+        return 1;
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (player instanceof ServerPlayer && hand == InteractionHand.MAIN_HAND && !CastingHelper.isCasting(player)) {
+            LivingEntity user = getUser();
+            if (user != null && player.getUUID().equals(user.getUUID())) {
+                CastingHelper.startCasting((ServerPlayer) player, this);
+                return InteractionResult.CONSUME;
+            }
+        }
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -108,7 +131,8 @@ public class BaangEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag nbt) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
+        super.readAdditionalSaveData(nbt);
         if (nbt.contains("User", Tag.TAG_INT_ARRAY)) {
             setUserID(nbt.getUUID("User"));
         }
@@ -121,7 +145,8 @@ public class BaangEntity extends Entity {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
         if (getUserID() != null) {
             tag.putUUID("User", getUserID());
         }
@@ -135,7 +160,7 @@ public class BaangEntity extends Entity {
 
     @Nullable
     public UUID getUserID() {
-        return user;
+        return userId;
     }
 
     @Nullable
@@ -148,7 +173,8 @@ public class BaangEntity extends Entity {
     }
 
     public void setUserID(@Nullable UUID user) {
-        this.user = user;
+        this.userId = user;
+        this.user = null;
     }
 
     @Nullable
@@ -173,14 +199,67 @@ public class BaangEntity extends Entity {
 
     @Nullable
     public LivingEntity getUser() {
-        UUID id = getUserID();
-        if (id != null && level instanceof ServerLevel) {
-            Entity user = ((ServerLevel) level).getEntity(id);
-            if (user instanceof LivingEntity) {
-                return (LivingEntity) user;
+        if (user == null) {
+            UUID id = getUserID();
+            if (id != null && level instanceof ServerLevel) {
+                Entity entity = ((ServerLevel) level).getEntity(id);
+                if (entity != null) {
+                    user = entity;
+                }
             }
         }
-        return null;
+        return user instanceof LivingEntity && user.isAlive() ? (LivingEntity) user : null;
+    }
+
+    private class FollowUser extends Goal {
+
+        private final double speed, stopDist, tpDist;
+        private int recalcTime;
+
+        private FollowUser(double speed, double stopDist, double tpDist) {
+            this.speed = speed;
+            this.stopDist = stopDist;
+            this.tpDist = tpDist;
+            setFlags(EnumSet.of(Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            LivingEntity user = getUser();
+            return user != null && !position().closerThan(user.getEyePosition(), stopDist);
+        }
+
+        @Override
+        public void start() {
+            recalcTime = 0;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            LivingEntity user = getUser();
+            return user != null && !navigation.isDone() && !position().closerThan(user.getEyePosition(), stopDist);
+        }
+
+        @Override
+        public void tick() {
+            if (--recalcTime <= 0) {
+                Vec3 pos = getUser().getEyePosition();
+                recalcTime = adjustedTickDelay(10);
+                if (!pos.closerThan(position(), tpDist) || !getNavigation().moveTo(pos.x(), pos.y(), pos.z(), speed)) {
+                    double x = random.nextDouble(-3, 3);
+                    double y = random.nextDouble(-1, 3);
+                    double z = random.nextDouble(-3, 3);
+                    teleportTo(pos.x() + x, pos.y() + y, pos.z() + z);
+                    getNavigation().stop();
+                }
+            }
+        }
+
+        @Override
+        public void stop() {
+            getNavigation().stop();
+        }
+
     }
 
 }

@@ -14,12 +14,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 
 public class BaangRenderer extends EntityRenderer<BaangEntity> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/shinsu.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(TowerOfGod.MOD_ID, "textures/entity/baang.png");
 
     public BaangRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -45,6 +46,7 @@ public class BaangRenderer extends EntityRenderer<BaangEntity> {
         int green = FastColor.ARGB32.green(color);
         VertexConsumer consumer = bufferIn.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entityIn)));
         matrixStackIn.pushPose();
+        matrixStackIn.scale(0.5f, 0.5f, 0.5f);
         matrixStackIn.mulPose(this.entityRenderDispatcher.cameraOrientation());
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
         PoseStack.Pose posestack$pose = matrixStackIn.last();
@@ -61,6 +63,11 @@ public class BaangRenderer extends EntityRenderer<BaangEntity> {
     @Override
     public ResourceLocation getTextureLocation(BaangEntity entity) {
         return TEXTURE;
+    }
+
+    @Override
+    protected int getBlockLightLevel(BaangEntity entity, BlockPos pos) {
+        return 15;
     }
 
 }
